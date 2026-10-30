@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0-rc.2] - 2026-10-30
+
 ### Added
 
 - The critic gate is applied in code: the critic records its yes/no to "would a senior designer present it as is?"
