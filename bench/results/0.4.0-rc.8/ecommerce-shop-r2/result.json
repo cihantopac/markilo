@@ -1,0 +1,100 @@
+{
+  "scenario": "ecommerce-shop",
+  "attempt": 2,
+  "holdout": false,
+  "title": "Online shop",
+  "kind": "ecommerce",
+  "brief": {
+    "ask": "Create a brand identity for Kilnroom, the online shop in this folder.",
+    "owner": "Owner preferences: handmade and warm but not rustic or folksy; no pottery wheels, no vase or mug silhouettes, no flames. It must work on a shipping label, a tissue-paper sticker and Instagram. Web and social only; customers in Turkey and Europe."
+  },
+  "markilo": "0.4.0-rc.8",
+  "ranAt": "2026-10-30T17:04:41.282Z",
+  "minutes": 8.69,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 2.4320361999999998,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 46605,
+    "output": 98434,
+    "cacheRead": 3984772,
+    "cacheWrite": 315867
+  },
+  "turns": 4,
+  "subagents": 9,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Üç yön de iki eskiz turunda eleştirmen tarafından 'none' aldı (şapka/stok monogram/uygulama ikonu okumaları), hiçbir konsept kalite kapısına ulaşmadı; dışa aktarma ve galeri yapılmadı."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "kilnroom",
+      "name": "Kilnroom",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "firing-load",
+          "title": "Firing Load",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a baby-bottle/bowling-ball/three-dot icon in an app squircle; s2 a door or mailbox icon - a red ball in an arch, also tombstone-adjacent, 83% stock; s3 wifi/podcast/broadcast signal icon; s4 tally marks or a battery/equalizer (tally is the banned plain-object move). All sit in a rounded app-icon squircle in one flat orange, so the 'chop-mark seal' reads as an iOS tile, not a pressed seal - UI form language against a handmade brief. Different move: make the seal itself the idea - an irregular pressed clay edge (not a squircle), with a single owned impression (a maker's mark glyph) rather than icon content placed inside a container.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "kiln-k",
+          "title": "Kiln K",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a rounded-font K (Nunito-style), nothing more; s2 a K that reads as a fish/bird head with an eye - the dimple is an eye, not a thumb; s3 a bold soft K, stock; s4 a slab K, stock; s5 a K split into stem plus chevron - a back button / less-than sign, and the split-initial device. Softening the corners of a typed K is not handmade; every sketch is the initial in a stock rounded weight. Different move: the hand must change the letter's structure, not its corner radius - e.g. a K whose arm and leg are one coil looped through the stem, a K impressed as a negative into a slab edge, or abandon the monogram for this concept.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "threshold",
+          "title": "Threshold",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 Santa/gnome hat on a bar; s2 three chess pieces or a hat row, too many parts for 16 px; s3 chess knight/pawn in a circle (worst, also 79% stock); s4 party hat or traffic cone with a chipped tip; s5 Santa hat / chess knight with a bite. The bent-tip-on-a-base silhouette is a hat every time: the hook curl plus the flat pad says costume, not kiln. Different move: drop the full cone profile. Try the cone's real signature - a tall slim spike set at a lean in a pad, bent so the tip touches down (an arch/loop shape, not a curl), or the bend alone as a single drooping stroke; test it against hat, knight and cone readings before drawing finish.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "5862bc7e-a60e-4712-ab37-9950091026f3"
+}

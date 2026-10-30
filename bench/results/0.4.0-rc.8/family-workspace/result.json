@@ -1,0 +1,133 @@
+{
+  "scenario": "family-workspace",
+  "attempt": 1,
+  "holdout": false,
+  "title": "Multi-product family",
+  "kind": "family",
+  "brief": {
+    "ask": "Create the brand family for Lumenfold, the office suite in this monorepo: the Lumenfold master brand and product icons for Lumenfold Docs, Sheets and Sign.",
+    "owner": "Owner preferences: privacy-first and European, calm and precise. The three product icons must clearly belong to one family and still be told apart at small sizes. Web apps only."
+  },
+  "markilo": "0.4.0-rc.8",
+  "ranAt": "2026-10-30T16:56:02.621Z",
+  "minutes": 12.99,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.471197100000001,
+  "budgetUsd": 25,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 47652,
+    "output": 140818,
+    "cacheRead": 7400259,
+    "cacheWrite": 392181
+  },
+  "turns": 6,
+  "subagents": 6,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "All three directions (Crease, Lightfall, Folded L) got a critic 'none' in both sketch rounds because the product icons blurred together at 16 px and read as stock shapes (page dog-ear, door, tray), so none reached the quality gate and nothing was finalized, exported or installed."
+  },
+  "workspace": true,
+  "family": "Lumenfold",
+  "brands": [
+    {
+      "slug": "lumenfold",
+      "name": "Lumenfold",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "crease",
+          "title": "Crease",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a page with a dog-eared corner (brief explicitly avoids it; Docs and Sign members are the plain folded-corner page); s2 a letter L split by a 45-degree cut, the initial-with-a-cut device, and nearly identical to folded-l s1; s3 a speaker/volume icon (rectangle + trapezoid), Sign member a square plus sliver. Family: members differ only by proportion and blur together at 16 px. Different move: stop drawing the sheet or the L; find a fold whose result is a new silhouette (e.g. a folded strip that encloses a light counter) and give each product a distinct fold count or direction, not a stretched copy.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "folded-l",
+          "title": "Folded L",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a letter L cut by a diagonal (initial with a cut), same drawing as crease s2; members at 16 px differ only by foot length; s2 a stepped L holding a cup, reads as a sink/tray or toaster, the inset is a nested copy and goes muddy at 16 px; s3 a square nested in an L frame, a crop/picture-frame icon, near-primitive (0.905 square). Different move: if the L stays, it must come from the fold itself, not from an L silhouette with a slit; e.g. a single band whose turn-over creates the L counter in negative space, with the light underside as the only colour accent, and product members distinguished by a clear glyph-level cue.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "lightfall",
+          "title": "Lightfall",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: n1 an open door or two standing panels/book spread; Docs and Sign are near identical at 16 px; n2 tilted stacked bars, speed lines or stairs; Sheets member is literally a hamburger menu, Sign a lone slash, Docs two rectangles, so the members do not belong together; n3 two pennants / fast-forward arrows, Sheets member is a sailboat, Sign reads as play arrows. No fold reads in any of them. Different move: one constant light device (e.g. a single lit fold edge between two planes at a fixed angle) repeated in every member, with products told apart by one clear secondary cue, not by recomposition.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "docs",
+      "name": "Lumenfold Docs",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "sheets",
+      "name": "Lumenfold Sheets",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "sign",
+      "name": "Lumenfold Sign",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "31b879df-5f74-495a-8f85-19065035fcb4"
+}

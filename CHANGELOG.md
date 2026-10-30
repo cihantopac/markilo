@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Benchmark results for rc.8 (`bench/results/0.4.0-rc.8/`, nine runs with the calibrated critic): no run passed; the
+  three concepts that reached the gate were rejected by it and by the Opus judge alike; the Opus critic's sketch review
+  stopped 24 of 27 directions before development.
+
 ## [0.4.0-rc.8] - 2026-10-30
 
 ### Changed

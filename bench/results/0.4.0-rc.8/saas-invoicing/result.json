@@ -1,0 +1,133 @@
+{
+  "scenario": "saas-invoicing",
+  "attempt": 1,
+  "holdout": false,
+  "title": "Independent SaaS",
+  "kind": "saas",
+  "brief": {
+    "ask": "Create a brand identity for Tallyline, the invoicing and cash-flow forecasting product in this folder.",
+    "owner": "Owner preferences: calm and trustworthy, friendly to freelancers, not the generic fintech blue-and-green. Web app only."
+  },
+  "markilo": "0.4.0-rc.8",
+  "ranAt": "2026-10-30T17:17:39.489Z",
+  "minutes": 16.01,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.4790755999999994,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 36474,
+    "output": 108786,
+    "cacheRead": 7349457,
+    "cacheWrite": 434879
+  },
+  "turns": 1,
+  "subagents": 12,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Runway ve Handover iki eskiz turunda elendi; Long t iki turda da kapıyı geçemedi (blind distinctiveness 4, memorability 4, brand-fit 5), bu yüzden export, install-assets ve galeri yapılmadı."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "tallyline",
+      "name": "Tallyline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "handover",
+          "title": "Handover",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a smiley face / u-umlaut; s2 two slabs and a dot, generic; s3 a percent sign (finance cliche); s4 a pause/volume glyph l.l; s5 Pac-Man or a puzzle piece; s6 a paperclip or a D with an equals sign; s7 the letter H/b in a block, a cut square monogram (stock-shape 79%); s8 a crop-tool icon / corner brackets. New s6-s8 drop the dot but land on a paperclip, a cut-square letter and a crop icon. Nothing I would bet reaches distinctiveness/memorability 7. No pick.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "runway",
+          "title": "Runway",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s5 the dark-mode/contrast toggle icon (half-filled circle); s6 the same contrast icon in a squircle, generic diagonal split; s7 a medicine capsule broken open, or a padlock shackle. All three are one device (solid half + outline half + gap) applied to stock shapes, and it lands on UI icons every time. No pick. The booked-vs-forecast idea only works if the form itself is ownable; a fill-state split of a circle/tile/pill never will be.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "tl-line",
+          "title": "Long t",
+          "status": "rejected",
+          "critic": 4.46,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 4,
+            "distinctiveness": 3,
+            "memorability": 4,
+            "simplicity": 5,
+            "balance": 3,
+            "craft": 5,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 5,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 4
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 5,
+            "craft": 4,
+            "versatility": 4
+          },
+          "gate": false,
+          "readsAs": [
+            "lowercase tl typed in a terminal followed by an underscore cursor and a period (tl_.)",
+            "two rising bars of unequal height on a shared base, a small bar chart",
+            "a cross on a plinth beside a post, like a grave marker. Unfortunate for this audience: a rising-bars finance chart, which the brief explicitly bans"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 a lowercase t whose tail sweeps up into a tall stem, a one-stroke tl ligature (the hook it claims); s2 a broken plus sign or fishing hook, and the t split around the line is the initial-with-a-cut device, struck; s3 plain letters t...l with an ellipsis, typed text and loading, struck; s4 the letter H with a red bar, a different letter, struck. Keep s1: the single unbroken stroke that crosses the short stem and turns up into the l is the only gesture on all three boards that a stranger could remember. Fix: separate the clay dot from the stroke with a real gap (they merge in one colour now) or drop it; make the rising stem clearly taller than the t stem and keep the turn a round corner so it never reads as a checkmark or a J; keep the left lead-in long enough that the line, not the t, carries the mark; one stroke weight, round terminals.",
+          "checks": {
+            "pass": 20,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.326
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "1649fdb1-3d4e-45bf-bea0-6b540a6e723a"
+}

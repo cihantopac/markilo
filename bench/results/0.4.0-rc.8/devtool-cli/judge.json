@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "seamline",
+    "concept": "railstitch",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a horizontal U-turn rail or hairpin, like a sideways magnet",
+        "a blocky letter D or P with a notch cut out",
+        "a track loop ending at a cursor-like orange block"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 5,
+      "craft": 6,
+      "versatility": 4,
+      "presentAsIs": false,
+      "why": "The geometry is clean and confident, but the very wide horizontal shape wastes a square GitHub avatar and shrinks to an illegible sliver at 16–24px, while the seam/stitch idea doesn't come through: it reads as a generic hairpin or letter D plus a cursor block."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2149096
+  }
+]

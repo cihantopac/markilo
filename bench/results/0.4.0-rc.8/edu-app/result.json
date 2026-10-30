@@ -1,0 +1,100 @@
+{
+  "scenario": "edu-app",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Learning app",
+  "kind": "education",
+  "brief": {
+    "ask": "Create a brand identity for Quillnest, the writing app in this folder.",
+    "owner": "Owner preferences: encouraging and a little bold, for 13–17 year-olds, never childish or school-like. No owls, no pencils or quills drawn literally, no lightbulbs, no speech bubbles. App icon for iOS and Android plus a web version."
+  },
+  "markilo": "0.4.0-rc.8",
+  "ranAt": "2026-10-30T17:05:44.007Z",
+  "minutes": 8.36,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 2.0119846000000003,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 27128,
+    "output": 74309,
+    "cacheRead": 3404453,
+    "cacheWrite": 281327
+  },
+  "turns": 4,
+  "subagents": 9,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Üç yönün hepsi iki eskiz turunda da eleştirmenden none aldı, hiçbir konsept kapıya ulaşmadı; finalize, export ve galeri yapılmadı."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "quillnest",
+      "name": "Quillnest",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "cradle",
+          "title": "Open Cradle",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 crescent moon and star (religious/sleep symbol); s2 pen nib dipped in an inkwell / sailboat (near the banned quill); s3 winking smiley face (childish); s4 origami tulip or fox head, three loose parts; s5 smiley face / ear. Faces and crescent-plus-point dominate. Different move: fuse cradle and rising form into one closed silhouette (no floating gem above a curve), keep it angular, and check it never forms eyes+mouth or moon+star.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "layers",
+          "title": "Rising Layers",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 app-grid/Windows tile icon; s2 target/egg-in-rings; s3 target or vinyl record with a tab; s4 crop/frame UI icon; s5 the stock 'layers' stack icon. Every sketch is generic UI geometry, and nesting copies is the cut/nested device. Different move: drop concentric/nested repeats entirely; draw growth as one asymmetric silhouette with a single unexpected gesture (e.g. a shape that breaks its own boundary), not a stack.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "turn",
+          "title": "The Turn",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 lowercase n / 'rn' (a different letter); s2 awareness ribbon or dancing stick figure; s3 'c-' / toggle switch; s4 'D' or a pill toggle; s5 Tetris S/L pieces or stair/progress steps. s5 is the most energetic but its first reading is a Tetris piece and steps are a learning cliche. Different move: one continuous stroke whose turn makes an ownable, non-letter silhouette (avoid n/c/D/S); keep the two-colour hand-off, which is the only part worth keeping.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "1d47ada7-72b4-463c-a3ac-36842288ba25"
+}

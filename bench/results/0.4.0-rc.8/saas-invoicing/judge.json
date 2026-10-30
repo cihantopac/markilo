@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "tallyline",
+    "concept": "tl-line",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a lowercase 'tl' ligature sharing one baseline",
+        "a squat bar chart or a 'u' shape beside a stray dot and dash",
+        "a typing cursor or a status indicator"
+      ],
+      "distinctiveness": 5,
+      "memorability": 4,
+      "brandFit": 6,
+      "craft": 5,
+      "versatility": 5,
+      "presentAsIs": false,
+      "why": "The warm terracotta neatly avoids the fintech blue-and-green and the joined baseline hints at a ledger line, but the dot and dash float with no clear meaning, the blobby crossbar on the t looks clumsy, and at 16–24px the whole mark collapses into an unreadable 'tl' with specks."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2173048
+  }
+]

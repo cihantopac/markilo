@@ -80,23 +80,25 @@ tuning (a developer tool, an online shop). The plugin researches, writes the bri
 only what passes its own gate. Blind judges then rate every critiqued concept from the brief and the images alone.
 Every run, image and score is in [bench/](bench).
 
-| Version        | Runs                    | Passed the gate | Opus 5.5 judge would present (of concepts it judged) | Time per run | Cost per run (API equivalent) |
-| -------------- | ----------------------- | --------------- | ---------------------------------------------------- | ------------ | ----------------------------- |
-| 0.4.0-rc.1     | 3                       | 0               | —                                                    | 11–21 min    | $2.61–3.67                    |
-| 0.4.0-rc.2     | 3                       | 1               | —                                                    | 8–15 min     | $1.60–2.68                    |
-| 0.4.0-rc.3     | 3                       | 2               | 0 of 2 (the two that passed)                         | 14–24 min    | $3.15–4.37                    |
-| 0.4.0-rc.5     | 9 (6 on holdouts)       | 2               | 0 of 12                                              | 10–19 min    | $2.29–4.41                    |
-| **0.4.0-rc.7** | **11** (2 new holdouts) | **0**           | **2 of 5** — both rejected by the gate               | 6–16 min     | $1.66–3.30                    |
+| Version        | Runs                | Passed the gate | Opus 5.5 judge would present (of concepts it judged) | Time per run | Cost per run (API equivalent) |
+| -------------- | ------------------- | --------------- | ---------------------------------------------------- | ------------ | ----------------------------- |
+| 0.4.0-rc.1     | 3                   | 0               | —                                                    | 11–21 min    | $2.61–3.67                    |
+| 0.4.0-rc.2     | 3                   | 1               | —                                                    | 8–15 min     | $1.60–2.68                    |
+| 0.4.0-rc.3     | 3                   | 2               | 0 of 2 (the two that passed)                         | 14–24 min    | $3.15–4.37                    |
+| 0.4.0-rc.5     | 9 (6 on holdouts)   | 2               | 0 of 12                                              | 10–19 min    | $2.29–4.41                    |
+| 0.4.0-rc.7     | 11 (2 new holdouts) | 0               | 2 of 5 — both rejected by the gate                   | 6–16 min     | $1.66–3.30                    |
+| **0.4.0-rc.8** | **9**               | **0**           | **0 of 3** — the recalibrated gate agreed on all 3   | 8–18 min     | $1.91–3.48                    |
 
 What this shows, plainly:
 
 - **Unattended, Markilo rarely reaches its own gate** — 2 of the last 20 validation runs, 1 of 8 on holdout briefs
   written before the changes they test. rc.3's two of three did not hold up on new briefs.
-- **The marks got better; the gate is now too strict at the margin.** The Opus judge would present none of rc.5's
-  twelve critiqued concepts, but two of rc.7's five — the first unattended marks it accepts. rc.7's stricter critic
-  rejected both (it scored them 5.9 and 6.3 against the judge's 6.2 and 6.6), after rc.5's critic had passed two the
-  judge rejected. Borderline calls are where the critic needs calibrating next.
-- **It does not ship weak work.** Across all runs the gate and the judges agreed on 26 of 32 critiqued concepts;
+- **The critic is calibrated; the sketch stage is now the bottleneck.** The critic's informed scores barely tracked a
+  strict independent judge (Opus 5.5, Spearman 0.20 on 32 concepts), a cold look did much better (0.51), so rc.8's
+  gate rests on the critic's cold scores and runs on Opus — and it agreed with the judge on all three concepts that
+  reached it. But the same critic stops 24 of 27 directions at the sketch review: the designer's sketches, not the
+  gate, now decide that nothing passes. In rc.7 two of the five developed marks were the first the judge accepted.
+- **It does not ship weak work.** Across all runs the gate and the judges agreed on 29 of 35 critiqued concepts;
   three disagreements went each way. When nothing passes, Markilo says so and nothing is finalized or exported.
 - **What moved the needle was measured, not guessed.** Hairline gaps came from Markilo's own guide; clichés reached
   development because the sketch review picked the best of weak boards; the name's initial with a cut became the

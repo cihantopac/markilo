@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "seamline",
+    "concept": "running-stitch",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "road or highway lane marking seen from above",
+        "perforated ticket or tear-off coupon",
+        "dashed seam or stitch line through a rounded square"
+      ],
+      "distinctiveness": 4,
+      "memorability": 5,
+      "brandFit": 5,
+      "craft": 7,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "It is cleanly built and holds up down to 16px, but a rounded square with a dashed centre line reads first as a road or tear-off ticket, not a seam, and it is too close to a generic UI icon to be ownable or developer-native."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2124484
+  }
+]

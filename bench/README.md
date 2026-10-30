@@ -24,6 +24,7 @@ company) plus the owner's preferences:
 | [0.4.0-rc.3](results/0.4.0-rc.3)                           | Sonnet 5.5 | 2 of 3          | 2 of 2                                                   | 6 / 9                  | 5 of 6                     | 54              | $10.85                |
 | [0.4.0-rc.5](results/0.4.0-rc.5) (9 runs, 6 holdout)       | Sonnet 5.5 | 2 of 9          | 0 of 2 (Opus judge)                                      | 12 / 27                | 10 of 12                   | 139             | $29.93                |
 | [0.4.0-rc.7](results/0.4.0-rc.7) (11 runs, 2 new holdouts) | Sonnet 5.5 | 0 of 11         | 2 of 5 developed (Opus judge), both rejected by the gate | 5 / 33                 | 3 of 5                     | 129             | $26.81                |
+| [0.4.0-rc.8](results/0.4.0-rc.8) (9 runs, Opus critic)     | Sonnet 5.5 | 0 of 9          | 0 of 3 (Opus judge)                                      | 3 / 27                 | 3 of 3                     | 105             | $23.79                |
 
 What changed, and why:
 
@@ -67,7 +68,12 @@ What changed, and why:
   cold, from the brief and the images, before reading the rationale (`--blind`), and the gate rests on those scores and
   its cold yes or no; informed scores stay as feedback. The critic runs on Opus (`model: opus`).
 
-Benchmarking so far (four runs of the three briefs plus judging) cost $33.80 in API-equivalent terms, the rc.5 validation another $33 (runs $29.93, Opus judging $2.61, calibration about $0.66) and the rc.7 validation $27.90 (runs $26.81, judging $1.09). Each run counts
+- **rc.8 (calibrated critic).** Nine runs with the cold-look gate and the critic on Opus. The three concepts that
+  reached the gate were rejected by it and by the Opus judge alike (3 of 3; the Sonnet judge would have presented
+  one). But the Opus critic's sketch review stopped 24 of 27 directions before development (rc.7, Sonnet critic: 28 of
+  33). With the gate calibrated, the bottleneck is plainly the designer's sketches.
+
+Benchmarking so far (four runs of the three briefs plus judging) cost $33.80 in API-equivalent terms, the rc.5 validation another $33 (runs $29.93, Opus judging $2.61, calibration about $0.66) the rc.7 validation $27.90 (runs $26.81, judging $1.09) and the critic calibration about $30 (judging 30 concepts again about $5, rc.8 runs $23.79, judging $1.50). Each run counts
 against a Claude subscription's usage limits instead of being billed; the costs are what the same tokens would cost
 on the API.
 

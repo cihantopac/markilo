@@ -1,0 +1,100 @@
+{
+  "scenario": "b2b-logistics",
+  "attempt": 1,
+  "holdout": true,
+  "title": "B2B platform",
+  "kind": "b2b",
+  "brief": {
+    "ask": "Create a brand identity for Portwise, the freight visibility platform in this folder.",
+    "owner": "Owner preferences: dependable and calm, for operations teams who look at it all day; serious enough for enterprise procurement. No globes, ships, containers, trucks or arrows. Web app, sales decks and LinkedIn."
+  },
+  "markilo": "0.4.0-rc.8",
+  "ranAt": "2026-10-30T16:56:02.712Z",
+  "minutes": 9.69,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 2.0423231999999993,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 36083,
+    "output": 72589,
+    "cacheRead": 3370848,
+    "cacheWrite": 284006
+  },
+  "turns": 4,
+  "subagents": 9,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "The critic gave 'none' to all three directions (waypoints, tolerance, quay-p) in two sketch-review rounds, so no concept reached the gate and no assets were finalized, exported or installed."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "portwise",
+      "name": "Portwise",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "quay-p",
+          "title": "Quay P",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s6 a frying pan / magnifier / power-off button in a square; s7 a plain geometric P in a stock font, nothing of a quay; s8 the brick-wall icon the brief bans (also a firewall icon - wrong for a visibility product); s9 a letter M in a rounded square (an M-initial app icon). The designer's s8 claim is rejected. Different move: keep the P only if the harbour reads first. Build the P bowl as the basin itself: a single heavy L-shaped quay (stem + top) and a mole that closes the bowl but leaves a narrow harbour mouth on the right-lower side, with a counter that is a calm rectangle of water, not a circle. Test against plain P and a 'parking' sign at 16 px; if it reads as parking P, strike.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "tolerance",
+          "title": "Tolerance",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s6 a staircase in a rounded square (app-icon cliché, stockShape 0.79); s7 a traffic cone / bell, unfortunate for a freight brand (road works, delay); s8 a bracket pair [ ] offset, the exact shape the brief bans, the offset does not rescue it; s9 three staircases / a stepped chart, banned staircase again. The designer's s8 claim is rejected. Different move: abandon jaws, brackets and steps entirely. Tolerance as a band of certainty: one solid mass whose two edges are not parallel (a narrow-to-wide lozenge or wedge of a single weight) with one fixed notch marking the committed ETA. Or drop the concept if the next pass returns another bracket/stair.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "waypoints",
+          "title": "Waypoints",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s6 a window/copy UI icon with an orange tab (or a price tag); s7 Greek-key meander / square spiral, a stock ornament; s8 a split pill sliced and offset, the banned cut device, also a pause/D initial; s9 a step-function / single stair, the brief's banned staircase. None carries 'waypoints'. Different move: stop drawing a line that changes level. Draw the waypoints themselves as the form: e.g. a closed counter-shape built from a fixed number of evenly spaced, identical solid stations (not dots on a path) whose spacing implies the route, with one station in accent where the shipment is now. Must not read as a loading spinner, dice face or progress bar; test at 16 px first.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "a60d272c-2a36-4b35-9fca-19856b14ce32"
+}

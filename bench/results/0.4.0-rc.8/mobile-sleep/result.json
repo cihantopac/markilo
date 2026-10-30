@@ -1,0 +1,100 @@
+{
+  "scenario": "mobile-sleep",
+  "attempt": 1,
+  "holdout": false,
+  "title": "Mobile app",
+  "kind": "mobile",
+  "brief": {
+    "ask": "Create a brand identity for Dozeline, the iOS and Android wind-down and sleep journal app in this folder.",
+    "owner": "Owner preferences: calm, warm, not clinical, no moons or stars cliché. The app icon must be recognisable on a home screen at small sizes. English and Turkish markets."
+  },
+  "markilo": "0.4.0-rc.8",
+  "ranAt": "2026-10-30T17:09:02.293Z",
+  "minutes": 8.62,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 1.9091092000000005,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 28413,
+    "output": 67027,
+    "cacheRead": 3160255,
+    "cacheWrite": 272474
+  },
+  "turns": 5,
+  "subagents": 9,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "No concept passed: the critic gave sketch pick 'none' to all three directions in two review rounds, so all were rejected and nothing was developed, finalized or exported."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "dozeline",
+      "name": "Dozeline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "handover",
+          "title": "Evening Handover",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s6 two parallelograms, a fast-forward or chevron arrow; s7 the letter L; s8 the letter Z, the Zzz sleep cliché; s9 a folded page corner or dog-ear (a struck product-object cliché) plus a play/forward arrow. The two-tone ribbon carries none of it: at 16 px they are flat brown and yellow polygons. Different move: the bookmark-handover idea needs a silhouette that reads as a bookmark resting in something (a journal spine, a pillow edge) without letters or arrows; otherwise retire the concept.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "horizon-d",
+          "title": "Horizon D",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a D on an underline (initial plus bar, stock monogram); s3 an open D/backwards c with a dot, an eye or a Pac-Man; s4 a cake or a head on a pillow emoji; s5 a bowl/eye with a lid, a sunrise; s6 a lowercase d or mirrored J; s7 a bib or half-disc; s8 a U or magnet; s9 a tipped A or a flag. Letter readings dominate, and the ones that do not read as a letter read as a different object. Different move: drop the D-as-container; if the initial stays, it needs one feature that is not a cut, offset or sag of the letter, and that feature must be the first thing a stranger sees.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "steps",
+          "title": "Settling Steps",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a left-aligned text/list icon (UI); s3 a staircase/step chart; s6 a backslash or tilde swoosh, generic; s7 a cursive e or awareness-ribbon loop, mushy at 16 px; s8 a smiley mouth or a ball in a cup (closest, but the sinking-sun-in-valley reading is a sunset cliché next door to the banned moon); s9 a hook or pigtail curl, no eyelid reading. None would reach distinctiveness 7. Different move: stop drawing a single line doing a gesture; find one ownable silhouette with a specific feature (an asymmetric weight, a notch, a closed counter) that a stranger reads as one thing at 16 px, and test the reading cold before captioning it.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "43683423-8e7a-42d4-984b-2f854765a5d5"
+}
