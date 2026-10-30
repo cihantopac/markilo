@@ -1,0 +1,95 @@
+{
+ "note": "Opus 5.5 blind judge, four independent looks per borderline concept (the first is the one in judge.json). At 6.0-6.4 a single look flips about half the time.",
+ "looks": {
+  "0.4.0-rc.9/b2b-logistics/porta": [
+   {
+    "average": 6.2,
+    "present": false
+   },
+   {
+    "average": 6.0,
+    "present": false
+   },
+   {
+    "average": 6.4,
+    "present": true
+   },
+   {
+    "average": 6.4,
+    "present": true
+   }
+  ],
+  "0.4.0-rc.9/mobile-sleep/settle": [
+   {
+    "average": 5.2,
+    "present": false
+   },
+   {
+    "average": 4.6,
+    "present": false
+   },
+   {
+    "average": 5.4,
+    "present": false
+   },
+   {
+    "average": 5.6,
+    "present": false
+   }
+  ],
+  "0.4.0-rc.9/edu-app/q-caret": [
+   {
+    "average": 6.8,
+    "present": true
+   },
+   {
+    "average": 6.0,
+    "present": false
+   },
+   {
+    "average": 5.8,
+    "present": false
+   },
+   {
+    "average": 6.6,
+    "present": true
+   }
+  ],
+  "0.4.0-rc.7/ecommerce-shop-r2/doorway": [
+   {
+    "average": 6.6,
+    "present": true
+   },
+   {
+    "average": 5.8,
+    "present": false
+   },
+   {
+    "average": 6.2,
+    "present": true
+   },
+   {
+    "average": 6.4,
+    "present": true
+   }
+  ],
+  "0.4.0-rc.7/devtool-cli-r2/stitched-join": [
+   {
+    "average": 6.2,
+    "present": true
+   },
+   {
+    "average": 6.2,
+    "present": false
+   },
+   {
+    "average": 6.0,
+    "present": false
+   },
+   {
+    "average": 5.8,
+    "present": false
+   }
+  ]
+ }
+}

@@ -1,0 +1,65 @@
+[
+  {
+    "brand": "quillnest",
+    "concept": "growing-rings",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a hand-drawn letter Q with an orange dot in its counter",
+        "a fried egg or an eyeball",
+        "a location pin or target lying on its side"
+      ],
+      "distinctiveness": 5,
+      "memorability": 6,
+      "brandFit": 5,
+      "craft": 5,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The bold monoline Q is legible and holds up from 16px to 256px, but the dot in the teardrop counter reads as a fried egg or an eye rather than writing or growth, and the lumpy inner join where the tail meets the bowl looks unfinished rather than deliberate."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.21452340000000003
+  },
+  {
+    "brand": "quillnest",
+    "concept": "next-step",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "three slanted bars accelerating to the right, like a fast-forward or progress glyph",
+        "a block thinning into strokes, like a page turning into a pen nib or a signal bar",
+        "generic sporty speed lines, the kind used by fitness and delivery brands"
+      ],
+      "distinctiveness": 4,
+      "memorability": 5,
+      "brandFit": 4,
+      "craft": 6,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "The progression from a heavy block to a thin orange slash looks clean and bold and holds up down to 16px, but it reads as generic speed or progress marks used by sports, logistics and media brands, with no tie to writing, a nest or Quillnest, and its wide 3:1 shape fits a square app icon badly."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.21320940000000002
+  },
+  {
+    "brand": "quillnest",
+    "concept": "q-caret",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a bold Q with a block tail",
+        "a disc with a right-angle notch cut out and a red bar",
+        "a caret or nib-tip wedge biting into a circle"
+      ],
+      "distinctiveness": 6,
+      "memorability": 7,
+      "brandFit": 6,
+      "craft": 7,
+      "versatility": 8,
+      "presentAsIs": true,
+      "why": "A confident, teen-appropriate Q whose notch-and-tail cut holds up from 16px to mono, but the writing link (caret/nib) is subtle and the cut-out disc plus offset block sits close to generic geometric-Q marks."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.21225
+  }
+]

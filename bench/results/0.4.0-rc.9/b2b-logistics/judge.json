@@ -1,0 +1,44 @@
+[
+  {
+    "brand": "portwise",
+    "concept": "one-thread",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a block suspended between two posts, like a progress or loading indicator",
+        "a dimension or measurement bracket",
+        "a container berthed between quay walls"
+      ],
+      "distinctiveness": 4,
+      "memorability": 4,
+      "brandFit": 5,
+      "craft": 6,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "Three plain rectangles look calm and hold up at small sizes, but the mark is too generic to own and reads close to the container cliché the brief bans, with no clear tie to 'one thread' or to Portwise."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2261816
+  },
+  {
+    "brand": "portwise",
+    "concept": "porta",
+    "final": true,
+    "judge": {
+      "readsAs": [
+        "a split stepped arch, like a temple or cathedral doorway",
+        "a gateway or harbour gate opening down the middle",
+        "a stepped tower or rocket silhouette"
+      ],
+      "distinctiveness": 6,
+      "memorability": 6,
+      "brandFit": 5,
+      "craft": 7,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The split stepped arch is cleanly built, holds up down to 16px and avoids every banned cliché, but it reads more like a church door or ceremonial monument than calm freight visibility, and the notched 'o' adds a second unrelated idea instead of tying the wordmark to the symbol."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2220484
+  }
+]

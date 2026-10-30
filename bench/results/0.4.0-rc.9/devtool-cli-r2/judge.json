@@ -1,0 +1,44 @@
+[
+  {
+    "brand": "seamline",
+    "concept": "join",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "two bracket-like blocks (a C and a U) joined by an orange pipe or route",
+        "a stylized 'S' or a plumbing elbow joint",
+        "a data-join or merge diagram"
+      ],
+      "distinctiveness": 6,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 5,
+      "versatility": 5,
+      "presentAsIs": false,
+      "why": "The join-between-two-parts idea suits the name and the developer audience, but the 45-degree chamfer looks arbitrary, the diagonal layout leaves two empty corners and sits off balance as an avatar, the mono versions turn the solid bar into an outlined stroke so the mark changes shape, and at 16–24px it collapses into an unreadable squiggle."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2167916
+  },
+  {
+    "brand": "seamline",
+    "concept": "s-weave",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "two stacked square blocks pinned together by a slanted stitch",
+        "a blocky S or 8 with a slash through it",
+        "a chain link or bolted joint"
+      ],
+      "distinctiveness": 6,
+      "memorability": 6,
+      "brandFit": 6,
+      "craft": 5,
+      "versatility": 5,
+      "presentAsIs": false,
+      "why": "The seam-and-stitch idea fits the name and stays legible in one colour, but the tall 1:0.58 shape wastes a square GitHub avatar, the slanted bar ends clumsily inside the counters, and below 32px it becomes a muddy blob."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.21517799999999998
+  }
+]

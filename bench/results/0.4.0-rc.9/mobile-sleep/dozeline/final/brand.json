@@ -1,0 +1,40 @@
+{
+  "schema": "markilo/kit@1",
+  "brand": "dozeline",
+  "name": "Dozeline",
+  "concept": "settle",
+  "locked": false,
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "lockupHorizontal": "lockup-horizontal.svg",
+    "lockupStacked": "lockup-stacked.svg",
+    "lockupCompact": "lockup-compact.svg"
+  },
+  "palette": {
+    "primary": "#9C5B5F",
+    "secondary": "#D9A99A",
+    "accent": "#5E3340",
+    "ink": "#2A1D20",
+    "paper": "#F5ECE6",
+    "dark": "#120b0b"
+  },
+  "tagline": "Settle in.",
+  "approvedAt": "2026-10-30T21:04:08.133Z",
+  "originality": {
+    "verdict": "insufficient-evidence",
+    "confidence": "low",
+    "acceptedRisk": true,
+    "report": "../reports/originality-settle.md",
+    "evidence": {
+      "visual": "11 brand(s) from 12 reference file(s): 11 direct competitor, 0 category/form-family; sources 4 official, 6 app store, 0 logo catalog, 1 unverified",
+      "registry": "no registry searches logged for \"Dozeline\"",
+      "registryCoverage": "none"
+    }
+  },
+  "gate": {
+    "status": "passed",
+    "average": 6.2,
+    "reasons": []
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "scenario": "b2b-logistics",
+  "attempt": 1,
+  "holdout": true,
+  "title": "B2B platform",
+  "kind": "b2b",
+  "brief": {
+    "ask": "Create a brand identity for Portwise, the freight visibility platform in this folder.",
+    "owner": "Owner preferences: dependable and calm, for operations teams who look at it all day; serious enough for enterprise procurement. No globes, ships, containers, trucks or arrows. Web app, sales decks and LinkedIn."
+  },
+  "markilo": "0.4.0-rc.9",
+  "ranAt": "2026-10-30T20:20:53.881Z",
+  "minutes": 15.2,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.479913899999998,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 40804,
+    "output": 111243,
+    "cacheRead": 7244429,
+    "cacheWrite": 438339
+  },
+  "turns": 8,
+  "subagents": 12,
+  "claim": {
+    "passed": [
+      "porta"
+    ],
+    "finalized": "porta",
+    "notes": "Only Porta cleared the gate (blind avg 6.4); finalized with insufficient-evidence originality accepted, and the name Portwise has a likely unverified trademark conflict (Portwise B.V., classes 35/39/42) that needs a lawyer before any use."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "portwise",
+      "name": "Portwise",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "confidence-band",
+          "title": "Confidence Band",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s6 a notification-bell UI icon (dome over base line), second read a chart bell curve, so a UI icon plus the product's own object drawn plainly; s7 a traffic cone at first glance, which signals construction or hazard, the opposite of calm and dependable; s8 a letter A, then a tombstone or arch window: a different letter plus a grim misreading. All three struck. Lesson: once the bell curve is closed into a solid dome it turns into a bell, cone or arch. If this direction comes back, the confidence range must not be drawn as a filled distribution silhouette. Try it as an interval instead: a held span between two precise end marks, with no peak and no dome.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "one-thread",
+          "title": "Interval",
+          "status": "rejected",
+          "critic": 6.08,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 5,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 9,
+            "balance": 6,
+            "craft": 6,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 8
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 6,
+            "craft": 6,
+            "versatility": 8
+          },
+          "gate": false,
+          "readsAs": [
+            "a letter H with its crossbar floating loose (or a sideways I-beam)",
+            "a bracketed minus / collapse toggle [-] or a UI range-slider handle",
+            "a brick or dumbbell between two posts. Most unfortunate for ops teams: a 'minus / remove / collapsed' UI control"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 a monoline lowercase p with a dot, also a hook or an eye; s2 a cursive P / question mark with a ball end, generic script; s3 a route on a map ending at a destination dot (the route-line cliché the brief bans, struck); s4 a square-cornered P, Greek-key / ruled spiral, ending on one dot. Pick s4: most precise and gridded (fits calm/precise/enterprise), best at 16 px (0.95), and the inward square wind is the only one with ownable geometry. Risks: a line ending on a round dot still reads as a route/GPS destination - consider ending the line on a square terminal or a dot that sits in a gap rather than on the stroke (tool also warns thread and dot merge in one colour - add a gap); a square spiral P risks a parking sign or a generic pixel-font P; the spiral needs one more deliberate turn or proportion so it reads as a wound timeline, not just a P outline.",
+          "checks": {
+            "pass": 31,
+            "warn": 2,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.315
+          }
+        },
+        {
+          "id": "porta",
+          "title": "Porta",
+          "status": "approved",
+          "critic": 6.31,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 6,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 7,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 7
+          },
+          "present": true,
+          "blind": {
+            "distinctiveness": 6,
+            "memorability": 6,
+            "brand-fit": 6,
+            "craft": 7,
+            "versatility": 7
+          },
+          "gate": true,
+          "readsAs": [
+            "a round-topped doorway split down the middle",
+            "two mirrored stepped Art Deco towers (skyline, real-estate developer)",
+            "a ziggurat or mirrored bar chart. Unfortunate: a pair of headstones / twin towers, or a property-developer logo"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 a lowercase n / arch doorway (different letter, struck); s2 a stepped arched window or brick gate tower, no letter, no UI icon; s3 a lowercase h / n with a cut and dropped half (initial-with-cut device plus wrong letter, struck); s4 a bold stock P with a rounded counter, barely distinguishable from any heavy sans P (weak, low ownability). Pick s2: the only one that is a shape before it is a letter, and the stacked stages give the timeline idea a body. Risks: reads as a building/castle/Lego stack or stained-glass window; the tiny top tier looks fussy and will clog at 16 px (0.88); three bands with a slot drift toward a brick wall. Develop: fewer, calmer parts (two or three tiers with generous, consistent gaps), make the central slot clearly the through-line from ground to crown, check the round crown does not become a tombstone, and keep it plum, flat, one colour.",
+          "checks": {
+            "pass": 14,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.396
+          }
+        }
+      ],
+      "finalized": "porta",
+      "exported": 81,
+      "byGroup": {
+        "logos": 54,
+        "web": 11,
+        "social": 11,
+        "tokens": 3,
+        "guidelines": 2
+      },
+      "success": true
+    }
+  ],
+  "sessionId": "8d7a2abb-5430-40ec-857a-09094adfa697"
+}

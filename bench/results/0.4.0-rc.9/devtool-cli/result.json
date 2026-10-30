@@ -1,0 +1,132 @@
+{
+  "scenario": "devtool-cli",
+  "attempt": 1,
+  "holdout": false,
+  "title": "Developer tool",
+  "kind": "devtool",
+  "brief": {
+    "ask": "Create a brand identity for Seamline, the open-source command-line tool in this folder.",
+    "owner": "Owner preferences: precise, trustworthy, developer-native; it must work in a terminal-heavy README, as a GitHub avatar and on a small docs site. No database cylinders, no elephants, no generic terminal prompt. Web and GitHub only."
+  },
+  "markilo": "0.4.0-rc.9",
+  "ranAt": "2026-10-30T20:20:53.596Z",
+  "minutes": 13.67,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.0013739999999998,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 322,
+    "output": 100204,
+    "cacheRead": 5286571,
+    "cacheWrite": 400019
+  },
+  "turns": 3,
+  "subagents": 12,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "No concept passed the gate: c2-seam and c3-s were struck at sketch review, and c1-step failed the blind gate in both rounds (git-commit-icon reading, distinctiveness 4), so nothing was finalized, exported or put in a gallery."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "seamline",
+      "name": "Seamline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "c1-step",
+          "title": "Expand and Contract",
+          "status": "rejected",
+          "critic": 6.15,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 6,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 8,
+            "craft": 6,
+            "typography": 6,
+            "color": 6,
+            "cultural-fit": 7,
+            "timelessness": 7,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 6,
+            "craft": 7,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "a git commit node on a line (GitHub's commit icon)",
+            "a fuse / schematic component on a wire",
+            "a bypass lane splitting and rejoining. Unfortunate: a generic git-commit/branch-merge UI glyph, which this exact audience sees all day"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 a square-wave pulse / Pi / torii gate (signal-icon cliche, duplicated by c3 s2); s2 two offset rounded squares, a sliced-bar cut, also a camera/toggle - struck; s3 a component on a wire, a frame on a rod, then a line splitting into two lanes and rejoining; s4 hamburger/text-align icon - struck. Keep s3: two parallel lanes on one axis is the only sketch that says expand/contract (old and new running side by side, then rejoining), not just 'a detour'. Fix: drop the amber lid bar (reads as a hinge/lid and makes it a box); make both lanes equal weight so it reads as two paths, not a frame; consider rounding the fork joins or making the loop a lozenge so it stops looking like a resistor/chip on a trace; tighten the stubs so the 16 px render is not a minus sign with a square. Risk: generic 'node on a line' timeline glyph - it must gain one ownable detail.",
+          "checks": {
+            "pass": 17,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.233
+          }
+        },
+        {
+          "id": "c2-seam",
+          "title": "Invisible Join",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a staircase or step-line chart, really a stepped S with a color split (initial plus step, struck); s2 a square spiral or Greek-key S, or interlocking brackets: stock interlock, 58% stock-shape (struck); s3 the git-merge or road-merge icon, also a > chevron (UI icon, struck); s4 audio-mixer sliders or a fence/HH; the over-under thread is invisible because the navy is drawn as two separate bars (UI icon, struck; one-color merges the layers). Every sketch struck. A different move to try: drop two-color merge and join metaphors. Make one continuous stroke whose single crossing is visible in one color through a real gap. Also avoid the S and any arrow or lane geometry.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "c3-s",
+          "title": "Two-Stroke S",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 the numeral 8 or an ampersand; the S only comes through once you are told (a different letter, struck); s4 a cursive S or a script 8, closer to a signature or handwriting than a tool: it contradicts precise and developer-native, and at 16 px it is an 8 (struck). Both are the same loop-S, and the stitch idea does not read: a self-crossing reads as a loop, not a tie-off. A different move to try: if the S stays, the stitch must be a visible discrete mark, such as a short crossing tick through a geometric monoline S with a gap at the crossing. No closed loop, which is what turns it into an 8.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "a1977049-a9de-4675-8499-d3794d99798d"
+}

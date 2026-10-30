@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Benchmark results for rc.9 (`bench/results/0.4.0-rc.9/`): two of nine runs passed the gate (Portwise, Dozeline); 22
+  of 27 directions reached development; the gate agreed with the Opus judge on 19 of 22 concepts. A noise check judged
+  five borderline marks four times each: a single look flips about half the time around 6.0–6.4 (Portwise 2/4,
+  Dozeline 0/4).
+- `bench.mjs judge --times N`: the majority of N independent looks per concept, with averaged scores.
+
 ## [0.4.0-rc.9] - 2026-10-30
 
 ### Changed

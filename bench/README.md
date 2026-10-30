@@ -25,6 +25,7 @@ company) plus the owner's preferences:
 | [0.4.0-rc.5](results/0.4.0-rc.5) (9 runs, 6 holdout)       | Sonnet 5.5 | 2 of 9          | 0 of 2 (Opus judge)                                      | 12 / 27                | 10 of 12                   | 139             | $29.93                |
 | [0.4.0-rc.7](results/0.4.0-rc.7) (11 runs, 2 new holdouts) | Sonnet 5.5 | 0 of 11         | 2 of 5 developed (Opus judge), both rejected by the gate | 5 / 33                 | 3 of 5                     | 129             | $26.81                |
 | [0.4.0-rc.8](results/0.4.0-rc.8) (9 runs, Opus critic)     | Sonnet 5.5 | 0 of 9          | 0 of 3 (Opus judge)                                      | 3 / 27                 | 3 of 3                     | 105             | $23.79                |
+| [0.4.0-rc.9](results/0.4.0-rc.9) (9 runs)                  | Sonnet 5.5 | 2 of 9          | Portwise 2/4 looks, Dozeline 0/4 (Opus)                  | 22 / 27                | 19 of 22                   | 155             | $37.75                |
 
 What changed, and why:
 
@@ -73,7 +74,15 @@ What changed, and why:
   one). But the Opus critic's sketch review stopped 24 of 27 directions before development (rc.7, Sonnet critic: 28 of
   33). With the gate calibrated, the bottleneck is plainly the designer's sketches.
 
-Benchmarking so far (four runs of the three briefs plus judging) cost $33.80 in API-equivalent terms, the rc.5 validation another $33 (runs $29.93, Opus judging $2.61, calibration about $0.66) the rc.7 validation $27.90 (runs $26.81, judging $1.09) and the critic calibration about $30 (judging 30 concepts again about $5, rc.8 runs $23.79, judging $1.50). Each run counts
+- **rc.9 (sketch review strikes only clear failures).** Developed directions rose from 3 of 27 to 22 of 27 and two
+  identities passed the gate (Portwise, Dozeline). The Opus judge agreed with the gate on 19 of 22 concepts, and the
+  three disagreements were all borderline, so each was judged four times ([noise check](results/0.4.0-rc.9/noise-check.json)):
+  Portwise was presentable in 2 of 4 looks, Dozeline in 0 of 4 (a clear false pass), q-caret (rejected by the gate)
+  in 2 of 4; rc.7's doorway in 3 of 4 and stitched-join in 1 of 4. Around 6.0–6.4 a single look flips about half the
+  time: the gate now errs about as often as the judge disagrees with itself. `bench.mjs judge --times N` takes the
+  majority of N looks for future runs.
+
+Benchmarking so far (four runs of the three briefs plus judging) cost $33.80 in API-equivalent terms, the rc.5 validation another $33 (runs $29.93, Opus judging $2.61, calibration about $0.66) the rc.7 validation $27.90 (runs $26.81, judging $1.09) the critic calibration about $30 (judging 30 concepts again about $5, rc.8 runs $23.79, judging $1.50) and rc.9 about $48 (runs $37.75, judging $7.28, noise check about $3.30). Each run counts
 against a Claude subscription's usage limits instead of being billed; the costs are what the same tokens would cost
 on the API.
 

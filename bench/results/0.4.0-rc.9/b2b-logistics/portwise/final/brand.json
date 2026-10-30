@@ -1,0 +1,51 @@
+{
+  "schema": "markilo/kit@1",
+  "brand": "portwise",
+  "name": "Portwise",
+  "concept": "porta",
+  "locked": false,
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "lockupHorizontal": "lockup-horizontal.svg",
+    "lockupStacked": "lockup-stacked.svg",
+    "lockupCompact": "lockup-compact.svg"
+  },
+  "palette": {
+    "primary": "#4a2b4f",
+    "secondary": "#efe9f0",
+    "accent": "#cdbcd1",
+    "ink": "#1d1420",
+    "paper": "#fcfafc",
+    "dark": "#100c10"
+  },
+  "typography": {
+    "fontId": "plus-jakarta-sans",
+    "weight": 700,
+    "family": "Plus Jakarta Sans",
+    "license": "OFL-1.1",
+    "tracking": 0
+  },
+  "tagline": "Every shipment, one clear timeline.",
+  "notes": [
+    "Use the plum mark on light grounds and the white reversed mark on dark; keep clear space of one slot width.",
+    "Do not close, fill or re-cut the slot; do not add arrows, globes or route lines."
+  ],
+  "approvedAt": "2026-10-30T20:35:30.013Z",
+  "originality": {
+    "verdict": "insufficient-evidence",
+    "confidence": "low",
+    "acceptedRisk": true,
+    "report": "../reports/originality-porta.md",
+    "evidence": {
+      "visual": "4 brand(s) from 5 reference file(s): 4 direct competitor, 0 category/form-family; sources 2 official, 0 app store, 0 logo catalog, 2 unverified",
+      "registry": "no registry searches logged for \"Portwise\"",
+      "registryCoverage": "none"
+    }
+  },
+  "gate": {
+    "status": "passed",
+    "average": 6.4,
+    "reasons": []
+  }
+}

@@ -1,0 +1,65 @@
+[
+  {
+    "brand": "lumenfold",
+    "concept": "aperture",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "megaphone or loudspeaker seen side-on",
+        "flashlight casting a beam of light",
+        "rounded open bracket holding an orange trapezoid"
+      ],
+      "distinctiveness": 4,
+      "memorability": 5,
+      "brandFit": 3,
+      "craft": 5,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "The mark reads first as a megaphone, which suggests loud broadcasting rather than a calm, private, precise office suite; nothing in it shows a fold, its left edge runs off the symbol canvas, and while the silhouette stays readable down to 16px it is close to a generic speaker or flashlight shape."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2155044
+  },
+  {
+    "brand": "lumenfold",
+    "concept": "crease",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a blocky numeral 7 or Γ shape",
+        "a rectangle beside an angled bar with no clear relation",
+        "faintly a folded corner, only once told"
+      ],
+      "distinctiveness": 4,
+      "memorability": 4,
+      "brandFit": 4,
+      "craft": 5,
+      "versatility": 4,
+      "presentAsIs": false,
+      "why": "The two unconnected blocks read first as a '7' rather than a fold or light; at 16–24 px they shrink to a dash and a sliver, and there is no structure here the Docs, Sheets and Sign icons could vary while still reading as one family."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2138192
+  },
+  {
+    "brand": "lumenfold",
+    "concept": "shared-ground",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "two interlocking L-shaped blocks in a rounded square",
+        "a stepped Z or the digit 2 cut through a tile",
+        "a puzzle or construction joint rather than a fold or light"
+      ],
+      "distinctiveness": 4,
+      "memorability": 5,
+      "brandFit": 5,
+      "craft": 7,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "It is cleanly built and holds up at 16px, but the interlocking-L tile is a stock tech or construction shape that reads as a Z or 2, and nothing in it suggests light or folding, so it says little that is specific to Lumenfold."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.21725740000000002
+  }
+]

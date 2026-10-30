@@ -1,0 +1,44 @@
+[
+  {
+    "brand": "kilnroom",
+    "concept": "countdown-ring",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a breaking wave or curling hook",
+        "a question mark or shepherd's crook",
+        "a desk lamp or chimney stack"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 3,
+      "craft": 4,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The bold silhouette holds up from 16px upward, but it looks like a wave or hook and has nothing to do with a kiln, a room or handmade warmth; the cold navy works against the brief, and the right shoulder has a visible kink where the arc meets the tapered stem."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2151054
+  },
+  {
+    "brand": "kilnroom",
+    "concept": "door-light",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "dripping paint or melting caramel/chocolate drip",
+        "a slime/horror 'drip' graphic or a melting table",
+        "a stylised lowercase 'm' or a lintel with three hanging bulbs"
+      ],
+      "distinctiveness": 4,
+      "memorability": 5,
+      "brandFit": 3,
+      "craft": 5,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "The intended 'door light' or glaze-run idea doesn't come through: what you see is a generic paint or caramel drip, a stock trope that tips into a sweets or slime look, has no link to handmade ceramics or warmth, and turns into an unreadable smear at 16–24 px."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2132344
+  }
+]

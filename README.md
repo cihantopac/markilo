@@ -87,19 +87,24 @@ Every run, image and score is in [bench/](bench).
 | 0.4.0-rc.3     | 3                   | 2               | 0 of 2 (the two that passed)                         | 14–24 min    | $3.15–4.37                    |
 | 0.4.0-rc.5     | 9 (6 on holdouts)   | 2               | 0 of 12                                              | 10–19 min    | $2.29–4.41                    |
 | 0.4.0-rc.7     | 11 (2 new holdouts) | 0               | 2 of 5 — both rejected by the gate                   | 6–16 min     | $1.66–3.30                    |
-| **0.4.0-rc.8** | **9**               | **0**           | **0 of 3** — the recalibrated gate agreed on all 3   | 8–18 min     | $1.91–3.48                    |
+| 0.4.0-rc.8     | 9                   | 0               | 0 of 3 — the recalibrated gate agreed on all 3       | 8–18 min     | $1.91–3.48                    |
+| **0.4.0-rc.9** | **9**               | **2**           | **Portwise 2 of 4 looks, Dozeline 0 of 4**           | 14–28 min    | $3.00–7.13                    |
 
 What this shows, plainly:
 
 - **Unattended, Markilo rarely reaches its own gate** — 2 of the last 20 validation runs, 1 of 8 on holdout briefs
   written before the changes they test. rc.3's two of three did not hold up on new briefs.
-- **The critic is calibrated; the sketch stage is now the bottleneck.** The critic's informed scores barely tracked a
-  strict independent judge (Opus 5.5, Spearman 0.20 on 32 concepts), a cold look did much better (0.51), so rc.8's
-  gate rests on the critic's cold scores and runs on Opus — and it agreed with the judge on all three concepts that
-  reached it. But the same critic stops 24 of 27 directions at the sketch review: the designer's sketches, not the
-  gate, now decide that nothing passes. In rc.7 two of the five developed marks were the first the judge accepted.
-- **It does not ship weak work.** Across all runs the gate and the judges agreed on 29 of 35 critiqued concepts;
-  three disagreements went each way. When nothing passes, Markilo says so and nothing is finalized or exported.
+- **Markilo's best unattended work sits on the line of "presentable".** rc.9 (sketch review that only strikes clear
+  failures, a calibrated cold-look gate on Opus) developed 22 of 27 directions and passed two identities. A strict
+  judge looked at each borderline mark four times: Portwise was presentable in two of four looks, Dozeline in none.
+  At this level a single judgment flips about half the time, so the gate now errs about as often as the judge
+  disagrees with itself; what is left is making better marks, not tuning the gate.
+- **How the gate got here was measured.** The critic's scores given after reading the rationale barely tracked the
+  strict judge (Spearman 0.20 on 32 concepts), a cold look did much better (0.51); the gate now rests on the cold
+  look. A sketch review that bet on the finished score stopped 24 of 27 directions; one that strikes only clear
+  failures lets the gate decide.
+- **It does not ship weak work.** Across all runs the gate and the judges agreed on 48 of 57 critiqued concepts, and
+  most disagreements were marks the judge itself splits on. When nothing passes, Markilo says so and nothing is finalized or exported.
 - **What moved the needle was measured, not guessed.** Hairline gaps came from Markilo's own guide; clichés reached
   development because the sketch review picked the best of weak boards; the name's initial with a cut became the
   default move once objects were ruled out; same-colour layers left seams. Each was found in the runs and fixed in

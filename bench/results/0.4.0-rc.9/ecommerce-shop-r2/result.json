@@ -1,0 +1,199 @@
+{
+  "scenario": "ecommerce-shop",
+  "attempt": 2,
+  "holdout": false,
+  "title": "Online shop",
+  "kind": "ecommerce",
+  "brief": {
+    "ask": "Create a brand identity for Kilnroom, the online shop in this folder.",
+    "owner": "Owner preferences: handmade and warm but not rustic or folksy; no pottery wheels, no vase or mug silhouettes, no flames. It must work on a shipping label, a tissue-paper sticker and Instagram. Web and social only; customers in Turkey and Europe."
+  },
+  "markilo": "0.4.0-rc.9",
+  "ranAt": "2026-10-30T20:37:57.709Z",
+  "minutes": 14.86,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.9518975999999992,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 24953,
+    "output": 129483,
+    "cacheRead": 8203766,
+    "cacheWrite": 486172
+  },
+  "turns": 4,
+  "subagents": 14,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "All three concepts (maker-stamp, doorway, glaze-tiles) failed the critic's quality gate after two rounds, so nothing was finalized, exported or installed and no gallery was built."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "kilnroom",
+      "name": "Kilnroom",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "doorway",
+          "title": "Opening Doorway",
+          "status": "rejected",
+          "critic": 5.46,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 6,
+            "typography": 6,
+            "color": 5,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 6,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "a sail beside a dark panel (sailing/yacht brand)",
+            "a door swung open - the generic exit/log-out UI icon",
+            "an open book or folded leaflet. Unfortunate: a marine or travel-booking mark, or a 'sign out' button"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 arched door/window with a lit slot (also: tombstone, mailbox slot); s2 horseshoe magnet or a plain door icon; s3 igloo / bread oven, and the kiln is drawn plainly (struck); s4 lowercase r or a periscope, a different letter (struck); s5 a split arch, the struck cut device, also a pair of gravestones. Keep s1: the only one where the idea (the kiln door opening onto warm light) comes first, and the off-centre sliver is the ownable part. Fix: the generic boutique arch and the tombstone reading are the risks. Make the outer form less of a stock half-pill (flatter, kiln-brick shoulder or slightly hand-drawn proportion), give the sliver a deliberate shape (taper or a soft lean, as if the door is just ajar) so it reads as light, not a slot, and check one-colour: the sliver must hold as a knockout without the terracotta.",
+          "checks": {
+            "pass": 16,
+            "warn": 1,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.297
+          }
+        },
+        {
+          "id": "glaze-tiles",
+          "title": "Glaze Run",
+          "status": "rejected",
+          "critic": 5.15,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 6,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 5,
+            "balance": 5,
+            "craft": 5,
+            "typography": 6,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 4
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 5,
+            "versatility": 5
+          },
+          "gate": false,
+          "readsAs": [
+            "paint dripping over a globe (Sherwin-Williams 'Cover the Earth')",
+            "a circuit trace with pin terminals",
+            "a melting ice-cream scoop or a face - unfortunate: a paint brand or a melting/damaged item for a breakage-insured shop"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 a disc dipped in something that runs: dripping paint or a chocolate-dipped biscuit, glaze on a second look; the two drips also read as rounded teeth / 'uu' (a ghost or jellyfish at 16 px); s2 a ring with a hook or keyhole poking into the hole, a toggle/power-ish glyph; the drip does not read as glaze (struck: idea not visible); s3 a medicine capsule/pill (struck: pharma/UI cliche); s4 a two-tone circle split by a wave, generic stock shape (0.87) and Pepsi-adjacent (struck). Keep s1: the only sketch where a stranger sees dipping and running. Fix: the drips are parallel U-shaped columns of equal width, which looks like teeth and generic paint-drip clip art. Make them real glaze runs: unequal lengths and widths, tapering from the edge, ending in a heavier rounded bead, one clearly dominant; make the dip edge less even, with a slight tilt, as in a hand dip. Avoid melting/slime drip cliches (no more than two runs, no splash). Stock-shape similarity is 0.81, so the run silhouette has to carry the ownability. The one-colour label version must hold via the paper gap line alone. Check that the 16 px render reads as a dipped disc, not a face.",
+          "checks": {
+            "pass": 17,
+            "warn": 0,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.359
+          }
+        },
+        {
+          "id": "maker-stamp",
+          "title": "Maker's Stamp",
+          "status": "rejected",
+          "critic": 5.62,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 7,
+            "balance": 7,
+            "craft": 6,
+            "typography": 6,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 6,
+            "craft": 6,
+            "versatility": 7
+          },
+          "gate": false,
+          "readsAs": [
+            "a camera lens or webcam app icon",
+            "a record button / ring-in-squircle UI glyph",
+            "a fried egg or a stone with a pebble. Unfortunate: an Instagram-style camera icon on the very Instagram avatar it must work as"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 a bowling ball (struck); s2 a seal with an oval dimple and a small hole, loosely a button or a zero; s3 a refresh/loading spiral, a UI icon (struck); s4 a target, an eye or a bowl from above (struck); s5 claw or scratch marks, which suggests damage for a brand selling breakage insurance (struck). Keep s2: the press-into-clay idea at least survives, and the asymmetric pool plus small hole is the least stock combination. Risks: the oval in a circle reads as 0 or a seed, and the small circle reads as a stray dot or a bite. Fix: make the pool clearly a finger press (one soft, asymmetric edge where the clay was pushed up, not a clean ellipse), justify the hole (a hanging/stamp hole) or remove it, and give the outer seal a slightly irregular edge that still looks refined, not rustic.",
+          "checks": {
+            "pass": 16,
+            "warn": 0,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.252
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "93315816-f14e-4ee0-a1fd-748223cee3b8"
+}

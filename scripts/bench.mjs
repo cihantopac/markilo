@@ -5,7 +5,7 @@
 //
 //   node scripts/bench.mjs list
 //   node scripts/bench.mjs run <id…|all> [--out <dir>] [--model <alias>] [--budget <usd>] [--repeat <n>]
-//   node scripts/bench.mjs judge [<dir>] [--model <alias>]
+//   node scripts/bench.mjs judge [<dir>] [--model <alias>] [--times <n>]  (majority of n looks per concept)
 //   node scripts/bench.mjs report [<dir>]
 //   node scripts/bench.mjs refresh <id> <run folder>  (re-measure a kept run folder; cost and tokens are kept)
 //   node scripts/bench.mjs measure <workspace>      (the same metrics for any Markilo workspace)
@@ -356,23 +356,53 @@ function judge(out) {
         const files = readdirSync(imgs)
           .filter((f) => f.endsWith('.png'))
           .map((f) => join(imgs, f));
-        const r = spawnSync('claude', ['-p', '--output-format', 'json', '--allowedTools', 'Read', ...model], {
-          input: JUDGE(s, b.name, files, final),
-          encoding: 'utf8',
-          cwd: imgs,
-          maxBuffer: 16 * 1024 * 1024,
-        });
-        let res;
-        try {
-          res = JSON.parse(r.stdout);
-        } catch {}
+        // One look at a borderline mark flips about half the time (rc.9 noise check), so --times N takes the
+        // majority of N independent looks and averages their scores.
+        const looks = [];
+        let cost = 0;
+        let usedModel = null;
+        for (let k = 0; k < Math.max(1, Number(opts.times ?? 1)); k++) {
+          const r = spawnSync(
+            'claude',
+            ['-p', '--output-format', 'json', '--allowedTools', 'Read', ...model],
+            {
+              input: JUDGE(s, b.name, files, final),
+              encoding: 'utf8',
+              cwd: imgs,
+              maxBuffer: 16 * 1024 * 1024,
+            },
+          );
+          let res;
+          try {
+            res = JSON.parse(r.stdout);
+          } catch {}
+          cost += res?.total_cost_usd ?? 0;
+          usedModel = usedModel ?? Object.keys(res?.modelUsage ?? {})[0] ?? null;
+          const v = lastJsonLine(res?.result);
+          if (v) looks.push(v);
+        }
+        const keys = ['distinctiveness', 'memorability', 'brandFit', 'craft', 'versatility'];
+        const combined =
+          looks.length > 1
+            ? {
+                ...looks[0],
+                ...Object.fromEntries(
+                  keys.map((k) => [
+                    k,
+                    Math.round((looks.reduce((a, x) => a + x[k], 0) / looks.length) * 10) / 10,
+                  ]),
+                ),
+                presentAsIs: looks.filter((x) => x.presentAsIs).length * 2 > looks.length,
+                votes: `${looks.filter((x) => x.presentAsIs).length}/${looks.length}`,
+              }
+            : (looks[0] ?? null);
         verdicts.push({
           brand: b.slug,
           concept: c.id,
           final,
-          judge: lastJsonLine(res?.result),
-          model: Object.keys(res?.modelUsage ?? {})[0] ?? null,
-          costUsdApiEquivalent: res?.total_cost_usd ?? null,
+          judge: combined,
+          model: usedModel,
+          costUsdApiEquivalent: cost,
         });
       }
     }

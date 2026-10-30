@@ -1,0 +1,231 @@
+{
+  "scenario": "family-workspace",
+  "attempt": 1,
+  "holdout": false,
+  "title": "Multi-product family",
+  "kind": "family",
+  "brief": {
+    "ask": "Create the brand family for Lumenfold, the office suite in this monorepo: the Lumenfold master brand and product icons for Lumenfold Docs, Sheets and Sign.",
+    "owner": "Owner preferences: privacy-first and European, calm and precise. The three product icons must clearly belong to one family and still be told apart at small sizes. Web apps only."
+  },
+  "markilo": "0.4.0-rc.9",
+  "ranAt": "2026-10-30T20:20:53.783Z",
+  "minutes": 27.74,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 7.126547999999996,
+  "budgetUsd": 25,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 674,
+    "output": 252893,
+    "cacheRead": 15924917,
+    "cacheWrite": 808641
+  },
+  "turns": 7,
+  "subagents": 15,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Üç konsept de iki turda eleştirmenin kalite kapısını geçemedi (kör ortalamalar 5,8/5,2/4,6), bu yüzden finalize, export, install-assets ve galeri adımları yapılmadı."
+  },
+  "workspace": true,
+  "family": "Lumenfold",
+  "brands": [
+    {
+      "slug": "lumenfold",
+      "name": "Lumenfold",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "aperture",
+          "title": "Aperture",
+          "status": "rejected",
+          "critic": 5.38,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 6,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 5,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 5
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 4,
+            "craft": 6,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "a megaphone / loudspeaker (volume icon)",
+            "a flashlight or projector beam",
+            "a stencil D or a price tag"
+          ],
+          "sketchPick": "s7",
+          "sketchNotes": "Reads as: s6 '///' slashes - code-comment / tally marks / three-stripe sportswear echo; its Sign member is an exclamation mark or italic I, Docs is '//' (struck: glyph + UI reading). s7 master: a dark door with light spilling out of it - first reading matches the hook, the only one that does; but Sign member is a pause button (two bars), Sheets is an M / bar-wedge-bar, Docs is nearly identical to master at 16 px. s8 horizontal bars of growing length = sort/list icon or bar chart, also a stepped cut of a triangle; 78% legibility, members collapse to generic triangles (struck). Keep in s7: the amber wedge fanning from a dark leaf - make the WEDGE the hero (larger, its angle and outer edge carry the identity), the leaf narrower and slightly turned so it reads as a door, not a bar. Fix: never two parallel uprights of similar width (pause icon); members must vary the wedge (angle, spread, which edge it leaves from) not add/remove slabs; Docs must differ visibly from master at 16 px; drop the 3-part Sheets. Risk to watch: 'light gets out' can read as a leak for a privacy brand - keep the opening narrow and controlled, calm not dramatic; avoid a literal door frame or handle.",
+          "checks": {
+            "pass": 17,
+            "warn": 0,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.375
+          }
+        },
+        {
+          "id": "crease",
+          "title": "Crease",
+          "status": "rejected",
+          "critic": 5.08,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 7,
+            "balance": 4,
+            "craft": 5,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 4,
+            "versatility": 5
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 5,
+            "craft": 5,
+            "versatility": 5
+          },
+          "gate": false,
+          "readsAs": [
+            "the numeral 7",
+            "a flag on a pole (golf hole marker)",
+            "a bookmark or folded page corner drawn as two loose blocks"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Round 2: ribbon folded on a 45 degree crease, front green/back amber. s1 read as a house/lampshade, s3 as a sunrise.",
+          "checks": {
+            "pass": 16,
+            "warn": 1,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.38
+          }
+        },
+        {
+          "id": "shared-ground",
+          "title": "Shared Ground",
+          "status": "rejected",
+          "critic": 5.92,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 7,
+            "craft": 6,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 6,
+            "craft": 6,
+            "versatility": 7
+          },
+          "gate": false,
+          "readsAs": [
+            "a split square / two interlocking L-blocks (an L with a stepped cut)",
+            "a Z or 2",
+            "a staircase or bar chart (Sheets) and a split pie (Sign)"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 Illustrator/Figma Pathfinder 'intersect' and a copy icon (struck); s2 exactly the Pathfinder intersect icon (struck); s3 two squares meeting corner to corner, a checker/bow; s4 a medicine capsule in brackets, '(0)', Sheets member a hamburger/burger (struck: pharma misreading and glyph). Pick s3: most abstract, calm, survives 16 px (99%), warm terracotta clears the blue-violet band. Risks: reads as a generic checker or Pathfinder 'exclude'; the square void - the whole idea - disappears at 16 px, enlarge or articulate it. Members currently abandon the language (Docs = a vertical cut/pause, Sheets = horizontal stripes/hamburger, Sign = a mirror of master, indistinguishable at 16 px). Rebuild members from the same two-L-plus-void grammar, varying the void's position or proportion, so each has its own silhouette.",
+          "checks": {
+            "pass": 18,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.585
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "docs",
+      "name": "Lumenfold Docs",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "sheets",
+      "name": "Lumenfold Sheets",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "sign",
+      "name": "Lumenfold Sign",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "a6a4988b-eca5-4b97-b107-173e2dd154fd"
+}

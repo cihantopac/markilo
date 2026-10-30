@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "seamline",
+    "concept": "c1-step",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a branch-and-merge path diagram (two lanes splitting and rejoining)",
+        "an eye or lens outline on a horizontal line",
+        "an electronics schematic symbol such as a fuse or inline component"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 5,
+      "versatility": 4,
+      "presentAsIs": false,
+      "why": "The split-and-rejoin path fits a 'seam' tool, but it is close to the familiar git branch/merge cliché, the hard vertical cuts where the orange meets the teal look unresolved, and because the shape is very wide it shrinks to a tiny horizontal blip in a square GitHub avatar at 16–32 px."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.216847
+  }
+]

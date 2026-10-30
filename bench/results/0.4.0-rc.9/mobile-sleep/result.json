@@ -1,0 +1,208 @@
+{
+  "scenario": "mobile-sleep",
+  "attempt": 1,
+  "holdout": false,
+  "title": "Mobile app",
+  "kind": "mobile",
+  "brief": {
+    "ask": "Create a brand identity for Dozeline, the iOS and Android wind-down and sleep journal app in this folder.",
+    "owner": "Owner preferences: calm, warm, not clinical, no moons or stars cliché. The app icon must be recognisable on a home screen at small sizes. English and Turkish markets."
+  },
+  "markilo": "0.4.0-rc.9",
+  "ranAt": "2026-10-30T20:48:38.107Z",
+  "minutes": 16.03,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.8095078999999994,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 43338,
+    "output": 118089,
+    "cacheRead": 8343218,
+    "cacheWrite": 489277
+  },
+  "turns": 8,
+  "subagents": 13,
+  "claim": {
+    "passed": [
+      "settle"
+    ],
+    "finalized": "settle",
+    "notes": "Only settle passed the critic gate (blind 6/6/7, average 6.2, a narrow pass); descend and lamplit were rejected, and finalize needed --accept-risk because originality is insufficient-evidence (no trademark registry searches done)."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "dozeline",
+      "name": "Dozeline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "descend",
+          "title": "Stepping Down",
+          "status": "rejected",
+          "critic": 5,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 5,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 8,
+            "balance": 4,
+            "craft": 5,
+            "typography": 5,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 4
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 5,
+            "craft": 5,
+            "versatility": 5
+          },
+          "gate": false,
+          "readsAs": [
+            "a worm or squiggle",
+            "a declining line chart / drop-off graph",
+            "a stair-rail or bent pipe. Unfortunate: a falling chart ('your sleep is crashing') or a worm in a bedtime app"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 a tilde / swung dash, a generic stroke with nothing to own (struck); s2 a playground slide or ski jump, i.e. the swoosh family, the swell does not read as falling asleep (struck); s4 a boot, sock or hockey stick, an unfortunate and comic first reading (struck); s3 a line settling down in two decelerating steps, which is the closest any of them comes to its idea, and it has the lowest stock-shape similarity (0.19). Keep: one continuous even stroke, warm terracotta, a long flat rest at the end. Risks to fix: (1) at 16 px it collapses into a squiggle or tilde, so the second dip must be clearly shallower and the final flat at least as long as the whole descent, so the slowing is visible small; (2) don't let the two bumps go equal or it becomes a staircase or a wave/water icon; (3) the high start must not hook or curl, or it turns into a slide or a cane; (4) give it one ownable detail (terminal shape, stroke weight relation, or a frame/ground) so it is not just a line anyone could draw. Weak survivor: development must earn distinctiveness.",
+          "checks": {
+            "pass": 15,
+            "warn": 1,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.292
+          }
+        },
+        {
+          "id": "lamplit",
+          "title": "One Light On",
+          "status": "rejected",
+          "critic": 5.77,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 5,
+            "craft": 6,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 7
+          },
+          "gate": false,
+          "readsAs": [
+            "a small house or cabin with a sloped roof and a tall rounded door",
+            "the digit 0 (or letter O) set in a pentagon tag",
+            "a generic home/door UI icon, or a price tag. Unfortunate: a big zero, i.e. a score of 0, for an app whose promise is no scores"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 a boho rainbow / tunnel (cliche, nested arches); s2 a gravestone or mouse-hole with a dot, webcam/record button (gravestone is the worst possible misreading for a sleep app, struck); s3 an arched window at night with one pane lit; s4 a bullseye/target or setting sun (sun-sets-for-sleep cliche, struck). s3 is the strongest idea on all three boards: one light left on in a dark house is warm, domestic, not moon/star, and reads at 16 px. Risks to fix: the symmetric 2x2 grid flirts with the Windows logo and generic 'home/window' icons - break symmetry (one off-centre mullion, or just two panes with the lit one low), let the lit pane glow (soft warm inner light, not a flat beige square), and keep the dark panes warm brown not black so it never turns into a tombstone. Make the arch proportion tall and slim like a real bedroom window.",
+          "checks": {
+            "pass": 14,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.398
+          }
+        },
+        {
+          "id": "settle",
+          "title": "Settled D",
+          "status": "approved",
+          "critic": 6.31,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 6,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": true,
+          "blind": {
+            "distinctiveness": 6,
+            "memorability": 6,
+            "brand-fit": 7,
+            "craft": 6,
+            "versatility": 6
+          },
+          "gate": true,
+          "readsAs": [
+            "a soft slumped pebble or creature with one closed eye",
+            "a mouse-hole or slot in a soft blob",
+            "a capital D sagging onto its back. Unfortunate: a piggy-bank coin slot or a toaster"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 a fat rounded D with a small low hole (generic letter in a rounded font); s2 an E / list icon made of bars (initial built from slices, struck); s3 an E or Pac-Man/eye, slot cut into the D (initial with a cut, struck; Headspace review risk); s4 a plain rounded-sans D, open at top-left, reads as a font letter; s5 a nested D-in-D (nested copy, struck). s1 is the only one whose idea (weight settled to the bottom) is visible at all, via the sunk counter, but today it is a stock D (stock 0.81, Headspace-adjacent blob). Must change: exaggerate the slump so it reads as a resting pebble/body first and a D second - lower, wider, shoulder visibly sagging right, asymmetric organic contour, counter a soft horizontal pill hugging the base. Warm the colour off the mauve-brown. Risk: if it still reads 'D in a rounded font' after development, kill it.",
+          "checks": {
+            "pass": 16,
+            "warn": 0,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.52
+          }
+        }
+      ],
+      "finalized": "settle",
+      "exported": 105,
+      "byGroup": {
+        "logos": 54,
+        "ios": 6,
+        "android": 29,
+        "social": 11,
+        "tokens": 3,
+        "guidelines": 2
+      },
+      "success": true
+    }
+  ],
+  "sessionId": "974ab856-e8d9-4cb1-9168-0da33e6326fb"
+}

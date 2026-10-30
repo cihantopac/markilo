@@ -1,0 +1,65 @@
+[
+  {
+    "brand": "tallyline",
+    "concept": "cairn",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "stacked balancing stones (spa/wellness cairn)",
+        "three floating pebbles or beans",
+        "a loose stack of coins"
+      ],
+      "distinctiveness": 3,
+      "memorability": 4,
+      "brandFit": 4,
+      "craft": 5,
+      "versatility": 5,
+      "presentAsIs": false,
+      "why": "The warm rust-and-ochre palette avoids fintech blue-green as asked, but the stacked-stones cairn is a stock wellness cliché with no tie to invoicing, tallies or lines, and the wide gaps between the pebbles make it read as three loose blobs rather than a balanced stack, so it shrinks into a faint, thin column at small sizes."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.21527079999999998
+  },
+  {
+    "brand": "tallyline",
+    "concept": "horizon",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a descending line flattening into an ellipsis, like 'L...' or loading",
+        "a falling cash curve that bottoms out, then dotted projection",
+        "a hockey stick or a lazy checkmark trailing off"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 4,
+      "craft": 5,
+      "versatility": 3,
+      "presentAsIs": false,
+      "why": "The plum-and-copper palette avoids fintech clichés and the solid line turning into dotted forecast points is a sensible idea, but the downward curve reads as decline for a cash-flow product, the off-centre, bottom-heavy composition leaves the square mostly empty, and below 32px the dots disappear and it becomes an unreadable tick."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2164698
+  },
+  {
+    "brand": "tallyline",
+    "concept": "post",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a lowercase t or a cross built from three loose rounded bars",
+        "a tally stroke standing on a broken baseline, with a gold segment for what comes next",
+        "a minimal chart or timeline tick marker"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 7,
+      "craft": 6,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "The aubergine-and-gold palette avoids the usual fintech blue and green, and the tally-on-a-line idea suits the name, but three disconnected rounded bars hold together poorly as one mark: the long right bar makes it look lopsided, and at 16–24 px it becomes a thin, wide sliver that reads like a generic plus or t glyph instead of an ownable symbol."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2132204
+  }
+]

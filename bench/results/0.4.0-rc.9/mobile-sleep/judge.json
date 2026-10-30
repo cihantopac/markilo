@@ -1,0 +1,65 @@
+[
+  {
+    "brand": "dozeline",
+    "concept": "descend",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a descending wavy line or path settling flat",
+        "a worm or a squiggly brushstroke",
+        "a sleep-stage graph stepping down"
+      ],
+      "distinctiveness": 4,
+      "memorability": 3,
+      "brandFit": 5,
+      "craft": 4,
+      "versatility": 3,
+      "presentAsIs": false,
+      "why": "The descending line ties loosely to winding down, but it looks like a generic squiggle (even a worm), the flat-cut left end and the uneven bumps look unfinished, it is too wide and thin to hold a square app icon, and at 16–24px it shrinks to an unreadable tick."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2123604
+  },
+  {
+    "brand": "dozeline",
+    "concept": "lamplit",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a slanted-roof block or lampshade with an oval hole",
+        "a stylised letter D or zero cut out of a wedge",
+        "a house or tag icon with a window"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 4,
+      "craft": 7,
+      "versatility": 8,
+      "presentAsIs": false,
+      "why": "The silhouette is clean and holds up at 16px, but the slanted block with an oval hole reads as a generic tag, house or zero rather than a warm lamp or wind-down, so it says little about sleep or calm despite the warm rust colour."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.21239800000000003
+  },
+  {
+    "brand": "dozeline",
+    "concept": "settle",
+    "final": true,
+    "judge": {
+      "readsAs": [
+        "a lumpy blob with a pill-shaped slot, like a toaster, a wall socket or a piece of cheese",
+        "a slumped letter D settling down like a pillow",
+        "a cartoon mouse or a creature peeking from a mound"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 4,
+      "craft": 6,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "The warm dusty-rose colour avoids the moon-and-star cliché, and the D in the wordmark echoes the symbol well, but the uneven blob with its off-centre slot reads more like an appliance or a socket than like calm wind-down, and the slot almost disappears at 16–24 px, so the icon ends up an ambiguous lump on a home screen."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2239288
+  }
+]

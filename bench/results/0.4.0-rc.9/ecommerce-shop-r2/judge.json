@@ -1,0 +1,65 @@
+[
+  {
+    "brand": "kilnroom",
+    "concept": "doorway",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "an open door with a wedge of light spilling out",
+        "a glowing kiln door ajar",
+        "an abstract sail or flag beside a panel"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 5,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The door ajar with a wedge of warm light fits the 'room' in the name, and it stays readable down to 16px. But open-door-with-light is a common opportunity/real-estate trope with nothing that says handmade, and the orange shape has an awkward notch and an unresolved stem at its lower left that weaken the craft."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.21561
+  },
+  {
+    "brand": "kilnroom",
+    "concept": "glaze-tiles",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "blue glaze dripping over a terracotta disc",
+        "paint-drip or melting icon",
+        "circuit-board traces or puzzle-piece knobs"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 5,
+      "versatility": 5,
+      "presentAsIs": false,
+      "why": "The glaze-drip-on-clay idea fits the craft without using any of the banned clichés, but the drips have halo rings and look like keyholes or circuit traces, the tilted white channel and clipped right edge feel clumsy, and below 32px the drips merge into noise, so on a sticker or avatar it reads as a generic paint-drip badge rather than an ownable mark."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2171124
+  },
+  {
+    "brand": "kilnroom",
+    "concept": "maker-stamp",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a camera lens or record button inside a rounded square",
+        "a peephole or kiln spyhole",
+        "a generic app icon or an eye"
+      ],
+      "distinctiveness": 4,
+      "memorability": 5,
+      "brandFit": 4,
+      "craft": 6,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The disc inside a soft square with a crescent gap is clean, stays legible down to 16px and has a warm terracotta tone, but the first read is a generic camera or record icon rather than a handmade maker's stamp, so it says little that belongs to Kilnroom."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.213181
+  }
+]

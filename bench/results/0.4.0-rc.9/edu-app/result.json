@@ -1,0 +1,199 @@
+{
+  "scenario": "edu-app",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Learning app",
+  "kind": "education",
+  "brief": {
+    "ask": "Create a brand identity for Quillnest, the writing app in this folder.",
+    "owner": "Owner preferences: encouraging and a little bold, for 13–17 year-olds, never childish or school-like. No owls, no pencils or quills drawn literally, no lightbulbs, no speech bubbles. App icon for iOS and Android plus a web version."
+  },
+  "markilo": "0.4.0-rc.9",
+  "ranAt": "2026-10-30T20:36:06.130Z",
+  "minutes": 16.8,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 4.153288500000001,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 40344,
+    "output": 137968,
+    "cacheRead": 8923695,
+    "cacheWrite": 519009
+  },
+  "turns": 5,
+  "subagents": 13,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "All three concepts (next-step, growing-rings, q-caret) failed the critic's quality gate after two rounds (best average 6.2, distinctiveness 4–5), so nothing was finalized, exported or put in the gallery."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "quillnest",
+      "name": "Quillnest",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "growing-rings",
+          "title": "First Loop",
+          "status": "rejected",
+          "critic": 6.23,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 6,
+            "distinctiveness": 5,
+            "memorability": 6,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 6,
+            "brand-fit": 6,
+            "craft": 7,
+            "versatility": 7
+          },
+          "gate": false,
+          "readsAs": [
+            "a hand-drawn single-stroke letter Q",
+            "a magnifying-glass search icon (ring plus handle), strongest in the 16 px tab",
+            "an eye or fried egg with a coral yolk. Unfortunate: a search/find app icon"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 a target or spiral, close to an @ or a loading spinner at 16 px, struck as generic; s2 a spiral or record/loading icon, struck; s3 a lowercase n or an arched doorway, a different letter, struck; s4 a figure with arms raised or a dot rising out of a bowl or sunrise, the 'just hatched' idea comes through; s5 an eclipse or crescent moon with a dot, 0.89 stock shape, struck. Keep s4: it is the only one where something is happening (a lift-off) and it is encouraging without being childish. Risks to fix: (1) the 'person with arms up' reading is the stock wellness/community/meditation logo, so push away from a human figure (break the symmetry, give the dot a direction or offset, make the bowls feel like a nest and not a smile); (2) at 16 px the two thin bowls merge into a smiley or Wi-Fi signal, so thicken the strokes or reduce to one bold bowl; (3) the dot must not read as a notification badge; (4) coral plus blue is fine for the brief, keep away from teal.",
+          "checks": {
+            "pass": 20,
+            "warn": 0,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "needs-review",
+            "confidence": "low",
+            "topVisual": 0.305
+          }
+        },
+        {
+          "id": "next-step",
+          "title": "Next Step",
+          "status": "rejected",
+          "critic": 5.77,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 7,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 7,
+            "versatility": 7
+          },
+          "gate": false,
+          "readsAs": [
+            "speed stripes / sportswear or motorsport slashes",
+            "a fast-forward or progress-loading glyph",
+            "a '//' code-comment or URL slash. Unfortunate: an energy-drink or racing brand, nothing about writing or encouragement"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 two offset tiles, purple low and gold jumped up; the hook (next step, one rung higher) lands. s2 one tile sliced and bumped, a cut tile that also reads as a 'compare' or 'split view' UI icon, struck. s3 a staircase with a floating pill; the gold pill reads as a notification badge at 16 px and stairs-to-success is the growth cliche, struck. s4 stair-line plus gold dot: a staircase or a Z/lightning bolt at 16 px, and the dot sits exactly where an unread badge goes, struck. Keep s1: the jump is bold and not school-like. Fix: (1) the gold tile's huge single rounded corner reads as a speech-bubble or leaf tab, and speech bubbles are banned, so give both tiles one consistent corner logic; (2) two loose squares is stock geometry, so make the relationship ownable (a shared edge, a lift that shows momentum, a proportion change) rather than two floating blocks; (3) avoid a podium or bar-chart reading; (4) check the gold block never reads as a badge in the corner of an app icon.",
+          "checks": {
+            "pass": 18,
+            "warn": 3,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "needs-review",
+            "confidence": "low",
+            "topVisual": 0.218
+          }
+        },
+        {
+          "id": "q-caret",
+          "title": "Q Caret",
+          "status": "rejected",
+          "critic": 6.38,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 6,
+            "simplicity": 9,
+            "balance": 6,
+            "craft": 7,
+            "typography": 7,
+            "color": 5,
+            "cultural-fit": 6,
+            "timelessness": 7,
+            "premium-perception": 7,
+            "versatility": 8
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 6,
+            "brand-fit": 5,
+            "craft": 7,
+            "versatility": 8
+          },
+          "gate": false,
+          "readsAs": [
+            "a geometric Q built from a disc with a notched-out corner and a lifted red tab",
+            "a Pac-Man / pie chart with a slice removed",
+            "a red correction tag or eraser. Unfortunate: teacher's red-pen mark, school grading"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Second review (rebuilt board, no Q, no cursor). Reads as: s1 a dark tile sliced on a diagonal with the top half knocked up in lime; this is a cut block with a lifted piece, the same move as the developed next-step concept (notched dark block plus lifted gold piece) and 0.74 stock shape, so struck as too close and generic. s2 three stacked bars: a text-align or hamburger-menu icon, and lines of text are the product's own object drawn plainly, struck. s4 a page with a folded corner: the document icon, an explicit cliche, struck. s3 a lime slash standing on a dark baseline; first reading is an angle sign or a '/_' code glyph, second a stroke hitting a line. Only s3 survives and it stays clearly apart from next-step. Keep the single bold diagonal against the flat baseline. Fix: (1) make the contact the event, with the slash touching or denting the line rather than floating above it, so it reads as a landing and not as a typographic symbol; (2) avoid the lime bar reading as a highlighter or pencil, so use no rounded tip and no taper toward a point; (3) work the proportions (slash weight, line length, angle) until it stops looking like a math or code glyph at 16 px; (4) black plus acid lime reads bold and grown-up, so keep it.",
+          "checks": {
+            "pass": 21,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "needs-review",
+            "confidence": "low",
+            "topVisual": 0.555
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "afe3a30b-2469-4018-8622-09cd1733a989"
+}
