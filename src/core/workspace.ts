@@ -1,4 +1,4 @@
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { MarkiloError } from './errors.js';
 import { isDir, nowIso, readJson, writeFileSafe, writeJson } from './fsx.js';
@@ -17,10 +17,20 @@ import { validateBrief, validateConcept, validateManifest } from './validate.js'
 export const MANIFEST = 'markilo.json';
 export const DEFAULT_WORKSPACE_DIR = 'brand';
 
+const IGNORED = ['brands/*/research/cache/', 'brands/*/research/references/', '/research/'];
 const WORKSPACE_GITIGNORE = `# Created by Markilo. Raw research captures can contain third-party or private material.
-brands/*/research/cache/
-brands/*/research/references/
+${IGNORED.join('\n')}
 `;
+
+/** Adds ignore rules introduced by newer Markilo versions to an existing workspace's .gitignore. */
+function upgradeGitignore(root: string): void {
+  const file = join(root, '.gitignore');
+  if (!existsSync(file)) return;
+  const current = readFileSync(file, 'utf8');
+  const missing = IGNORED.filter((rule) => !current.split(/\r?\n/).includes(rule));
+  if (missing.length)
+    writeFileSafe(file, `${current.replace(/\n*$/, '\n')}${missing.join('\n')}\n`, { force: true });
+}
 
 export class Workspace {
   readonly root: string;
@@ -31,15 +41,20 @@ export class Workspace {
   }
 
   /** Finds a workspace: explicit path, ./brand, then the nearest ancestor holding markilo.json. */
+  private static open(root: string): Workspace {
+    upgradeGitignore(root);
+    return new Workspace(root);
+  }
+
   static locate(cwd: string, explicit?: string): Workspace {
     if (explicit) {
       const root = resolve(cwd, explicit);
-      if (existsSync(join(root, MANIFEST))) return new Workspace(root);
+      if (existsSync(join(root, MANIFEST))) return Workspace.open(root);
       // A relative --workspace also matches from a parent folder, so commands run from inside the workspace
       // (an agent that changed directory into a concept folder) still find it.
       if (!isAbsolute(explicit)) {
         for (let dir = dirname(resolve(cwd)); ; dir = dirname(dir)) {
-          if (existsSync(join(dir, explicit, MANIFEST))) return new Workspace(join(dir, explicit));
+          if (existsSync(join(dir, explicit, MANIFEST))) return Workspace.open(join(dir, explicit));
           if (dirname(dir) === dir) break;
         }
       }
@@ -47,9 +62,9 @@ export class Workspace {
     }
     let dir = resolve(cwd);
     for (;;) {
-      if (existsSync(join(dir, MANIFEST))) return new Workspace(dir);
+      if (existsSync(join(dir, MANIFEST))) return Workspace.open(dir);
       if (existsSync(join(dir, DEFAULT_WORKSPACE_DIR, MANIFEST)))
-        return new Workspace(join(dir, DEFAULT_WORKSPACE_DIR));
+        return Workspace.open(join(dir, DEFAULT_WORKSPACE_DIR));
       const parent = dirname(dir);
       if (parent === dir) break;
       dir = parent;

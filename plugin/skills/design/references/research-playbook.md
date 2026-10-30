@@ -72,6 +72,8 @@ customer quotes). An originality verdict of `insufficient-evidence` is the hones
   service (including web searches). Prefer generic queries.
 - Never record secrets, API keys or personal data in the profile. The repo scanner skips secret-like files.
 - Research captures belong to the user's workspace, never to the Markilo repository.
+- Downloads (logos, pages, icons) go into `brands/<slug>/research/cache/`; reference marks are stored by
+  `markilo reference add` in `research/references/`. Both are git-ignored because they are third-party material.
 
 ## Questions to the user
 

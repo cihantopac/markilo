@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { writeFileSafe } from '../src/core/fsx.js';
@@ -52,6 +52,16 @@ describe('workspace', () => {
     expect(Workspace.locate(inside, 'branding-next').root).toBe(ws.root);
     expect(Workspace.locate(dir, 'branding-next').root).toBe(ws.root);
     expect(() => Workspace.locate(dir, 'elsewhere')).toThrow(/No markilo.json/);
+  });
+  it('keeps raw research out of git, also in workspaces made by older versions', () => {
+    const dir = tmp();
+    Workspace.init(join(dir, 'brand'), 'T');
+    writeFileSync(join(dir, 'brand', '.gitignore'), 'brands/*/research/cache/\n');
+    Workspace.locate(dir);
+    const rules = readFileSync(join(dir, 'brand', '.gitignore'), 'utf8').split('\n');
+    expect(rules).toEqual(
+      expect.arrayContaining(['brands/*/research/cache/', 'brands/*/research/references/', '/research/']),
+    );
   });
   it('reports a helpful error when there is no workspace', () => {
     expect(() => Workspace.locate(tmp())).toThrow(/No Markilo workspace/);

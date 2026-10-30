@@ -20,7 +20,8 @@ Rules:
 - Competitors: first put them in the brief (`markilo brief update` with `competitors[].name/url`), then run
   `markilo research competitors --brand <slug> --allow-network` (only if the caller says network use is approved). It
   records their positioning and collects their logos/icons as reference marks. For anything it could not collect, and
-  for famous marks with a similar form, save the logo to a temporary folder and run `markilo reference add … --category
+  for famous marks with a similar form, save the logo under `brands/<slug>/research/cache/` (git-ignored; never a new
+  folder elsewhere in the workspace) and run `markilo reference add … --category
   direct|category|form-family`. Aim for the "adequate" evidence level in the originality reference.
 - Apps: `markilo research app "<name or id>" --brand <slug> --allow-network [--store android] [--competitor --as-reference]`.
 - Registry searches: open the registry search pages, search the name (and close variants) in the suggested Nice

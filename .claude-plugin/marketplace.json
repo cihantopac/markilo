@@ -10,7 +10,7 @@
       "name": "markilo",
       "source": "./plugin",
       "description": "Brand research, originality analysis, original SVG identity design and complete asset export.",
-      "version": "0.3.0-beta.6",
+      "version": "0.3.0-beta.7",
       "category": "design",
       "tags": ["brand", "logo", "svg", "icons", "design"]
     }
