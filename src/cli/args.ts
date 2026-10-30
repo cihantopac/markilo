@@ -52,7 +52,16 @@ export function parseCommand(spec: CommandSpec, argv: string[], cwd: string): Ru
       ),
     });
   } catch (err) {
-    throw new MarkiloError('USAGE', `${(err as Error).message}`, `Usage: markilo ${spec.usage}`);
+    const message = (err as Error).message;
+    // An unquoted #rrggbb starts a shell comment: the option arrives empty and the rest of the command is gone.
+    const colour = /'--(primary|secondary|accent|ink|paper|color|bg)\b[^']*' argument missing/.test(message);
+    throw new MarkiloError(
+      'USAGE',
+      message,
+      colour
+        ? `Quote colours in the shell: --${message.match(/--(\w+)/)![1]} '#1d4e89'. An unquoted # starts a comment and drops everything after it. Usage: markilo ${spec.usage}`
+        : `Usage: markilo ${spec.usage}`,
+    );
   }
   const values = parsed.values as RunContext['values'];
   const ctx: RunContext = {

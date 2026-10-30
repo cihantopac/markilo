@@ -29,6 +29,7 @@ const GROUPS: [string, string[]][] = [
     [
       'concept new',
       'concept list',
+      'concept show',
       'concept update',
       'wordmark',
       'wordmarks',

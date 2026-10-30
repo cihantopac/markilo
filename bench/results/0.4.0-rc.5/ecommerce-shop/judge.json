@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "kilnroom",
+    "concept": "pair",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "the letters 'ad' or 'oo' / 'ab'",
+        "a pair of googly eyes or binoculars",
+        "an infinity loop or ligature monogram cut in half"
+      ],
+      "distinctiveness": 4,
+      "memorability": 5,
+      "brandFit": 3,
+      "craft": 6,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "A clean, bold pair of mirrored loops that stays legible down to 16px, but it reads as the letters 'ad'/'oo' or as cartoon eyes, says nothing about Kilnroom, kilns, making by hand or warmth, and its stiff geometry feels like a generic tech monogram instead of a handmade, crafted mark."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.21296120000000002
+  }
+]

@@ -1,0 +1,123 @@
+{
+  "scenario": "mobile-sleep",
+  "attempt": 1,
+  "holdout": false,
+  "title": "Mobile app",
+  "kind": "mobile",
+  "brief": {
+    "ask": "Create a brand identity for Dozeline, the iOS and Android wind-down and sleep journal app in this folder.",
+    "owner": "Owner preferences: calm, warm, not clinical, no moons or stars cliché. The app icon must be recognisable on a home screen at small sizes. English and Turkish markets."
+  },
+  "markilo": "0.4.0-rc.5",
+  "ranAt": "2026-10-30T14:56:07.866Z",
+  "minutes": 13.56,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 2.9810111,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 16718,
+    "output": 109816,
+    "cacheRead": 7231487,
+    "cacheWrite": 402787
+  },
+  "turns": 3,
+  "subagents": 13,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "No concept passed the critic gate after two rounds (settle scored 6.23 then 5.92; dimmer and lid were dropped at sketch review), so nothing was finalized, exported or installed."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "dozeline",
+      "name": "Dozeline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "dimmer",
+          "title": "Dimmer",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: a1 rounded blob/UI tile; a2 barcode or pill toggle; a3 slashed circle (prohibited sign); a4 striped retro sun/no-entry. All generic cut-disc moves, none says dimming or sleep. Try a different move: a graded sequence (e.g. one form in steps of lightness/size) rather than cuts through a disc.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "lid",
+          "title": "Lid",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: a1 hamburger/bun or sunset; a2 pill box or clapperboard; a3 Stonehenge/trousers; a4 door/arch UI icon. Pictograms of objects, all cliche or confusing at 32px. Try a different move: abstract the closing gesture into one bold shape, not a depicted object.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "settle",
+          "title": "Settle",
+          "status": "rejected",
+          "critic": 5.92,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 4,
+            "simplicity": 8,
+            "balance": 5,
+            "craft": 6,
+            "typography": 7,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "gate": false,
+          "readsAs": [
+            "the letters 'I / _' or 'IL' typed as a slash and underscore",
+            "a bar chart or progress/sort glyph",
+            "a tipping domino sequence"
+          ],
+          "sketchPick": "s9",
+          "sketchNotes": "Reads as: s6 three ovals/dots, generic; s8 person/pawn/keyhole; s9 fat curl easing into a flat tail (hook/cane risk at 16px). Only s9 has an ownable silhouette and a real idea (loosening toward rest, no moon). Develop: enlarge the curl so it holds at 32px, thicken the tail, keep terminal round, check it does not read as a hook, pipe or snail, tune the curl-to-tail taper, optical weight balance in the square.",
+          "checks": {
+            "pass": 14,
+            "warn": 1,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.211
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "dbce4c45-9e1d-4369-9053-fb46e7d3bb48"
+}

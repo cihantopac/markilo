@@ -1,0 +1,123 @@
+{
+  "scenario": "ecommerce-shop",
+  "attempt": 2,
+  "holdout": true,
+  "title": "Online shop",
+  "kind": "ecommerce",
+  "brief": {
+    "ask": "Create a brand identity for Kilnroom, the online shop in this folder.",
+    "owner": "Owner preferences: handmade and warm but not rustic or folksy; no pottery wheels, no vase or mug silhouettes, no flames. It must work on a shipping label, a tissue-paper sticker and Instagram. Web and social only; customers in Turkey and Europe."
+  },
+  "markilo": "0.4.0-rc.5",
+  "ranAt": "2026-10-30T14:53:52.185Z",
+  "minutes": 16.19,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.7021670999999965,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 60868,
+    "output": 137348,
+    "cacheRead": 9155238,
+    "cacheWrite": 494865
+  },
+  "turns": 2,
+  "subagents": 14,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Üç yönden ikisi eskiz incelemesinde iki turda elendi, stack iki yeniden çalışma turundan sonra da kapıyı geçemedi (en iyi ortalama 6,23, memorability/distinctiveness eşik altı), bu yüzden hiçbir konsept sonuçlandırılmadı."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "kilnroom",
+      "name": "Kilnroom",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "pool",
+          "title": "Glaze Pool",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s6 paint drop or speech bubble with a tail; s7 plug or tangled noodle on a disc; s8 magnifier or search icon; s9 ball-and-bulb, a metaball or male symbol. All four are generic blobs or UI icons. s8 is the most considered but is a magnifying glass. s9 is the cleanest but is a stock metaball, and none of them says kiln, firing or drop. Different move: leave the blob; find a form for the moment of glaze meeting fired clay that has a distinctive silhouette and one meaningful edge, not a drip. Make sure it reads on a one-colour thermal label.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "stack",
+          "title": "Kiln Shelves",
+          "status": "rejected",
+          "critic": 5.92,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 5,
+            "distinctiveness": 6,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 7,
+            "craft": 6,
+            "typography": 4,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "versatility": 5,
+            "premium-perception": 5
+          },
+          "present": false,
+          "gate": false,
+          "readsAs": [
+            "a stack of H/I-beam slabs (工 or Ξ-like glyph)",
+            "a bookshelf or shelving unit with one drawer pulled out",
+            "a stylised letter E or Hebrew-like character"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s2 a K with a loose slash (stock letter); s3 pixel-tile K or QR fragment; s4 striped K with one amber shelf pulled out; s5 K plus play button (cliche). Strike s5 (play triangle) and s3 (pixel/QR). s2 is a plain K. Keep s4: kiln shelves as stripes and one slid shelf is the idea, and the offset survives in one colour. Fix: sliced-letter is a known genre, so make the slid shelf do the work (bigger offset, uneven slice heights), keep 16px counters open, and verify the one-colour label version without amber. Risk is moderate; if it comes out as a generic striped K, reject.",
+          "checks": {
+            "pass": 29,
+            "warn": 0,
+            "fail": 0,
+            "info": 5
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.352
+          }
+        },
+        {
+          "id": "threshold",
+          "title": "Threshold",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s6 sliced donut or broken arch, two fragments; s7 sliced coin or ball; s8 folding fan or open scissors; s5 K-flag. s6 is the only one with a kiln-vault idea, but the idea is not legible: at 16 px it is two specks, and the split arch resembles a pie-chart or rainbow fragment. s7 and s8 are stock shapes with no kiln link. Different move: stop splitting solids. Build one confident, ownable gesture from the kiln-opening moment (the glowing gap as a single negative-space form inside a distinctive silhouette that is not a K or an arch), and test it as a one-colour sticker first.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "e225d321-f891-416d-89e0-f2f1cf00e645"
+}

@@ -1,0 +1,123 @@
+{
+  "scenario": "devtool-cli",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Developer tool",
+  "kind": "devtool",
+  "brief": {
+    "ask": "Create a brand identity for Seamline, the open-source command-line tool in this folder.",
+    "owner": "Owner preferences: precise, trustworthy, developer-native; it must work in a terminal-heavy README, as a GitHub avatar and on a small docs site. No database cylinders, no elephants, no generic terminal prompt. Web and GitHub only."
+  },
+  "markilo": "0.4.0-rc.5",
+  "ranAt": "2026-10-30T14:37:53.010Z",
+  "minutes": 10.17,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 2.288730599999999,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 43422,
+    "output": 80660,
+    "cacheRead": 5004063,
+    "cacheWrite": 337227
+  },
+  "turns": 3,
+  "subagents": 12,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "No concept passed the quality gate: through-line and stepped-path got 'none' in two sketch reviews, and offset-s failed the critic gate in both rounds (6.54 then 5.85, present=no), so nothing was finalized, exported or installed and no gallery was built."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "seamline",
+      "name": "Seamline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "offset-s",
+          "title": "Offset S",
+          "status": "rejected",
+          "critic": 5.85,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 6,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 6,
+            "balance": 6,
+            "craft": 5,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 5
+          },
+          "present": false,
+          "gate": false,
+          "readsAs": [
+            "heavy S/3 with a slash through it",
+            "glitch or censored letter (dollar-sign-like)",
+            "a Pac-Man style chopped C/G"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 an S whose two hooks slip past each other; s2 a blocky 5 or S; s3 a sliced S (common trope); s4 a 5 with orange bar, UI-ish; s5 a striped S, dies at 16px. Keep s1: only one with a real seam in the counter and clean at 16px. Fix: it risks reading as a cut-S trope, so make the offset the memorable gesture (stronger asymmetry, one deliberate gap) and keep it single colour. Judgment.",
+          "checks": {
+            "pass": 17,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.337
+          }
+        },
+        {
+          "id": "stepped-path",
+          "title": "Stepped Path",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 blocky Z/S letter or flag; s2 prohibited sign/coffee bean/pill; s3 letter X or hourglass; s4 C+D letter pair or yin-yang. Handover gap works only in s4 and s1 but each reads as a letter first, and s1 is stair-like. Different move: drop the track metaphor; use a single asymmetric seam-cut form that is not a letter, disc or ring.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "through-line",
+          "title": "Through Line",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 speed bump/arch/tilde-caret; s2 stair-step or pipe bend (forbidden stairs); s3 pill capsule or 'i', gone at 16px; s4 letter O/6; s5 letter S. All generic line-wiggles; the one-line idea is not ownable. Try a different move: a mark built from the seam itself (a negative-space cut that is the only thing that differs between two identical halves), not a path drawn as a stroke.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "8d61d72e-45ad-45b5-b131-4e45aaabbd3a"
+}

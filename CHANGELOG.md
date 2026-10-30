@@ -6,6 +6,22 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0-rc.6] - 2026-10-30
+
+### Added
+
+- `concept show`: one concept with its files, palette, typography, critique and gate (agents asked for it).
+- Validation benchmark for rc.5 (`bench/results/0.4.0-rc.5/`): two holdout briefs (a developer tool and an online
+  shop) run three times each, the three known briefs once, judged by Opus 5.5. Two of nine runs passed the gate
+  (holdouts: one of six); the Opus judge would present neither, nor — re-judged — rc.3's two identities or Markilo's
+  own (5.8–6.2 of 10). The README's "Measured quality" says so.
+
+### Fixed
+
+- A colour typed without quotes (`--primary #1d4e89`) starts a shell comment, so the option arrived empty and the
+  rest of the command was lost; the error now says to quote colours, and every example in the CLI reference and the
+  designer's instructions is quoted. Agents hit this in three of nine validation runs.
+
 ## [0.4.0-rc.5] - 2026-10-30
 
 ### Added

@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "seamline",
+    "concept": "offset-s",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "an S sliced into three horizontal bands with the middle band shifted",
+        "a glitched or misregistered letterform, like an S with a strike-through",
+        "a reversed 3 or a currency-like sign at small sizes"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 5,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "The offset slice makes a sensible 'seam' metaphor, but a sliced/glitched monogram is a familiar trope; the thin orange middle sliver is weak and wedge-shaped, the S breaks into three disconnected pieces that read like a 3 or a struck-through glyph at 16–32 px, and the bands are not aligned precisely enough to feel 'precise'."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.23127460000000002
+  }
+]

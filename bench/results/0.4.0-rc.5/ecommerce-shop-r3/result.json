@@ -1,0 +1,123 @@
+{
+  "scenario": "ecommerce-shop",
+  "attempt": 3,
+  "holdout": true,
+  "title": "Online shop",
+  "kind": "ecommerce",
+  "brief": {
+    "ask": "Create a brand identity for Kilnroom, the online shop in this folder.",
+    "owner": "Owner preferences: handmade and warm but not rustic or folksy; no pottery wheels, no vase or mug silhouettes, no flames. It must work on a shipping label, a tissue-paper sticker and Instagram. Web and social only; customers in Turkey and Europe."
+  },
+  "markilo": "0.4.0-rc.5",
+  "ranAt": "2026-10-30T15:10:03.700Z",
+  "minutes": 18.11,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.5077796999999986,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 64647,
+    "output": 135994,
+    "cacheRead": 8471674,
+    "cacheWrite": 458365
+  },
+  "turns": 3,
+  "subagents": 13,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Üç yönün hiçbiri kalite kapısını geçmedi (en iyi glaze ortalama 5,62, eleştirmen sunulmaz dedi), bu yüzden finalize, export, install-assets ve gallery adımları çalıştırılmadı."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "kilnroom",
+      "name": "Kilnroom",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "chop",
+          "title": "Maker Chop",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s5 camera lens/target; s6 power/recycle/gear ring; s7 fingerprint (biometric UI icon); s4 K node tile duplicates glaze s8; s1-s3 dice/faces/blobs. No pick bettable at 7+. Direction dropped.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "door",
+          "title": "The Opening",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s5 magnet/horseshoe on a bar; s6 target/bullseye/eye; s7 Hangul letter or shelf-stack glyph; s8 parentheses in an app tile. All struck: cliche or wrong letter. Direction dropped.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "glaze",
+          "title": "Two Glazes",
+          "status": "rejected",
+          "critic": 5.62,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 6,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "gate": false,
+          "readsAs": [
+            "rewind / skip-back media glyph (|< plus chevron)",
+            "stylised K or double back-arrow",
+            "folded paper / tag shapes"
+          ],
+          "sketchPick": "s7",
+          "sketchNotes": "Reads as: s6 dripping tile/cloud; s7 heavy K with a ball on the leg (drop); s8 K in app tile (generic, collides with chop s4). Pick s7: only one ownable, 1-colour-safe, 16px-legible. Risk: ball may read as molecule/pin; make the drop a true falling teardrop, offset from the leg, tighten stem/arm junction, drop the second colour reliance.",
+          "checks": {
+            "pass": 28,
+            "warn": 1,
+            "fail": 0,
+            "info": 7
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.307
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "3e374b6b-8bca-4c04-9f37-4e604d853684"
+}

@@ -13,7 +13,7 @@
 <p align="center">
   <a href="https://github.com/cihantopac/markilo/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/cihantopac/markilo/actions/workflows/ci.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-d12c12"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-0.4.0--rc.5-101218">
+  <img alt="Version" src="https://img.shields.io/badge/version-0.4.0--rc.6-101218">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-101218">
 </p>
 
@@ -74,32 +74,50 @@ registry search has been done yet; the guidelines say so.</sub>
 
 ## Measured quality
 
-Markilo is benchmarked end to end on three realistic products — an independent SaaS, a mobile app and a
-multi-product family — with nobody steering: the plugin researches, writes the brief, designs, critiques, and
-finalizes only what passes its own gate. A separate blind judge then rates every critiqued concept from the brief and
-the images alone. Every run, image and score is in [bench/](bench).
+Markilo is benchmarked end to end with nobody steering: on three realistic products (an independent SaaS, a mobile
+app, a multi-product family) and two **holdout** products written before the latest changes and never used for
+tuning (a developer tool, an online shop). The plugin researches, writes the brief, designs, critiques, and finalizes
+only what passes its own gate. Blind judges then rate every critiqued concept from the brief and the images alone.
+Every run, image and score is in [bench/](bench).
 
-| Version    | Model      | Passed the gate       | Blind judge would present it | Concepts critiqued | Gate agrees with the judge | Time per run | Cost per run (API equivalent) |
-| ---------- | ---------- | --------------------- | ---------------------------- | ------------------ | -------------------------- | ------------ | ----------------------------- |
-| 0.4.0-rc.1 | Sonnet 5.5 | 0 of 3                | —                            | 7                  | 7 of 7                     | 11–21 min    | $2.61–3.67                    |
-| 0.4.0-rc.2 | Sonnet 5.5 | 1 of 3                | 0 of 1                       | 1                  | 0 of 1                     | 8–15 min     | $1.60–2.68                    |
-| 0.4.0-rc.2 | Opus 5.5   | 0 of 1 (SaaS only)    | —                            | 1                  | 1 of 1                     | 17 min       | $5.23                         |
-| 0.4.0-rc.3 | Sonnet 5.5 | 2 of 3 (SaaS, mobile) | 2 of 2                       | 6                  | 5 of 6                     | 14–24 min    | $3.15–4.37                    |
+| Version        | Runs                  | Passed the gate | Sonnet 5.5 judge would present it | Opus 5.5 judge would present it | Time per run | Cost per run (API equivalent) |
+| -------------- | --------------------- | --------------- | --------------------------------- | ------------------------------- | ------------ | ----------------------------- |
+| 0.4.0-rc.1     | 3                     | 0               | —                                 | —                               | 11–21 min    | $2.61–3.67                    |
+| 0.4.0-rc.2     | 3                     | 1               | 0 of 1                            | —                               | 8–15 min     | $1.60–2.68                    |
+| 0.4.0-rc.3     | 3                     | 2               | 2 of 2                            | 0 of 2                          | 14–24 min    | $3.15–4.37                    |
+| **0.4.0-rc.5** | **9** (6 on holdouts) | **2**           | —                                 | **0 of 2**                      | 10–19 min    | $2.29–4.41                    |
 
 What this shows, plainly:
 
-- **Unattended, rc.3 delivers a presentable identity for two of three products.** Both passed the gate and the blind
-  judge would present both as is. The multi-product family is not solved yet: its best concept missed the gate
-  narrowly (6.38 against 6.5), so its product icons were never reached. Three products, one run each: the numbers
-  will move with more runs.
-- **It does not ship weak work.** Across all runs the gate and the blind judge agreed on 13 of 15 critiqued concepts,
-  with one disagreement in each direction. Failures are reported as failures — nothing is finalized or exported.
-- **What moved the needle was measured, not guessed.** In rc.1 and rc.2, 69 % of the sketches the critic struck had
-  hairline gaps that vanish at 16 px — because Markilo's own construction guide asked for gaps below its own verify
-  threshold. rc.3 fixed the rule, made every sketch pass its checks before review, and asked for the visual hook a
-  stranger sees at 32 px: concepts that reached development went from 1 of 9 (rc.2) to 6 of 9. More development costs
-  more: rc.3's three runs cost $10.85 against rc.2's $6.10 and rc.1's $9.76.
-- **The model was not the bottleneck.** Opus 5.5 on the SaaS brief failed with rc.2 too; rc.3 passed it with Sonnet.
+- **Unattended, Markilo reaches its own gate in about one run in four** (rc.5: 2 of 9; on briefs it was never tuned
+  on, 1 of 6). rc.3's two of three did not hold up on new briefs.
+- **No unattended identity is finished work yet.** A strict independent judge (Opus 5.5) would present none of them as
+  is — nor Markilo's own identity, made in a longer interactive session. It scores the best work 5.8–6.2 of 10:
+  competent, not yet strong and ownable. A more lenient judge (Sonnet 5.5) would have presented rc.3's two. Read
+  "passed the gate" as "worth showing you", not as "done".
+- **It does not ship weak work.** The gate and the judges agreed on 23 of 27 critiqued concepts. In three of the four
+  disagreements the judge was stricter than the gate, in one the gate was stricter. When nothing passes, Markilo
+  says so and nothing is finalized or exported.
+- **What moved the needle was measured, not guessed.** Sketches failed for hairline gaps because Markilo's own guide
+  asked for gaps below its own verify threshold; clichés reached development because the sketch review picked the
+  best of weak boards; critics had no way to record "would not present it". Each was found in the runs and fixed in
+  the plugin; the model was not the bottleneck (Opus 5.5 as designer did no better on the SaaS brief).
+
+Markilo is built to work with you: you pick directions, react in the gallery and decide. Unattended runs measure
+the floor. Two of them, as exported (fictional products, no human edits):
+
+<table>
+  <tr>
+    <td><img src="bench/results/0.4.0-rc.3/saas-invoicing/tallyline/overview.png" alt="Tallyline logo files made by Markilo unattended"></td>
+    <td><img src="bench/results/0.4.0-rc.3/mobile-sleep/dozeline/overview.png" alt="Dozeline logo files made by Markilo unattended"></td>
+  </tr>
+  <tr>
+    <td><sub>Tallyline (invoicing SaaS): critic 6.8, passed the gate; Sonnet judge 6.4 "present", Opus judge 6.2 "not as is"
+    — the T reads as a figure kicking a ball.</sub></td>
+    <td><sub>Dozeline (sleep app): critic 6.8, passed the gate; Sonnet judge 6.8 "present", Opus judge 5.8 "not as is" — the
+    arch motif is common.</sub></td>
+  </tr>
+</table>
 
 ## Install
 
@@ -266,8 +284,10 @@ Details: [docs/PRIVACY.md](docs/PRIVACY.md) · [SECURITY.md](SECURITY.md).
 - Raster images (PNG/JPEG) are analyzed for similarity; vector tracing of raster logos is not included.
 - Icon Composer (`.icon`) files are not written directly; Markilo exports the layer sources to import.
 - X (Twitter) image sizes could not be verified against x.com documentation (blocked to automated readers).
-- Design quality still depends on the model and on your direction: unattended runs rarely pass the critic gate (see
-  [Measured quality](#measured-quality)). Markilo raises the floor and refuses to hide weak work; taste is a conversation.
+- Design quality still depends on the model and on your direction: unattended runs pass the critic gate about one
+  time in four, and a strict independent judge does not yet rate any of them finished (see
+  [Measured quality](#measured-quality)). Markilo raises the floor and refuses to hide weak work; taste is a
+  conversation.
 
 ## Develop
 

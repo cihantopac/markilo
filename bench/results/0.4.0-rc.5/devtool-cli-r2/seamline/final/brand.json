@@ -1,0 +1,46 @@
+{
+  "schema": "markilo/kit@1",
+  "brand": "seamline",
+  "name": "Seamline",
+  "concept": "mirror-s",
+  "locked": false,
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "lockupHorizontal": "lockup-horizontal.svg",
+    "lockupStacked": "lockup-stacked.svg",
+    "lockupCompact": "lockup-compact.svg"
+  },
+  "palette": {
+    "primary": "#22b57a",
+    "accent": "#dcfbec",
+    "ink": "#eef6f1",
+    "paper": "#0e1713",
+    "dark": "#090f0b"
+  },
+  "typography": {
+    "fontId": "outfit",
+    "weight": 500,
+    "family": "Outfit",
+    "license": "OFL-1.1",
+    "tracking": 20
+  },
+  "tagline": "Zero-downtime schema migrations for PostgreSQL",
+  "approvedAt": "2026-10-30T15:06:31.584Z",
+  "originality": {
+    "verdict": "insufficient-evidence",
+    "confidence": "low",
+    "acceptedRisk": true,
+    "report": "../reports/originality-mirror-s.md",
+    "evidence": {
+      "visual": "3 brand(s) from 5 reference file(s): 3 direct competitor, 0 category/form-family; sources 2 official, 0 app store, 0 logo catalog, 1 unverified",
+      "registry": "no registry searches logged for \"Seamline\"",
+      "registryCoverage": "none"
+    }
+  },
+  "gate": {
+    "status": "passed",
+    "average": 6.77,
+    "reasons": []
+  }
+}

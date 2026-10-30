@@ -1,0 +1,184 @@
+{
+  "scenario": "saas-invoicing",
+  "attempt": 1,
+  "holdout": false,
+  "title": "Independent SaaS",
+  "kind": "saas",
+  "brief": {
+    "ask": "Create a brand identity for Tallyline, the invoicing and cash-flow forecasting product in this folder.",
+    "owner": "Owner preferences: calm and trustworthy, friendly to freelancers, not the generic fintech blue-and-green. Web app only."
+  },
+  "markilo": "0.4.0-rc.5",
+  "ranAt": "2026-10-30T15:09:41.494Z",
+  "minutes": 10.79,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.072027700000001,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "tokens": {
+    "input": 448,
+    "output": 106172,
+    "cacheRead": 7408817,
+    "cacheWrite": 450004
+  },
+  "turns": 10,
+  "subagents": 16,
+  "claim": {
+    "passed": [
+      "round-trip"
+    ],
+    "finalized": "round-trip",
+    "notes": "Only Round Trip cleared the gate (avg 6.62) after two rounds; finalized with accepted insufficient-evidence originality risk, no trademark registry search done, amber-on-cream contrast ~2.6:1 flagged."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "tallyline",
+      "name": "Tallyline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "ahead",
+          "title": "Ahead",
+          "status": "rejected",
+          "critic": 4.85,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 3,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 4,
+            "craft": 4,
+            "typography": 4,
+            "color": 5,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 6
+          },
+          "present": false,
+          "gate": false,
+          "readsAs": [
+            "T with quotation marks",
+            "a T plus two slashes",
+            "a quote/citation glyph"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 T with stepped crossbar; s2 G/tile (stock tile, struck); s3 T plus stray square; s4 lopsided T. Keep s1: the stair step is a single ownable gesture and holds at 16px. Fix: make the step more deliberate so it is not read as a drawing error.",
+          "checks": {
+            "pass": 19,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.326
+          }
+        },
+        {
+          "id": "round-trip",
+          "title": "Round Trip",
+          "status": "approved",
+          "critic": 6.62,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 6,
+            "distinctiveness": 7,
+            "memorability": 6,
+            "simplicity": 8,
+            "balance": 7,
+            "craft": 6,
+            "typography": 7,
+            "color": 5,
+            "cultural-fit": 7,
+            "timelessness": 7,
+            "premium-perception": 6,
+            "versatility": 7
+          },
+          "present": true,
+          "gate": true,
+          "readsAs": [
+            "letter C and D / S-shape",
+            "two offset brackets or parentheses",
+            "dollar/cycle UI icon"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 two offset brackets, ring split; s2 C/battery UI icon (struck); s3 hash/# (known symbol, struck); s4 square spiral UI icon (struck). Keep s1: only one that is ownable, two-tone and legible at 16px. Fix: the offset must read as a round trip, not a CD or parentheses; tighten the slide.",
+          "checks": {
+            "pass": 16,
+            "warn": 0,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.276
+          }
+        },
+        {
+          "id": "twin-l",
+          "title": "Twin L",
+          "status": "rejected",
+          "critic": 6,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 5,
+            "craft": 6,
+            "typography": 4,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 7,
+            "premium-perception": 6,
+            "versatility": 7
+          },
+          "present": false,
+          "gate": false,
+          "readsAs": [
+            "The letter L",
+            "nested stair steps / corner brackets",
+            "a bar-chart or layers icon"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 sheared L; s2 ruler L (cliche); s3 L with hole (ledger/UI); s4 L split by a diagonal crease; s5 clipped L. Keep s4: the diagonal gap is the one memorable move and survives 16px. Fix: keep the gap wide enough at 16px and check it does not read as a slash or broken glyph.",
+          "checks": {
+            "pass": 13,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.396
+          }
+        }
+      ],
+      "finalized": "round-trip",
+      "exported": 81,
+      "byGroup": {
+        "logos": 54,
+        "web": 11,
+        "social": 11,
+        "tokens": 3,
+        "guidelines": 2
+      },
+      "success": true
+    }
+  ],
+  "sessionId": "7cdcd617-a915-40c1-b152-155eb46c3450"
+}

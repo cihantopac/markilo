@@ -1,0 +1,123 @@
+{
+  "scenario": "ecommerce-shop",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Online shop",
+  "kind": "ecommerce",
+  "brief": {
+    "ask": "Create a brand identity for Kilnroom, the online shop in this folder.",
+    "owner": "Owner preferences: handmade and warm but not rustic or folksy; no pottery wheels, no vase or mug silhouettes, no flames. It must work on a shipping label, a tissue-paper sticker and Instagram. Web and social only; customers in Turkey and Europe."
+  },
+  "markilo": "0.4.0-rc.5",
+  "ranAt": "2026-10-30T14:37:53.087Z",
+  "minutes": 15.98,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 2.9948757,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 54560,
+    "output": 115235,
+    "cacheRead": 6856865,
+    "cacheWrite": 400352
+  },
+  "turns": 3,
+  "subagents": 13,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "No concept passed the quality gate: door and shelf got 'none' at both sketch reviews, and pair (the only one developed) failed critique in both rounds (avg 5.54, then 5.69) because it reads as 00/OD or C+donut with no ceramics cue, so nothing was finalized, exported or installed."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "kilnroom",
+      "name": "Kilnroom",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "door",
+          "title": "Open Door K",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 arch/doorway icon; s2 arch-in-arch portal/app icon; s3 split tombstone; s4 arch with notch, keyhole/lock-ish. All are the stock arch or door-icon family, which is the product-adjacent cliche. Try a different move: drop the arch silhouette and find a kiln-specific gesture (spy hole, stacked setters, shelf posts) or build from the K or R letterform.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "pair",
+          "title": "Double O",
+          "status": "rejected",
+          "critic": 5.69,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 5,
+            "timelessness": 6,
+            "premium-perception": 4,
+            "versatility": 8
+          },
+          "present": false,
+          "gate": false,
+          "readsAs": [
+            "double zero / two ovals side by side",
+            "letters 'oo' or 'OD'",
+            "a pair of eyes or a toggle/infinity-like glasses shape"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 broken o beside dot, fussy, dies at 32px; s2 two rings/bubbles or degree sign; s3 squiggle/infinity-ish, illegible small; s4 big open o with small whole o in its mouth (reads 'Co', or a vessel with a piece placed in the opening). Weak board; s4 is the only one with a one-colour silhouette that survives 16px. Keep: heavy rounded terminals, the small o seated in the gap. Fix: the Co./letter-C reading is a real risk, so make the opening direction and the small o's seating read as 'two o's, one placed' (e.g. opening facing up so it reads as a bowl/cup-and-piece, or tighter gap); avoid generic Co. and keep stroke terminals distinctive. If development still reads as C plus dot, drop it.",
+          "checks": {
+            "pass": 15,
+            "warn": 0,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.335
+          }
+        },
+        {
+          "id": "shelf",
+          "title": "Firing Load",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 coffee bean/pill/cut disc; s2 dot cluster, bubbles or a molecule; s3 play-button triangles in a ring, recycle-ish; s4 letter N. None holds a ceramics idea at 32 px; s2 dots collapse to noise at 16 px, s4 is a different letter. Try a different move: one bold, asymmetric stacked form (kiln shelf with posts, one piece offset) with at most 2-3 shapes, not scattered units.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "c648c109-b75f-49c2-9a30-6fc5d6972089"
+}

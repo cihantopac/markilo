@@ -1,0 +1,48 @@
+{
+  "schema": "markilo/kit@1",
+  "brand": "tallyline",
+  "name": "Tallyline",
+  "concept": "round-trip",
+  "locked": false,
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "lockupHorizontal": "lockup-horizontal.svg",
+    "lockupStacked": "lockup-stacked.svg",
+    "lockupCompact": "lockup-compact.svg"
+  },
+  "palette": {
+    "primary": "#D98A1F",
+    "ink": "#2E2616",
+    "paper": "#FFF9EC",
+    "dark": "#110c08"
+  },
+  "typography": {
+    "fontId": "outfit",
+    "weight": 600,
+    "family": "Outfit",
+    "license": "OFL-1.1",
+    "tracking": 10
+  },
+  "tagline": "Know what's coming in.",
+  "notes": [
+    "Amber on cream is about 2.6:1: use the ink half or dark ink for text and small marks on light grounds."
+  ],
+  "approvedAt": "2026-10-30T15:20:04.521Z",
+  "originality": {
+    "verdict": "insufficient-evidence",
+    "confidence": "low",
+    "acceptedRisk": true,
+    "report": "../reports/originality-round-trip.md",
+    "evidence": {
+      "visual": "5 brand(s) from 9 reference file(s): 5 direct competitor, 0 category/form-family; sources 3 official, 0 app store, 0 logo catalog, 2 unverified",
+      "registry": "no registry searches logged for \"Tallyline\"",
+      "registryCoverage": "none"
+    }
+  },
+  "gate": {
+    "status": "passed",
+    "average": 6.62,
+    "reasons": []
+  }
+}

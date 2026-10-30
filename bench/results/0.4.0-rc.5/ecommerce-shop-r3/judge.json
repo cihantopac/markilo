@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "kilnroom",
+    "concept": "glaze",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "geometric K monogram",
+        "rewind / skip-back media chevrons",
+        "angular arrow pointing left"
+      ],
+      "distinctiveness": 4,
+      "memorability": 5,
+      "brandFit": 3,
+      "craft": 5,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "A competent but cold, hard-edged K that reads as a media 'back' control rather than a warm handmade ceramics shop, and in the color-on-light version the sage and gold go dark, so the palette barely shows."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.21572000000000002
+  }
+]

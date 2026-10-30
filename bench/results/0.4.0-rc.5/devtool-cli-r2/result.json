@@ -1,0 +1,131 @@
+{
+  "scenario": "devtool-cli",
+  "attempt": 2,
+  "holdout": true,
+  "title": "Developer tool",
+  "kind": "devtool",
+  "brief": {
+    "ask": "Create a brand identity for Seamline, the open-source command-line tool in this folder.",
+    "owner": "Owner preferences: precise, trustworthy, developer-native; it must work in a terminal-heavy README, as a GitHub avatar and on a small docs site. No database cylinders, no elephants, no generic terminal prompt. Web and GitHub only."
+  },
+  "markilo": "0.4.0-rc.5",
+  "ranAt": "2026-10-30T14:48:03.143Z",
+  "minutes": 18.99,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.6533598000000005,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 46566,
+    "output": 131472,
+    "cacheRead": 9354164,
+    "cacheWrite": 480735
+  },
+  "turns": 11,
+  "subagents": 15,
+  "claim": {
+    "passed": [
+      "mirror-s"
+    ],
+    "finalized": "mirror-s",
+    "notes": "Only mirror-s passed the gate (avg 6.77, after two rework rounds); shift and overlap were rejected at sketch review, and originality is insufficient-evidence with no registry search done, so trademark clearance is still open."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "seamline",
+      "name": "Seamline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "mirror-s",
+          "title": "Reversible s",
+          "status": "approved",
+          "critic": 6.77,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 6,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 8,
+            "balance": 7,
+            "craft": 7,
+            "typography": 7,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 7,
+            "premium-perception": 6,
+            "versatility": 7
+          },
+          "present": true,
+          "gate": true,
+          "readsAs": [
+            "letter S built from two hooks",
+            "horseshoe magnets / cable clips",
+            "a stylised 5 or c-over-u"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 coin/disc cut by a staircase zigzag, faint S; s2 bitten block plus wedge; s3 pixel mountain/graph silhouette; s4 square frame/window icon. Pick s1: only one with a seam you can name, survives 16 px. Keep the stepped cut, make the S reading deliberate and the halves less coin-like; avoid sync/refresh icon feel.",
+          "checks": {
+            "pass": 16,
+            "warn": 0,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.414
+          }
+        },
+        {
+          "id": "overlap",
+          "title": "Handoff",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 pie chart; s2 chat bubble/app tile; s3 leaf/flag shapes; s4 tadpole/sperm; s5 pizza slice with eclipse or Pac-Man. Strike all: stock or off-message, overlap tiles mostly read as generic. Try a more constructed, geometric overlap not built from blobs and wedges.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "shift",
+          "title": "Live seam",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 digit 2 or S/5; s2 division sign; s3 easing-curve/S icon; s4 prohibited/no-sign. All struck as a different letter, UI icon or stock shape. Try a form that is not a letter or stroke: one distinctive notched or offset construction.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": "mirror-s",
+      "exported": 81,
+      "byGroup": {
+        "logos": 54,
+        "web": 11,
+        "social": 11,
+        "tokens": 3,
+        "guidelines": 2
+      },
+      "success": true
+    }
+  ],
+  "sessionId": "696d59ce-0fc8-4ead-b892-9341bf1a4d3d"
+}

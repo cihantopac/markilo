@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "dozeline",
+    "concept": "settle",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "three bars tipping from upright to lying flat, a body settling down to sleep",
+        "the letters 'I/_' or a loading/progress glyph",
+        "a falling-domino or volume-level indicator"
+      ],
+      "distinctiveness": 6,
+      "memorability": 6,
+      "brandFit": 6,
+      "craft": 6,
+      "versatility": 5,
+      "presentAsIs": false,
+      "why": "The upright-to-lying sequence is a clever, cliché-free metaphor for winding down in a warm terracotta, but it is a wide, bottom-heavy strip that wastes the square icon space and breaks up into faint dashes at 16–24px, and its plain capsule forms read as generic UI marks more than an ownable symbol."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.21263500000000002
+  }
+]

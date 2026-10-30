@@ -1061,6 +1061,16 @@ export const COMMANDS: CommandSpec[] = [
     },
   },
   {
+    name: 'concept show',
+    summary: 'Show one concept: its files, palette, typography, critique and the gate.',
+    usage: 'concept show --brand <slug> --concept <id>',
+    options: { ...brandOpt, concept: { type: 'string', description: 'Concept id' } },
+    async run(c) {
+      const concept = ws(c).concept(c.req('brand'), c.req('concept'));
+      return { ...concept, gate: gateOf(concept) };
+    },
+  },
+  {
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:

@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "lumenfold",
+    "concept": "crease",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a heavy letter L monogram cut by a diagonal slash",
+        "a folded paper corner, with the gold triangle as the turned-back flap",
+        "a road or railway sign glyph"
+      ],
+      "distinctiveness": 4,
+      "memorability": 5,
+      "brandFit": 5,
+      "craft": 7,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The geometry is clean and holds up from 16px through mono and reversed versions, but an L split by a diagonal is a common monogram, the gold triangle looks like a separate offcut rather than a fold of the L itself so 'fold' only half-lands, the forest-green and gold palette feels like heritage banking rather than calm, precise, privacy-first software, and the mark says nothing about 'lumen' (light)."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2174092
+  }
+]

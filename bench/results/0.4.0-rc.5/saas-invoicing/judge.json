@@ -1,0 +1,65 @@
+[
+  {
+    "brand": "tallyline",
+    "concept": "ahead",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "letter T followed by a closing quotation mark or ditto/inch symbol",
+        "a T with forward speed slashes",
+        "a typographic monogram, not a finance mark"
+      ],
+      "distinctiveness": 4,
+      "memorability": 4,
+      "brandFit": 4,
+      "craft": 4,
+      "versatility": 4,
+      "presentAsIs": false,
+      "why": "The terracotta color steps away from fintech blue and green, but the mark looks like a T next to a closing quotation mark, so it suggests quoting or speech rather than tallying or forecasting cash flow; the wide, right-heavy layout won't fit a square favicon, and the slashes switch between black and pale peach across versions with no clear rule."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2154398
+  },
+  {
+    "brand": "tallyline",
+    "concept": "round-trip",
+    "final": true,
+    "judge": {
+      "readsAs": [
+        "a chain-link or 'connected' icon made of two offset half-rings",
+        "a 'CD' or 'CO' monogram",
+        "two brackets passing something back and forth, like money going out and coming back in"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 6,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The warm ochre-and-umber palette avoids the generic fintech look and feels calm, but the offset half-ring symbol is too close to a stock link or monogram glyph, and the uneven tally-bar 'll' running into the 'y' looks glitchy rather than intentional, so neither part says invoicing or cash-flow strongly enough to own it."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.223862
+  },
+  {
+    "brand": "tallyline",
+    "concept": "twin-l",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "two nested letter L shapes",
+        "a chart's corner axes with a block inside",
+        "a Tetris-like block piece"
+      ],
+      "distinctiveness": 4,
+      "memorability": 5,
+      "brandFit": 5,
+      "craft": 6,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The muted plum color moves away from fintech blue-green and the solid shapes still read at 16px, but nesting one L inside another is a generic monogram device; the inner L is heavier and blockier than the outer one, so the two do not feel like one design, and nothing in the mark says tally, line or cash flow."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2137214
+  }
+]

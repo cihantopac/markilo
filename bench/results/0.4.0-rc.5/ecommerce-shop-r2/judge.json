@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "kilnroom",
+    "concept": "stack",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "an abstract stacked glyph like a Ξ or the kanji 王",
+        "a shelving or kiln-furniture stack of slabs and posts",
+        "a pill-shaped toggle or UI icon"
+      ],
+      "distinctiveness": 6,
+      "memorability": 6,
+      "brandFit": 5,
+      "craft": 6,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The kiln-shelf stack is a smart idea that avoids every banned cliché and stays solid at small sizes, but the chunky rounded geometry feels more like a tech or UI icon than handmade warmth, and without explanation the kiln furniture reads as an abstract letterform."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2164784
+  }
+]

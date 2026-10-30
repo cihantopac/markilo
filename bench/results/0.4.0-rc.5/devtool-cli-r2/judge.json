@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "seamline",
+    "concept": "mirror-s",
+    "final": true,
+    "judge": {
+      "readsAs": [
+        "a stylized S split into two mirrored hooks",
+        "two paperclip or staple halves about to interlock",
+        "a pair of magnets or connectors with a gap between them"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 6,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The split-S seam idea is clean and holds up from 16px upward, but the wide gap makes it read as two loose parts rather than one joined line, the two hooks have uneven legs, and split-letter monograms are common, so it is competent rather than ownable."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.22453
+  }
+]

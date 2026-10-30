@@ -14,12 +14,13 @@ company) plus the owner's preferences:
 
 ## Results
 
-| Run                                         | Model      | Passed the gate | Blind judge would present | Developed / directions | Gate agrees with the judge | Minutes (total) | Cost (API equivalent) |
-| ------------------------------------------- | ---------- | --------------- | ------------------------- | ---------------------- | -------------------------- | --------------- | --------------------- |
-| [0.4.0-rc.1](results/0.4.0-rc.1)            | Sonnet 5.5 | 0 of 3          | —                         | 7 / 9                  | 7 of 7                     | 48              | $9.76                 |
-| [0.4.0-rc.2](results/0.4.0-rc.2)            | Sonnet 5.5 | 1 of 3          | 0 of 1                    | 1 / 9                  | 0 of 1                     | 32              | $6.10                 |
-| [0.4.0-rc.2, Opus](results/0.4.0-rc.2-opus) | Opus 5.5   | 0 of 1          | —                         | 1 / 3                  | 1 of 1                     | 17              | $5.23                 |
-| [0.4.0-rc.3](results/0.4.0-rc.3)            | Sonnet 5.5 | 2 of 3          | 2 of 2                    | 6 / 9                  | 5 of 6                     | 54              | $10.85                |
+| Run                                                  | Model      | Passed the gate | Blind judge would present | Developed / directions | Gate agrees with the judge | Minutes (total) | Cost (API equivalent) |
+| ---------------------------------------------------- | ---------- | --------------- | ------------------------- | ---------------------- | -------------------------- | --------------- | --------------------- |
+| [0.4.0-rc.1](results/0.4.0-rc.1)                     | Sonnet 5.5 | 0 of 3          | —                         | 7 / 9                  | 7 of 7                     | 48              | $9.76                 |
+| [0.4.0-rc.2](results/0.4.0-rc.2)                     | Sonnet 5.5 | 1 of 3          | 0 of 1                    | 1 / 9                  | 0 of 1                     | 32              | $6.10                 |
+| [0.4.0-rc.2, Opus](results/0.4.0-rc.2-opus)          | Opus 5.5   | 0 of 1          | —                         | 1 / 3                  | 1 of 1                     | 17              | $5.23                 |
+| [0.4.0-rc.3](results/0.4.0-rc.3)                     | Sonnet 5.5 | 2 of 3          | 2 of 2                    | 6 / 9                  | 5 of 6                     | 54              | $10.85                |
+| [0.4.0-rc.5](results/0.4.0-rc.5) (9 runs, 6 holdout) | Sonnet 5.5 | 2 of 9          | 0 of 2 (Opus judge)       | 12 / 27                | 10 of 12                   | 139             | $29.93                |
 
 What changed, and why:
 
@@ -36,7 +37,16 @@ What changed, and why:
   stranger sees at 32 px, and gave the construction guide a worked example. Developed concepts went from 1 to 6 of 9;
   the SaaS and mobile app identities passed the gate and the blind judge. The family brief is still unsolved.
 
-Benchmarking so far (four runs of the three briefs plus judging) cost $33.80 in API-equivalent terms. Each run counts
+- **rc.3 → rc.5 (validation).** Two holdout briefs were written before the next changes (decisions logged by the
+  toolchain, `markilo status`, near misses, families sketched as one system, a wordmark board, a small version of the
+  symbol for favicons) and never run while tuning. Each holdout ran three times, each known brief once, and the judge
+  was switched to Opus 5.5 to reduce shared bias with the Sonnet critic. Two of nine runs passed the gate (developer
+  tool once, SaaS once; holdouts 1 of 6); the Opus judge would present neither. Re-judging rc.3's two identities and
+  Markilo's own with Opus gave 5.8–6.2 and "not as is" for all three: the Opus judge is stricter across the board,
+  and by its standard nothing Markilo has made is finished yet. rc.3's 2 of 3 was partly luck on the briefs it was
+  tuned on.
+
+Benchmarking so far (four runs of the three briefs plus judging) cost $33.80 in API-equivalent terms, and the rc.5 validation another $33 (runs $29.93, Opus judging $2.61, calibration about $0.66). Each run counts
 against a Claude subscription's usage limits instead of being billed; the costs are what the same tokens would cost
 on the API.
 

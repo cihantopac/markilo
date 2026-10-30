@@ -1,0 +1,44 @@
+[
+  {
+    "brand": "seamline",
+    "concept": "live-through",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "two offset blocks split by a green line — a seam or cut",
+        "stylized hamburger / stacked-layers icon",
+        "abstract 'S' or equal-sign / strikethrough glyph"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 7,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The offset halves split by a green seam line clearly show the name and stay clean even at 16px, but it also reads as a generic hamburger or layered-stack icon, so it's competent but not ownable yet."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.21201920000000002
+  },
+  {
+    "brand": "seamline",
+    "concept": "stepped-s",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a solid disc split by a stepped seam with offset halves",
+        "a stylized numeral 2 or lowercase e",
+        "a broken or rotated power/toggle glyph"
+      ],
+      "distinctiveness": 5,
+      "memorability": 6,
+      "brandFit": 6,
+      "craft": 5,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The offset stepped seam captures the 'seam' idea with a bold, scalable silhouette that survives 16px, but it reads strongly as a '2' or Edge-like 'e', the shifted halves look accidentally misregistered, and a visible hairline at the vertical step betrays sloppy path construction."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2157732
+  }
+]

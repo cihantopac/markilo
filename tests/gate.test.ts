@@ -149,6 +149,59 @@ describe('cli: critique and research', () => {
     expect(JSON.parse(bad.stderr).error.hint).toMatch(/brand-fit/);
   });
 
+  it('shows a concept with its gate, and explains a colour lost to an unquoted #', () => {
+    const cwd = tmp();
+    run(['init'], cwd);
+    run(['brand', 'add', 'Show Test'], cwd);
+    // What the shell passes for `--primary #1d4e89 --accent …` unquoted: everything after # is a comment.
+    const lost = run(
+      [
+        'concept',
+        'new',
+        '--brand',
+        'show-test',
+        '--id',
+        'a',
+        '--title',
+        'A',
+        '--direction',
+        'd',
+        '--rationale',
+        'r',
+        '--semantics',
+        'x',
+        '--primary',
+      ],
+      cwd,
+    );
+    expect(lost.status).toBe(64);
+    expect(JSON.parse(lost.stderr).error.hint).toMatch(/Quote colours/);
+    run(
+      [
+        'concept',
+        'new',
+        '--brand',
+        'show-test',
+        '--id',
+        'a',
+        '--title',
+        'A',
+        '--direction',
+        'd',
+        '--rationale',
+        'r',
+        '--semantics',
+        'x',
+        '--primary',
+        '#1d4e89',
+      ],
+      cwd,
+    );
+    const shown = run(['concept', 'show', '--brand', 'show-test', '--concept', 'a'], cwd);
+    expect(shown.status, shown.stderr).toBe(0);
+    expect(JSON.parse(shown.stdout)).toMatchObject({ id: 'a', gate: { status: 'not-reviewed' } });
+  });
+
   it('researches the current folder as "."', () => {
     const cwd = tmp();
     run(['init'], cwd);

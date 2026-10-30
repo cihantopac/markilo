@@ -21,8 +21,9 @@ Modes (the caller says which; without one, do every step):
   what it said to fix. Do not switch to another sketch's idea.
 
 Steps:
-1. `markilo concept new --brand <slug> --id <id> --title … --direction … --rationale … --semantics … --primary … [--secondary …]
+1. `markilo concept new --brand <slug> --id <id> --title … --direction … --rationale … --semantics … --primary '#rrggbb' [--secondary '#rrggbb']
    --font <font id> --weight <n> --construction "<grid and geometry notes>"` (skip if it exists).
+   Quote every colour (`'#1d4e89'`): an unquoted `#` starts a shell comment and drops the rest of the command.
    Set `--paper` to the background the brand really lives on (dark-first brands: a dark paper) and `--ink` to the
    text color on that paper. The design must read on that paper; Markilo adapts it for the opposite ground.
 2. **Build, don't type coordinates.** Draw every mark as a construction spec (`construction.md`) and compile it with

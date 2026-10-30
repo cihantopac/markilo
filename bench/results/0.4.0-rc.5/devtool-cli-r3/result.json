@@ -1,0 +1,150 @@
+{
+  "scenario": "devtool-cli",
+  "attempt": 3,
+  "holdout": true,
+  "title": "Developer tool",
+  "kind": "devtool",
+  "brief": {
+    "ask": "Create a brand identity for Seamline, the open-source command-line tool in this folder.",
+    "owner": "Owner preferences: precise, trustworthy, developer-native; it must work in a terminal-heavy README, as a GitHub avatar and on a small docs site. No database cylinders, no elephants, no generic terminal prompt. Web and GitHub only."
+  },
+  "markilo": "0.4.0-rc.5",
+  "ranAt": "2026-10-30T15:07:02.533Z",
+  "minutes": 17.04,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.3203243000000016,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 71322,
+    "output": 122404,
+    "cacheRead": 8004156,
+    "cacheWrite": 456859
+  },
+  "turns": 4,
+  "subagents": 14,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "No concept cleared the quality gate after two rounds (live-through 6.38, stepped-s 5.92, offset-seam dropped at sketch review), so nothing was finalized, exported, installed or gallery-built."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "seamline",
+      "name": "Seamline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "live-through",
+          "title": "Live Through",
+          "status": "rejected",
+          "critic": 6.38,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 6,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 7,
+            "typography": 7,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 7
+          },
+          "present": false,
+          "gate": false,
+          "readsAs": [
+            "hamburger / menu icon",
+            "three stacked bars (list or equals sign)",
+            "a toggle or stacked-layers UI glyph"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 a division sign or plus-minus (UI icon, struck); s2 a pause, Ø or slashed disc (struck); s3 a dollar sign (cliché, struck); s4 two bars with a wave between them, close to a data stream between two tables. Pick s4 because it is the only one that carries the idea (a live line passing between shifting schemas) and is not a stock glyph. Fixes: the slab offset is barely visible at 32 px, so make the shove bigger, fewer in number and more asymmetric. Thicken the wave and give it a clear S-curve so it does not read as a tilde or an equals sign. Keep the two colours but raise the contrast of the orange against the green. Check that it does not collapse to a strikethrough at 16 px. If it does, this is a weak pick.",
+          "checks": {
+            "pass": 17,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.439
+          }
+        },
+        {
+          "id": "offset-seam",
+          "title": "Offset Seam",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a stair step or L-block; s2 a square with a swirl or Z cut, near a pinwheel or Liquibase-like block; s3 the letter S or 5 in a pixel font; s4 a rounded app tile with a squiggle slit. All four are a stock block plus a notch, and a stranger does not get a migration or a seam from any of them. s3 is a letter, so it is struck. s2 and s4 are the best, but I would not bet 7 or higher on distinctiveness and memorability. Try a different move: drop the block-with-cut. Build the mark from two shapes that really are offset, such as two bars or two L-forms that share one continuous edge, so the shared seam is the figure and not a cut in a tile.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "stepped-s",
+          "title": "Stepped S",
+          "status": "rejected",
+          "critic": 5.92,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 5,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 7,
+            "craft": 6,
+            "typography": 6,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "gate": false,
+          "readsAs": [
+            "Internet Explorer / Edge style 'e'",
+            "blue disc with a slot cut (app-icon badge)",
+            "pause or toggle glyph"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 squared S or 5, Greek-key; s2 two hooks forming an S, split by a hairline; s3 S tile, app-icon-like and heavy; s4 S in a tile, close to s1. Pick s2: lowest stock similarity (40%), holds as S at 16px, the out-of-register offset carries the seam idea and is not a UI icon. Fix: confirm it does not read as digit 5 at 16px, make the hairline survive at 16px (widen), and push the offset so it is the memorable hook.",
+          "checks": {
+            "pass": 14,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.527
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "37bbcf75-2eb5-44c1-99bf-1d7d6febffd7"
+}
