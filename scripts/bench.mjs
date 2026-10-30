@@ -7,6 +7,7 @@
 //   node scripts/bench.mjs run <id…|all> [--out <dir>] [--model <alias>]
 //   node scripts/bench.mjs judge [<dir>] [--model <alias>]
 //   node scripts/bench.mjs report [<dir>]
+//   node scripts/bench.mjs refresh <id> <run folder>  (re-measure a kept run folder; cost and tokens are kept)
 //   node scripts/bench.mjs measure <workspace>      (the same metrics for any Markilo workspace)
 //
 // Runs happen in a temporary copy of each scenario's project; only metrics and Markilo's own outputs are kept
@@ -31,6 +32,15 @@ const SCEN = join(root, 'bench', 'scenarios');
 const CLI = join(root, 'plugin', 'dist', 'markilo.mjs');
 const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version;
 const GATE = ['brand-fit', 'distinctiveness', 'memorability'];
+// Same reading as Markilo's gate (src/report/gate.ts): criteria under other spellings count by their canonical name.
+const ALIAS = { semantic: 'semantic-relevance', cultural: 'cultural-fit', premium: 'premium-perception' };
+const criterion = (k) => {
+  const c = k
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .toLowerCase()
+    .replace(/[\s_]+/g, '-');
+  return ALIAS[c] ?? c;
+};
 
 const argv = process.argv.slice(2);
 const opts = {};
@@ -94,7 +104,7 @@ function measure(ws) {
       .map((id) => readJson(join(cdir, id, 'concept.json')))
       .filter(Boolean)
       .map((c) => {
-        const j = c.judgment ?? {};
+        const j = Object.fromEntries(Object.entries(c.judgment ?? {}).map(([k, v]) => [criterion(k), v]));
         const scores = Object.values(j).map((v) => v.score);
         const avg = scores.length ? scores.reduce((a, x) => a + x, 0) / scores.length : undefined;
         const q = readJson(join(dir, 'reports', `quality-${c.id}.json`));
@@ -105,7 +115,13 @@ function measure(ws) {
           status: c.status,
           critic: avg !== undefined ? Math.round(avg * 100) / 100 : null,
           scores: Object.fromEntries(Object.entries(j).map(([k, v]) => [k, v.score])),
-          gate: avg !== undefined && avg >= 6.5 && GATE.every((k) => (j[k]?.score ?? 0) >= 6),
+          // Before 0.4.0-rc.2 the critic's present-as-is answer was not recorded (present: null).
+          present: c.critique?.present ?? null,
+          gate:
+            avg !== undefined &&
+            avg >= 6.5 &&
+            GATE.every((k) => (j[k]?.score ?? 0) >= 6) &&
+            c.critique?.present !== false,
           readsAs: c.readsAs ?? [],
           sketchPick: c.sketchReview?.pick ?? null,
           checks: q?.summary ?? null,
@@ -167,6 +183,39 @@ function findWorkspace(dir) {
   return undefined;
 }
 
+/** Measures a finished run folder and keeps Markilo's own outputs (never research captures or reference marks). */
+function collect(work, dest) {
+  const ws = findWorkspace(work);
+  const m = ws ? measure(ws) : { workspace: false, brands: [] };
+  mkdirSync(dest, { recursive: true });
+  for (const b of m.brands) {
+    const bdir = join(ws, 'brands', b.slug);
+    if (existsSync(join(bdir, 'final')))
+      cpSync(join(bdir, 'final'), join(dest, b.slug, 'final'), { recursive: true });
+    for (const c of b.concepts) {
+      const cdir = join(bdir, 'concepts', c.id);
+      for (const f of ['symbol.svg', 'wordmark.svg', 'review/symbol-sheet.png'])
+        if (existsSync(join(cdir, f)))
+          cpSync(join(cdir, f), join(dest, b.slug, 'concepts', c.id, f.replace('review/', '')));
+    }
+    if (existsSync(join(bdir, 'decisions.md')))
+      cpSync(join(bdir, 'decisions.md'), join(dest, b.slug, 'decisions.md'));
+    if (existsSync(join(bdir, 'exports', 'logos', 'overview.png')))
+      cpSync(join(bdir, 'exports', 'logos', 'overview.png'), join(dest, b.slug, 'overview.png'));
+  }
+  return m;
+}
+
+/** Re-measures a kept run folder with the current metrics, keeping the run's own figures (cost, tokens, time). */
+function refresh(id, work, out) {
+  const file = join(out, id, 'result.json');
+  const rec = readJson(file);
+  if (!rec) throw new Error(`No ${file}.`);
+  const { workspace, family, brands } = collect(resolve(work), join(out, id));
+  writeFileSync(file, `${JSON.stringify({ ...rec, workspace, family, brands }, null, 2)}\n`);
+  console.log(JSON.stringify({ scenario: id, success: brands.map((b) => `${b.slug}:${b.success}`) }));
+}
+
 function run(ids, out) {
   const all = scenarios();
   const pick = ids.includes('all') ? all : all.filter((s) => ids.includes(s.id));
@@ -206,24 +255,8 @@ function run(ids, out) {
     try {
       result = JSON.parse(r.stdout);
     } catch {}
-    const ws = findWorkspace(work);
-    const m = ws ? measure(ws) : { workspace: false, brands: [] };
     const dest = join(out, s.id);
-    mkdirSync(dest, { recursive: true });
-    // Keep Markilo's own outputs for judging and the report.
-    for (const b of m.brands) {
-      const bdir = join(ws, 'brands', b.slug);
-      if (existsSync(join(bdir, 'final')))
-        cpSync(join(bdir, 'final'), join(dest, b.slug, 'final'), { recursive: true });
-      for (const c of b.concepts) {
-        const cdir = join(bdir, 'concepts', c.id);
-        for (const f of ['symbol.svg', 'wordmark.svg', 'review/symbol-sheet.png'])
-          if (existsSync(join(cdir, f)))
-            cpSync(join(cdir, f), join(dest, b.slug, 'concepts', c.id, f.replace('review/', '')));
-      }
-      if (existsSync(join(bdir, 'decisions.md')))
-        cpSync(join(bdir, 'decisions.md'), join(dest, b.slug, 'decisions.md'));
-    }
+    const m = collect(work, dest);
     const record = {
       scenario: s.id,
       title: s.title,
@@ -341,23 +374,33 @@ const judgeAvg = (v) =>
   v ? (v.distinctiveness + v.memorability + v.brandFit + v.craft + v.versatility) / 5 : null;
 const f1 = (n) => (n === null || n === undefined ? '—' : n.toFixed(1));
 
+// Before rc.2 the critic's yes/no was not recorded; the run's own claim of what passed stands in for it.
+const passed = (c, r) => c.gate && (c.present !== null || !r.claim || (r.claim.passed ?? []).includes(c.id));
+
 function report(out) {
   const rows = [];
   const runs = [];
   const pairs = [];
+  const detail = [];
+  let measured = version;
   for (const id of readdirSync(out).filter((d) => existsSync(join(out, d, 'result.json')))) {
     const r = readJson(join(out, id, 'result.json'));
     const j = readJson(join(out, id, 'judge.json')) ?? [];
+    measured = r.markilo ?? measured;
     for (const b of r.brands) {
       for (const c of b.concepts) {
         const v = j.find((x) => x.brand === b.slug && x.concept === c.id)?.judge;
         if (v && c.critic !== null)
-          pairs.push({ critic: c.critic, judge: judgeAvg(v), gate: c.gate, present: v.presentAsIs });
+          pairs.push({ critic: c.critic, judge: judgeAvg(v), gate: passed(c, r), present: v.presentAsIs });
+        if (c.critic !== null || c.sketchPick)
+          detail.push(
+            `| ${b.name} | ${c.id} | ${c.status} | ${f1(c.critic)} | ${passed(c, r) ? 'passed' : 'not passed'} | ${v ? `${f1(judgeAvg(v))} · ${v.presentAsIs ? 'present' : 'not as is'}` : '—'} | ${(c.readsAs ?? []).join('; ') || '—'} | ${v?.readsAs?.join('; ') ?? '—'} |`,
+          );
       }
       const final = b.concepts.find((c) => c.id === b.finalized);
       const v = j.find((x) => x.brand === b.slug && x.final)?.judge;
       rows.push(
-        `| ${r.title} | ${b.name}${b.locked ? ' (locked)' : ''} | ${b.success ? 'yes' : 'no'} | ${b.concepts.filter((c) => c.gate).length}/${b.concepts.length} | ${final ? `${final.id} · ${f1(final.critic)}` : '—'} | ${v ? `${f1(judgeAvg(v))}${v.presentAsIs ? ' · present' : ' · not as is'}` : '—'} | ${final?.checks ? `${final.checks.pass}/${final.checks.warn}/${final.checks.fail}` : '—'} | ${final?.originality?.verdict ?? '—'} | ${b.exported} |`,
+        `| ${r.title} | ${b.name}${b.locked ? ' (locked)' : ''} | ${b.success ? 'yes' : 'no'} | ${b.concepts.filter((c) => passed(c, r)).length}/${b.concepts.length} | ${final ? `${final.id} · ${f1(final.critic)}` : '—'} | ${v ? `${f1(judgeAvg(v))}${v.presentAsIs ? ' · present' : ' · not as is'}` : '—'} | ${final?.checks ? `${final.checks.pass}/${final.checks.warn}/${final.checks.fail}` : '—'} | ${final?.originality?.verdict ?? '—'} | ${b.exported} |`,
       );
     }
     const t = r.tokens;
@@ -366,7 +409,7 @@ function report(out) {
     );
   }
   const agree = pairs.filter((p) => p.gate === p.present).length;
-  const md = `# Markilo ${version} benchmark
+  const md = `# Markilo ${measured} benchmark
 
 Three end-to-end runs of the installed plugin in headless Claude Code, with the product owner unavailable (Markilo
 takes its own recommended answers). Scenario briefs and fixture projects are in \`bench/scenarios/\`; run them with
@@ -382,6 +425,12 @@ Success means a concept passed the quality gate, was finalized with no failing c
 Markilo's own design-critic agent (average of its judgment scores). The blind judge is a separate model call that saw
 only the brief and rendered images of each concept, with no rationale or scores: the average of distinctiveness,
 memorability, brand fit, craft and versatility (0–10), and whether it would present the mark as is.
+
+## Concepts
+
+| Brand | Concept | Status | Critic | Gate | Blind judge | Critic's first readings | Judge's first readings |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+${detail.join('\n')}
 
 ## Critic vs blind judge
 
@@ -412,6 +461,7 @@ if (cmd === 'list')
 else if (cmd === 'run') run(rest, outDir());
 else if (cmd === 'judge') judge(outDir(rest[0]));
 else if (cmd === 'report') report(outDir(rest[0]));
+else if (cmd === 'refresh') refresh(rest[0], rest[1], outDir());
 else if (cmd === 'measure') console.log(JSON.stringify(measure(resolve(rest[0] ?? '.')), null, 2));
 else
   console.log(

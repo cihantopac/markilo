@@ -9,6 +9,7 @@ import { composeLockup } from '../design/lockup.js';
 import { placeMark, squircle } from '../export/geometry.js';
 import { type BrandKit, kitPath } from '../export/kit.js';
 import { adaptToGround, groundsFor, onFillVariant } from '../export/variants.js';
+import { gateOf } from '../report/gate.js';
 import type { OriginalityReport } from '../report/originality.js';
 import { aspectOf, nestSvg, svgDocument } from '../svg/compose.js';
 import { escapeAttr, escapeText } from '../svg/xml.js';
@@ -146,6 +147,7 @@ async function subjectCard(s: Subject, opts: { review?: boolean } = {}): Promise
   const alt = s.symbol ? inline(on(s.symbol, g.opposite), 64, 64) : fitInline(on(lock!, g.opposite), 120, 44);
   const sizes = s.symbol ? [16, 24, 32, 48].map((n) => inline(s.symbol!, n, n)).join('') : '';
   const avg = criticAverage(s);
+  const gate = s.concept ? gateOf(s.concept) : undefined;
   const q = s.quality?.summary;
   const o = s.originality;
   const pills = [
@@ -157,6 +159,9 @@ async function subjectCard(s: Subject, opts: { review?: boolean } = {}): Promise
       : '',
     avg !== undefined
       ? `<span class="pill ${avg >= 7 ? 'good' : avg >= 6 ? 'warn' : 'bad'}" title="Critic average (judgment, 0–10)">critic ${avg}</span>`
+      : '',
+    gate && gate.status !== 'not-reviewed'
+      ? `<span class="pill ${gate.status === 'passed' ? 'good' : 'bad'}" title="${escapeAttr(gate.status === 'passed' ? 'Passed the critic gate' : gate.reasons.join('; '))}">${gate.status === 'passed' ? 'gate passed' : 'gate not passed'}</span>`
       : '',
     s.locked ? '<span class="pill lock">locked</span>' : '',
   ].join('');

@@ -38,11 +38,14 @@ words. Do not score the full criteria in a sketch review.
    - on the home screen it does not stand out from the competitors next to it, or it is not recognisable in the
      16 px tab → distinctiveness ≤ 6;
    - your eight-word description would fit another mark on the context sheet just as well → memorability ≤ 5.
-4. Record: `markilo concept update --brand <slug> --concept <id> --judgment brand-fit=7:"…" --judgment …`
+4. Record with exactly these criterion names: `markilo concept update --brand <slug> --concept <id> --judgment
+   brand-fit=7:"…" --judgment semantic-relevance=6:"…" --judgment …` (re-recording a criterion replaces it).
 5. Be calibrated: 5 = competent but forgettable, 7 = strong and ownable, 9 = category-defining. Generic geometry
    (two blobs, circle + bar, a stacked monogram in a stock font) scores ≤ 4 on distinctiveness however clean it is.
 6. Answer one question per concept with yes or no: "Would a senior identity designer put this in front of a client
-   as is?" A no means the concept does not pass the gate, whatever the scores.
+   as is?" and record it: `markilo concept update --brand <slug> --concept <id> --present no:"<why>"`. A no means the
+   concept does not pass the gate, whatever the scores. The output's `gate` (also in `markilo concept list`) applies
+   the rule — brand-fit, distinctiveness and memorability ≥ 6, average ≥ 6.5, yes — so report that, not your own sum.
 7. Name the single most important improvement for each concept, and flag anything that looks like an existing mark
    or a cliché even if the automated similarity was low (conceptual similarity is not measured automatically).
 

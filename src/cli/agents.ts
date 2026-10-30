@@ -69,11 +69,15 @@ Run: \`${m} <command>\` (JSON output; \`${m} help\` lists every command; details
    (\`wordmark\` or a constructed one), \`verify\`. Principles: ${ref('design-principles.md')}; SVG rules: ${ref('svg-authoring.md')}.
 8. Critique (a separate pass, as an independent critic): first look only at \`research/cache/review/context-<id>.png\` and
    the review sheet and record what the mark looks like (\`concept update --reads-as "…; …; …"\`), then read the
-   rationale and score with \`--judgment criterion=score:reason\`. Gate: brand-fit, distinctiveness and memorability ≥ 6,
-   average ≥ 6.5 and "a senior designer would present it as is"; otherwise rework (max 2 rounds) or reject.
+   rationale and score with \`--judgment criterion=score:reason\` (brand-fit, semantic-relevance, distinctiveness,
+   memorability, simplicity, balance, craft, typography, color, cultural-fit, timelessness, premium-perception,
+   versatility) and \`--present yes|no:reason\` ("would a senior designer present it as is?"). Gate: brand-fit,
+   distinctiveness and memorability ≥ 6, average ≥ 6.5 and yes — \`${m} concept list\` shows it; otherwise rework
+   (max 2 rounds) or reject.
 9. Review: \`${m} gallery --serve\` (keep it running in the background; give the user the URL), then
    \`${m} feedback --brand <slug>\` to read their decisions, pins and preference.
-10. Deliver: \`finalize\` (\`--accept-risk\` only when the user accepts an insufficient-evidence verdict),
+10. Deliver: \`finalize\` (\`--accept-risk\` only when the user accepts an insufficient-evidence verdict; a concept that
+    failed the gate needs \`--user-choice "<the user's reason>"\`),
     \`deliverables\`, \`export\`, then \`install-assets --framework auto --brand <slug>\` as a dry run, and \`--apply\` only
     with the user's OK.
 

@@ -11,6 +11,7 @@
       "!tests/.tmp",
       "!examples/**/output",
       "!branding",
+      "!bench/results",
       "!branding-next",
       "!**/*.png"
     ]

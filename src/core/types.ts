@@ -97,6 +97,7 @@ export interface Brief {
   audience?: { primary?: string[]; secondary?: string[]; markets?: string[]; languages?: string[] };
   positioning?: { values?: string[]; personality?: string[]; tone?: string; differentiators?: string[] };
   competitors?: { name: string; url?: string; notes?: string }[];
+  /** colors: hex values or color directions in words. */
   constraints?: { mustKeep?: string[]; avoid?: string[]; colors?: string[]; typography?: string[] };
   lockedAssets?: { path: string; reason: string }[];
   deliverables?: string[];
@@ -141,4 +142,6 @@ export interface Concept {
   readsAs?: string[];
   /** The critic's early verdict on the sketch board: which sketch to develop (null = none, rethink the move). */
   sketchReview?: { pick: string | null; notes: string; at: string };
+  /** The critic's answer to "would a senior identity designer put this in front of a client as is?" */
+  critique?: { present: boolean; reason: string; at: string };
 }

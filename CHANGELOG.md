@@ -8,10 +8,26 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- The critic gate is applied in code: the critic records its yes/no to "would a senior designer present it as is?"
+  (`concept update --present yes|no:<reason>`); `concept list`, `concept update` and the gallery show `gate`
+  (`passed`, `failed`, `not-reviewed`); `finalize` refuses a concept that failed it unless the user chose it anyway
+  (`--user-choice "<reason>"`), and `brand.json` records the gate. Found by the benchmark: critics computed the gate
+  by hand and their "no" had nowhere to go.
 - `scripts/smoke.mjs`: an empty folder to installed assets with the bundle alone; CI runs it on every OS and on the copy
   that `claude plugin install` produces from the marketplace.
+- `bench.mjs refresh` re-measures a kept run folder; the report lists every critiqued concept with the critic's and
+  the blind judge's first readings.
+
+### Changed
+
+- Judgment criteria are checked against the critic's list and stored under one spelling (`brandFit` → `brand-fit`,
+  `premium` → `premium-perception`); unknown criteria are refused with the list. Older concepts are read the same way.
+- The brief's `constraints.colors` accepts color directions in words as well as hex values.
 
 ### Fixed
+
+- `research repo .` failed ("Cannot derive a slug").
+- `construct`'s usage line shows `--role symbol|wordmark`.
 
 - An absolute path that reaches the workspace under another name (macOS `/var` and `/private/var`, a symlinked home)
   was refused as outside the workspace, so `concept update --wordmark /var/…` failed in temporary folders.

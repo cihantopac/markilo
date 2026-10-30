@@ -44,6 +44,7 @@ import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarit
 import { suggestNiceClasses, trademarkSearchPlan } from '../name/trademark.js';
 import { renderPng } from '../render/resvg.js';
 import { renderCompareSheet, renderReviewSheet } from '../render/sheet.js';
+import { gateOf, requireCriterion } from '../report/gate.js';
 import { buildOriginalityReport, readReferences } from '../report/originality.js';
 import { verifyConcept } from '../report/quality.js';
 import { brandKeyOf, brandsOf, officialHostsFrom } from '../report/references.js';
@@ -255,7 +256,10 @@ export const COMMANDS: CommandSpec[] = [
         scan.root = path;
         const merged = mergeRepoScan(p, scan);
         writeJson(
-          join(w.cacheDir(slug), `repo-${slugify(path.replace(/[\\/:]+/g, '-')).slice(0, 40)}.json`),
+          join(
+            w.cacheDir(slug),
+            `repo-${/[a-z0-9]/i.test(path) ? slugify(path.replace(/[\\/:]+/g, '-')).slice(0, 40) : 'project'}.json`,
+          ),
           scan,
         );
         results.push(
@@ -987,6 +991,8 @@ export const COMMANDS: CommandSpec[] = [
           direction: x.direction,
           files: x.files,
           palette: x.palette,
+          gate: gateOf(x).status,
+          ...(gateOf(x).average !== undefined ? { criticAverage: gateOf(x).average } : {}),
         }));
     },
   },
@@ -994,7 +1000,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]...',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1003,7 +1009,16 @@ export const COMMANDS: CommandSpec[] = [
       wordmark: { type: 'string', description: 'Wordmark file name inside the concept folder' },
       'lockup-horizontal': { type: 'string', description: 'Hand-made horizontal lockup file' },
       'lockup-stacked': { type: 'string', description: 'Hand-made stacked lockup file' },
-      judgment: { type: 'string', multiple: true, description: 'criterion=score:rationale (repeatable)' },
+      judgment: {
+        type: 'string',
+        multiple: true,
+        description:
+          'criterion=score:rationale (repeatable); criteria: brand-fit, semantic-relevance, distinctiveness, …',
+      },
+      present: {
+        type: 'string',
+        description: 'Critic: yes|no:<reason> — would a senior designer put this in front of a client as is?',
+      },
       primary: { type: 'string', description: 'Primary color' },
       secondary: { type: 'string', description: 'Secondary color ("none" removes it)' },
       accent: { type: 'string', description: 'Accent color ("none" removes it)' },
@@ -1086,16 +1101,32 @@ export const COMMANDS: CommandSpec[] = [
           family: fontInfo(c.str('font')!).family,
           license: fontInfo(c.str('font')!).license,
         };
+      const presentAs = (answer: string, reason: string) => {
+        next.critique = { present: /^y/i.test(answer), reason: reason.trim(), at: nowIso() };
+      };
+      if (c.str('present')) {
+        const m = /^(yes|no)\s*[:=]\s*(.+)$/is.exec(c.str('present')!.trim());
+        if (!m) throw new MarkiloError('USAGE', 'Use --present yes:<reason> or --present no:<reason>.');
+        presentAs(m[1]!, m[2]!);
+      }
       for (const j of c.list('judgment').length ? (c.values.judgment as string[]) : []) {
-        const m = /^([a-z-]+)=(\d+(?:\.\d+)?):(.+)$/i.exec(j);
+        // Critics sometimes record the present-as-is answer as a judgment: keep it where the gate reads it.
+        const p = /^present(?:able)?(?:[-_ ]?as[-_ ]?is)?\s*=\s*(yes|no)\s*:(.+)$/is.exec(j);
+        if (p) {
+          presentAs(p[1]!, p[2]!);
+          continue;
+        }
+        const m = /^([a-z][a-z _-]*)=(\d+(?:\.\d+)?):(.+)$/is.exec(j);
         if (!m) throw new MarkiloError('USAGE', `Bad --judgment "${j}". Use criterion=score:rationale.`);
+        const score = Number(m[2]);
+        if (score > 10) throw new MarkiloError('USAGE', `--judgment ${m[1]} must be scored 0–10.`);
         next.judgment = {
           ...(next.judgment ?? {}),
-          [m[1]!]: { score: Number(m[2]), rationale: m[3]!.trim() },
+          [requireCriterion(m[1]!)]: { score, rationale: m[3]!.trim() },
         };
       }
       w.saveConcept(next);
-      return next;
+      return { ...next, gate: gateOf(next) };
     },
   },
   {
@@ -1160,7 +1191,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Approve a concept: freeze optimized masters, generate lockups (horizontal, stacked, compact) and brand.json.',
     usage:
-      'finalize --brand <slug> --concept <id> [--tagline <text>] [--note <usage rule>]... [--accept-risk] [--force]',
+      'finalize --brand <slug> --concept <id> [--tagline <text>] [--note <usage rule>]... [--accept-risk] [--user-choice <why>] [--force]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1175,6 +1206,10 @@ export const COMMANDS: CommandSpec[] = [
         type: 'boolean',
         description: 'User knowingly approves despite an originality verdict other than no-conflicts-found',
       },
+      'user-choice': {
+        type: 'string',
+        description: "The user's reason for approving a concept that did not pass the critic gate",
+      },
       force: { type: 'boolean', description: 'Replace an existing approved kit' },
     },
     async run(c) {
@@ -1185,6 +1220,7 @@ export const COMMANDS: CommandSpec[] = [
         ...(notes.length ? { notes } : {}),
         force: c.bool('force'),
         acceptRisk: c.bool('accept-risk'),
+        ...(c.str('user-choice') ? { userChoice: c.str('user-choice')! } : {}),
       });
       return { kit, dir: w.finalDir(c.req('brand')), next: `markilo export --brand ${c.req('brand')}` };
     },
@@ -1605,7 +1641,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Build a mark from a construction spec (primitives, booleans, gaps, offsets, repeats, glyphs) into clean SVG; --vary explores and scores parameter variants.',
     usage:
-      'construct <spec.json> (-o <out.svg> | --brand <slug> --concept <id>) [--set k=v,…] [--guides <png>] [--vary [--max 24] [--sheet <png>] [--out-dir <dir>]] [--force]',
+      'construct <spec.json> (-o <out.svg> | --brand <slug> --concept <id>) [--role symbol|wordmark] [--set k=v,…] [--guides <png>] [--vary [--max 24] [--sheet <png>] [--out-dir <dir>]] [--force]',
     options: {
       ...brandOpt,
       concept: {

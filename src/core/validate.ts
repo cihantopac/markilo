@@ -61,8 +61,10 @@ export function validateBrief(v: unknown): Issues {
     }
   }
   const colors = (v as unknown as Brief).constraints?.colors;
+  // Hex colors, or a direction in words ("warm dusk: clay and amber, no blue"); only a malformed hex is an error.
   for (const c of colors ?? [])
-    if (!HEX.test(c)) issues.push(`constraints.colors entry "${c}" must be #rrggbb`);
+    if (c.trim().startsWith('#') && !HEX.test(c.trim()))
+      issues.push(`constraints.colors entry "${c}" must be #rrggbb (or describe the color in words)`);
   if (v.competitors !== undefined) {
     if (!Array.isArray(v.competitors)) issues.push('competitors must be an array');
     else

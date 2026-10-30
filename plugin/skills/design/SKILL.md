@@ -77,9 +77,11 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    measured variants, `symbol.svg`, `construction.json` and a wordmark that carries the idea in one or two letters.
 6. **Verify** — `markilo verify --brand <slug> --concept <id>` for every concept, then
    `markilo diversity --brand <slug>`. Fix failures. Ask the `markilo:design-critic` agent for an
-   independent visual critique. Record judgment with `markilo concept update … --judgment`.
+   independent visual critique; it records scores (`--judgment`) and its yes/no answer (`--present`).
    **Quality gate:** a concept goes to the user only if the critic scores brand-fit, distinctiveness and memorability
-   each ≥ 6, the average ≥ 6.5, and answers yes to "would a senior designer present this as is?". Otherwise send it
+   each ≥ 6, the average ≥ 6.5, and answers yes to "would a senior designer present this as is?" — read the result
+   from `markilo concept list --brand <slug>` (`gate: passed|failed`); `finalize` refuses a failed concept unless the
+   user chose it anyway (`--user-choice "<their reason>"`). Otherwise send it
    back to a concept-designer with the critique (up to 2 rounds), asking for a different move, not a polish. A concept
    that still misses is set to `rejected` (`markilo concept update --status rejected`) so the gallery hides it.
    If fewer than two concepts pass, say so plainly, show what passed, and propose new directions — do not fill the

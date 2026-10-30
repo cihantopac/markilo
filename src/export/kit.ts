@@ -6,6 +6,7 @@ import { nowIso, readJson, readText, writeGenerated, writeJson } from '../core/f
 import { resolveInsideReal } from '../core/paths.js';
 import type { Workspace } from '../core/workspace.js';
 import { composeLockup } from '../design/lockup.js';
+import { type GateResult, gateOf } from '../report/gate.js';
 import { lintSvg } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
 import { inkMetrics } from './geometry.js';
@@ -40,6 +41,8 @@ export interface BrandKit {
     /** What the verdict rests on, so guidelines can state it plainly (e.g. that no registry search was done). */
     evidence?: { visual: string; registry: string; registryCoverage: string };
   };
+  /** The critic gate at approval time; a concept that did not pass needs the user's own reason. */
+  gate?: { status: GateResult['status']; average?: number; reasons: string[]; userChoice?: string };
 }
 
 export const kitPath = (ws: Workspace, brand: string) => join(ws.finalDir(brand), 'brand.json');
@@ -82,10 +85,24 @@ export async function finalizeConcept(
   ws: Workspace,
   brand: string,
   conceptId: string,
-  opts: { tagline?: string; force?: boolean; acceptRisk?: boolean; notes?: string[] } = {},
+  opts: {
+    tagline?: string;
+    force?: boolean;
+    acceptRisk?: boolean;
+    notes?: string[];
+    userChoice?: string;
+  } = {},
 ): Promise<BrandKit> {
   ws.assertNotLocked(brand);
   const concept = ws.concept(brand, conceptId);
+  const gate = gateOf(concept);
+  if (gate.status === 'failed' && !opts.userChoice?.trim()) {
+    throw new MarkiloError(
+      'INVALID_INPUT',
+      `Concept ${conceptId} did not pass the critic gate: ${gate.reasons.join('; ')}.`,
+      'Rework it and have the critic review it again, or, if the user chose it anyway, pass --user-choice "<their reason>".',
+    );
+  }
   const reportFile = join(ws.reportsDir(brand), `originality-${conceptId}.json`);
   if (!existsSync(reportFile)) {
     throw new MarkiloError(
@@ -214,6 +231,12 @@ export async function finalizeConcept(
             },
           }
         : {}),
+    },
+    gate: {
+      status: gate.status,
+      ...(gate.average !== undefined ? { average: gate.average } : {}),
+      reasons: gate.reasons,
+      ...(gate.status !== 'passed' && opts.userChoice?.trim() ? { userChoice: opts.userChoice.trim() } : {}),
     },
   };
   writeJson(kitPath(ws, brand), kit);
