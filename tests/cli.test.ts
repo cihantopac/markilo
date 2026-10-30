@@ -159,6 +159,11 @@ describe('cli (bundled)', () => {
       run(['concept', 'update', '--brand', 'nimbra', '--concept', 'a', '--sketch-pick', 's9'], cwd).status,
     ).toBe(1);
   });
+  it('compares colors by CIEDE2000 and contrast', () => {
+    const r = run(['color', 'compare', '#d12c12', '#ffffff'], tmp());
+    expect(r.status, r.stderr).toBe(0);
+    expect(JSON.parse(r.stdout).pairs[0]).toMatchObject({ deltaE00: 49.4, contrast: 5.15 });
+  });
   it('shortcut install is a dry run without --yes and refuses foreign files', () => {
     const dir = tmp();
     const dry = JSON.parse(run(['shortcut', 'install', '--dir', dir], dir).stdout);

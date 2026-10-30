@@ -68,13 +68,15 @@ export function composeLockup(symbolIn: string, wordmark: string, opts: LockupOp
   let width: number;
   let height: number;
   if (opts.layout === 'horizontal') {
-    const sh = CAP * (opts.symbolScale ?? (inked ? 1.2 : 1.6));
+    const sh = CAP * (opts.symbolScale ?? (inked ? 1.15 : 1.6));
     const sw = sh * symRatio;
     const gap = CAP * (opts.gap ?? (inked ? 0.55 : 0.75));
-    // Center the symbol on the cap-height band, not on the ink box (descenders would pull it down).
+    // Placed by its ink, the symbol stands on the baseline like a letter and rises a little above the caps.
+    // Without ink metrics it is centered on the cap band (its artboard margin is unknown).
     const capCenter = capTopInBox + CAP / 2;
-    const top = Math.min(0, capCenter - sh / 2);
-    const symY = capCenter - sh / 2 - top;
+    const want = inked ? baselineInBox - sh : capCenter - sh / 2;
+    const top = Math.min(0, want);
+    const symY = want - top;
     const wmY = -top;
     width = sw + gap + wmW;
     height = Math.max(symY + sh, wmY + wmH);

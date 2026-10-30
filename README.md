@@ -13,7 +13,7 @@
 <p align="center">
   <a href="https://github.com/cihantopac/markilo/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/cihantopac/markilo/actions/workflows/ci.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-f45d2c"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-0.3.0--beta.4-14161f">
+  <img alt="Version" src="https://img.shields.io/badge/version-0.3.0--beta.5-14161f">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-14161f">
 </p>
 

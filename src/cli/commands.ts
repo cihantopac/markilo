@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, extname, join, resolve } from 'node:path';
-import { normalizeColor } from '../analyze/color.js';
+import { contrastRatio, deltaE2000, normalizeColor } from '../analyze/color.js';
 import { loadMark } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
 import { compareMarks, genericity } from '../analyze/similarity.js';
@@ -1724,6 +1724,30 @@ export const COMMANDS: CommandSpec[] = [
       });
       if (c.str('out')) writeJson(file(c, c.str('out')!), p);
       return p;
+    },
+  },
+  {
+    name: 'color compare',
+    summary:
+      'Measure colors against each other: CIEDE2000 difference (ΔE00; ≥ 15 reads as clearly different) and WCAG contrast ratio.',
+    usage: 'color compare <#hex> <#hex> [<#hex>…]',
+    async run(c) {
+      const colors = c.positionals.map((v) => {
+        const hex = normalizeColor(v);
+        if (!hex) throw new MarkiloError('INVALID_INPUT', `"${v}" is not a color.`);
+        return hex;
+      });
+      if (colors.length < 2) throw new MarkiloError('USAGE', 'Give at least two colors.');
+      const pairs: { a: string; b: string; deltaE00: number; contrast: number }[] = [];
+      for (let i = 0; i < colors.length; i++)
+        for (let j = i + 1; j < colors.length; j++)
+          pairs.push({
+            a: colors[i]!,
+            b: colors[j]!,
+            deltaE00: Math.round(deltaE2000(colors[i]!, colors[j]!) * 10) / 10,
+            contrast: Math.round(contrastRatio(colors[i]!, colors[j]!) * 100) / 100,
+          });
+      return { pairs };
     },
   },
   {

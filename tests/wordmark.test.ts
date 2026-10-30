@@ -56,6 +56,18 @@ describe('fonts and wordmarks', () => {
     expect(b.width).toBeCloseTo(a.width, 0);
     expect(composeLockup(loose, wm, { layout: 'horizontal' }).width).toBeGreaterThan(a.width);
   });
+  it('stands an ink-placed symbol on the wordmark baseline', async () => {
+    const { inkMetrics } = await import('../src/export/geometry.js');
+    const wm = wordmarkSvg(loadBundledFace('inter', 600), 'Nimbra');
+    const sym =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M10 10h80v80H10z"/></svg>';
+    const ink = (await inkMetrics(sym)).bbox;
+    const l = composeLockup(sym, wm, { layout: 'horizontal', symbolInk: ink });
+    const [m1, m2] = [...l.svg.matchAll(/matrix\(([^)]+)\)/g)].map((m) => m[1]!.split(' ').map(Number));
+    const symbolBottom = m1![3]! * (ink.y + ink.h) + m1![5]!;
+    const baseline = m2![3]! * 0 + m2![5]!; // the wordmark's baseline is y = 0 in its own units
+    expect(symbolBottom).toBeCloseTo(baseline, 0);
+  });
 });
 
 describe('optimized compositions', () => {
