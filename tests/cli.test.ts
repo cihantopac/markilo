@@ -131,12 +131,38 @@ describe('cli (bundled)', () => {
         ],
       }),
     );
+    // A hairline gap: the idea may be fine, but it disappears at 16 px, so the sketch is not ready for review.
+    writeFileSync(
+      join(dir, 's3.json'),
+      JSON.stringify({
+        idea: 'a split block',
+        layers: [
+          {
+            fill: 'primary',
+            shape: {
+              gap: {
+                shape: { rect: { x: 150, y: 150, w: 724, h: 724 } },
+                cut: { rect: { x: 0, y: 506, w: 1024, h: 12 } },
+                width: 0,
+              },
+            },
+          },
+        ],
+      }),
+    );
     const b = run(['sketches', '--brand', 'nimbra', '--concept', 'a'], cwd);
     expect(b.status, b.stderr).toBe(0);
-    expect(JSON.parse(b.stdout).sketches.map((x: { idea: string }) => x.idea)).toEqual([
+    const out = JSON.parse(b.stdout);
+    expect(out.sketches.map((x: { idea: string }) => x.idea)).toEqual([
       'a door left ajar',
       'one gesture',
+      'a split block',
     ]);
+    const split = out.sketches[2];
+    expect(split.ready).toBe(false);
+    expect(split.fix.join(' ')).toMatch(/≥ 80 units/);
+    expect(out.sketches[1].ready).toBe(true);
+    expect(out.notReady).toEqual(['s3']);
     expect(readFileSync(join(dir, 's1.svg'), 'utf8')).toContain('fill="#225577"');
     expect(existsSync(join(dir, 'board.png'))).toBe(true);
     const pick = run(

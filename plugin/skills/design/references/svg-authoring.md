@@ -26,7 +26,8 @@ construction shape can express.
 - Prefer arcs (`a`) and straight segments over many tiny curve segments; prefer a few precise cubic
   Béziers over auto-traced noise. Keep total path commands low (verify reports complexity).
 - Round corners with arcs of consistent radius across the mark.
-- For overlaps that should read as separate parts in one color, cut a real gap (≥ 1/24 of the artboard).
+- For overlaps that should read as separate parts in one color, cut a real gap: ≥ 1/13 of the artboard (≥ 80 units
+  on 1024), which is 1.2 px at 16 px — the verify threshold. Under 1/23 (~45 units) fails.
 
 ## Example (structure only — do not reuse the shape)
 

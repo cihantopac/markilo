@@ -36,7 +36,15 @@ export interface ScoredVariant {
   caption?: string;
   svg: string;
   warnings: string[];
-  quality: { pass: number; warn: number; fail: number; legibility16: number; failing: string[] };
+  quality: {
+    pass: number;
+    warn: number;
+    fail: number;
+    legibility16: number;
+    /** Thinnest stroke or gap at 16 px, in pixels (0 when the mark has none). */
+    thin16?: number;
+    failing: string[];
+  };
   genericity: { closest: string; similarity: number; level: string };
   closestReference?: { name: string; visual: number; risk: string };
   /** 0–1, higher is better: small-size legibility, distance from stock shapes and from collected references. */
@@ -62,6 +70,7 @@ export async function scoreSvg(
     if (!closest || c.visual > closest.visual) closest = { name: r.name, visual: c.visual, risk: c.risk };
   }
   const legibility16 = Number(q.checks.find((c) => c.id === 'fidelity-16')?.value ?? 0);
+  const thin16 = Number(q.checks.find((c) => c.id === 'thin-detail')?.value ?? 0);
   const distinct = 1 - g.similarity;
   const base = closest
     ? 0.45 * legibility16 + 0.3 * distinct + 0.25 * (1 - closest.visual)
@@ -75,12 +84,35 @@ export async function scoreSvg(
       warn: q.summary.warn,
       fail: q.summary.fail,
       legibility16,
+      thin16,
       failing: q.checks.filter((c) => c.status === 'fail').map((c) => `${c.label}: ${c.message}`),
     },
     genericity: g,
     ...(closest ? { closestReference: closest } : {}),
     score: Math.round(score * 1000) / 1000,
   };
+}
+
+/**
+ * Whether a sketch is ready for the sketch review. A hairline gap or a failing check hides the idea at 16 px and gets
+ * the sketch struck for the wrong reason, so each problem comes with a fix in construction units.
+ */
+export function sketchReadiness(v: ScoredVariant, size = 1024): { ready: boolean; fix: string[] } {
+  const fix: string[] = [];
+  const thin = v.quality.thin16 ?? 0;
+  // verify: ≥ 1.2 px at 16 px passes, under 0.7 px fails.
+  if (thin > 0 && thin < 0.7) {
+    const need = Math.ceil(((1.2 / 16) * size) / 10) * 10;
+    fix.push(
+      `Thinnest gap or stroke is ~${Math.round((thin / 16) * size)} units (${thin} px at 16 px): make every gap, cut and stroke ≥ ${need} units on the ${size} artboard (after fit), or drop that detail.`,
+    );
+  }
+  for (const f of v.quality.failing) if (!f.startsWith('Thinnest detail')) fix.push(f);
+  if (v.closestReference?.risk === 'high')
+    fix.push(
+      `Too close to the collected reference ${v.closestReference.name} (${Math.round(v.closestReference.visual * 100)}%): change the form, not the details.`,
+    );
+  return { ready: fix.length === 0, fix };
 }
 
 export async function runVariants(

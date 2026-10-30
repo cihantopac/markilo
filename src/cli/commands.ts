@@ -12,6 +12,7 @@ import {
   runVariants,
   type ScoredVariant,
   scoreSvg,
+  sketchReadiness,
 } from '../construct/vary.js';
 import { MarkiloError } from '../core/errors.js';
 import { isDir, nowIso, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
@@ -1593,6 +1594,7 @@ export const COMMANDS: CommandSpec[] = [
       const paper = concept.palette.paper ?? '#ffffff';
       const references = await loadReferences(w, brand);
       const items: ScoredVariant[] = [];
+      const sizes = new Map<string, number>();
       for (const f of files) {
         const name = f.replace(/\.json$/, '');
         let spec: ConstructionSpec & { idea?: string };
@@ -1602,6 +1604,7 @@ export const COMMANDS: CommandSpec[] = [
           throw new MarkiloError('INVALID_INPUT', `${f} is not valid JSON: ${(err as Error).message}`);
         }
         const compiled = await compileSpec(spec, { palette });
+        sizes.set(name, typeof spec.size === 'number' ? spec.size : 1024);
         writeGenerated(join(dir, `${name}.svg`), compiled.svg);
         const scored = await scoreSvg(name, compiled.svg, { paper, references });
         items.push({
@@ -1619,20 +1622,28 @@ export const COMMANDS: CommandSpec[] = [
           highlightFirst: false,
         }),
       );
-      const summary = items.map(({ svg: _svg, params: _p, ...v }) => v);
+      const summary = items.map(({ svg: _svg, params: _p, ...v }) => ({
+        ...v,
+        ...sketchReadiness(v as ScoredVariant, sizes.get(v.id)),
+      }));
       writeJson(join(dir, 'board.json'), { concept: id, paper, sketches: summary });
+      const notReady = summary.filter((v) => !v.ready).map((v) => v.id);
       return {
         board,
         sketches: summary.map((v) => ({
           id: v.id,
           idea: v.caption,
+          ready: v.ready,
+          ...(v.fix.length ? { fix: v.fix } : {}),
           legibility16: v.quality.legibility16,
           stockShape: v.genericity.similarity,
           ...(v.closestReference ? { closestReference: v.closestReference } : {}),
-          failing: v.quality.failing.map((f) => f.split(':')[0]),
           warnings: v.warnings,
         })),
-        next: 'Critic: Read the board, then concept update --sketch-pick <id|none> --sketch-notes "…"',
+        notReady,
+        next: notReady.length
+          ? `Designer: fix ${notReady.join(', ')} in the spec (see "fix") and run sketches again; the critic reviews ready sketches only.`
+          : 'Critic: Read the board, then concept update --sketch-pick <id|none> --sketch-notes "…"',
       };
     },
   },

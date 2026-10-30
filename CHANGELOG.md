@@ -6,6 +6,26 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0-rc.3] - 2026-10-30
+
+### Added
+
+- `sketches` says which sketches are `ready` for the sketch review and gives each problem a `fix` in construction
+  units (hairline gaps, failing checks, a near-copy of a collected reference); the critic reviews ready sketches only.
+- `construction.md` has a worked example: Markilo's own symbol, which passed the gate and the blind judge, annotated.
+
+### Changed
+
+- The concept designer lists 6–8 ideas before drawing, writes each sketch's idea as the hook the eye catches at 32 px
+  and what it means, and looks at its board and redraws at least once before handing it over. Directions name their
+  visual hook.
+
+### Fixed
+
+- The construction guide asked for gaps of 1/24 of the artboard (0.67 px at 16 px), below verify's own failing
+  threshold (0.7 px); it now asks for ≥ 80 units on 1024 (1.2 px). In the rc.1 and rc.2 benchmarks 69 % of the sketches
+  the critic struck carried this failure; 22 % of the picked ones did.
+
 ## [0.4.0-rc.2] - 2026-10-30
 
 ### Added

@@ -82,8 +82,11 @@ Every shape also takes `round` (fillet all corners with this radius), `grow` (of
 ## Process
 
 1. **Write the idea sentence first** (design-principles.md). Then pick the _move_ that makes it ownable (below).
+   Write it as what the eye catches, then what it means: _"one stem shared by two arches — research and verification
+   meet in an m"_. The first half must be visible at 32 px; a story without a visible hook ("a safe crossing from work
+   to payment") is not a sketch yet.
 2. **Sketch wide**: 3–5 specs (`sketches/s1.json …`), each a different move, not a nudge, each with an `"idea"`
-   sentence. `markilo sketches --brand <slug> --concept <id>` builds them all onto `sketches/board.png` for the
+   sentence in that form. `markilo sketches --brand <slug> --concept <id>` builds them all onto `sketches/board.png` for the
    critic's sketch review. Build each with
    `construct sN.json -o sN.svg --brand <slug> --concept <id>` (with `-o` the concept's palette is used and nothing
    in the concept changes), compare with `markilo render s1.svg s2.svg … --compare --paper <paper> -o
@@ -99,6 +102,51 @@ Every shape also takes `round` (fillet all corners with this radius), `grow` (of
    each letter's box, baseline, cap and x-height (`glyphs`), so cuts can be aimed at a stem or a bar by expression
    rather than by reading path data. Judge wordmarks with `markilo render wordmark.svg -o wm.png --width 1200`.
 
+## A worked example
+
+Markilo's own symbol, as built (`branding/brands/markilo/concepts/overlap/construction.json`, shortened). It passed
+the critic gate and a blind judge; what makes it work is in the comments.
+
+```jsonc
+{
+  "idea": "two arches share one stem, and the shared stem is the only colour — research and verification meet in an m",
+  // Every measurement is a named unit; the variants tuned gap and ft, nothing else.
+  "params": { "w": 130, "gap": 84, "r": 160, "ft": 440 },
+  "defs": {
+    // One arch drawn once, as a stroked path; the second is the same arch moved by its own width (2r):
+    // the overlap is a consequence of the geometry, not a decoration.
+    "A": { "path": { "d": "M300 860L300 560A{r} {r} 0 0 1 {300+2*r} 560L{300+2*r} 860", "width": "w" } },
+    "B": {
+      "path": { "d": "M300 860L300 560A{r} {r} 0 0 1 {300+2*r} 560L{300+2*r} 860", "width": "w" },
+      "move": ["2*r", 0]
+    },
+    // The idea, isolated: where the two arches overlap, below the shoulder.
+    "X": {
+      "intersect": [{ "ref": "A" }, { "ref": "B" }, { "rect": { "x": 0, "y": "ft", "w": 1024, "h": 1024 } }]
+    }
+  },
+  "layers": [
+    // The arches with the overlap knocked out by a gap of 84 units (after fit, verify measures the thinnest detail at 1.75 px at 16 px: it survives a favicon).
+    {
+      "fill": "primary",
+      "shape": {
+        "gap": {
+          "shape": { "union": [{ "ref": "A" }, { "ref": "B" }] },
+          "cut": { "ref": "X" },
+          "width": "gap"
+        }
+      }
+    },
+    // One accent, on the one part that carries the idea.
+    { "fill": "accent", "shape": { "ref": "X" } }
+  ],
+  "fit": 0.08
+}
+```
+
+One move (overlap), one unit system, one accent on the idea, every gap ≥ 80 units. The first reading is a letter m,
+the second is the shared stem — the idea is the thing the eye catches second, not a caption.
+
 ## Moves that make a mark ownable
 
 Each is a construction technique, not a shape to copy. Combine at most two.
@@ -106,7 +154,7 @@ Each is a construction technique, not a shape to copy. Combine at most two.
 - **Letter carries the metaphor**: a `glyph` whose counter, terminal or stem becomes the object — `subtract` the
   metaphor from the letter, or `union` a part of it in. The letter must still read at 16 px.
 - **Negative space with a second reading**: a solid form with a meaningful silhouette `subtract`ed, so the empty
-  part is the idea. Keep the cut ≥ 1/16 of the artboard wide.
+  part is the idea. Keep the cut ≥ 80 units wide (see the craft checklist).
 - **Interlock / weave**: two strokes crossing with `gap` at one crossing and not the other (over-under). Use one
   colour; the gaps carry the depth.
 - **Cut and shift**: `subtract` a thin band (`rect` rotated) through a solid, then `move` one side — motion,
@@ -130,8 +178,10 @@ check `e`, `a`, `w`, `m` and other complex forms at 1200 px and at 64 px wide.
 
 - One unit `u` and a few multiples of it for all widths, radii and gaps; a single corner radius family.
 - Round forms overshoot flat ones by 1–3% (`scale: 1.02`); horizontals ~5–8% thinner than verticals.
-- Gaps between same-colour parts ≥ 1/24 of the artboard; differently coloured parts that touch need a `gap`, or the
-  one-colour version merges them (construct warns about this).
+- **Every gap, cut and stroke ≥ 80 units on a 1024 artboard** (1/13 of it), measured after `fit`: that is 1.2 px at
+  16 px, where verify passes; under ~45 units (0.7 px) it fails and the detail vanishes in a favicon. A gap that only
+  works at 160 px is not part of the mark. Differently coloured parts that touch need a `gap`, or the one-colour
+  version merges them (construct warns about this).
 - Keep the drawing at 80–98% of the artboard; symbols under ~40 path commands (construct reports `stats`).
 - Before you commit, describe the mark in one sentence without naming a shape ("a ring and a bar" is a shape; "a
   door left ajar" is an idea). If you can only name shapes, go back to step 1.

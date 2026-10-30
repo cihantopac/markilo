@@ -66,13 +66,15 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    (`markilo brief update --brand <slug> --file …`). Ask only what you truly cannot infer — usually 2–5
    questions, asked together, each with your suggested answer.
 4. **Explore** — propose 3–5 genuinely different creative directions (idea, metaphor, form language,
-   type, color, why it fits, risks). Different ideas, not variations of one idea. For each, write what a stranger
-   would see first; at most one direction may draw the product's own object or the name's literal noun (a page for
+   type, color, why it fits, risks). Different ideas, not variations of one idea. For each, write the visual hook —
+   the one thing the eye catches at 32 px — and what a stranger would see first; at most one direction may draw the product's own object or the name's literal noun (a page for
    documents, a chart for finance, a moon for sleep — see "The product's own object is a cliché too" in
    `references/design-principles.md`), and only with a named transformation. Let the user steer.
 5. **Design**, in two passes so weak ideas die cheap:
    a. **Sketch** — for each chosen direction, a `markilo:concept-designer` agent in `sketch` mode (in parallel)
    writes 3–5 construction-spec sketches and a sketch board (`markilo sketches`).
+   Before the review, every sketch must be `ready` in `markilo sketches` (no hairline gaps or failing checks); send
+   boards that are not back to their designer with the `fix` lines.
    b. **Sketch review** — one `markilo:design-critic` agent reviews every board and records a pick or `none` per
    concept (`--sketch-pick`). For `none`, send the direction back for one more sketch pass with the critic's
    suggested move and a second sketch review, or drop it (`--status rejected`). The pick is the critic's: never

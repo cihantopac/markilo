@@ -31,11 +31,19 @@ Steps:
 3. **Explore wide before refining.** Write the idea sentence, then 3–5 genuinely different sketches as
    `concepts/<id>/sketches/s1.json … s5.json` — each a different _move_ from `construction.md` (letter carries the
    metaphor, negative space, interlock, cut and shift, truncation, single gesture, modular system, fold), not nudged
-   copies. Give every spec an `"idea"` sentence (what it says, not which shapes it uses). Run
-   `markilo sketches --brand <slug> --concept <id>`: it builds every sketch in the concept palette and writes
-   `sketches/board.png` (160, 32 and 16 px with each idea). `Read` the board; replace any sketch that reads as a
-   known device, a UI icon, a different letter or the product's own object drawn plainly (a page for documents, a
-   chart for finance, a moon for sleep) before you hand it over. In `sketch` mode, stop here.
+   copies. Give every spec an `"idea"`: what the eye catches at 32 px, then what it means (construction.md →
+   Process). Before writing any JSON, list 6–8 candidate ideas in one line each and keep the 3–5 whose hook you can
+   see in your head at 32 px. Then run `markilo sketches --brand <slug> --concept <id>`: it builds every sketch in the
+   concept palette, writes `sketches/board.png` (160, 32 and 16 px with each idea) and says which sketches are not
+   `ready`, with a `fix` in construction units (hairline gaps, failing checks, a near-copy of a collected reference).
+   **Look, then redraw — at least one full round:**
+   a. Fix every sketch that is not `ready` in its spec and run `sketches` again. A hairline gap is a drafting error, not
+   an idea; the critic reviews ready sketches only.
+   b. `Read` the board. For each sketch, cover the caption with your mind and ask what a stranger sees at 32 px. If it
+   is not the hook you wrote, change the drawing (proportion, weight, the size of the hook), not the caption.
+   c. Replace any sketch that reads as a known device, a UI icon, a different letter or the product's own object drawn
+   plainly (a page for documents, a chart for finance, a moon for sleep).
+   Hand over only when every sketch is `ready` and you would defend each one. In `sketch` mode, stop here.
    Otherwise pick the one that is (a) recognisable at 16 px, (b) still says the idea without explanation, (c) least
    like anything you have seen before, and say in one line why it won and why each other lost.
    Simple is not the same as empty: two generic blobs or a circle and a bar is not a concept. Every mark needs one
