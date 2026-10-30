@@ -26,8 +26,8 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    finishes each picked sketch.
 4. After the agents finish: `markilo diversity --brand <slug>`. Merge or replace directions that are too similar.
 5. Ask the `markilo:design-critic` agent to review all concepts (it reads the review sheets and records judgment).
-   Apply the quality gate: brand-fit, distinctiveness and memorability each ≥ 6, average ≥ 6.5 and the critic's
-   "would a senior designer present this?" is yes (`markilo concept list` shows `gate` per concept); else back to a
+   Apply the quality gate: the critic's blind brand-fit, distinctiveness and memorability each ≥ 6 and its "would a
+   senior designer present this?" is yes (`markilo concept list` shows `gate` per concept); else back to a
    concept-designer with the critique and a request for a different move (max 2 rounds; a `nearMiss` first gets one
    targeted round on its lowest criteria). What still misses is set to `rejected` so the gallery hides it; if fewer than
    two pass, tell the user plainly and propose new directions instead of showing weak work.

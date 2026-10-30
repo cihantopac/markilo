@@ -46,7 +46,7 @@ import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarit
 import { suggestNiceClasses, trademarkSearchPlan } from '../name/trademark.js';
 import { renderPng } from '../render/resvg.js';
 import { renderCompareSheet, renderReviewSheet } from '../render/sheet.js';
-import { gateOf, requireCriterion } from '../report/gate.js';
+import { BLIND_CRITERIA, criterionOf, gateOf, requireCriterion } from '../report/gate.js';
 import { buildOriginalityReport, readReferences } from '../report/originality.js';
 import { verifyConcept } from '../report/quality.js';
 import { brandKeyOf, brandsOf, officialHostsFrom } from '../report/references.js';
@@ -1097,6 +1097,11 @@ export const COMMANDS: CommandSpec[] = [
         type: 'string',
         description: 'Critic: yes|no:<reason> — would a senior designer put this in front of a client as is?',
       },
+      blind: {
+        type: 'string',
+        description:
+          'Critic, before reading the rationale: distinctiveness=n,memorability=n,brand-fit=n,craft=n,versatility=n (0–10)',
+      },
       primary: { type: 'string', description: 'Primary color' },
       secondary: { type: 'string', description: 'Secondary color ("none" removes it)' },
       accent: { type: 'string', description: 'Accent color ("none" removes it)' },
@@ -1188,6 +1193,24 @@ export const COMMANDS: CommandSpec[] = [
         if (!m) throw new MarkiloError('USAGE', 'Use --present yes:<reason> or --present no:<reason>.');
         presentAs(m[1]!, m[2]!);
       }
+      if (c.str('blind')) {
+        const scores: Record<string, number> = {};
+        for (const part of c.str('blind')!.split(',')) {
+          const m = /^\s*([a-z][a-z _-]*)\s*=\s*(\d+(?:\.\d+)?)\s*$/i.exec(part);
+          const k = m ? criterionOf(m[1]!) : undefined;
+          if (!m || !k || !(BLIND_CRITERIA as readonly string[]).includes(k) || Number(m[2]) > 10)
+            throw new MarkiloError(
+              'USAGE',
+              `Bad --blind part "${part}".`,
+              `Use ${BLIND_CRITERIA.map((x) => `${x}=0-10`).join(',')}.`,
+            );
+          scores[k] = Number(m[2]);
+        }
+        const missing = BLIND_CRITERIA.filter((k) => scores[k] === undefined);
+        if (missing.length)
+          throw new MarkiloError('USAGE', `--blind needs all five scores; missing ${missing.join(', ')}.`);
+        next.blind = { scores, at: nowIso() };
+      }
       for (const j of c.list('judgment').length ? (c.values.judgment as string[]) : []) {
         // Critics sometimes record the present-as-is answer as a judgment: keep it where the gate reads it.
         const p = /^present(?:able)?(?:[-_ ]?as[-_ ]?is)?\s*=\s*(yes|no)\s*:(.+)$/is.exec(j);
@@ -1212,7 +1235,7 @@ export const COMMANDS: CommandSpec[] = [
           'Sketch review',
           `${cur.id}: ${next.sketchReview?.pick ? `develop ${next.sketchReview.pick}` : 'no sketch picked'}${next.sketchReview?.notes ? ` — ${next.sketchReview.notes}` : ''}`,
         );
-      if (c.str('present') || c.list('judgment').length) {
+      if (c.str('present') || c.list('judgment').length || c.str('blind')) {
         const answer = next.critique
           ? `${next.critique.present ? 'would present as is' : 'would not present as is'} — ${next.critique.reason}. `
           : '';
@@ -1695,7 +1718,7 @@ export const COMMANDS: CommandSpec[] = [
             'Run markilo wordmarks first.',
           );
         copyFileSync(join(dir, `${pick}.svg`), w.conceptFile(brand, id, 'wordmark.svg'));
-        const { judgment: _old, critique: _answer, ...rest } = concept;
+        const { judgment: _old, critique: _answer, blind: _blind, ...rest } = concept;
         w.saveConcept({
           ...rest,
           files: { ...concept.files, wordmark: 'wordmark.svg' },
@@ -2073,7 +2096,7 @@ export const COMMANDS: CommandSpec[] = [
         // fresh critique (the small version is checked against the mark by verify instead). A family member's
         // colours become the concept's palette.
         const keepCritique = key === 'small';
-        const { judgment, critique, readsAs: _readings, ...rest } = concept;
+        const { judgment, critique, blind: _blind, readsAs: _readings, ...rest } = concept;
         w!.saveConcept({
           ...(keepCritique ? concept : rest),
           ...(member ? { palette: { ...concept.palette, ...member.palette } } : {}),

@@ -88,9 +88,10 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    measured variants, `symbol.svg`, `construction.json` and a wordmark that carries the idea in one or two letters.
 6. **Verify** — `markilo verify --brand <slug> --concept <id>` for every concept, then
    `markilo diversity --brand <slug>`. Fix failures. Ask the `markilo:design-critic` agent for an
-   independent visual critique; it records scores (`--judgment`) and its yes/no answer (`--present`).
-   **Quality gate:** a concept goes to the user only if the critic scores brand-fit, distinctiveness and memorability
-   each ≥ 6, the average ≥ 6.5, and answers yes to "would a senior designer present this as is?" — read the result
+   independent visual critique; it scores each concept cold before reading the rationale (`--blind`), answers yes or no
+   to "would a senior designer present this as is?" (`--present`) and adds informed scores as feedback (`--judgment`).
+   **Quality gate:** a concept goes to the user only if the critic's blind brand-fit, distinctiveness and memorability
+   are each ≥ 6 and its answer is yes — read the result
    from `markilo concept list --brand <slug>` (`gate: passed|failed`); `finalize` refuses a failed concept unless the
    user chose it anyway (`--user-choice "<their reason>"`). A `nearMiss` (only the average is short, every required
    criterion ≥ 6 and the critic said yes) gets one targeted round on its lowest-scored criteria before anything else,

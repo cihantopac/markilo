@@ -118,11 +118,14 @@ function measure(ws) {
           scores: Object.fromEntries(Object.entries(j).map(([k, v]) => [k, v.score])),
           // Before 0.4.0-rc.2 the critic's present-as-is answer was not recorded (present: null).
           present: c.critique?.present ?? null,
-          gate:
-            avg !== undefined &&
-            avg >= 6.5 &&
-            GATE.every((k) => (j[k]?.score ?? 0) >= 6) &&
-            c.critique?.present !== false,
+          // Same rule as Markilo's gate: from 0.4.0-rc.8 the critic's blind scores decide when it recorded them.
+          blind: c.blind?.scores ?? null,
+          gate: c.blind
+            ? GATE.every((k) => (c.blind.scores[k] ?? 0) >= 6) && c.critique?.present === true
+            : avg !== undefined &&
+              avg >= 6.5 &&
+              GATE.every((k) => (j[k]?.score ?? 0) >= 6) &&
+              c.critique?.present !== false,
           readsAs: c.readsAs ?? [],
           sketchPick: c.sketchReview?.pick ?? null,
           sketchNotes: c.sketchReview?.notes ?? null,

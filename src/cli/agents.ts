@@ -68,13 +68,15 @@ Run: \`${m} <command>\` (JSON output; \`${m} help\` lists every command; details
    that can reach 7/10 for distinctiveness and memorability (\`concept update --sketch-pick sN|none\`).
 7. Develop: tune with \`construct … --vary\`, commit with \`construct … --brand --concept --set …\`, wordmark
    (\`wordmark\` or a constructed one), \`verify\`. Principles: ${ref('design-principles.md')}; SVG rules: ${ref('svg-authoring.md')}.
-8. Critique (a separate pass, as an independent critic): first look only at \`research/cache/review/context-<id>.png\` and
-   the review sheet and record what the mark looks like (\`concept update --reads-as "…; …; …"\`), then read the
-   rationale and score with \`--judgment criterion=score:reason\` (brand-fit, semantic-relevance, distinctiveness,
-   memorability, simplicity, balance, craft, typography, color, cultural-fit, timelessness, premium-perception,
-   versatility) and \`--present yes|no:reason\` ("would a senior designer present it as is?"). Gate: brand-fit,
-   distinctiveness and memorability ≥ 6, average ≥ 6.5 and yes — \`${m} concept list\` shows it; otherwise rework
-   (max 2 rounds) or reject.
+8. Critique (a separate pass, as an independent critic). Cold first: read the brief and look only at
+   \`research/cache/review/context-<id>.png\` and the review sheet; record what the mark looks like
+   (\`concept update --reads-as "…; …; …"\`), blind scores (\`--blind distinctiveness=n,memorability=n,brand-fit=n,craft=n,versatility=n\`)
+   and whether a senior designer would present it as is (\`--present yes|no:reason\`). Then read the rationale and
+   reports and add feedback scores with \`--judgment criterion=score:reason\` (brand-fit, semantic-relevance,
+   distinctiveness, memorability, simplicity, balance, craft, typography, color, cultural-fit, timelessness,
+   premium-perception, versatility); a measured problem may turn the yes into a no, never the other way. Gate: blind
+   brand-fit, distinctiveness and memorability ≥ 6 and yes — \`${m} concept list\` shows it; otherwise rework (max 2
+   rounds) or reject.
 9. Review: \`${m} gallery --serve\` (keep it running in the background; give the user the URL), then
    \`${m} feedback --brand <slug>\` to read their decisions, pins and preference.
 10. Deliver: \`finalize\` (\`--accept-risk\` only when the user accepts an insufficient-evidence verdict; a concept that

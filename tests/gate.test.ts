@@ -43,6 +43,24 @@ describe('quality gate', () => {
     ).toBeUndefined();
   });
 
+  it('gates on the blind scores when the critic recorded them', () => {
+    const blind = (d: number, m: number, fit: number, present: boolean) =>
+      ({
+        ...scored({ 'brand-fit': 4, distinctiveness: 4, memorability: 4 }, present),
+        blind: {
+          scores: { distinctiveness: d, memorability: m, 'brand-fit': fit, craft: 6, versatility: 6 },
+          at: '2026-01-01T00:00:00Z',
+        },
+      }) as Concept;
+    // The informed scores are low, but the gate reads the blind ones (they predict an independent judge better).
+    expect(gateOf(blind(6, 6, 7, true))).toMatchObject({ status: 'passed', basis: 'blind' });
+    expect(gateOf(blind(6, 5, 7, true)).reasons.join(' ')).toMatch(/memorability 5 < 6 \(blind\)/);
+    expect(gateOf(blind(7, 7, 7, false)).status).toBe('failed');
+    expect(gateOf(scored({ 'brand-fit': 7, distinctiveness: 7, memorability: 7 }, true)).basis).toBe(
+      'informed',
+    );
+  });
+
   it('reads criteria under the spellings critics use', () => {
     expect(['brandFit', 'Brand fit', 'brand_fit', 'brandfit'].map(criterionOf)).toEqual(
       Array(4).fill('brand-fit'),
@@ -122,6 +140,27 @@ describe('cli: critique and research', () => {
     expect(out.critique).toMatchObject({ present: false, reason: 'Reads as a bar chart' });
     expect(out.judgment?.presentable).toBeUndefined();
     expect(out.gate.status).toBe('failed');
+    const b = run(
+      [
+        'concept',
+        'update',
+        '--brand',
+        'gate-test',
+        '--concept',
+        'a',
+        '--blind',
+        'distinctiveness=6,memorability=6,brandFit=7,craft=6,versatility=7',
+      ],
+      cwd,
+    );
+    expect(b.status, b.stderr).toBe(0);
+    expect(JSON.parse(b.stdout).blind.scores).toMatchObject({ 'brand-fit': 7, distinctiveness: 6 });
+    expect(
+      run(
+        ['concept', 'update', '--brand', 'gate-test', '--concept', 'a', '--blind', 'distinctiveness=6'],
+        cwd,
+      ).status,
+    ).toBe(64);
     expect(JSON.parse(run(['concept', 'list', '--brand', 'gate-test'], cwd).stdout)[0].gate).toBe('failed');
     // Decisions are logged by the toolchain, not left to the agent.
     const log = readFileSync(join(cwd, 'brand', 'brands', 'gate-test', 'decisions.md'), 'utf8');

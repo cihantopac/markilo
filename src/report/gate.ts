@@ -69,8 +69,22 @@ export const GATE = {
   average: 6.5,
 } as const;
 
+/** What the critic scores blind, from the brief and the images only — the rubric of the benchmark's blind judge. */
+export const BLIND_CRITERIA = [
+  'distinctiveness',
+  'memorability',
+  'brand-fit',
+  'craft',
+  'versatility',
+] as const;
+
 export interface GateResult {
   status: 'passed' | 'failed' | 'not-reviewed';
+  /**
+   * blind: the critic's scores from its first look, before reading the rationale (in the benchmark they predicted an
+   * independent judge far better than the scores given after reading it); informed: older reviews without them.
+   */
+  basis?: 'blind' | 'informed';
   /** Average of every recorded judgment score. */
   average?: number;
   reasons: string[];
@@ -81,7 +95,8 @@ export interface GateResult {
   nearMiss?: true;
 }
 
-export function gateOf(c: Pick<Concept, 'judgment' | 'critique'>): GateResult {
+export function gateOf(c: Pick<Concept, 'judgment' | 'critique' | 'blind'>): GateResult {
+  if (c.blind) return blindGate(c);
   // Older concepts may hold criteria under other spellings (brandFit, premium); read them by their canonical name.
   const j: Record<string, { score: number }> = {};
   for (const [k, v] of Object.entries(c.judgment ?? {})) j[criterionOf(k) ?? k] = v;
@@ -104,8 +119,32 @@ export function gateOf(c: Pick<Concept, 'judgment' | 'critique'>): GateResult {
   const nearMiss = reasons.length === 1 && reasons[0]!.startsWith('average') && c.critique?.present === true;
   return {
     status: reasons.length ? 'failed' : 'passed',
+    basis: 'informed',
     ...(average !== undefined ? { average } : {}),
     reasons,
     ...(nearMiss ? { nearMiss: true as const } : {}),
+  };
+}
+
+function blindGate(c: Pick<Concept, 'critique' | 'blind'>): GateResult {
+  const b = c.blind!.scores;
+  const reasons: string[] = [];
+  for (const k of GATE.required) {
+    const s = b[k];
+    if (s === undefined) reasons.push(`${k} not scored (blind)`);
+    else if (s < GATE.minimum) reasons.push(`${k} ${s} < ${GATE.minimum} (blind)`);
+  }
+  const values = Object.values(b);
+  const average = values.length
+    ? Math.round((values.reduce((x, y) => x + y, 0) / values.length) * 100) / 100
+    : undefined;
+  if (!c.critique) reasons.push('no answer yet to "would a senior designer present it as is?"');
+  else if (!c.critique.present)
+    reasons.push(`a senior designer would not present it as is: ${c.critique.reason}`);
+  return {
+    status: reasons.length ? 'failed' : 'passed',
+    basis: 'blind',
+    ...(average !== undefined ? { average } : {}),
+    reasons,
   };
 }

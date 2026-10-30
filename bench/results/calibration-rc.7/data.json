@@ -1,0 +1,485 @@
+{
+ "note": "Every concept that reached the critique in rc.1\u2013rc.7, with the critic average and the gate as recorded in the run, and blind judges (Opus 5.5 and Sonnet 5.5) that saw only the brief and the images. Spearman with the Opus judge: critic average 0.20, Sonnet blind judge 0.51.",
+ "concepts": [
+  {
+   "version": "0.4.0-rc.1",
+   "run": "family-workspace",
+   "concept": "aperture",
+   "criticAverage": 6,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.2,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.0,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.1",
+   "run": "family-workspace",
+   "concept": "crease",
+   "criticAverage": 6.85,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 4.6,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 6.0,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.1",
+   "run": "mobile-sleep",
+   "concept": "bedside-glow",
+   "criticAverage": 5.62,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 4.6,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.2,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.1",
+   "run": "mobile-sleep",
+   "concept": "dimming-steps",
+   "criticAverage": 6.15,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.0,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 6.0,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.1",
+   "run": "mobile-sleep",
+   "concept": "one-line-d",
+   "criticAverage": 6.38,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.6,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.8,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.1",
+   "run": "saas-invoicing",
+   "concept": "soft-fold",
+   "criticAverage": 5.38,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 4.8,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.6,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.1",
+   "run": "saas-invoicing",
+   "concept": "tally-run",
+   "criticAverage": 6.85,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.0,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 6.6,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.2-opus",
+   "run": "saas-invoicing",
+   "concept": "signature",
+   "criticAverage": 6.23,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 6.0,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 6.2,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.2",
+   "run": "mobile-sleep",
+   "concept": "settling-line",
+   "criticAverage": 6.54,
+   "passedGate": true,
+   "opusJudge": {
+    "average": 5.0,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.2,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.3",
+   "run": "family-workspace",
+   "concept": "facet",
+   "criticAverage": 6.38,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 4.8,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.6,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.3",
+   "run": "family-workspace",
+   "concept": "horizon",
+   "criticAverage": 5.31,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 6.0,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.4,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.3",
+   "run": "mobile-sleep",
+   "concept": "dusk-arch",
+   "criticAverage": 6.77,
+   "passedGate": true,
+   "opusJudge": {
+    "average": 6.0,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 6.8,
+    "present": true
+   }
+  },
+  {
+   "version": "0.4.0-rc.3",
+   "run": "mobile-sleep",
+   "concept": "tucked-d",
+   "criticAverage": 5.69,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.8,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.8,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.3",
+   "run": "saas-invoicing",
+   "concept": "horizon",
+   "criticAverage": 6.77,
+   "passedGate": true,
+   "opusJudge": {
+    "average": 6.2,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 6.4,
+    "present": true
+   }
+  },
+  {
+   "version": "0.4.0-rc.3",
+   "run": "saas-invoicing",
+   "concept": "split-stick",
+   "criticAverage": 6.77,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.2,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 6.6,
+    "present": true
+   }
+  },
+  {
+   "version": "0.4.0-rc.5",
+   "run": "devtool-cli-r2",
+   "concept": "mirror-s",
+   "criticAverage": 6.77,
+   "passedGate": true,
+   "opusJudge": {
+    "average": 5.8,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.6,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.5",
+   "run": "devtool-cli-r3",
+   "concept": "live-through",
+   "criticAverage": 6.38,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 6.0,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.6,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.5",
+   "run": "devtool-cli-r3",
+   "concept": "stepped-s",
+   "criticAverage": 5.92,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.8,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 6.2,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.5",
+   "run": "devtool-cli",
+   "concept": "offset-s",
+   "criticAverage": 5.85,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.4,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 6.2,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.5",
+   "run": "ecommerce-shop-r2",
+   "concept": "stack",
+   "criticAverage": 5.92,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 6.0,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 6.0,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.5",
+   "run": "ecommerce-shop-r3",
+   "concept": "glaze",
+   "criticAverage": 5.62,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 4.6,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.8,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.5",
+   "run": "ecommerce-shop",
+   "concept": "pair",
+   "criticAverage": 5.69,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.0,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.4,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.5",
+   "run": "family-workspace",
+   "concept": "crease",
+   "criticAverage": 6.62,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.6,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 6.6,
+    "present": true
+   }
+  },
+  {
+   "version": "0.4.0-rc.5",
+   "run": "mobile-sleep",
+   "concept": "settle",
+   "criticAverage": 5.92,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.8,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.6,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.5",
+   "run": "saas-invoicing",
+   "concept": "ahead",
+   "criticAverage": 4.85,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 4.0,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 4.4,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.5",
+   "run": "saas-invoicing",
+   "concept": "round-trip",
+   "criticAverage": 6.62,
+   "passedGate": true,
+   "opusJudge": {
+    "average": 5.8,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 6.4,
+    "present": true
+   }
+  },
+  {
+   "version": "0.4.0-rc.5",
+   "run": "saas-invoicing",
+   "concept": "twin-l",
+   "criticAverage": 6,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.4,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.6,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.7",
+   "run": "devtool-cli-r2",
+   "concept": "stitched-join",
+   "criticAverage": 5.92,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 6.2,
+    "present": true
+   },
+   "sonnetJudge": {
+    "average": 6.2,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.7",
+   "run": "devtool-cli-r3",
+   "concept": "overlap",
+   "criticAverage": 5.92,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.0,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.0,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.7",
+   "run": "ecommerce-shop-r2",
+   "concept": "doorway",
+   "criticAverage": 6.31,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 6.6,
+    "present": true
+   },
+   "sonnetJudge": {
+    "average": 6.6,
+    "present": true
+   }
+  },
+  {
+   "version": "0.4.0-rc.7",
+   "run": "edu-app",
+   "concept": "q-nest",
+   "criticAverage": 6.08,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 5.4,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 5.6,
+    "present": false
+   }
+  },
+  {
+   "version": "0.4.0-rc.7",
+   "run": "mobile-sleep",
+   "concept": "heavy-lid",
+   "criticAverage": 6,
+   "passedGate": false,
+   "opusJudge": {
+    "average": 3.8,
+    "present": false
+   },
+   "sonnetJudge": {
+    "average": 4.4,
+    "present": false
+   }
+  }
+ ]
+}

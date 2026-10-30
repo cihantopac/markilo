@@ -6,6 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0-rc.8] - 2026-10-30
+
+### Changed
+
+- The critic gate rests on a cold look. The critic first reads the brief and the images only and records blind scores
+  (`concept update --blind distinctiveness=n,memorability=n,brand-fit=n,craft=n,versatility=n`) and its yes or no;
+  then it reads the rationale and reports and adds informed scores as feedback. The gate is blind brand-fit,
+  distinctiveness and memorability ≥ 6 and a yes; a measured problem may still turn the yes into a no. Calibrated on
+  32 benchmark concepts judged blind by Opus 5.5: the critic's informed average tracked that judge at Spearman 0.20, a
+  blind look on the same model at 0.51 (`bench/results/calibration-rc.7/`). Concepts without blind scores keep the
+  previous rule.
+- The design critic runs on Opus (`model: opus`); where an organization's model allowlist blocks it, Claude Code
+  substitutes an allowed model and says so.
+
 ### Added
 
 - Benchmark results for rc.7 (`bench/results/0.4.0-rc.7/`, 11 runs including two fresh holdouts, Opus judge): no run

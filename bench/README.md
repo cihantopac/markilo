@@ -58,6 +58,15 @@ What changed, and why:
   are the first the Opus judge would present (6.2 and 6.6) — and the stricter critic rejected both (5.9 and 6.3). The
   designer side improved; the critic is now stricter than the judge on borderline marks.
 
+- **Critic calibration (rc.7 → rc.8).** Every concept that reached the critique so far (32) was judged blind by both
+  Opus 5.5 and Sonnet 5.5 ([data](results/calibration-rc.7/data.json)). The critic's own scores, given after reading
+  the designer's rationale and applying its caps, barely track the Opus judge (Spearman 0.20; the minimum of its gate
+  criteria −0.02), while a blind look on the same model does much better (0.51). No threshold on Sonnet's scores
+  separates the two marks Opus accepts from the 30 it rejects: rules that keep both pass 8–10 weak ones; the gate as it
+  was kept neither and passed 5. So rc.8 changes the reviewer rather than a threshold: the critic scores every concept
+  cold, from the brief and the images, before reading the rationale (`--blind`), and the gate rests on those scores and
+  its cold yes or no; informed scores stay as feedback. The critic runs on Opus (`model: opus`).
+
 Benchmarking so far (four runs of the three briefs plus judging) cost $33.80 in API-equivalent terms, the rc.5 validation another $33 (runs $29.93, Opus judging $2.61, calibration about $0.66) and the rc.7 validation $27.90 (runs $26.81, judging $1.09). Each run counts
 against a Claude subscription's usage limits instead of being billed; the costs are what the same tokens would cost
 on the API.

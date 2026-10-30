@@ -151,4 +151,9 @@ export interface Concept {
   sketchReview?: { pick: string | null; notes: string; at: string };
   /** The critic's answer to "would a senior identity designer put this in front of a client as is?" */
   critique?: { present: boolean; reason: string; at: string };
+  /**
+   * The critic's scores from the blind first look, before it reads the idea or the rationale: distinctiveness,
+   * memorability, brand-fit (against the brief), craft, versatility. The gate reads these when present.
+   */
+  blind?: { scores: Record<string, number>; at: string };
 }
