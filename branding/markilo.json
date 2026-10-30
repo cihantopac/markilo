@@ -1,0 +1,12 @@
+{
+  "schema": "markilo/workspace@1",
+  "name": "Markilo",
+  "createdAt": "2026-10-29T23:53:08.201Z",
+  "brands": [
+    {
+      "slug": "markilo",
+      "name": "Markilo",
+      "role": "master"
+    }
+  ]
+}

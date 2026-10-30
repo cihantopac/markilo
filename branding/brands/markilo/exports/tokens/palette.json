@@ -1,0 +1,97 @@
+{
+  "schema": "markilo/palette@1",
+  "input": {
+    "primary": "#f45d2c"
+  },
+  "scales": {
+    "primary": {
+      "base": "#f45d2c",
+      "scale": {
+        "50": "#fef4f1",
+        "100": "#ffe5dd",
+        "200": "#fdc6b5",
+        "300": "#fe987a",
+        "400": "#f45d2c",
+        "500": "#d14208",
+        "600": "#aa360a",
+        "700": "#872805",
+        "800": "#641c04",
+        "900": "#481101",
+        "950": "#2c0801"
+      },
+      "anchorStep": 400
+    }
+  },
+  "neutral": {
+    "50": "#fff4f1",
+    "100": "#f3e9e5",
+    "200": "#dcd2cf",
+    "300": "#bfb5b2",
+    "400": "#9f9693",
+    "500": "#817875",
+    "600": "#6a615e",
+    "700": "#534b48",
+    "800": "#3e3634",
+    "900": "#2c2522",
+    "950": "#1b1412"
+  },
+  "semantic": {
+    "success": "#0e8c41",
+    "warning": "#9c6905",
+    "danger": "#bc4a41",
+    "info": "#0a7abf"
+  },
+  "pairs": [
+    {
+      "foreground": "#f45d2c",
+      "background": "#ffffff",
+      "ratio": 3.26,
+      "rating": "AA-large",
+      "use": "brand color on white (logo, large text)"
+    },
+    {
+      "foreground": "#f45d2c",
+      "background": "#1b1412",
+      "ratio": 5.58,
+      "rating": "AA",
+      "use": "brand color on dark (logo on dark UI)"
+    },
+    {
+      "foreground": "#ffffff",
+      "background": "#f45d2c",
+      "ratio": 3.26,
+      "rating": "AA-large",
+      "use": "white text on brand fill (buttons)"
+    },
+    {
+      "foreground": "#1b1412",
+      "background": "#f45d2c",
+      "ratio": 5.58,
+      "rating": "AA",
+      "use": "dark text on brand fill"
+    },
+    {
+      "foreground": "#872805",
+      "background": "#ffffff",
+      "ratio": 8.99,
+      "rating": "AAA",
+      "use": "brand-dark text on white (links, body accents)"
+    },
+    {
+      "foreground": "#1b1412",
+      "background": "#fff4f1",
+      "ratio": 16.84,
+      "rating": "AAA",
+      "use": "body text"
+    },
+    {
+      "foreground": "#6a615e",
+      "background": "#ffffff",
+      "ratio": 6.03,
+      "rating": "AA",
+      "use": "secondary text"
+    }
+  ],
+  "relations": [],
+  "warnings": []
+}

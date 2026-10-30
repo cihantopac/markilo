@@ -1,0 +1,6 @@
+{
+  "mode": "new",
+  "notes": "Family members (owner-supplied): ovokodo.com, ovodock.com (contains apps, including the locked BOSS brand), ovoroom.com, ovoloop.com, mailkodo.com, sitekodo.com, ovolabs.dev. All other facts must be researched and sourced.",
+  "constraints": { "mustKeep": ["BOSS brand inside Ovodock: existing design preserved exactly"] },
+  "deliverables": ["logos", "web", "social", "tokens", "guidelines"]
+}

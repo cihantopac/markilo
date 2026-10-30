@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Markilo — Markilo gallery</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--ink:#16181d;--muted:#666c7a;--line:#e2e4e9;--good:#127a4a;--warn:#9a6400;--bad:#b42318}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0d0f13;--card:#16191f;--ink:#e9ebf0;--muted:#9aa1ae;--line:#272b33}}
+:root[data-theme=dark]{--bg:#0d0f13;--card:#16191f;--ink:#e9ebf0;--muted:#9aa1ae;--line:#272b33}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header.top{position:sticky;top:0;z-index:5;display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 24px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.top h1{font-size:17px;margin:0}header.top .tools{display:flex;gap:8px;flex-wrap:wrap}button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 80px}h2{font-size:26px;margin:40px 0 12px}h2 small{font-size:14px;color:var(--muted);font-weight:500}
+.concept{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin:18px 0}.concept header{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.concept h3{margin:0;font-size:20px}
+.badges{display:flex;gap:6px;flex-wrap:wrap}.badge{font-size:12px;padding:2px 9px;border-radius:99px;border:1px solid var(--line)}.badge.good{color:var(--good)}.badge.warn{color:var(--warn)}.badge.bad{color:var(--bad)}.badge.lock{background:#fff3c4;color:#6d5200;border-color:#f0d27a}
+.stage{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin:16px 0}.ground{display:grid;place-items:center;border-radius:14px;min-height:200px;border:1px solid var(--line)}.ground.light{background:#fff}.ground.dark{background:#111318}
+.lockup{background:#fff;border-radius:12px;padding:18px;display:grid;place-items:center;border:1px solid var(--line)}
+.sizes{display:flex;gap:14px;align-items:flex-end;padding:12px;background:#fff;border-radius:12px;margin:10px 0;border:1px solid var(--line)}.chips{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.chips span{width:22px;height:22px;border-radius:6px;border:1px solid var(--line)}.chips code{font-size:12px;color:var(--muted);margin-right:8px}
+.dir{margin:12px 0 4px}.sem span{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:99px;padding:1px 8px;margin:2px}
+details{margin:8px 0}summary{cursor:pointer;color:var(--muted)}.checks{list-style:none;padding:0;margin:8px 0}.checks li{padding:4px 0 4px 22px;position:relative;font-size:13px}.checks li:before{position:absolute;left:0}.checks .pass:before{content:"✓";color:var(--good)}.checks .warn:before{content:"!";color:var(--warn)}.checks .fail:before{content:"✗";color:var(--bad)}.checks .info:before{content:"i";color:var(--muted)}
+.mockups{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:16px}.mock{margin:0;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:12px;overflow:hidden}figcaption{font-size:12px;color:var(--muted);margin-top:8px}
+.browser .tabbar{display:flex;gap:4px;background:#dfe2e8;border-radius:8px 8px 0 0;padding:6px 6px 0}.browser .tab{display:flex;gap:6px;align-items:center;background:#fff;border-radius:7px 7px 0 0;padding:5px 10px;font-size:12px;color:#222}.browser .tab.ghost{background:transparent;color:#666}.browser .addr{background:#fff;font-size:11px;color:#777;padding:4px 10px;border-bottom:1px solid #e5e7eb}
+.page{background:#fff;padding:10px;border-radius:0 0 8px 8px}.page nav,.darkui nav{display:flex;align-items:center;gap:12px;font-size:12px;color:#444}.page nav span:first-of-type,.darkui nav span:first-of-type{margin-left:auto}.btn{color:#fff;padding:3px 9px;border-radius:6px}
+.hero b{display:block;height:12px;width:60%;background:#e7e9ee;border-radius:4px;margin:16px 0 8px}.hero i{display:block;height:8px;width:80%;background:#f0f1f4;border-radius:4px;margin:6px 0}
+.darkui{background:#111318}.darkui nav{color:#cfd3db}.darkui .hero b{background:#2a2e37}.darkui .hero i{background:#20242c}
+.phone .screen{background:linear-gradient(160deg,#5b6b8c,#2c3346);border-radius:18px;padding:16px}.phone .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.phone .app{display:grid;justify-items:center;gap:3px}.phone .app i,.phone .tile{width:40px;height:40px;border-radius:9px}.phone .app span{font-size:9px;color:#fff}
+.android .screen{background:linear-gradient(160deg,#3b4b42,#1f2a24);border-radius:14px;padding:18px;display:flex;gap:18px;justify-content:center}
+.dock .bar{display:flex;gap:10px;align-items:end;justify-content:center;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.7);border-radius:16px;padding:8px;background-color:#c9d2e3}.dock .bar i{width:46px;height:46px;border-radius:11px;display:block}
+.store .card{display:flex;gap:12px;align-items:center;background:#fff;color:#111;border-radius:12px;padding:12px}.store .tile{width:64px;height:64px}.store small{display:block;color:#666;font-size:11px}.store .get{display:inline-block;margin-top:4px;background:#eef1f6;color:#0a64d8;font-weight:700;font-size:11px;border-radius:99px;padding:2px 12px}
+.social .post{background:#fff;color:#111;border-radius:12px;padding:10px}.social .who{display:flex;gap:8px;align-items:center;font-size:12px;margin-bottom:8px}.social .who i{width:20px;height:20px;border-radius:50%}.og{width:100%;height:auto;border-radius:8px;border:1px solid #e6e8ec}.social small{color:#777;font-size:11px}
+.bizcard .front{border-radius:8px;aspect-ratio:85/55;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.15)}.bizcard .back{margin-top:8px;background:#fff;color:#222;border-radius:8px;padding:10px;display:grid;gap:2px;box-shadow:0 4px 14px rgba(0,0,0,.1)}.bizcard small{color:#777;font-size:10px}
+.feedback{margin-top:16px;border-top:1px dashed var(--line);padding-top:12px}.feedback textarea{display:block;width:100%;min-height:64px;margin-top:6px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px;font:inherit}.fbrow{display:flex;gap:16px;margin-top:6px;font-size:13px}
+.compare{display:flex;gap:12px;flex-wrap:wrap}.compare a{color:inherit;text-decoration:none;display:grid;gap:4px;justify-items:center;font-size:12px}.cmp{width:150px;height:120px;display:grid;place-items:center;background:#fff;border:1px solid var(--line);border-radius:12px}
+.family .fmrow{display:flex;gap:20px;flex-wrap:wrap}.fm{display:grid;justify-items:center;gap:6px;background:#fff;color:#222;border-radius:14px;padding:16px;border:1px solid var(--line)}
+.assets a{margin-right:8px;font-size:13px}.empty{color:var(--muted)}
+@media (max-width:640px){.stage{grid-template-columns:1fr}.ground{min-height:150px}header.top{padding:10px 16px}}
+</style></head><body>
+<header class="top"><h1>Markilo · Brand Preview Gallery</h1><div class="tools"><button type="button" id="theme">Toggle theme</button><button type="button" id="copy">Copy feedback for Claude</button></div></header>
+<main><section class="brand"><h2>Markilo <small>master</small></h2><div class="compare"><a href="#markilo-final"><div class="cmp"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><g transform="matrix(0.8 0 0 0.8 0 0)">
+  <path fill="#14161f" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+</g></svg></div><span>Markilo — approved identity</span></a><a href="#markilo-arches"><div class="cmp"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><g transform="matrix(0.8 0 0 0.8 0 0)">
+  <path fill="#14161f" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#f45d2c"/>
+</g></svg></div><span>Arches</span></a><a href="#markilo-check-m"><div class="cmp"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><g transform="matrix(0.8 0 0 0.8 0 0)">
+  <path fill="#f45d2c" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg></div><span>Check M</span></a></div><details class="assets"><summary>Exported assets (196)</summary><p><b>logos</b> (52) <a href="../brands/markilo/exports/logos/primary/primary-color.svg">primary-color.svg</a> <a href="../brands/markilo/exports/logos/primary/primary-reversed.svg">primary-reversed.svg</a> <a href="../brands/markilo/exports/logos/primary/primary-black.svg">primary-black.svg</a> <a href="../brands/markilo/exports/logos/primary/primary-white.svg">primary-white.svg</a> <a href="../brands/markilo/exports/logos/primary/primary-ink.svg">primary-ink.svg</a> <a href="../brands/markilo/exports/logos/secondary/secondary-color.svg">secondary-color.svg</a> <a href="../brands/markilo/exports/logos/secondary/secondary-reversed.svg">secondary-reversed.svg</a> <a href="../brands/markilo/exports/logos/secondary/secondary-black.svg">secondary-black.svg</a></p><p><b>web</b> (10) <a href="../brands/markilo/exports/web/favicon.svg">favicon.svg</a> <a href="../brands/markilo/exports/web/favicon.ico">favicon.ico</a></p><p><b>ios</b> (6) <a href="../brands/markilo/exports/ios/AppIcon.appiconset/AppIcon-1024.png">AppIcon-1024.png</a> <a href="../brands/markilo/exports/ios/icon-composer/background.svg">background.svg</a> <a href="../brands/markilo/exports/ios/icon-composer/foreground.svg">foreground.svg</a></p><p><b>macos</b> (14) <a href="../brands/markilo/exports/macos/AppIcon-1024-square.svg">AppIcon-1024-square.svg</a> <a href="../brands/markilo/exports/macos/AppIcon-1024-legacy.svg">AppIcon-1024-legacy.svg</a> <a href="../brands/markilo/exports/macos/AppIcon.icns">AppIcon.icns</a></p><p><b>android</b> (29) </p><p><b>windows</b> (60) <a href="../brands/markilo/exports/windows/app.ico">app.ico</a></p><p><b>social</b> (11) <a href="../brands/markilo/exports/social/og-image.svg">og-image.svg</a> <a href="../brands/markilo/exports/social/og-image-dark.svg">og-image-dark.svg</a> <a href="../brands/markilo/exports/social/github-social-preview.svg">github-social-preview.svg</a> <a href="../brands/markilo/exports/social/x-header.svg">x-header.svg</a> <a href="../brands/markilo/exports/social/linkedin-cover.svg">linkedin-cover.svg</a></p><p><b>marketing</b> (9) <a href="../brands/markilo/exports/marketing/watermark-white.svg">watermark-white.svg</a> <a href="../brands/markilo/exports/marketing/watermark-black.svg">watermark-black.svg</a> <a href="../brands/markilo/exports/marketing/slide-title.svg">slide-title.svg</a> <a href="../brands/markilo/exports/marketing/business-card-front.svg">business-card-front.svg</a> <a href="../brands/markilo/exports/marketing/business-card-back.svg">business-card-back.svg</a></p><p><b>tokens</b> (3) </p><p><b>guidelines</b> (2) </p></details><article class="concept" id="markilo-final" data-key="markilo/final">
+  <header><h3>Markilo — approved identity</h3><div class="badges"><span class="badge good">quality 15✓ 0! 0✗</span><span class="badge plain">approved</span></div></header>
+  <div class="stage"><div class="ground light"><svg class="hero-mark" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="168" height="168" viewBox="0 0 168 168"><g transform="matrix(1.4 0 0 1.4 0 0)">
+  <path fill="#14161f" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+</g></svg></div><div class="ground dark"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><g transform="matrix(1 0 0 1 0 0)">
+  <path fill="#ffffff" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+</g></svg></div><div class="ground brand" style="background:#f45d2c"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><g transform="matrix(1 0 0 1 0 0)">
+  <path fill="#0b0d12" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#0b0d12" rx="4"/>
+</g></svg></div></div>
+  <div class="lockup"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="351" height="80" viewBox="0 0 351 80"><g transform="matrix(0.4999 0 0 0.4999 0 0.008)">
+  <g transform="matrix(1.3333 0 0 1.3333 0 0)">
+    <path fill="#14161f" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+    <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+  </g>
+  <g transform="matrix(1.4286 0 0 1.4286 225 130)">
+    <g fill="#14161f">
+      <path d="M7 0v-49.6h12.4v5.4h1.8q1.3-2.5 4.3-4.35t7.9-1.85q5.3 0 8.5 2.05T46.8-43h1.8q1.7-3.2 4.8-5.3t8.8-2.1q4.6 0 8.35 1.95t6 5.9 2.25 9.95V0H66.2v-31.7q0-4.1-2.1-6.15t-5.9-2.05q-4.3 0-6.65 2.75T49.2-29.3V0H36.6v-31.7q0-4.1-2.1-6.15t-5.9-2.05q-4.3 0-6.65 2.75T19.6-29.3V0Z" data-char="m"/>
+      <path d="M105.3 1.4q-5.3 0-9.5-1.85t-6.65-5.4-2.45-8.65 2.45-8.55 6.8-5.2T105.9-30h13.6v-2.8q0-3.5-2.2-5.75t-7-2.25q-4.7 0-7 2.15t-3 5.55L88.7-37q1.2-3.8 3.85-6.95t7.1-5.1T110.5-51q9.8 0 15.5 4.9t5.7 14.2v18.5q0 3 2.8 3h4V0h-8.4q-3.7 0-6.1-1.8t-2.4-4.8v-.1h-1.9q-.4 1.2-1.8 3.15T113.5-.1t-8.2 1.5m2.2-10.2q5.3 0 8.65-2.95t3.35-7.85v-1h-12.7q-3.5 0-5.5 1.5t-2 4.2 2.1 4.4 6.1 1.7" data-char="a"/>
+      <path d="M145.2 0v-49.6h12.4v5.6h1.8q1.1-3 3.65-4.4t5.95-1.4h6v11.2h-6.2q-4.8 0-7.9 2.55t-3.1 7.85V0Z" data-char="r"/>
+      <path d="M182.3 0v-70h12.6v38.7h1.8l16.4-18.3h16.4l-22.9 24L230.3 0h-16.2l-17.4-19.7h-1.8V0Z" data-char="k"/>
+      <path d="M236.2 0v-49.6h12.6V0Zm6.3-55.4q-3.4 0-5.75-2.2t-2.35-5.8 2.35-5.8 5.75-2.2q3.5 0 5.8 2.2t2.3 5.8-2.3 5.8-5.8 2.2" data-char="i"/>
+      <path d="M260.3 0v-70h12.6V0Z" data-char="l"/>
+      <path d="M308 1.4q-7.4 0-13.3-3t-9.3-8.7T282-24v-1.6q0-8 3.4-13.7t9.3-8.7 13.3-3 13.3 3 9.3 8.7 3.4 13.7v1.6q0 8-3.4 13.7t-9.3 8.7-13.3 3m0-11.2q5.8 0 9.6-3.75t3.8-10.75v-1q0-7-3.75-10.75T308-39.8q-5.8 0-9.6 3.75t-3.8 10.75v1q0 7 3.8 10.75T308-9.8" data-char="o"/>
+    </g>
+  </g>
+</g></svg></div>
+  <div class="sizes"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><g transform="matrix(0.1333 0 0 0.1333 0 0)">
+  <path fill="#14161f" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+</g></svg><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g transform="matrix(0.2 0 0 0.2 0 0)">
+  <path fill="#14161f" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+</g></svg><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g transform="matrix(0.2667 0 0 0.2667 0 0)">
+  <path fill="#14161f" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+</g></svg><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><g transform="matrix(0.4 0 0 0.4 0 0)">
+  <path fill="#14161f" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+</g></svg><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><g transform="matrix(0.5333 0 0 0.5333 0 0)">
+  <path fill="#14161f" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+</g></svg></div>
+  <div class="chips"><span style="background:#f45d2c" title="#f45d2c"></span><code>#f45d2c</code><span style="background:#14161f" title="#14161f"></span><code>#14161f</code></div>
+  
+  <details><summary>Technical checks</summary><ul class="checks"><li class="pass"><b>symbol: Clean vector master</b> 0 errors, 0 warnings — Pure vector, self-contained, scalable.</li><li class="pass"><b>symbol: Legibility at 16 px</b> 0.97 — 97% of the shape survives at 16 px (≥ 85% reads clearly).</li><li class="pass"><b>symbol: Legibility at 32 px</b> 0.91 — 91% of the shape survives at 32 px (≥ 85% reads clearly).</li><li class="pass"><b>symbol: Thinnest detail at 16 px</b> 1.38 — Thin strokes/gaps are ~1.38 px wide at 16 px (≥ 1.2 px stays crisp).</li><li class="pass"><b>symbol: Optical balance</b> 0 — Visual centroid sits 0% of the artboard from center.</li><li class="pass"><b>symbol: Artboard fit</b> 0.84 — Mark spans 84% of the artboard (80–98% keeps icon exports consistent).</li><li class="pass"><b>symbol: Distinct from stock primitives</b> 0.375 — Closest stock shape is a square at 38% overlap.</li><li class="pass"><b>symbol: Construction complexity</b> 14 — 1 paths, 14 path commands, compactness 4.68.</li><li class="pass"><b>symbol: One-color reproduction</b> 0 — Shapes stay separable in a single color.</li><li class="info"><b>symbol: Contrast of #14161f</b> 18.04:1 light / 1.03:1 dark — Works on light grounds; use a reversed variant on the other.</li><li class="pass"><b>symbol: Contrast of #f45d2c</b> 3.26:1 light / 5.71:1 dark — Meets the 3:1 non-text contrast guideline (WCAG 1.4.11) on light and dark grounds.</li><li class="pass"><b>symbol: Palette separation</b> 52.74 — Closest pair of colors differs by ΔE₀₀ 52.74. Under 20, shapes separated only by these colors blur together for many viewers; vary lightness too.</li><li class="pass"><b>symbol: Lightness contrast inside the mark</b> 110 — Lightness difference between brand colors (matters for grayscale print and color-vision deficiencies).</li><li class="pass"><b>wordmark: Clean vector master</b> 0 errors, 0 warnings — Pure vector, self-contained, scalable.</li><li class="pass"><b>wordmark: Construction complexity</b> 149 — 7 paths, 149 path commands, compactness 22.01.</li><li class="pass"><b>wordmark: One-color reproduction</b> 0 — Shapes stay separable in a single color.</li><li class="info"><b>wordmark: Contrast of #14161f</b> 18.04:1 light / 1.03:1 dark — Works on light grounds; use a reversed variant on the other.</li></ul></details>
+  <div class="mockups"><figure class="mock browser"><div class="tabbar"><div class="tab"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><g transform="matrix(0.1333 0 0 0.1333 0 0)">
+  <path fill="#14161f" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+</g></svg><span>Markilo</span></div><div class="tab ghost"><span>New tab</span></div></div><div class="addr">markilo.example</div><div class="page"><nav><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="123" height="28" viewBox="0 0 123 28"><g transform="matrix(0.175 0 0 0.175 0.0628 0)">
+  <g transform="matrix(1.3333 0 0 1.3333 0 0)">
+    <path fill="#14161f" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+    <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+  </g>
+  <g transform="matrix(1.4286 0 0 1.4286 225 130)">
+    <g fill="#14161f">
+      <path d="M7 0v-49.6h12.4v5.4h1.8q1.3-2.5 4.3-4.35t7.9-1.85q5.3 0 8.5 2.05T46.8-43h1.8q1.7-3.2 4.8-5.3t8.8-2.1q4.6 0 8.35 1.95t6 5.9 2.25 9.95V0H66.2v-31.7q0-4.1-2.1-6.15t-5.9-2.05q-4.3 0-6.65 2.75T49.2-29.3V0H36.6v-31.7q0-4.1-2.1-6.15t-5.9-2.05q-4.3 0-6.65 2.75T19.6-29.3V0Z" data-char="m"/>
+      <path d="M105.3 1.4q-5.3 0-9.5-1.85t-6.65-5.4-2.45-8.65 2.45-8.55 6.8-5.2T105.9-30h13.6v-2.8q0-3.5-2.2-5.75t-7-2.25q-4.7 0-7 2.15t-3 5.55L88.7-37q1.2-3.8 3.85-6.95t7.1-5.1T110.5-51q9.8 0 15.5 4.9t5.7 14.2v18.5q0 3 2.8 3h4V0h-8.4q-3.7 0-6.1-1.8t-2.4-4.8v-.1h-1.9q-.4 1.2-1.8 3.15T113.5-.1t-8.2 1.5m2.2-10.2q5.3 0 8.65-2.95t3.35-7.85v-1h-12.7q-3.5 0-5.5 1.5t-2 4.2 2.1 4.4 6.1 1.7" data-char="a"/>
+      <path d="M145.2 0v-49.6h12.4v5.6h1.8q1.1-3 3.65-4.4t5.95-1.4h6v11.2h-6.2q-4.8 0-7.9 2.55t-3.1 7.85V0Z" data-char="r"/>
+      <path d="M182.3 0v-70h12.6v38.7h1.8l16.4-18.3h16.4l-22.9 24L230.3 0h-16.2l-17.4-19.7h-1.8V0Z" data-char="k"/>
+      <path d="M236.2 0v-49.6h12.6V0Zm6.3-55.4q-3.4 0-5.75-2.2t-2.35-5.8 2.35-5.8 5.75-2.2q3.5 0 5.8 2.2t2.3 5.8-2.3 5.8-5.8 2.2" data-char="i"/>
+      <path d="M260.3 0v-70h12.6V0Z" data-char="l"/>
+      <path d="M308 1.4q-7.4 0-13.3-3t-9.3-8.7T282-24v-1.6q0-8 3.4-13.7t9.3-8.7 13.3-3 13.3 3 9.3 8.7 3.4 13.7v1.6q0 8-3.4 13.7t-9.3 8.7-13.3 3m0-11.2q5.8 0 9.6-3.75t3.8-10.75v-1q0-7-3.75-10.75T308-39.8q-5.8 0-9.6 3.75t-3.8 10.75v1q0 7 3.8 10.75T308-9.8" data-char="o"/>
+    </g>
+  </g>
+</g></svg><span>Product</span><span>Pricing</span><span class="btn" style="background:#f45d2c">Get started</span></nav><div class="hero"><b></b><i></i><i></i></div></div><figcaption>Browser tab &amp; site header</figcaption></figure><figure class="mock darkui"><nav><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="123" height="28" viewBox="0 0 123 28"><g transform="matrix(0.175 0 0 0.175 0.0628 0)">
+  <g transform="matrix(1.3333 0 0 1.3333 0 0)">
+    <path fill="#ffffff" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+    <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+  </g>
+  <g transform="matrix(1.4286 0 0 1.4286 225 130)">
+    <g fill="#ffffff">
+      <path d="M7 0v-49.6h12.4v5.4h1.8q1.3-2.5 4.3-4.35t7.9-1.85q5.3 0 8.5 2.05T46.8-43h1.8q1.7-3.2 4.8-5.3t8.8-2.1q4.6 0 8.35 1.95t6 5.9 2.25 9.95V0H66.2v-31.7q0-4.1-2.1-6.15t-5.9-2.05q-4.3 0-6.65 2.75T49.2-29.3V0H36.6v-31.7q0-4.1-2.1-6.15t-5.9-2.05q-4.3 0-6.65 2.75T19.6-29.3V0Z" data-char="m"/>
+      <path d="M105.3 1.4q-5.3 0-9.5-1.85t-6.65-5.4-2.45-8.65 2.45-8.55 6.8-5.2T105.9-30h13.6v-2.8q0-3.5-2.2-5.75t-7-2.25q-4.7 0-7 2.15t-3 5.55L88.7-37q1.2-3.8 3.85-6.95t7.1-5.1T110.5-51q9.8 0 15.5 4.9t5.7 14.2v18.5q0 3 2.8 3h4V0h-8.4q-3.7 0-6.1-1.8t-2.4-4.8v-.1h-1.9q-.4 1.2-1.8 3.15T113.5-.1t-8.2 1.5m2.2-10.2q5.3 0 8.65-2.95t3.35-7.85v-1h-12.7q-3.5 0-5.5 1.5t-2 4.2 2.1 4.4 6.1 1.7" data-char="a"/>
+      <path d="M145.2 0v-49.6h12.4v5.6h1.8q1.1-3 3.65-4.4t5.95-1.4h6v11.2h-6.2q-4.8 0-7.9 2.55t-3.1 7.85V0Z" data-char="r"/>
+      <path d="M182.3 0v-70h12.6v38.7h1.8l16.4-18.3h16.4l-22.9 24L230.3 0h-16.2l-17.4-19.7h-1.8V0Z" data-char="k"/>
+      <path d="M236.2 0v-49.6h12.6V0Zm6.3-55.4q-3.4 0-5.75-2.2t-2.35-5.8 2.35-5.8 5.75-2.2q3.5 0 5.8 2.2t2.3 5.8-2.3 5.8-5.8 2.2" data-char="i"/>
+      <path d="M260.3 0v-70h12.6V0Z" data-char="l"/>
+      <path d="M308 1.4q-7.4 0-13.3-3t-9.3-8.7T282-24v-1.6q0-8 3.4-13.7t9.3-8.7 13.3-3 13.3 3 9.3 8.7 3.4 13.7v1.6q0 8-3.4 13.7t-9.3 8.7-13.3 3m0-11.2q5.8 0 9.6-3.75t3.8-10.75v-1q0-7-3.75-10.75T308-39.8q-5.8 0-9.6 3.75t-3.8 10.75v1q0 7 3.8 10.75T308-9.8" data-char="o"/>
+    </g>
+  </g>
+</g></svg><span>Docs</span><span>Blog</span></nav><div class="hero"><b></b><i></i></div><figcaption>Dark interface</figcaption></figure><figure class="mock phone"><div class="screen"><div class="grid"><div class="app"><i style="background:#e8eaef"></i><span>App</span></div><div class="app"><i style="background:#d6dbe4"></i><span>App</span></div><div class="app"><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect x="0" y="0" width="64" height="64" rx="14.4" fill="#f45d2c"/><g transform="matrix(0.3828 0 0 0.3828 9.0318 9.0318)">
+  <path fill="#0b0d12" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#0b0d12" rx="4"/>
+</g></svg><span>Markilo</span></div><div class="app"><i style="background:#dfe3ea"></i><span>App</span></div><div class="app"><i style="background:#d0d5df"></i><span>App</span></div></div></div><figcaption>iOS home screen</figcaption></figure><figure class="mock android"><div class="screen"><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#f45d2c"/><g transform="matrix(0.2618 0 0 0.2618 12.2947 12.2947)">
+  <path fill="#0b0d12" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#0b0d12" rx="4"/>
+</g></svg><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><rect x="0" y="0" width="56" height="56" rx="12.6" fill="#f45d2c"/><g transform="matrix(0.3238 0 0 0.3238 8.5727 8.5727)">
+  <path fill="#0b0d12" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#0b0d12" rx="4"/>
+</g></svg></div><figcaption>Android adaptive masks</figcaption></figure><figure class="mock dock"><div class="bar"><i style="background:#c7ccd6"></i><i style="background:#aeb6c4"></i><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54"><rect x="0" y="0" width="54" height="54" rx="12.15" fill="#f45d2c"/><g transform="matrix(0.3015 0 0 0.3015 8.9125 8.9125)">
+  <path fill="#0b0d12" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#0b0d12" rx="4"/>
+</g></svg><i style="background:#bfc5d0"></i></div><figcaption>macOS Dock</figcaption></figure><figure class="mock store"><div class="card"><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72"><rect x="0" y="0" width="72" height="72" rx="16.2" fill="#f45d2c"/><g transform="matrix(0.4163 0 0 0.4163 11.0221 11.0221)">
+  <path fill="#0b0d12" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#0b0d12" rx="4"/>
+</g></svg><div><b>Markilo</b><small>App</small><span class="get">GET</span></div></div><figcaption>App store listing</figcaption></figure><figure class="mock social"><div class="post"><div class="who"><i style="background:#f45d2c"></i><b>Markilo</b></div><svg class="og" xmlns="http://www.w3.org/2000/svg" width="600" height="315" viewBox="0 0 600 315"><rect width="600" height="315" fill="#ffffff"/><g transform="matrix(0.5127 0 0 0.5127 120 116.4825)">
+  <g transform="matrix(1.3333 0 0 1.3333 0 0)">
+    <path fill="#14161f" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+    <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+  </g>
+  <g transform="matrix(1.4286 0 0 1.4286 225 130)">
+    <g fill="#14161f">
+      <path d="M7 0v-49.6h12.4v5.4h1.8q1.3-2.5 4.3-4.35t7.9-1.85q5.3 0 8.5 2.05T46.8-43h1.8q1.7-3.2 4.8-5.3t8.8-2.1q4.6 0 8.35 1.95t6 5.9 2.25 9.95V0H66.2v-31.7q0-4.1-2.1-6.15t-5.9-2.05q-4.3 0-6.65 2.75T49.2-29.3V0H36.6v-31.7q0-4.1-2.1-6.15t-5.9-2.05q-4.3 0-6.65 2.75T19.6-29.3V0Z" data-char="m"/>
+      <path d="M105.3 1.4q-5.3 0-9.5-1.85t-6.65-5.4-2.45-8.65 2.45-8.55 6.8-5.2T105.9-30h13.6v-2.8q0-3.5-2.2-5.75t-7-2.25q-4.7 0-7 2.15t-3 5.55L88.7-37q1.2-3.8 3.85-6.95t7.1-5.1T110.5-51q9.8 0 15.5 4.9t5.7 14.2v18.5q0 3 2.8 3h4V0h-8.4q-3.7 0-6.1-1.8t-2.4-4.8v-.1h-1.9q-.4 1.2-1.8 3.15T113.5-.1t-8.2 1.5m2.2-10.2q5.3 0 8.65-2.95t3.35-7.85v-1h-12.7q-3.5 0-5.5 1.5t-2 4.2 2.1 4.4 6.1 1.7" data-char="a"/>
+      <path d="M145.2 0v-49.6h12.4v5.6h1.8q1.1-3 3.65-4.4t5.95-1.4h6v11.2h-6.2q-4.8 0-7.9 2.55t-3.1 7.85V0Z" data-char="r"/>
+      <path d="M182.3 0v-70h12.6v38.7h1.8l16.4-18.3h16.4l-22.9 24L230.3 0h-16.2l-17.4-19.7h-1.8V0Z" data-char="k"/>
+      <path d="M236.2 0v-49.6h12.6V0Zm6.3-55.4q-3.4 0-5.75-2.2t-2.35-5.8 2.35-5.8 5.75-2.2q3.5 0 5.8 2.2t2.3 5.8-2.3 5.8-5.8 2.2" data-char="i"/>
+      <path d="M260.3 0v-70h12.6V0Z" data-char="l"/>
+      <path d="M308 1.4q-7.4 0-13.3-3t-9.3-8.7T282-24v-1.6q0-8 3.4-13.7t9.3-8.7 13.3-3 13.3 3 9.3 8.7 3.4 13.7v1.6q0 8-3.4 13.7t-9.3 8.7-13.3 3m0-11.2q5.8 0 9.6-3.75t3.8-10.75v-1q0-7-3.75-10.75T308-39.8q-5.8 0-9.6 3.75t-3.8 10.75v1q0 7 3.8 10.75T308-9.8" data-char="o"/>
+    </g>
+  </g>
+</g><rect y="307" width="600" height="8" fill="#f45d2c"/></svg><small>markilo.example</small></div><figcaption>Link preview (Open Graph)</figcaption></figure><figure class="mock bizcard"><div class="front" style="background:#f45d2c"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="170" height="39" viewBox="0 0 170 39"><g transform="matrix(0.2421 0 0 0.2421 0 0.1306)">
+  <g transform="matrix(1.3333 0 0 1.3333 0 0)">
+    <path fill="#0b0d12" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+    <rect width="30" height="30" x="45" y="45" fill="#0b0d12" rx="4"/>
+  </g>
+  <g transform="matrix(1.4286 0 0 1.4286 225 130)">
+    <g fill="#0b0d12">
+      <path d="M7 0v-49.6h12.4v5.4h1.8q1.3-2.5 4.3-4.35t7.9-1.85q5.3 0 8.5 2.05T46.8-43h1.8q1.7-3.2 4.8-5.3t8.8-2.1q4.6 0 8.35 1.95t6 5.9 2.25 9.95V0H66.2v-31.7q0-4.1-2.1-6.15t-5.9-2.05q-4.3 0-6.65 2.75T49.2-29.3V0H36.6v-31.7q0-4.1-2.1-6.15t-5.9-2.05q-4.3 0-6.65 2.75T19.6-29.3V0Z" data-char="m"/>
+      <path d="M105.3 1.4q-5.3 0-9.5-1.85t-6.65-5.4-2.45-8.65 2.45-8.55 6.8-5.2T105.9-30h13.6v-2.8q0-3.5-2.2-5.75t-7-2.25q-4.7 0-7 2.15t-3 5.55L88.7-37q1.2-3.8 3.85-6.95t7.1-5.1T110.5-51q9.8 0 15.5 4.9t5.7 14.2v18.5q0 3 2.8 3h4V0h-8.4q-3.7 0-6.1-1.8t-2.4-4.8v-.1h-1.9q-.4 1.2-1.8 3.15T113.5-.1t-8.2 1.5m2.2-10.2q5.3 0 8.65-2.95t3.35-7.85v-1h-12.7q-3.5 0-5.5 1.5t-2 4.2 2.1 4.4 6.1 1.7" data-char="a"/>
+      <path d="M145.2 0v-49.6h12.4v5.6h1.8q1.1-3 3.65-4.4t5.95-1.4h6v11.2h-6.2q-4.8 0-7.9 2.55t-3.1 7.85V0Z" data-char="r"/>
+      <path d="M182.3 0v-70h12.6v38.7h1.8l16.4-18.3h16.4l-22.9 24L230.3 0h-16.2l-17.4-19.7h-1.8V0Z" data-char="k"/>
+      <path d="M236.2 0v-49.6h12.6V0Zm6.3-55.4q-3.4 0-5.75-2.2t-2.35-5.8 2.35-5.8 5.75-2.2q3.5 0 5.8 2.2t2.3 5.8-2.3 5.8-5.8 2.2" data-char="i"/>
+      <path d="M260.3 0v-70h12.6V0Z" data-char="l"/>
+      <path d="M308 1.4q-7.4 0-13.3-3t-9.3-8.7T282-24v-1.6q0-8 3.4-13.7t9.3-8.7 13.3-3 13.3 3 9.3 8.7 3.4 13.7v1.6q0 8-3.4 13.7t-9.3 8.7-13.3 3m0-11.2q5.8 0 9.6-3.75t3.8-10.75v-1q0-7-3.75-10.75T308-39.8q-5.8 0-9.6 3.75t-3.8 10.75v1q0 7 3.8 10.75T308-9.8" data-char="o"/>
+    </g>
+  </g>
+</g></svg></div><div class="back"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"><g transform="matrix(0.2167 0 0 0.2167 0 0)">
+  <path fill="#14161f" d="M10 10h46v20H30v26H10zm100 100H64V90h26V64h20z"/>
+  <rect width="30" height="30" x="45" y="45" fill="#f45d2c" rx="4"/>
+</g></svg><b>Full Name</b><small>Role · name@markilo.example</small></div><figcaption>Business card</figcaption></figure></div>
+  <div class="feedback"><label>Your feedback on “Markilo — approved identity”<textarea data-fb="markilo/final" placeholder="What works, what doesn't, what to push further…"></textarea></label><div class="fbrow"><label><input type="radio" name="pick-markilo/final" value="shortlist"> Shortlist</label><label><input type="radio" name="pick-markilo/final" value="reject"> Reject</label><label><input type="radio" name="pick-markilo/final" value="approve"> Approve</label></div></div>
+</article>
+<article class="concept" id="markilo-arches" data-key="markilo/arches">
+  <header><h3>Arches</h3><div class="badges"><span class="badge warn">quality 11✓ 1! 0✗</span><span class="badge good">originality: clear-to-continue</span><span class="badge plain">shortlisted</span></div></header>
+  <div class="stage"><div class="ground light"><svg class="hero-mark" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="168" height="168" viewBox="0 0 168 168"><g transform="matrix(1.4 0 0 1.4 0 0)">
+  <path fill="#14161f" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#f45d2c"/>
+</g></svg></div><div class="ground dark"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><g transform="matrix(1 0 0 1 0 0)">
+  <path fill="#ffffff" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#f45d2c"/>
+</g></svg></div><div class="ground brand" style="background:#f45d2c"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><g transform="matrix(1 0 0 1 0 0)">
+  <path fill="#0b0d12" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#0b0d12"/>
+</g></svg></div></div>
+  
+  <div class="sizes"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><g transform="matrix(0.1333 0 0 0.1333 0 0)">
+  <path fill="#14161f" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#f45d2c"/>
+</g></svg><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g transform="matrix(0.2 0 0 0.2 0 0)">
+  <path fill="#14161f" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#f45d2c"/>
+</g></svg><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g transform="matrix(0.2667 0 0 0.2667 0 0)">
+  <path fill="#14161f" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#f45d2c"/>
+</g></svg><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><g transform="matrix(0.4 0 0 0.4 0 0)">
+  <path fill="#14161f" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#f45d2c"/>
+</g></svg><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><g transform="matrix(0.5333 0 0 0.5333 0 0)">
+  <path fill="#14161f" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#f45d2c"/>
+</g></svg></div>
+  <div class="chips"><span style="background:#f45d2c" title="#f45d2c"></span><code>#f45d2c</code><span style="background:#14161f" title="#14161f"></span><code>#14161f</code></div>
+  <p class="dir"><b>Lowercase m of two arches with a point above</b> — Friendly m with the dot as the mark being placed</p><p class="sem"><span>m</span><span>arches</span><span>point</span><span>friendly</span></p>
+  <details><summary>Technical checks</summary><ul class="checks"><li class="pass"><b>Clean vector master</b> 0 errors, 0 warnings — Pure vector, self-contained, scalable.</li><li class="pass"><b>Legibility at 16 px</b> 0.93 — 93% of the shape survives at 16 px (≥ 85% reads clearly).</li><li class="pass"><b>Legibility at 32 px</b> 0.95 — 95% of the shape survives at 32 px (≥ 85% reads clearly).</li><li class="pass"><b>Thinnest detail at 16 px</b> 1.88 — Thin strokes/gaps are ~1.88 px wide at 16 px (≥ 1.2 px stays crisp).</li><li class="pass"><b>Optical balance</b> 0.04 — Visual centroid sits 4% of the artboard from center.</li><li class="warn"><b>Artboard fit</b> 0.78 — Mark spans 78% of the artboard (80–98% keeps icon exports consistent).</li><li class="pass"><b>Distinct from stock primitives</b> 0.38 — Closest stock shape is a square at 38% overlap.</li><li class="pass"><b>Construction complexity</b> 16 — 1 paths, 16 path commands, compactness 5.96.</li><li class="pass"><b>One-color reproduction</b> 0 — Shapes stay separable in a single color.</li><li class="info"><b>Contrast of #14161f</b> 18.04:1 light / 1.03:1 dark — Works on light grounds; use a reversed variant on the other.</li><li class="pass"><b>Contrast of #f45d2c</b> 3.26:1 light / 5.71:1 dark — Meets the 3:1 non-text contrast guideline (WCAG 1.4.11) on light and dark grounds.</li><li class="pass"><b>Palette separation</b> 52.74 — Closest pair of colors differs by ΔE₀₀ 52.74. Under 20, shapes separated only by these colors blur together for many viewers; vary lightness too.</li><li class="pass"><b>Lightness contrast inside the mark</b> 110 — Lightness difference between brand colors (matters for grayscale print and color-vision deficiencies).</li></ul></details><details><summary>Similarity (0 references)</summary><ul class="checks"><li>No references collected.</li><li class="pass">vs concept <b>check-m</b>: 34%</li><li class="pass">vs concept <b>crop</b>: 32%</li></ul></details>
+  <div class="mockups"><figure class="mock browser"><div class="tabbar"><div class="tab"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><g transform="matrix(0.1333 0 0 0.1333 0 0)">
+  <path fill="#14161f" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#f45d2c"/>
+</g></svg><span>Markilo</span></div><div class="tab ghost"><span>New tab</span></div></div><div class="addr">markilo.example</div><div class="page"><nav><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><g transform="matrix(0.2333 0 0 0.2333 0 0)">
+  <path fill="#14161f" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#f45d2c"/>
+</g></svg><span>Product</span><span>Pricing</span><span class="btn" style="background:#f45d2c">Get started</span></nav><div class="hero"><b></b><i></i><i></i></div></div><figcaption>Browser tab &amp; site header</figcaption></figure><figure class="mock darkui"><nav><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><g transform="matrix(0.2333 0 0 0.2333 0 0)">
+  <path fill="#ffffff" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#f45d2c"/>
+</g></svg><span>Docs</span><span>Blog</span></nav><div class="hero"><b></b><i></i></div><figcaption>Dark interface</figcaption></figure><figure class="mock phone"><div class="screen"><div class="grid"><div class="app"><i style="background:#e8eaef"></i><span>App</span></div><div class="app"><i style="background:#d6dbe4"></i><span>App</span></div><div class="app"><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect x="0" y="0" width="64" height="64" rx="14.4" fill="#f45d2c"/><g transform="matrix(0.4076 0 0 0.4076 7.1642 8.3582)">
+  <path fill="#0b0d12" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#0b0d12"/>
+</g></svg><span>Markilo</span></div><div class="app"><i style="background:#dfe3ea"></i><span>App</span></div><div class="app"><i style="background:#d0d5df"></i><span>App</span></div></div></div><figcaption>iOS home screen</figcaption></figure><figure class="mock android"><div class="screen"><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#f45d2c"/><g transform="matrix(0.2812 0 0 0.2812 10.8636 11.6875)">
+  <path fill="#0b0d12" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#0b0d12"/>
+</g></svg><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><rect x="0" y="0" width="56" height="56" rx="12.6" fill="#f45d2c"/><g transform="matrix(0.3447 0 0 0.3447 6.993 8.003)">
+  <path fill="#0b0d12" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#0b0d12"/>
+</g></svg></div><figcaption>Android adaptive masks</figcaption></figure><figure class="mock dock"><div class="bar"><i style="background:#c7ccd6"></i><i style="background:#aeb6c4"></i><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54"><rect x="0" y="0" width="54" height="54" rx="12.15" fill="#f45d2c"/><g transform="matrix(0.321 0 0 0.321 7.4418 8.3821)">
+  <path fill="#0b0d12" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#0b0d12"/>
+</g></svg><i style="background:#bfc5d0"></i></div><figcaption>macOS Dock</figcaption></figure><figure class="mock store"><div class="card"><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72"><rect x="0" y="0" width="72" height="72" rx="16.2" fill="#f45d2c"/><g transform="matrix(0.4432 0 0 0.4432 8.991 10.2896)">
+  <path fill="#0b0d12" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#0b0d12"/>
+</g></svg><div><b>Markilo</b><small>Lowercase m of two arches with a point above</small><span class="get">GET</span></div></div><figcaption>App store listing</figcaption></figure><figure class="mock social"><div class="post"><div class="who"><i style="background:#f45d2c"></i><b>Markilo</b></div><svg class="og" xmlns="http://www.w3.org/2000/svg" width="600" height="315" viewBox="0 0 600 315"><rect width="600" height="315" fill="#ffffff"/><g transform="matrix(0.735 0 0 0.735 255.9 113.4)">
+  <path fill="#14161f" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#f45d2c"/>
+</g><rect y="307" width="600" height="8" fill="#f45d2c"/></svg><small>markilo.example</small></div><figcaption>Link preview (Open Graph)</figcaption></figure><figure class="mock bizcard"><div class="front" style="background:#f45d2c"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><g transform="matrix(0.4167 0 0 0.4167 0 0)">
+  <path fill="#0b0d12" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#0b0d12"/>
+</g></svg></div><div class="back"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"><g transform="matrix(0.2167 0 0 0.2167 0 0)">
+  <path fill="#14161f" d="M14 62a24 24 0 0 1 48 0v42H48V62a10 10 0 0 0-20 0v42H14zM48 62a24 24 0 0 1 48 0v42H82V62a10 10 0 0 0-20 0z"/>
+  <circle cx="98" cy="22" r="10" fill="#f45d2c"/>
+</g></svg><b>Full Name</b><small>Role · name@markilo.example</small></div><figcaption>Business card</figcaption></figure></div>
+  <div class="feedback"><label>Your feedback on “Arches”<textarea data-fb="markilo/arches" placeholder="What works, what doesn't, what to push further…"></textarea></label><div class="fbrow"><label><input type="radio" name="pick-markilo/arches" value="shortlist"> Shortlist</label><label><input type="radio" name="pick-markilo/arches" value="reject"> Reject</label><label><input type="radio" name="pick-markilo/arches" value="approve"> Approve</label></div></div>
+</article>
+<article class="concept" id="markilo-check-m" data-key="markilo/check-m">
+  <header><h3>Check M</h3><div class="badges"><span class="badge bad">quality 7✓ 1! 2✗</span><span class="badge good">originality: clear-to-continue</span><span class="badge plain">rejected</span></div></header>
+  <div class="stage"><div class="ground light"><svg class="hero-mark" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="168" height="168" viewBox="0 0 168 168"><g transform="matrix(1.4 0 0 1.4 0 0)">
+  <path fill="#f45d2c" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg></div><div class="ground dark"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><g transform="matrix(1 0 0 1 0 0)">
+  <path fill="#f45d2c" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg></div><div class="ground brand" style="background:#f45d2c"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><g transform="matrix(1 0 0 1 0 0)">
+  <path fill="#0b0d12" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg></div></div>
+  
+  <div class="sizes"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><g transform="matrix(0.1333 0 0 0.1333 0 0)">
+  <path fill="#f45d2c" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g transform="matrix(0.2 0 0 0.2 0 0)">
+  <path fill="#f45d2c" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g transform="matrix(0.2667 0 0 0.2667 0 0)">
+  <path fill="#f45d2c" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><g transform="matrix(0.4 0 0 0.4 0 0)">
+  <path fill="#f45d2c" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><g transform="matrix(0.5333 0 0 0.5333 0 0)">
+  <path fill="#f45d2c" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg></div>
+  <div class="chips"><span style="background:#f45d2c" title="#f45d2c"></span><code>#f45d2c</code><span style="background:#14161f" title="#14161f"></span><code>#14161f</code></div>
+  <p class="dir"><b>An M whose last stroke rises as a check mark</b> — Mark + verified: Markilo designs marks and checks them</p><p class="sem"><span>M</span><span>mark</span><span>check</span><span>verified</span><span>rising</span></p>
+  <details><summary>Technical checks</summary><ul class="checks"><li class="pass"><b>Clean vector master</b> 0 errors, 0 warnings — Pure vector, self-contained, scalable.</li><li class="pass"><b>Legibility at 16 px</b> 0.95 — 95% of the shape survives at 16 px (≥ 85% reads clearly).</li><li class="pass"><b>Legibility at 32 px</b> 0.97 — 97% of the shape survives at 32 px (≥ 85% reads clearly).</li><li class="fail"><b>Thinnest detail at 16 px</b> 0.5 — Thin strokes/gaps are ~0.5 px wide at 16 px (≥ 1.2 px stays crisp).</li><li class="fail"><b>Optical balance</b> 0.1 — Visual centroid sits 10% of the artboard from center (slightly high, which reads as optically centered).</li><li class="warn"><b>Artboard fit</b> 0.72 — Mark spans 72% of the artboard (80–98% keeps icon exports consistent).</li><li class="pass"><b>Distinct from stock primitives</b> 0.583 — Closest stock shape is a square at 58% overlap.</li><li class="pass"><b>Construction complexity</b> 11 — 1 paths, 11 path commands, compactness 3.03.</li><li class="pass"><b>One-color reproduction</b> 0 — Shapes stay separable in a single color.</li><li class="pass"><b>Contrast of #f45d2c</b> 3.26:1 light / 5.71:1 dark — Meets the 3:1 non-text contrast guideline (WCAG 1.4.11) on light and dark grounds.</li></ul></details><details><summary>Similarity (0 references)</summary><ul class="checks"><li>No references collected.</li><li class="pass">vs concept <b>arches</b>: 34%</li><li class="pass">vs concept <b>crop</b>: 26%</li></ul></details>
+  <div class="mockups"><figure class="mock browser"><div class="tabbar"><div class="tab"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><g transform="matrix(0.1333 0 0 0.1333 0 0)">
+  <path fill="#f45d2c" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg><span>Markilo</span></div><div class="tab ghost"><span>New tab</span></div></div><div class="addr">markilo.example</div><div class="page"><nav><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><g transform="matrix(0.2333 0 0 0.2333 0 0)">
+  <path fill="#f45d2c" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg><span>Product</span><span>Pricing</span><span class="btn" style="background:#f45d2c">Get started</span></nav><div class="hero"><b></b><i></i><i></i></div></div><figcaption>Browser tab &amp; site header</figcaption></figure><figure class="mock darkui"><nav><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><g transform="matrix(0.2333 0 0 0.2333 0 0)">
+  <path fill="#f45d2c" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg><span>Docs</span><span>Blog</span></nav><div class="hero"><b></b><i></i></div><figcaption>Dark interface</figcaption></figure><figure class="mock phone"><div class="screen"><div class="grid"><div class="app"><i style="background:#e8eaef"></i><span>App</span></div><div class="app"><i style="background:#d6dbe4"></i><span>App</span></div><div class="app"><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect x="0" y="0" width="64" height="64" rx="14.4" fill="#f45d2c"/><g transform="matrix(0.4428 0 0 0.4428 5.9503 5.4314)">
+  <path fill="#0b0d12" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg><span>Markilo</span></div><div class="app"><i style="background:#dfe3ea"></i><span>App</span></div><div class="app"><i style="background:#d0d5df"></i><span>App</span></div></div></div><figcaption>iOS home screen</figcaption></figure><figure class="mock android"><div class="screen"><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#f45d2c"/><g transform="matrix(0.3063 0 0 0.3063 9.9803 9.6213)">
+  <path fill="#0b0d12" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56"><rect x="0" y="0" width="56" height="56" rx="12.6" fill="#f45d2c"/><g transform="matrix(0.3745 0 0 0.3745 5.9663 5.5274)">
+  <path fill="#0b0d12" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg></div><figcaption>Android adaptive masks</figcaption></figure><figure class="mock dock"><div class="bar"><i style="background:#c7ccd6"></i><i style="background:#aeb6c4"></i><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 54 54"><rect x="0" y="0" width="54" height="54" rx="12.15" fill="#f45d2c"/><g transform="matrix(0.3487 0 0 0.3487 6.4858 6.0772)">
+  <path fill="#0b0d12" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg><i style="background:#bfc5d0"></i></div><figcaption>macOS Dock</figcaption></figure><figure class="mock store"><div class="card"><svg class="tile" xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 72 72"><rect x="0" y="0" width="72" height="72" rx="16.2" fill="#f45d2c"/><g transform="matrix(0.4816 0 0 0.4816 7.6709 7.1066)">
+  <path fill="#0b0d12" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg><div><b>Markilo</b><small>An M whose last stroke rises as a check mark</small><span class="get">GET</span></div></div><figcaption>App store listing</figcaption></figure><figure class="mock social"><div class="post"><div class="who"><i style="background:#f45d2c"></i><b>Markilo</b></div><svg class="og" xmlns="http://www.w3.org/2000/svg" width="600" height="315" viewBox="0 0 600 315"><rect width="600" height="315" fill="#ffffff"/><g transform="matrix(0.735 0 0 0.735 255.9 113.4)">
+  <path fill="#f45d2c" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g><rect y="307" width="600" height="8" fill="#f45d2c"/></svg><small>markilo.example</small></div><figcaption>Link preview (Open Graph)</figcaption></figure><figure class="mock bizcard"><div class="front" style="background:#f45d2c"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><g transform="matrix(0.4167 0 0 0.4167 0 0)">
+  <path fill="#0b0d12" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg></div><div class="back"><svg class="" role="img" aria-label="logo" xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"><g transform="matrix(0.2167 0 0 0.2167 0 0)">
+  <path fill="#f45d2c" d="M36.5 102 L36.5 56 L57.6 102 L62.1 102 L102.2 18 L79 18 L60.2 57.3 L42.1 18 L15.5 18 L15.5 102Z"/>
+</g></svg><b>Full Name</b><small>Role · name@markilo.example</small></div><figcaption>Business card</figcaption></figure></div>
+  <div class="feedback"><label>Your feedback on “Check M”<textarea data-fb="markilo/check-m" placeholder="What works, what doesn't, what to push further…"></textarea></label><div class="fbrow"><label><input type="radio" name="pick-markilo/check-m" value="shortlist"> Shortlist</label><label><input type="radio" name="pick-markilo/check-m" value="reject"> Reject</label><label><input type="radio" name="pick-markilo/check-m" value="approve"> Approve</label></div></div>
+</article></section></main>
+<script>
+(()=>{const K='markilo-feedback';let s={};try{s=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(s))}catch(e){}};
+document.querySelectorAll('textarea[data-fb]').forEach(t=>{const k=t.dataset.fb;t.value=(s[k]&&s[k].note)||'';t.addEventListener('input',()=>{(s[k]=s[k]||{}).note=t.value;save()})});
+document.querySelectorAll('input[type=radio]').forEach(r=>{const k=r.name.slice(5);if(s[k]&&s[k].pick===r.value)r.checked=true;r.addEventListener('change',()=>{(s[k]=s[k]||{}).pick=r.value;save()})});
+document.getElementById('theme').onclick=()=>{const d=document.documentElement;d.dataset.theme=d.dataset.theme==='dark'?'light':'dark'};
+document.getElementById('copy').onclick=async()=>{const lines=Object.entries(s).filter(([,v])=>v.note||v.pick).map(([k,v])=>'- '+k+(v.pick?' ['+v.pick+']':'')+(v.note?': '+v.note.replace(/\n/g,' '):''));const text='Markilo gallery feedback:\n'+(lines.join('\n')||'(no notes yet)');try{await navigator.clipboard.writeText(text);document.getElementById('copy').textContent='Copied ✓'}catch(e){prompt('Copy this feedback:',text)}};})();
+</script>
+</body></html>

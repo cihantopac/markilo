@@ -1,0 +1,23 @@
+{
+  "oneLiner": "A calm, minimal weather app for sailors",
+  "mode": "new",
+  "product": {
+    "type": "mobile app",
+    "category": "weather / marine",
+    "features": ["wind and tide forecasts", "offline charts"],
+    "platforms": ["iOS", "Android"]
+  },
+  "audience": {
+    "primary": ["recreational sailors"],
+    "secondary": ["sailing schools"],
+    "markets": ["EU", "US"],
+    "languages": ["en", "de", "fr"]
+  },
+  "positioning": {
+    "values": ["calm", "precision", "safety"],
+    "personality": ["quiet", "competent", "warm"],
+    "tone": "reassuring, concise"
+  },
+  "constraints": { "avoid": ["anchors", "ship wheels", "generic wave swooshes"], "colors": ["#0f6e8c"] },
+  "deliverables": ["logos", "ios", "android", "web", "social"]
+}

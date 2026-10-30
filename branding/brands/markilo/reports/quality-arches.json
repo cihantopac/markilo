@@ -1,0 +1,105 @@
+{
+  "subject": "arches/symbol.svg",
+  "role": "symbol",
+  "measuredAt": "2026-10-29T23:53:10.233Z",
+  "checks": [
+    {
+      "id": "symbol:svg-integrity",
+      "label": "Clean vector master",
+      "status": "pass",
+      "value": "0 errors, 0 warnings",
+      "message": "Pure vector, self-contained, scalable."
+    },
+    {
+      "id": "symbol:fidelity-16",
+      "label": "Legibility at 16 px",
+      "status": "pass",
+      "value": 0.93,
+      "message": "93% of the shape survives at 16 px (≥ 85% reads clearly)."
+    },
+    {
+      "id": "symbol:fidelity-32",
+      "label": "Legibility at 32 px",
+      "status": "pass",
+      "value": 0.95,
+      "message": "95% of the shape survives at 32 px (≥ 85% reads clearly)."
+    },
+    {
+      "id": "symbol:thin-detail",
+      "label": "Thinnest detail at 16 px",
+      "status": "pass",
+      "value": 1.88,
+      "message": "Thin strokes/gaps are ~1.88 px wide at 16 px (≥ 1.2 px stays crisp)."
+    },
+    {
+      "id": "symbol:balance",
+      "label": "Optical balance",
+      "status": "pass",
+      "value": 0.04,
+      "message": "Visual centroid sits 4% of the artboard from center."
+    },
+    {
+      "id": "symbol:artboard-fit",
+      "label": "Artboard fit",
+      "status": "warn",
+      "value": 0.78,
+      "message": "Mark spans 78% of the artboard (80–98% keeps icon exports consistent)."
+    },
+    {
+      "id": "symbol:genericity",
+      "label": "Distinct from stock primitives",
+      "status": "pass",
+      "value": 0.38,
+      "message": "Closest stock shape is a square at 38% overlap."
+    },
+    {
+      "id": "symbol:complexity",
+      "label": "Construction complexity",
+      "status": "pass",
+      "value": 16,
+      "message": "1 paths, 16 path commands, compactness 5.96."
+    },
+    {
+      "id": "symbol:monochrome",
+      "label": "One-color reproduction",
+      "status": "pass",
+      "value": 0,
+      "message": "Shapes stay separable in a single color."
+    },
+    {
+      "id": "symbol:contrast-14161f",
+      "label": "Contrast of #14161f",
+      "status": "info",
+      "value": "18.04:1 light / 1.03:1 dark",
+      "message": "Works on light grounds; use a reversed variant on the other."
+    },
+    {
+      "id": "symbol:contrast-f45d2c",
+      "label": "Contrast of #f45d2c",
+      "status": "pass",
+      "value": "3.26:1 light / 5.71:1 dark",
+      "message": "Meets the 3:1 non-text contrast guideline (WCAG 1.4.11) on light and dark grounds."
+    },
+    {
+      "id": "symbol:palette-separation",
+      "label": "Palette separation",
+      "status": "pass",
+      "value": 52.74,
+      "message": "Closest pair of colors differs by ΔE₀₀ 52.74. Under 20, shapes separated only by these colors blur together for many viewers; vary lightness too."
+    },
+    {
+      "id": "symbol:lightness-contrast",
+      "label": "Lightness contrast inside the mark",
+      "status": "pass",
+      "value": 110,
+      "message": "Lightness difference between brand colors (matters for grayscale print and color-vision deficiencies)."
+    }
+  ],
+  "summary": {
+    "pass": 11,
+    "warn": 1,
+    "fail": 0,
+    "info": 1
+  },
+  "note": "Measured technical checks. Brand fit, memorability, cultural fit and timelessness require visual review and are recorded as judgment."
+}

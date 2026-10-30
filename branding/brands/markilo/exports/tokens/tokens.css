@@ -1,0 +1,26 @@
+:root {
+  --markilo-primary-50: #fef4f1;
+  --markilo-primary-100: #ffe5dd;
+  --markilo-primary-200: #fdc6b5;
+  --markilo-primary-300: #fe987a;
+  --markilo-primary-400: #f45d2c;
+  --markilo-primary-500: #d14208;
+  --markilo-primary-600: #aa360a;
+  --markilo-primary-700: #872805;
+  --markilo-primary-800: #641c04;
+  --markilo-primary-900: #481101;
+  --markilo-primary-950: #2c0801;
+  --markilo-neutral-50: #fff4f1;
+  --markilo-neutral-100: #f3e9e5;
+  --markilo-neutral-200: #dcd2cf;
+  --markilo-neutral-300: #bfb5b2;
+  --markilo-neutral-400: #9f9693;
+  --markilo-neutral-500: #817875;
+  --markilo-neutral-600: #6a615e;
+  --markilo-neutral-700: #534b48;
+  --markilo-neutral-800: #3e3634;
+  --markilo-neutral-900: #2c2522;
+  --markilo-neutral-950: #1b1412;
+  --markilo-ink: #14161f;
+  --markilo-paper: #ffffff;
+}

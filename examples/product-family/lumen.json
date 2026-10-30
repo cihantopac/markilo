@@ -1,0 +1,16 @@
+{
+  "oneLiner": "Privacy-first productivity tools for small teams",
+  "mode": "new",
+  "product": {
+    "type": "SaaS family",
+    "category": "productivity software",
+    "features": ["email", "website builder"]
+  },
+  "audience": { "primary": ["small businesses", "freelancers"], "markets": ["global"], "languages": ["en"] },
+  "positioning": {
+    "values": ["privacy", "clarity", "independence"],
+    "personality": ["trustworthy", "bright", "unfussy"]
+  },
+  "constraints": { "mustKeep": ["Ledger's existing identity"], "avoid": ["padlocks", "shields"] },
+  "notes": "Family members share one construction grid and color logic; each product gets its own idea."
+}

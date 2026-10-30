@@ -1,0 +1,88 @@
+{
+  "schema": "markilo/originality@1",
+  "brand": "markilo",
+  "concept": "check-m",
+  "generatedAt": "2026-10-29T23:53:09.265Z",
+  "verdict": "clear-to-continue",
+  "scope": {
+    "referencesCompared": 0,
+    "references": [],
+    "conceptsCompared": ["arches", "crop"],
+    "nameCompetitors": 0,
+    "registrySearchesLogged": []
+  },
+  "visual": {
+    "risk": "low",
+    "thresholds": {
+      "review": 0.62,
+      "high": 0.78
+    },
+    "matches": []
+  },
+  "diversity": [
+    {
+      "concept": "arches",
+      "visual": 0.339,
+      "risk": "low",
+      "reasons": ["No strong overlap in silhouette, composition or structure."]
+    },
+    {
+      "concept": "crop",
+      "visual": 0.264,
+      "risk": "low",
+      "reasons": ["No strong overlap in silhouette, composition or structure."]
+    }
+  ],
+  "genericity": {
+    "closest": "square",
+    "similarity": 0.583,
+    "level": "distinct"
+  },
+  "name": {
+    "candidate": "Markilo",
+    "risk": "low",
+    "comparisons": [],
+    "pronunciation": []
+  },
+  "trademark": {
+    "suggestedClasses": [9, 42],
+    "classReasons": [
+      "downloadable software (9), SaaS and software development (42)",
+      "software as a service, hosting, AI services (42)"
+    ],
+    "registries": [
+      {
+        "name": "WIPO Global Brand Database",
+        "url": "https://branddb.wipo.int/",
+        "how": "Search \"Brand name\" with the fuzzy/phonetic strategy, then filter by Nice class. Also try the image search with the symbol PNG."
+      },
+      {
+        "name": "TMview (EUIPO and partner offices)",
+        "url": "https://www.tmdn.org/tmview/",
+        "how": "Search the name, enable \"similar\" matching, filter by Nice class and status \"registered\" or \"filed\"."
+      },
+      {
+        "name": "USPTO Trademark Search",
+        "url": "https://tmsearch.uspto.gov/",
+        "how": "Use the wordmark field with wildcards (e.g. nimbr*) and review live marks in the relevant classes."
+      },
+      {
+        "name": "TÜRKPATENT Marka Araştırma",
+        "url": "https://www.turkpatent.gov.tr/arastirma-yap?form=trademark",
+        "how": "Search the brand text and review results in the selected Nice classes."
+      },
+      {
+        "name": "UK IPO trade mark search",
+        "url": "https://trademarks.ipo.gov.uk/ipo-tmtext",
+        "how": "Search by word, then filter by class."
+      }
+    ]
+  },
+  "limitations": [
+    "Compared against 0 reference mark(s) collected for this brand; marks outside that set were not compared.",
+    "Absence of similar results is not evidence that the design or name is unique or registrable.",
+    "Automated similarity measures shape, composition, structure and color. Conceptual similarity (same idea drawn differently) needs human review.",
+    "This report is not legal advice and is not a trademark clearance search. Consult a trademark attorney before adoption.",
+    "No registry searches have been logged yet (markilo profile add-source --type registry ...)."
+  ]
+}

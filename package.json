@@ -1,0 +1,75 @@
+{
+  "name": "markilo",
+  "version": "0.1.0",
+  "description": "AI-powered brand identity studio for Claude Code: research, originality analysis, SVG identity design, verification and complete asset export.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "author": "Cihan Topaç (https://github.com/cihantopac)",
+  "homepage": "https://github.com/cihantopac/markilo#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cihantopac/markilo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cihantopac/markilo/issues"
+  },
+  "keywords": [
+    "brand-identity",
+    "logo",
+    "svg",
+    "claude-code",
+    "claude-code-plugin",
+    "favicon",
+    "app-icon",
+    "design-system",
+    "originality"
+  ],
+  "engines": {
+    "node": ">=20.10"
+  },
+  "bin": {
+    "markilo": "dist/markilo.mjs"
+  },
+  "files": [
+    "dist",
+    "fonts",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "fonts": "node scripts/vendor-fonts.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:dist": "node scripts/check-dist.mjs",
+    "validate:plugin": "claude plugin validate . --strict",
+    "ci": "npm run lint && npm run typecheck && npm test && npm run build && npm run check:dist"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.4",
+    "@fontsource/dm-sans": "5.3.0",
+    "@fontsource/fraunces": "5.3.0",
+    "@fontsource/ibm-plex-serif": "5.3.0",
+    "@fontsource/inter": "5.3.0",
+    "@fontsource/jetbrains-mono": "5.3.0",
+    "@fontsource/manrope": "5.3.0",
+    "@fontsource/outfit": "5.3.0",
+    "@fontsource/plus-jakarta-sans": "5.3.0",
+    "@fontsource/sora": "5.3.0",
+    "@fontsource/space-grotesk": "5.3.0",
+    "@resvg/resvg-wasm": "2.6.2",
+    "@types/node": "22.20.5",
+    "@types/pngjs": "6.0.5",
+    "esbuild": "0.28.2",
+    "fontkit": "2.0.4",
+    "jpeg-js": "0.4.4",
+    "pngjs": "7.0.0",
+    "svgo": "4.1.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}

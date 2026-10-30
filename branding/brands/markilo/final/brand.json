@@ -1,0 +1,28 @@
+{
+  "schema": "markilo/kit@1",
+  "brand": "markilo",
+  "name": "Markilo",
+  "concept": "crop",
+  "locked": false,
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "lockupHorizontal": "lockup-horizontal.svg",
+    "lockupStacked": "lockup-stacked.svg",
+    "lockupCompact": "lockup-compact.svg"
+  },
+  "palette": {
+    "primary": "#f45d2c",
+    "ink": "#14161f",
+    "paper": "#ffffff",
+    "dark": "#120c0a"
+  },
+  "typography": {
+    "fontId": "space-grotesk",
+    "weight": 700,
+    "family": "Space Grotesk",
+    "license": "OFL-1.1"
+  },
+  "tagline": "Brand identities, researched and verified",
+  "approvedAt": "2026-10-29T23:55:33.109Z"
+}

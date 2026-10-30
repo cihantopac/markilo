@@ -1,0 +1,24 @@
+---
+
+name: concepts
+description: Markilo creative exploration and concept design — turn a brief into 3–5 genuinely different creative directions and original, verified SVG logo concepts (symbol + outlined wordmark). Use when the user wants logo concepts or design directions for a brand that already has research or a brief.
+argument-hint: "[brand slug and any direction notes]"
+allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs *) Read Write Edit Glob Grep
+---
+
+# Markilo · Explore and design concepts
+
+Request: $ARGUMENTS
+
+Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Read `${CLAUDE_PLUGIN_ROOT}/skills/design/references/design-principles.md` and `${CLAUDE_PLUGIN_ROOT}/skills/design/references/svg-authoring.md`.
+
+1. `markilo brief show --brand <slug>` and `markilo profile show --brand <slug>`. If the brief is thin, run the
+   research skill first or ask the user. Refuse concept work for locked brands.
+2. Write 3–5 directions (idea sentence, metaphor, form language, typeface from `markilo fonts`, palette, why it fits,
+   risks). Share them briefly; proceed with the ones the user prefers (or all, if they said "just go").
+3. For each direction, delegate to the `markilo:concept-designer` agent with: brand slug, concept id, the direction text,
+   the brief summary, palette and typeface. Run independent directions in parallel.
+4. After the agents finish: `markilo diversity --brand <slug>`. Merge or replace directions that are too similar.
+5. Ask the `markilo:design-critic` agent to review all concepts (it reads the review sheets and records judgment).
+6. `markilo gallery` and present: per concept, two lines (idea + measured strengths/risks) and the gallery path.
+   Ask the user which to refine.

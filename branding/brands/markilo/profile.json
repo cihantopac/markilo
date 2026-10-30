@@ -1,0 +1,13 @@
+{
+  "schema": "markilo/profile@1",
+  "brand": "markilo",
+  "updatedAt": "2026-10-29T23:53:08.291Z",
+  "sources": [],
+  "findings": [],
+  "existingIdentity": {
+    "logos": [],
+    "colors": [],
+    "fonts": []
+  },
+  "gaps": []
+}

@@ -1,0 +1,18 @@
+node_modules/
+coverage/
+tests/.tmp/
+evals/results/
+*.log
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
+# Brand workspaces created while developing/testing Markilo locally.
+# Real client research and designs must never be committed to this public repository.
+/brand/
+/markilo-workspace/
+/.markilo/
+/private/
+# Test fixture with a fake secret (verifies the scanner never reads it)
+!tests/fixtures/repo/.env

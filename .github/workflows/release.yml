@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+    tags: ["markilo--v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run ci
+      - name: Extract release notes from CHANGELOG.md
+        run: |
+          VERSION="${GITHUB_REF_NAME#markilo--v}"
+          awk -v v="$VERSION" '$0 ~ "^## \\[" v "\\]" {p=1; next} p && /^## \[/ {exit} p' CHANGELOG.md > notes.md
+          test -s notes.md
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --title "Markilo ${GITHUB_REF_NAME#markilo--v}" --notes-file notes.md

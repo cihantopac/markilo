@@ -1,0 +1,13 @@
+{
+  "name": "zentrix",
+  "description": "Open-source uptime monitoring for small teams",
+  "keywords": [
+    "monitoring",
+    "uptime"
+  ],
+  "homepage": "https://zentrix.example",
+  "dependencies": {
+    "react": "19.0.0",
+    "@fontsource/inter": "5.0.0"
+  }
+}

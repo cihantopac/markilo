@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.woff binary
+*.wasm binary
+*.png binary
+*.ico binary
+*.icns binary
+dist/** linguist-generated=true

@@ -1,0 +1,12 @@
+:root {
+  --brand: #0e9f6e;
+  --ink: #101828;
+  --accent: #f79009;
+}
+body {
+  font-family: "Inter", sans-serif;
+  color: #101828;
+}
+.btn {
+  background: #0e9f6e;
+}

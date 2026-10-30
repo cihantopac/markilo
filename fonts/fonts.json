@@ -1,0 +1,386 @@
+{
+  "generatedBy": "scripts/vendor-fonts.mjs",
+  "license": "OFL-1.1",
+  "families": [
+    {
+      "id": "inter",
+      "family": "Inter",
+      "category": "sans-serif",
+      "role": "neutral grotesque sans; UI-grade, highly legible",
+      "license": "OFL-1.1",
+      "licenseFile": "inter/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/inter@5.3.0 (Google Fonts v20)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "files": {
+        "400": [
+          "inter/inter-latin-400-normal.woff",
+          "inter/inter-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "inter/inter-latin-500-normal.woff",
+          "inter/inter-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "inter/inter-latin-600-normal.woff",
+          "inter/inter-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "inter/inter-latin-700-normal.woff",
+          "inter/inter-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "inter/inter-latin-800-normal.woff",
+          "inter/inter-latin-ext-800-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "manrope",
+      "family": "Manrope",
+      "category": "sans-serif",
+      "role": "geometric-humanist sans; friendly, modern",
+      "license": "OFL-1.1",
+      "licenseFile": "manrope/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/manrope@5.3.0 (Google Fonts v20)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "files": {
+        "400": [
+          "manrope/manrope-latin-400-normal.woff",
+          "manrope/manrope-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "manrope/manrope-latin-500-normal.woff",
+          "manrope/manrope-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "manrope/manrope-latin-600-normal.woff",
+          "manrope/manrope-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "manrope/manrope-latin-700-normal.woff",
+          "manrope/manrope-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "manrope/manrope-latin-800-normal.woff",
+          "manrope/manrope-latin-ext-800-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "space-grotesk",
+      "family": "Space Grotesk",
+      "category": "sans-serif",
+      "role": "technical grotesque with quirky details",
+      "license": "OFL-1.1",
+      "licenseFile": "space-grotesk/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/space-grotesk@5.3.0 (Google Fonts v22)",
+      "weights": [
+        400,
+        500,
+        600,
+        700
+      ],
+      "files": {
+        "400": [
+          "space-grotesk/space-grotesk-latin-400-normal.woff",
+          "space-grotesk/space-grotesk-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "space-grotesk/space-grotesk-latin-500-normal.woff",
+          "space-grotesk/space-grotesk-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "space-grotesk/space-grotesk-latin-600-normal.woff",
+          "space-grotesk/space-grotesk-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "space-grotesk/space-grotesk-latin-700-normal.woff",
+          "space-grotesk/space-grotesk-latin-ext-700-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "sora",
+      "family": "Sora",
+      "category": "sans-serif",
+      "role": "wide geometric sans; tech / fintech",
+      "license": "OFL-1.1",
+      "licenseFile": "sora/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/sora@5.3.0 (Google Fonts v17)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "files": {
+        "400": [
+          "sora/sora-latin-400-normal.woff",
+          "sora/sora-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "sora/sora-latin-500-normal.woff",
+          "sora/sora-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "sora/sora-latin-600-normal.woff",
+          "sora/sora-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "sora/sora-latin-700-normal.woff",
+          "sora/sora-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "sora/sora-latin-800-normal.woff",
+          "sora/sora-latin-ext-800-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "dm-sans",
+      "family": "DM Sans",
+      "category": "sans-serif",
+      "role": "low-contrast geometric sans; compact",
+      "license": "OFL-1.1",
+      "licenseFile": "dm-sans/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/dm-sans@5.3.0 (Google Fonts v17)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "files": {
+        "400": [
+          "dm-sans/dm-sans-latin-400-normal.woff",
+          "dm-sans/dm-sans-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "dm-sans/dm-sans-latin-500-normal.woff",
+          "dm-sans/dm-sans-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "dm-sans/dm-sans-latin-600-normal.woff",
+          "dm-sans/dm-sans-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "dm-sans/dm-sans-latin-700-normal.woff",
+          "dm-sans/dm-sans-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "dm-sans/dm-sans-latin-800-normal.woff",
+          "dm-sans/dm-sans-latin-ext-800-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "outfit",
+      "family": "Outfit",
+      "category": "sans-serif",
+      "role": "rounded geometric sans; approachable",
+      "license": "OFL-1.1",
+      "licenseFile": "outfit/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/outfit@5.3.0 (Google Fonts v15)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "files": {
+        "400": [
+          "outfit/outfit-latin-400-normal.woff",
+          "outfit/outfit-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "outfit/outfit-latin-500-normal.woff",
+          "outfit/outfit-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "outfit/outfit-latin-600-normal.woff",
+          "outfit/outfit-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "outfit/outfit-latin-700-normal.woff",
+          "outfit/outfit-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "outfit/outfit-latin-800-normal.woff",
+          "outfit/outfit-latin-ext-800-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "plus-jakarta-sans",
+      "family": "Plus Jakarta Sans",
+      "category": "sans-serif",
+      "role": "contemporary sans with open apertures",
+      "license": "OFL-1.1",
+      "licenseFile": "plus-jakarta-sans/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/plus-jakarta-sans@5.3.0 (Google Fonts v12)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "files": {
+        "400": [
+          "plus-jakarta-sans/plus-jakarta-sans-latin-400-normal.woff",
+          "plus-jakarta-sans/plus-jakarta-sans-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "plus-jakarta-sans/plus-jakarta-sans-latin-500-normal.woff",
+          "plus-jakarta-sans/plus-jakarta-sans-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "plus-jakarta-sans/plus-jakarta-sans-latin-600-normal.woff",
+          "plus-jakarta-sans/plus-jakarta-sans-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "plus-jakarta-sans/plus-jakarta-sans-latin-700-normal.woff",
+          "plus-jakarta-sans/plus-jakarta-sans-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "plus-jakarta-sans/plus-jakarta-sans-latin-800-normal.woff",
+          "plus-jakarta-sans/plus-jakarta-sans-latin-ext-800-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "fraunces",
+      "family": "Fraunces",
+      "category": "serif",
+      "role": "soft \"wonky\" display serif; editorial, warm",
+      "license": "OFL-1.1",
+      "licenseFile": "fraunces/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/fraunces@5.3.0 (Google Fonts v38)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "files": {
+        "400": [
+          "fraunces/fraunces-latin-400-normal.woff",
+          "fraunces/fraunces-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "fraunces/fraunces-latin-500-normal.woff",
+          "fraunces/fraunces-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "fraunces/fraunces-latin-600-normal.woff",
+          "fraunces/fraunces-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "fraunces/fraunces-latin-700-normal.woff",
+          "fraunces/fraunces-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "fraunces/fraunces-latin-800-normal.woff",
+          "fraunces/fraunces-latin-ext-800-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "ibm-plex-serif",
+      "family": "IBM Plex Serif",
+      "category": "serif",
+      "role": "rational text serif; institutional, trustworthy",
+      "license": "OFL-1.1",
+      "licenseFile": "ibm-plex-serif/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/ibm-plex-serif@5.3.0 (Google Fonts v20)",
+      "weights": [
+        400,
+        500,
+        600,
+        700
+      ],
+      "files": {
+        "400": [
+          "ibm-plex-serif/ibm-plex-serif-latin-400-normal.woff",
+          "ibm-plex-serif/ibm-plex-serif-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "ibm-plex-serif/ibm-plex-serif-latin-500-normal.woff",
+          "ibm-plex-serif/ibm-plex-serif-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "ibm-plex-serif/ibm-plex-serif-latin-600-normal.woff",
+          "ibm-plex-serif/ibm-plex-serif-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "ibm-plex-serif/ibm-plex-serif-latin-700-normal.woff",
+          "ibm-plex-serif/ibm-plex-serif-latin-ext-700-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "jetbrains-mono",
+      "family": "JetBrains Mono",
+      "category": "monospace",
+      "role": "monospace; developer tools",
+      "license": "OFL-1.1",
+      "licenseFile": "jetbrains-mono/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/jetbrains-mono@5.3.0 (Google Fonts v24)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "files": {
+        "400": [
+          "jetbrains-mono/jetbrains-mono-latin-400-normal.woff",
+          "jetbrains-mono/jetbrains-mono-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "jetbrains-mono/jetbrains-mono-latin-500-normal.woff",
+          "jetbrains-mono/jetbrains-mono-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "jetbrains-mono/jetbrains-mono-latin-600-normal.woff",
+          "jetbrains-mono/jetbrains-mono-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "jetbrains-mono/jetbrains-mono-latin-700-normal.woff",
+          "jetbrains-mono/jetbrains-mono-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "jetbrains-mono/jetbrains-mono-latin-800-normal.woff",
+          "jetbrains-mono/jetbrains-mono-latin-ext-800-normal.woff"
+        ]
+      }
+    }
+  ]
+}
