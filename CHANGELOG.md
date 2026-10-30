@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `scripts/smoke.mjs`: an empty folder to installed assets with the bundle alone; CI runs it on every OS and on the copy
+  that `claude plugin install` produces from the marketplace.
+
+### Fixed
+
+- An absolute path that reaches the workspace under another name (macOS `/var` and `/private/var`, a symlinked home)
+  was refused as outside the workspace, so `concept update --wordmark /var/…` failed in temporary folders.
+
 ## [0.4.0-rc.1] - 2026-10-30
 
 ### Added
@@ -14,7 +24,6 @@ All notable changes to this project are documented here. The format follows
   independent SaaS, a mobile app, a multi-product family) in headless Claude Code, measures success, the quality gate,
   checks, originality, exports, tokens and cost, has a blind judge rate every critiqued concept and writes the report
   to `bench/results/<version>/`.
-
 - Context sheets: `verify` shows the mark in browser tabs, on a home screen next to the collected competitors, in site
   headers and as avatars; the critic starts with a blind first impression (`concept update --reads-as`) that caps
   scores when the idea does not read or the mark reads as a UI icon or cliché.

@@ -1,5 +1,5 @@
 import { existsSync, realpathSync } from 'node:fs';
-import { basename, dirname, isAbsolute, normalize, relative, resolve, sep } from 'node:path';
+import { basename, dirname, isAbsolute, join, normalize, relative, resolve, sep } from 'node:path';
 import { MarkiloError } from './errors.js';
 
 /** Lowercase ASCII slug; folds Turkish and other Latin diacritics so "Şirket Ürün" → "sirket-urun". */
@@ -45,12 +45,20 @@ export function isSlug(value: string): boolean {
 export function resolveInside(root: string, target: string): string {
   const base = resolve(root);
   const full = isAbsolute(target) ? normalize(target) : resolve(base, target);
-  const rel = relative(base, full);
-  if (rel === '') return full;
-  if (rel.startsWith(`..${sep}`) || rel === '..' || isAbsolute(rel)) {
-    throw new MarkiloError('UNSAFE_PATH', `Refusing to access "${target}" because it is outside ${base}.`);
+  if (isWithin(base, full)) return full;
+  // One folder can have two names (macOS /var and /private/var, a symlinked home): compare the real locations and
+  // hand back the path under the root's own name.
+  if (isAbsolute(target)) {
+    const realBase = realExisting(base);
+    const realFull = realExisting(full);
+    if (isWithin(realBase, realFull)) return join(base, relative(realBase, realFull));
   }
-  return full;
+  throw new MarkiloError('UNSAFE_PATH', `Refusing to access "${target}" because it is outside ${base}.`);
+}
+
+function isWithin(base: string, full: string): boolean {
+  const rel = relative(base, full);
+  return !(rel.startsWith(`..${sep}`) || rel === '..' || isAbsolute(rel));
 }
 
 /** realpath of the deepest existing ancestor, with the missing tail re-appended. */
@@ -73,8 +81,7 @@ function realExisting(path: string): string {
 export function resolveInsideReal(root: string, target: string): string {
   const full = resolveInside(root, target);
   const realRoot = realExisting(resolve(root));
-  const rel = relative(realRoot, realExisting(full));
-  if (rel.startsWith(`..${sep}`) || rel === '..' || isAbsolute(rel)) {
+  if (!isWithin(realRoot, realExisting(full))) {
     throw new MarkiloError(
       'UNSAFE_PATH',
       `Refusing to access "${target}": it resolves outside ${realRoot} through a symbolic link.`,

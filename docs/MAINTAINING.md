@@ -17,8 +17,11 @@ if they disagree. Setting `version` in the plugin manifest means users receive u
 
 1. Move _Unreleased_ notes in `CHANGELOG.md` to a new version section with today's date.
 2. Bump the version in the three manifests.
-3. `npm run ci` and `claude plugin validate . --strict`.
-4. Optional but recommended: `claude plugin eval . --runs 1 --max-cost-usd 5 --allow-tools "Bash(node *)" Write Edit --no-publish`.
+3. `npm run ci`, `node scripts/smoke.mjs` and `claude plugin validate . --strict`.
+4. For releases that change the design workflow, skills or checks: update the installed plugin and run the benchmark
+   (`node scripts/bench.mjs run all`, then `judge` and `report`; see [bench/README.md](../bench/README.md)). Commit
+   `bench/results/<version>/` and update the README's numbers. Optional: `claude plugin eval . --runs 1 --max-cost-usd 5
+   --allow-tools "Bash(node *)" Write Edit --no-publish`.
 5. Commit, then `claude plugin tag --push` (creates `markilo--v<version>`). The release workflow runs CI and publishes
    GitHub release notes from the changelog.
 

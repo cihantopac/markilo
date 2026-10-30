@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { writeFileSafe } from '../src/core/fsx.js';
@@ -16,6 +16,17 @@ describe('paths', () => {
     expect(() => resolveInside(root, '../x')).toThrow(/outside/);
     expect(() => resolveInside(root, '/etc/passwd')).toThrow(/outside/);
     expect(resolveInside(root, 'a/b')).toBe(join(root, 'a', 'b'));
+  });
+  // macOS names the temp folder /var/… and /private/var/…: an absolute path through another name is still inside.
+  it('accepts an absolute path that reaches the root under another name', () => {
+    const dir = tmp();
+    const root = join(dir, 'real');
+    mkdirSync(join(root, 'c'), { recursive: true });
+    writeFileSync(join(root, 'c', 'w.svg'), '<svg/>');
+    symlinkSync(root, join(dir, 'alias'), 'dir');
+    expect(resolveInside(root, join(dir, 'alias', 'c', 'w.svg'))).toBe(join(root, 'c', 'w.svg'));
+    expect(resolveInside(root, join(dir, 'alias', 'c', 'new.svg'))).toBe(join(root, 'c', 'new.svg'));
+    expect(() => resolveInside(join(root, 'c'), join(dir, 'alias', 'x'))).toThrow(/outside/);
   });
   it('never silently overwrites', () => {
     const f = join(tmp(), 'f.txt');

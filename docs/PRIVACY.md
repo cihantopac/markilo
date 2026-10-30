@@ -16,8 +16,13 @@
   paths (they would reveal your user name and folder layout); `markilo profile tidy` rewrites older profiles.
 - **External services.** Web searches and fetches done by Claude (WebSearch/WebFetch) are governed by your Claude Code
   settings. Markilo's skills ask before searching with private or unreleased names.
-- **Your project.** Markilo writes outside `brand/` only through `install-assets --apply`, never overwriting existing
-  files unless you pass `--force`. The optional `/markilo` shortcut writes one file to `~/.claude/skills/markilo/` only
-  with `--yes`.
+- **Your project.** Markilo writes outside `brand/` only through `install-assets --apply` (never overwriting existing
+  files unless you pass `--force`, and backing them up to `.markilo-backup/` first) and `agent-setup --apply` (one
+  instruction file for another coding agent; it names paths on your computer unless you pass `--cli` and
+  `--references`, so check it before committing). The optional `/markilo` shortcut writes one file to
+  `~/.claude/skills/markilo/` only with `--yes`.
+- **Optional embedder.** `MARKILO_EMBEDDER` runs a local command you choose to compare marks; Markilo sends it two image
+  paths and nothing else, and nothing is downloaded for it.
 - **This repository.** Never commit real client research or unreleased brand material to Markilo itself. Tests and
-  examples use synthetic brands.
+  examples use synthetic brands. Benchmark results (`bench/results/`) keep only Markilo's own outputs and metrics, never
+  research captures or third-party reference marks.
