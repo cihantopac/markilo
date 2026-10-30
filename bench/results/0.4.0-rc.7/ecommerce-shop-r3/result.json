@@ -1,0 +1,96 @@
+{
+  "scenario": "ecommerce-shop",
+  "attempt": 3,
+  "holdout": false,
+  "title": "Online shop",
+  "kind": "ecommerce",
+  "brief": {
+    "ask": "Create a brand identity for Kilnroom, the online shop in this folder.",
+    "owner": "Owner preferences: handmade and warm but not rustic or folksy; no pottery wheels, no vase or mug silhouettes, no flames. It must work on a shipping label, a tissue-paper sticker and Instagram. Web and social only; customers in Turkey and Europe."
+  },
+  "markilo": "0.4.0-rc.7",
+  "ranAt": "2026-10-30T16:25:09.502Z",
+  "minutes": 8.21,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 1.6572120000000004,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 44028,
+    "output": 64928,
+    "cacheRead": 3258808,
+    "cacheWrite": 236386
+  },
+  "turns": 3,
+  "subagents": 8,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Eleştirmen iki eskiz turunda da üç yönün hiçbirine seçim vermedi (kfold bir turda, opening ve chop iki turda reddedildi); kalite kapısına ulaşan konsept olmadığı için sonuçlandırma, dışa aktarma ve galeri yapılmadı."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "kilnroom",
+      "name": "Kilnroom",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "chop",
+          "title": "Maker's Chop",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 fingerprint/target (security icon); s2 tally slashes or barcode in a badge; s3 water/wave icon; s4 bomb with fuse, garlic or a vase/pot (owner exclusion); s5 hypnosis spiral or cinnamon roll. The faceted seal outline is the one ownable thing, but every inner mark is a stock read (stock similarity 69-80%) and 16px shows only a dotted badge. Different move: make the irregular hand-cut outline itself the mark, with one asymmetric notch or one off-centre cut, no inner pictogram.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "kfold",
+          "title": "Folded K",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1-s3 a K built from rounded bars, i.e. generic K monogram with offset/split pieces; s4 K cut from a rounded square, app tile. All are the initial with a cut or step. Different move: leave the letter; build a non-letter mark (a pressed or fired form with a distinctive silhouette) and let the K live in the wordmark only.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "opening",
+          "title": "The Opening",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 three bars, list/hamburger menu; s2 brick grid, dots at 16px, generic wall icon; s3 pie chart or Pac-Man, clock wedge; s4 target or nested UI frame. All struck: the product's own object (kiln shelves, bricks) drawn plainly or UI geometry. Try a different move: an opening shown by one distinctive silhouette (a cut-out or notch in a made object's edge) rather than a diagram of the kiln.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "178580c8-07d3-4521-8089-ed943eb4d47e"
+}

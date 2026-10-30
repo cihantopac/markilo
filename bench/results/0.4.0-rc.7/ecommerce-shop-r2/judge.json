@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "kilnroom",
+    "concept": "doorway",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "arched building facade or kiln with a glowing doorway",
+        "stacked arched kiln shelves beside a lit kiln door",
+        "a small chapel or colonnade window"
+      ],
+      "distinctiveness": 6,
+      "memorability": 6,
+      "brandFit": 7,
+      "craft": 7,
+      "versatility": 7,
+      "presentAsIs": true,
+      "why": "The shape is a kiln-room doorway with a warm amber glow and stacked arched niches, so it suggests the kiln with no flame or vessel; it is clean and holds up from 16px upward, but it sits close to generic arch-and-window architecture marks and could be mistaken for a church, a building or a real-estate logo."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.213285
+  }
+]

@@ -1,0 +1,129 @@
+{
+  "scenario": "family-workspace",
+  "attempt": 1,
+  "holdout": false,
+  "title": "Multi-product family",
+  "kind": "family",
+  "brief": {
+    "ask": "Create the brand family for Lumenfold, the office suite in this monorepo: the Lumenfold master brand and product icons for Lumenfold Docs, Sheets and Sign.",
+    "owner": "Owner preferences: privacy-first and European, calm and precise. The three product icons must clearly belong to one family and still be told apart at small sizes. Web apps only."
+  },
+  "markilo": "0.4.0-rc.7",
+  "ranAt": "2026-10-30T15:59:40.116Z",
+  "minutes": 15.54,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.1555181999999995,
+  "budgetUsd": 25,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 38589,
+    "output": 138370,
+    "cacheRead": 5550491,
+    "cacheWrite": 425323
+  },
+  "turns": 5,
+  "subagents": 9,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "All three directions (crease, lightcut, threshold) got 'none' from the critic in two sketch-review rounds, so no concept was developed, finalized or exported."
+  },
+  "workspace": true,
+  "family": "Lumenfold",
+  "brands": [
+    {
+      "slug": "lumenfold",
+      "name": "Lumenfold",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "crease",
+          "title": "Crease",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s5 split diamond/kite, a cut shape; s6 two thin spikes, M/Y or rabbit ears, dies at 16 px; s7 fragmented bird/shards, docs reads as a 7, sign as S/Z, not calm. Family belongs in s5 only and its docs/sheets differ only by seam direction. Try a move that is not a cut: one solid silhouette whose fold is an overlap or tonal turn, not a gap.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "lightcut",
+          "title": "Light cuts",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s4 slanted bars over an underline, like !! or a typographic H/i, members barely differ at 16 px; s5 split diamond, left-pointing play/back arrow; s6 table lamp or traffic cone on a plinth, a literal light cliché, and the family adds only a bar or a split. Try light as a single owned silhouette (not bars, cones or windows) that carries all three members by one added element.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "threshold",
+          "title": "Threshold",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 door or horseshoe magnet, sign adds a bell; s2 split arched door, sheets/sign muddled; s3 rainbow or wifi arches, sheets unreadable at 16 px; s4/s5 split half-disc and split diamond, DocuSign/yin-yang-like cuts; s6 sliced disc, burger or dial. Nothing passes distinctiveness 7. Try a different move than the seam/split/arch: one bold ownable silhouette, members differing by a single internal mark.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "docs",
+      "name": "Lumenfold Docs",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "sheets",
+      "name": "Lumenfold Sheets",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "sign",
+      "name": "Lumenfold Sign",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "55b21310-c4a6-49a1-9484-1d5c38816c1c"
+}

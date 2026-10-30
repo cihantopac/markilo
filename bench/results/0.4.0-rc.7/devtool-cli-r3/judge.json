@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "seamline",
+    "concept": "overlap",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "three tilted rounded bars, like a skewed equals sign or hamburger menu",
+        "a stepped, abstract S or a zigzag",
+        "a mid-gap spacer between two slabs, a loose hint at a seam"
+      ],
+      "distinctiveness": 4,
+      "memorability": 4,
+      "brandFit": 5,
+      "craft": 6,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "Clean and reproducible in one colour, but three tilted pill-bars are a stock motif; the concept is called \"overlap\" yet nothing overlaps or joins, so the seam idea doesn't come through, and at 16–24 px the small middle bar turns into noise."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.21589600000000003
+  }
+]

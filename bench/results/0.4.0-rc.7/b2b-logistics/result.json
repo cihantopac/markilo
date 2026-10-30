@@ -1,0 +1,96 @@
+{
+  "scenario": "b2b-logistics",
+  "attempt": 1,
+  "holdout": true,
+  "title": "B2B platform",
+  "kind": "b2b",
+  "brief": {
+    "ask": "Create a brand identity for Portwise, the freight visibility platform in this folder.",
+    "owner": "Owner preferences: dependable and calm, for operations teams who look at it all day; serious enough for enterprise procurement. No globes, ships, containers, trucks or arrows. Web app, sales decks and LinkedIn."
+  },
+  "markilo": "0.4.0-rc.7",
+  "ranAt": "2026-10-30T15:59:40.209Z",
+  "minutes": 6.4,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 1.9278567999999991,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 41271,
+    "output": 67310,
+    "cacheRead": 3638199,
+    "cacheWrite": 306002
+  },
+  "turns": 4,
+  "subagents": 9,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Üç yönün hepsi iki sketch incelemesinde eleştirmenden 'none' aldı ve reddedildi; kapıyı geçen konsept olmadığından finalize, export ve galeri çalıştırılmadı; ad için önceki kullanım riski var, sicil taraması yapılamadı."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "portwise",
+      "name": "Portwise",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "harbour-gate",
+          "title": "Harbour Gate",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 two plain rectangles, generic; s2 square split on the diagonal (cut device); s3 Pac-Man/C disc with a bite; s4 P with an open bowl (initial plus cut). All struck. Different move: a form that is not a split letter or shape.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "pillar",
+          "title": "Pillar P",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 hamburger/menu with a purple pill; s2 blocky P with a bite; s3 P from pill+disc, generic; s4 plain P with a loop. All are the initial with a cut/overlap or a UI icon. Different move: a non-letter form.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "range",
+          "title": "Range",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 bell-curve chart icon; s2 wifi/signal icon; s3 copy/duplicate UI icon; s4 sliced dome, sunrise cliche with a cut. All struck. Different move: drop the distribution metaphor, find a non-chart, non-letter form.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "38556ac8-e86e-4aff-bc36-36a2da811d52"
+}

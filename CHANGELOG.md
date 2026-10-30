@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Benchmark results for rc.7 (`bench/results/0.4.0-rc.7/`, 11 runs including two fresh holdouts, Opus judge): no run
+  passed the gate; two of the five developed marks are the first the Opus judge would present, and the stricter
+  critic rejected both. The README's "Measured quality" says so.
+
 ## [0.4.0-rc.7] - 2026-10-30
 
 ### Changed

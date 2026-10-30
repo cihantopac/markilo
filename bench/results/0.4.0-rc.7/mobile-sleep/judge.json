@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "dozeline",
+    "concept": "heavy-lid",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a candle or bottle with a detached, oddly shaped flame",
+        "a perfume or sauce bottle with a hooked drip above it",
+        "a thumbs-up hand shape under a floating blob"
+      ],
+      "distinctiveness": 4,
+      "memorability": 4,
+      "brandFit": 4,
+      "craft": 3,
+      "versatility": 4,
+      "presentAsIs": false,
+      "why": "The two parts don't hold together as one mark: the flame floats too far from the body, it is lopsided, and the uneven shoulders on the body look accidental, so it reads as a clumsy candle or bottle rather than a heavy eyelid or wind-down, and at small home-screen sizes it breaks into two unrelated specks."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2150198
+  }
+]

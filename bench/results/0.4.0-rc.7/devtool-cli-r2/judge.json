@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "seamline",
+    "concept": "stitched-join",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "two offset slabs laced together by diagonal stitches, like a seam or zipper",
+        "a stylised S coiled like a spring or helix through a split block",
+        "a binding or shoelace cinching two panels"
+      ],
+      "distinctiveness": 6,
+      "memorability": 6,
+      "brandFit": 7,
+      "craft": 6,
+      "versatility": 6,
+      "presentAsIs": true,
+      "why": "The seam idea and the hidden S fit the name and look precise and developer-native, but the white channel bulges in a lumpy way, the spring and helix reading pulls away from 'seam', and below 24px the stitches clog into noise, so the mark is solid but not yet ownable."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2304296
+  }
+]

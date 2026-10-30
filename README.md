@@ -80,28 +80,28 @@ tuning (a developer tool, an online shop). The plugin researches, writes the bri
 only what passes its own gate. Blind judges then rate every critiqued concept from the brief and the images alone.
 Every run, image and score is in [bench/](bench).
 
-| Version        | Runs                  | Passed the gate | Sonnet 5.5 judge would present it | Opus 5.5 judge would present it | Time per run | Cost per run (API equivalent) |
-| -------------- | --------------------- | --------------- | --------------------------------- | ------------------------------- | ------------ | ----------------------------- |
-| 0.4.0-rc.1     | 3                     | 0               | —                                 | —                               | 11–21 min    | $2.61–3.67                    |
-| 0.4.0-rc.2     | 3                     | 1               | 0 of 1                            | —                               | 8–15 min     | $1.60–2.68                    |
-| 0.4.0-rc.3     | 3                     | 2               | 2 of 2                            | 0 of 2                          | 14–24 min    | $3.15–4.37                    |
-| **0.4.0-rc.5** | **9** (6 on holdouts) | **2**           | —                                 | **0 of 2**                      | 10–19 min    | $2.29–4.41                    |
+| Version        | Runs                    | Passed the gate | Opus 5.5 judge would present (of concepts it judged) | Time per run | Cost per run (API equivalent) |
+| -------------- | ----------------------- | --------------- | ---------------------------------------------------- | ------------ | ----------------------------- |
+| 0.4.0-rc.1     | 3                       | 0               | —                                                    | 11–21 min    | $2.61–3.67                    |
+| 0.4.0-rc.2     | 3                       | 1               | —                                                    | 8–15 min     | $1.60–2.68                    |
+| 0.4.0-rc.3     | 3                       | 2               | 0 of 2 (the two that passed)                         | 14–24 min    | $3.15–4.37                    |
+| 0.4.0-rc.5     | 9 (6 on holdouts)       | 2               | 0 of 12                                              | 10–19 min    | $2.29–4.41                    |
+| **0.4.0-rc.7** | **11** (2 new holdouts) | **0**           | **2 of 5** — both rejected by the gate               | 6–16 min     | $1.66–3.30                    |
 
 What this shows, plainly:
 
-- **Unattended, Markilo reaches its own gate in about one run in four** (rc.5: 2 of 9; on briefs it was never tuned
-  on, 1 of 6). rc.3's two of three did not hold up on new briefs.
-- **No unattended identity is finished work yet.** A strict independent judge (Opus 5.5) would present none of them as
-  is — nor Markilo's own identity, made in a longer interactive session. It scores the best work 5.8–6.2 of 10:
-  competent, not yet strong and ownable. A more lenient judge (Sonnet 5.5) would have presented rc.3's two. Read
-  "passed the gate" as "worth showing you", not as "done".
-- **It does not ship weak work.** The gate and the judges agreed on 23 of 27 critiqued concepts. In three of the four
-  disagreements the judge was stricter than the gate, in one the gate was stricter. When nothing passes, Markilo
-  says so and nothing is finalized or exported.
-- **What moved the needle was measured, not guessed.** Sketches failed for hairline gaps because Markilo's own guide
-  asked for gaps below its own verify threshold; clichés reached development because the sketch review picked the
-  best of weak boards; critics had no way to record "would not present it". Each was found in the runs and fixed in
-  the plugin; the model was not the bottleneck (Opus 5.5 as designer did no better on the SaaS brief).
+- **Unattended, Markilo rarely reaches its own gate** — 2 of the last 20 validation runs, 1 of 8 on holdout briefs
+  written before the changes they test. rc.3's two of three did not hold up on new briefs.
+- **The marks got better; the gate is now too strict at the margin.** The Opus judge would present none of rc.5's
+  twelve critiqued concepts, but two of rc.7's five — the first unattended marks it accepts. rc.7's stricter critic
+  rejected both (it scored them 5.9 and 6.3 against the judge's 6.2 and 6.6), after rc.5's critic had passed two the
+  judge rejected. Borderline calls are where the critic needs calibrating next.
+- **It does not ship weak work.** Across all runs the gate and the judges agreed on 26 of 32 critiqued concepts;
+  three disagreements went each way. When nothing passes, Markilo says so and nothing is finalized or exported.
+- **What moved the needle was measured, not guessed.** Hairline gaps came from Markilo's own guide; clichés reached
+  development because the sketch review picked the best of weak boards; the name's initial with a cut became the
+  default move once objects were ruled out; same-colour layers left seams. Each was found in the runs and fixed in
+  the plugin. The model was not the bottleneck (Opus 5.5 as designer did no better on the SaaS brief).
 
 Markilo is built to work with you: you pick directions, react in the gallery and decide. Unattended runs measure
 the floor. Two of them, as exported (fictional products, no human edits):
@@ -284,9 +284,8 @@ Details: [docs/PRIVACY.md](docs/PRIVACY.md) · [SECURITY.md](SECURITY.md).
 - Raster images (PNG/JPEG) are analyzed for similarity; vector tracing of raster logos is not included.
 - Icon Composer (`.icon`) files are not written directly; Markilo exports the layer sources to import.
 - X (Twitter) image sizes could not be verified against x.com documentation (blocked to automated readers).
-- Design quality still depends on the model and on your direction: unattended runs pass the critic gate about one
-  time in four, and a strict independent judge does not yet rate any of them finished (see
-  [Measured quality](#measured-quality)). Markilo raises the floor and refuses to hide weak work; taste is a
+- Design quality still depends on the model and on your direction: unattended runs rarely pass the critic gate, and a
+  strict independent judge accepts only a few of the marks they develop (see [Measured quality](#measured-quality)). Markilo raises the floor and refuses to hide weak work; taste is a
   conversation.
 
 ## Develop

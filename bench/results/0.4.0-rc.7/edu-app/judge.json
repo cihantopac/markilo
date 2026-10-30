@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "quillnest",
+    "concept": "q-nest",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a Q shaped like a cartoon face with bangs and one eye or open mouth",
+        "a magnifying glass or search icon",
+        "a bowl or nest holding an egg"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 4,
+      "craft": 6,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The nest-and-egg idea doesn't come through: the flat filled cap reads as a fringe of hair over a single eye, which makes the mark look like a goofy cartoon face (childish for 13–17), and the Q tail adds an unwanted search-icon reading, even though the shapes are clean and hold up well at 16px and in one colour."
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.2150296
+  }
+]

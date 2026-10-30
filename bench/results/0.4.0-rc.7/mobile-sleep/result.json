@@ -1,0 +1,123 @@
+{
+  "scenario": "mobile-sleep",
+  "attempt": 1,
+  "holdout": false,
+  "title": "Mobile app",
+  "kind": "mobile",
+  "brief": {
+    "ask": "Create a brand identity for Dozeline, the iOS and Android wind-down and sleep journal app in this folder.",
+    "owner": "Owner preferences: calm, warm, not clinical, no moons or stars cliché. The app icon must be recognisable on a home screen at small sizes. English and Turkish markets."
+  },
+  "markilo": "0.4.0-rc.7",
+  "ranAt": "2026-10-30T16:15:12.545Z",
+  "minutes": 15.78,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.3006682999999986,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 41786,
+    "output": 121409,
+    "cacheRead": 8123971,
+    "cacheWrite": 449869
+  },
+  "turns": 16,
+  "subagents": 13,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "No concept passed the quality gate after two rounds (heavy-lid averaged 5.69, then 6.0, and the critic would not present it; step-down and lit-arch were dropped after two sketch reviews with no pick), so nothing was finalized, exported or installed."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "dozeline",
+      "name": "Dozeline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "heavy-lid",
+          "title": "Heavy lid",
+          "status": "rejected",
+          "critic": 6,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 5,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 6,
+            "typography": 7,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 5
+          },
+          "present": false,
+          "gate": false,
+          "readsAs": [
+            "a candle with a flame",
+            "a pump bottle or lipstick with a leaf",
+            "a bowling pin or chess pawn"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 a bell or a nose on a hook; s2 a Santa hat; s3 a gate or curtains; s4 a candle whose flame droops. Pick s4, the only one with a memorable gesture (a nodding flame) and the lowest stock-shape similarity (47%). It is warm and has no moon. Keep the flame bowed and fuse it into the stub so it is one silhouette, not two pieces. Make the flame fatter so it holds at 16 px. Avoid reading as a plain candle or a fire/hot icon.",
+          "checks": {
+            "pass": 15,
+            "warn": 2,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.32
+          }
+        },
+        {
+          "id": "lit-arch",
+          "title": "Lit arch",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a lamp icon; s2 a flask or a lamp app tile; s3 the letter D with a cut-out; s4 a speaker or video-camera/play glyph. s3 is the initial with a cut, s4 is a UI icon, and s1 and s2 repeat the lamp. Try a different move that does not depend on D or on lamp light.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "step-down",
+          "title": "Step-down",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 two stacked blocks, a lamp or pendant; s2 a donut or egg in a bowl; s3 a bucket or jar; s4 a stock table-lamp icon. Every one is the bedroom prop drawn plainly, and none has a hook you would remember. Try a different move: one abstract gesture of settling, not an object.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "146c6b35-e33a-4209-8564-06ea03fa1722"
+}
