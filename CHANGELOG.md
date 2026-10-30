@@ -6,216 +6,101 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-### Added
+## [0.4.0] - 2026-10-31
 
-- Benchmark results for rc.9 (`bench/results/0.4.0-rc.9/`): two of nine runs passed the gate (Portwise, Dozeline); 22
-  of 27 directions reached development; the gate agreed with the Opus judge on 19 of 22 concepts. A noise check judged
-  five borderline marks four times each: a single look flips about half the time around 6.0–6.4 (Portwise 2/4,
-  Dozeline 0/4).
-- `bench.mjs judge --times N`: the majority of N independent looks per concept, with averaged scores.
+Quality and trust: Markilo's design quality is measured instead of claimed. A benchmark runs the installed plugin end
+to end on seven realistic products with nobody steering, blind judges rate every critiqued concept from the brief and
+the images alone, and the critic's quality gate is applied in code and calibrated against those judges. Every run,
+image and score is in `bench/`; the README's "Measured quality" section reports them as they are.
 
-## [0.4.0-rc.9] - 2026-10-30
+### Known limitations
 
-### Changed
-
-- The sketch review strikes clear failures (UI icons, known logos, clichés, the product's own object drawn plainly,
-  the name's initial with a cut, a form language that contradicts the brief, sketches that are not ready) and sends
-  the strongest sketch left to development; `none` only when every sketch is struck. It no longer bets on the
-  finished score: the calibrated gate judges that after development. With the bet, an Opus critic stopped 24 of 27
-  directions before development in rc.8.
-
-### Fixed
-
-- A concept id that is not a slug (`splitS`) gets a suggestion (`--id split-s`).
+- Unattended, Markilo rarely reaches its own gate: 4 of the 38 validation runs since rc.5 (on briefs that were still
+  untouched holdouts when they ran, 1 of 8). Its best unattended work sits on the line of "presentable": the strict
+  Opus judge called the two identities that passed in the last round presentable in 2 of 4 and 0 of 4 looks. Markilo
+  is built for working with you; unattended runs measure the floor.
+- Around 6.0–6.4 of 10 a single judgment flips about half the time; the gate agrees with the Opus judge about as
+  often as the judge agrees with itself (19 of 22 concepts in the last round, 48 of 57 across all runs).
+- The design critic asks for Opus. Where an organization's model allowlist blocks it, Claude Code substitutes an
+  allowed model and says so; the gate's calibration was measured on Opus only.
 
 ### Added
 
-- Benchmark results for rc.8 (`bench/results/0.4.0-rc.8/`, nine runs with the calibrated critic): no run passed; the
-  three concepts that reached the gate were rejected by it and by the Opus judge alike; the Opus critic's sketch review
-  stopped 24 of 27 directions before development.
-
-## [0.4.0-rc.8] - 2026-10-30
-
-### Changed
-
-- The critic gate rests on a cold look. The critic first reads the brief and the images only and records blind scores
-  (`concept update --blind distinctiveness=n,memorability=n,brand-fit=n,craft=n,versatility=n`) and its yes or no;
-  then it reads the rationale and reports and adds informed scores as feedback. The gate is blind brand-fit,
-  distinctiveness and memorability ≥ 6 and a yes; a measured problem may still turn the yes into a no. Calibrated on
-  32 benchmark concepts judged blind by Opus 5.5: the critic's informed average tracked that judge at Spearman 0.20, a
-  blind look on the same model at 0.51 (`bench/results/calibration-rc.7/`). Concepts without blind scores keep the
-  previous rule.
-- The design critic runs on Opus (`model: opus`); where an organization's model allowlist blocks it, Claude Code
-  substitutes an allowed model and says so.
-
-### Added
-
-- Benchmark results for rc.7 (`bench/results/0.4.0-rc.7/`, 11 runs including two fresh holdouts, Opus judge): no run
-  passed the gate; two of the five developed marks are the first the Opus judge would present, and the stricter
-  critic rejected both. The README's "Measured quality" says so.
-
-## [0.4.0-rc.7] - 2026-10-30
-
-### Changed
-
-- The name's initial with a cut (split, sliced, offset, stepped or nested in a copy) is treated as the cliché it is:
-  the sketch review strikes it, the critic caps distinctiveness at 5 when it is the first reading, directions may use
-  it at most once and at least one direction must have no letter and no product object. It was 11 of the 15 marks
-  the Opus judge rejected (the rc.5 validation and its calibration).
-- Form language follows the brief's character: the design principles map adjectives (warm and handmade, precise,
-  calm, bold, premium) to construction choices; the sketch review strikes UI geometry for a handmade brand, and the
-  critic caps brand fit when the form contradicts the brief or a plausible misreading would hurt the product (a
-  gravestone for a sleep app).
-- The construction guide's worked example is framed as structure, not as a model idea (it is a letter; the judge
-  rated it 5.8), and the craft checklist asks for offsets that are zero or at least a unit and matching widths for
-  matching parts.
-
-### Added
-
-- `Fits a square icon` check: a symbol twice as wide as it is tall fills at most half of a square app icon or favicon.
-
-### Fixed
-
-- Same-colour layers that touch are merged into one shape: as separate paths they left a hairline seam where they met,
-  which the judge called sloppy construction. `construct` says when it merges.
-
-## [0.4.0-rc.6] - 2026-10-30
-
-### Added
-
-- `concept show`: one concept with its files, palette, typography, critique and gate (agents asked for it).
-- Validation benchmark for rc.5 (`bench/results/0.4.0-rc.5/`): two holdout briefs (a developer tool and an online
-  shop) run three times each, the three known briefs once, judged by Opus 5.5. Two of nine runs passed the gate
-  (holdouts: one of six); the Opus judge would present neither, nor — re-judged — rc.3's two identities or Markilo's
-  own (5.8–6.2 of 10). The README's "Measured quality" says so.
-
-### Fixed
-
-- A colour typed without quotes (`--primary #1d4e89`) starts a shell comment, so the option arrived empty and the
-  rest of the command was lost; the error now says to quote colours, and every example in the CLI reference and the
-  designer's instructions is quoted. Agents hit this in three of nine validation runs.
-
-## [0.4.0-rc.5] - 2026-10-30
-
-### Added
-
-- `markilo status`: where the work stands — the workspace (or `found: false`, exit 0), each brand's stage and the
-  next step. The skills start with it instead of probing for a workspace and getting an error.
-- Decisions are logged by the toolchain: sketch picks, critiques with the gate result, rejections, deliverables,
-  approvals and locks are appended to `decisions.md` with a timestamp. In the benchmark the file stayed empty.
-- Families are sketched as one system: a spec's `members` block gives each product its parameters (and colours);
-  `markilo sketches` draws master and members on `sketches/family.png`, checks each member, marks a sketch not ready
-  when two members read as the same mark (copy-level shape and close colours) and notes members told apart only by
-  colour. `construct --member <name>` builds a product from the same spec. The workflow guide no longer asks for
-  sibling similarity under 0.62, which ruled out shared constructions and was never checked.
-- `markilo wordmarks`: the name in the concept's face and three contrasting ones (or a shortlist, weights and
-  spacings) next to the symbol on one board, each measured; `--pick` commits one with its typography. The blind judge
-  called most benchmark wordmarks generic: they were the first font the designer tried.
-- A small version of the symbol for 32 px and below: `construct … --role small` writes `symbol-small.svg`; verify
-  measures it and checks it still reads as the main symbol (the similarity engine's review bar, 62 %); finalize keeps
-  it; favicons (SVG, ICO ≤ 32, 32 px PNG), Windows ICO and target sizes ≤ 32 use it; the context sheet's tabs show it.
-  The blind judge's most common objection was a mark that turns to mush or loses a dot at 16 px.
-- The gate reports a `nearMiss` (only the average is short, every required criterion ≥ 6 and the critic said yes); it
-  gets one targeted round on its lowest criteria before rejection. The bar does not move.
-
-### Fixed
-
-- A changed mark kept the critic's present-as-is answer and first readings from the previous drawing; they are
-  cleared with the scores now.
-- Context sheets show light reference marks (white logos made for dark app tiles) on a dark tile instead of letting
-  them vanish on white.
-
-## [0.4.0-rc.4] - 2026-10-30
-
-### Fixed
-
-- Context sheets drew a blank white app icon for every home-screen slot without a collected competitor, which made the
-  concept look more distinctive than it was.
-
-### Added
-
-- Benchmark results for rc.3: two of three products got an identity that passed the gate and the blind judge (rc.2:
-  one, which the judge would not present; rc.1: none).
-
-## [0.4.0-rc.3] - 2026-10-30
-
-### Added
-
-- `sketches` says which sketches are `ready` for the sketch review and gives each problem a `fix` in construction
-  units (hairline gaps, failing checks, a near-copy of a collected reference); the critic reviews ready sketches only.
-- `construction.md` has a worked example: Markilo's own symbol, which passed the gate and the blind judge, annotated.
-
-### Changed
-
-- The concept designer lists 6–8 ideas before drawing, writes each sketch's idea as the hook the eye catches at 32 px
-  and what it means, and looks at its board and redraws at least once before handing it over. Directions name their
-  visual hook.
-
-### Fixed
-
-- The construction guide asked for gaps of 1/24 of the artboard (0.67 px at 16 px), below verify's own failing
-  threshold (0.7 px); it now asks for ≥ 80 units on 1024 (1.2 px). In the rc.1 and rc.2 benchmarks 69 % of the sketches
-  the critic struck carried this failure; 22 % of the picked ones did.
-
-## [0.4.0-rc.2] - 2026-10-30
-
-### Added
-
-- The critic gate is applied in code: the critic records its yes/no to "would a senior designer present it as is?"
-  (`concept update --present yes|no:<reason>`); `concept list`, `concept update` and the gallery show `gate`
-  (`passed`, `failed`, `not-reviewed`); `finalize` refuses a concept that failed it unless the user chose it anyway
-  (`--user-choice "<reason>"`), and `brand.json` records the gate. Found by the benchmark: critics computed the gate
-  by hand and their "no" had nowhere to go.
-- `scripts/smoke.mjs`: an empty folder to installed assets with the bundle alone; CI runs it on every OS and on the copy
-  that `claude plugin install` produces from the marketplace.
-- `bench.mjs refresh` re-measures a kept run folder, `--model` and `--budget` set the run's model and cost cap, and the
-  report lists every concept — including directions dropped at sketch review — with the critic's and the blind
-  judge's first readings.
-- Benchmark results for rc.1 and rc.2 (`bench/results/`) and a "Measured quality" section in the README: one of seven
-  unattended runs passed the gate; the gate and a blind judge agreed on 8 of 9 critiqued concepts.
-
-### Changed
-
-- Sketch review is a procedure: read every sketch before knowing its idea, strike UI icons, clichés and the product's
-  own object drawn plainly, and pick only a sketch with no reading the critic had to name as a risk. Directions name
-  what a stranger would see first, and at most one may draw the product's own object or the name's literal noun.
-  The design principles list those category objects (pages and folded corners for documents, charts and tally marks
-  for finance, moons for sleep…) and no longer use a folded page as their example idea. In the benchmark every
-  rejected concept had passed sketch review with exactly such a named risk. The skills also say that the sketch pick
-  is the critic's: the main agent never overrides a `none` (it did once in the benchmark).
-- Judgment criteria are checked against the critic's list and stored under one spelling (`brandFit` → `brand-fit`,
-  `premium` → `premium-perception`); unknown criteria are refused with the list. Older concepts are read the same way.
-- The brief's `constraints.colors` accepts color directions in words as well as hex values.
-
-### Fixed
-
-- `research repo .` failed ("Cannot derive a slug").
-- `construct`'s usage line shows `--role symbol|wordmark`.
-
-- An absolute path that reaches the workspace under another name (macOS `/var` and `/private/var`, a symlinked home)
-  was refused as outside the workspace, so `concept update --wordmark /var/…` failed in temporary folders.
-
-## [0.4.0-rc.1] - 2026-10-30
-
-### Added
-
-- Benchmark: `scripts/bench.mjs` runs the installed plugin end to end on realistic scenarios (`bench/scenarios/`: an
-  independent SaaS, a mobile app, a multi-product family) in headless Claude Code, measures success, the quality gate,
-  checks, originality, exports, tokens and cost, has a blind judge rate every critiqued concept and writes the report
-  to `bench/results/<version>/`.
+- Benchmark: `scripts/bench.mjs` runs the installed plugin in headless Claude Code on fixture projects
+  (`bench/scenarios/`: an independent SaaS, a mobile app, a multi-product family, a developer tool, an online shop, a
+  B2B platform and a learning app; holdouts are written before the changes they test). It measures success, the gate,
+  checks, originality, exports, time, tokens and cost; `judge` rates every critiqued concept blind (`--times N` takes
+  the majority of N looks), `report` writes `bench/results/<version>/`, `refresh` re-measures a kept run and `measure`
+  prints the metrics for any workspace. Results for every release candidate are committed.
+- The critic's quality gate is applied in code: blind brand fit, distinctiveness and memorability ≥ 6 and a yes to
+  "would a senior identity designer present it as is?" (`concept update --blind …`, `--present yes|no:<reason>`).
+  `concept list`, `concept update`, `concept show` and the gallery report `gate` (`passed`, `failed`, `not-reviewed`)
+  and a `nearMiss`; `finalize` refuses a concept that failed unless the user chose it (`--user-choice "<reason>"`),
+  and `brand.json` records the gate.
 - Context sheets: `verify` shows the mark in browser tabs, on a home screen next to the collected competitors, in site
-  headers and as avatars; the critic starts with a blind first impression (`concept update --reads-as`) that caps
-  scores when the idea does not read or the mark reads as a UI icon or cliché.
+  headers and as avatars; the critic's first readings are recorded (`concept update --reads-as`).
+- Sketch readiness: `markilo sketches` says which sketches are `ready` for review and gives each problem a `fix` in
+  construction units (hairline gaps, failing checks, a near-copy of a collected reference).
+- Families sketched as one system: a spec's `members` block gives each product its parameters and colours;
+  `sketches` draws master and members on `sketches/family.png` and flags members that read as the same mark;
+  `construct --member <name>` builds a product from the same spec.
+- `markilo wordmarks`: the name in the concept's face and contrasting ones next to the symbol, measured; `--pick`
+  commits one.
+- A small version of the symbol for 32 px and below (`construct … --role small`): verify checks it still reads as the
+  main symbol; favicons, Windows ICO and target sizes ≤ 32 use it.
+- `markilo status` (where the work stands and the next step) and `concept show`.
+- Decisions are logged by the toolchain to `decisions.md`: sketch picks, critiques with the gate result, rejections,
+  deliverables, approvals and locks.
+- `Fits a square icon` check for symbols twice as wide as they are tall.
 - Originality evidence counts distinct brands and rates sources (official, store, catalog, unverified);
-  `reference dedupe`; reports keep the closest file per brand; copies that add a small element are found by
-  comparing marks without minor parts; `similarity calibrate` measures the engine on real logos (24 real brands:
-  AUC 0.99, 1.1 % false alarms at review); optional `MARKILO_EMBEDDER` hook.
+  `reference dedupe`; copies that add a small element are found by comparing marks without minor parts;
+  `similarity calibrate` measures the engine on real logos (24 brands: AUC 0.99, 1.1 % false alarms at review);
+  optional `MARKILO_EMBEDDER` hook.
 - Product understanding: `research repo` and `research site` extract value proposition, features, audience, surfaces,
   platforms, languages and pricing with sources (stated vs inferred); `profile understanding`; unknowns become gaps.
-- Gallery: pins with notes on the mark, side-by-side comparison with a preferred concept, `gallery --serve`
-  (127.0.0.1, token) so "Send to Claude" saves decisions; `feedback` reads them (`--import`, `--apply`).
+- Gallery: pins with notes on the mark, side-by-side comparison, `gallery --serve` (127.0.0.1, token) so "Send to
+  Claude" saves decisions; `feedback` reads them (`--import`, `--apply`).
 - `install-assets --framework auto|next|laravel|flutter|static` with backups; `agent-setup` for Codex, Cursor and other
   agents; `web/favicon-32.png` export.
+- `scripts/smoke.mjs`: an empty folder to installed assets with the bundle alone; CI runs it on every OS and on the
+  copy that `claude plugin install` produces from the marketplace.
+
+### Changed
+
+- The critic gate rests on a cold look: the critic scores each concept from the brief and the images before reading
+  the designer's rationale, then adds informed scores as feedback. On 32 benchmark concepts the informed scores
+  tracked the Opus judge at Spearman 0.20, a cold look at 0.51 (`bench/results/calibration-rc.7/`). A measured problem
+  may still turn a yes into a no; reading the rationale never turns a no into a yes. Concepts reviewed before this
+  keep the previous rule (required criteria ≥ 6, average ≥ 6.5).
+- The design critic runs on Opus (`model: opus`).
+- The sketch review reads every sketch before knowing its idea, strikes clear failures (UI icons, known logos,
+  clichés, the product's own object drawn plainly, the name's initial with a cut, a form language that contradicts
+  the brief, sketches that do not survive 16 px or are not ready) and sends the strongest sketch left to development;
+  `none` only when every sketch is struck. The main agent never overrides a `none`.
+- The concept designer lists 6–8 ideas before drawing, names each sketch's visual hook, looks at its board and redraws
+  at least once; directions may use the product's own object or the name's initial with a cut at most once each, and
+  at least one has no letter and no object. Form language follows the brief's adjectives (warm and handmade, precise,
+  calm, bold, premium).
+- The construction guide asks for gaps of at least 80 units on 1024 (it asked for 1/24 of the artboard, below verify's
+  own failing threshold), frames its worked example as structure rather than a model idea and checks offsets and
+  matching widths.
+- Judgment criteria are checked against the critic's list and stored under one spelling (`brandFit` → `brand-fit`);
+  unknown criteria are refused with the list.
+- The brief's `constraints.colors` accepts colour directions in words as well as hex values.
+
+### Fixed
+
+- Same-colour layers that touch are merged into one shape instead of leaving a hairline seam; `construct` says so.
+- Context sheets no longer draw blank app icons for empty home-screen slots, and light reference marks are shown on a
+  dark tile.
+- A changed mark no longer keeps the critique, first readings and present-as-is answer of the previous drawing.
+- A colour typed without quotes (`--primary #1d4e89`) starts a shell comment; the error now says to quote colours, and
+  every example is quoted.
+- `research repo .` failed ("Cannot derive a slug"); a concept id that is not a slug gets a suggestion
+  (`--id split-s`).
+- An absolute path that reaches the workspace under another name (macOS `/var` and `/private/var`, a symlinked home)
+  was refused as outside the workspace.
+- `construct`'s usage line shows `--role symbol|wordmark|small`.
 
 ## [0.3.0-beta.7] - 2026-10-30
 

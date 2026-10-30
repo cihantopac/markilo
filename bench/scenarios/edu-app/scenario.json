@@ -4,8 +4,9 @@
   "kind": "education",
   "sector": "education for teenagers",
   "name": "Quillnest",
-  "holdout": true,
+  "holdout": false,
   "ask": "Create a brand identity for Quillnest, the writing app in this folder.",
   "owner": "Owner preferences: encouraging and a little bold, for 13–17 year-olds, never childish or school-like. No owls, no pencils or quills drawn literally, no lightbulbs, no speech bubbles. App icon for iOS and Android plus a web version.",
-  "budgetUsd": 20
+  "budgetUsd": 20,
+  "heldOutUntil": "0.4.0-rc.7"
 }

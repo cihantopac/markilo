@@ -11,8 +11,8 @@ company) plus the owner's preferences:
 | [family-workspace](scenarios/family-workspace)                  | Lumenfold — office suite with Docs, Sheets and Sign (monorepo)                       | A master brand and three product icons that belong together                                         |
 | [devtool-cli](scenarios/devtool-cli) (holdout until rc.5)       | Seamline — zero-downtime PostgreSQL migrations, an open-source CLI (Rust, docs site) | A developer audience, GitHub avatar and README, no category clichés (cylinders, elephants, prompts) |
 | [ecommerce-shop](scenarios/ecommerce-shop) (holdout until rc.5) | Kilnroom — online shop for small-batch ceramics (Laravel, TR + EU)                   | Warm without folksy, labels and stickers, Laravel asset install                                     |
-| [b2b-logistics](scenarios/b2b-logistics) (holdout)              | Portwise — freight visibility for mid-size shippers (Django)                         | An enterprise audience, a category full of globes, ships and arrows                                 |
-| [edu-app](scenarios/edu-app) (holdout)                          | Quillnest — a writing coach for teenagers (Expo, iOS, Android, web)                  | Bold but not childish, app icons, a category full of owls and pencils                               |
+| [b2b-logistics](scenarios/b2b-logistics) (holdout until rc.7)   | Portwise — freight visibility for mid-size shippers (Django)                         | An enterprise audience, a category full of globes, ships and arrows                                 |
+| [edu-app](scenarios/edu-app) (holdout until rc.7)               | Quillnest — a writing coach for teenagers (Expo, iOS, Android, web)                  | Bold but not childish, app icons, a category full of owls and pencils                               |
 
 ## Results
 
@@ -87,7 +87,10 @@ against a Claude subscription's usage limits instead of being billed; the costs 
 on the API.
 
 Holdout scenarios were written before the changes they test and were never run while Markilo was being tuned;
-they show whether an improvement generalizes beyond the briefs it was found on.
+they show whether an improvement generalizes beyond the briefs it was found on. A holdout stops being one once its
+results have shaped a change: the rc.5 holdouts after rc.5, the rc.7 holdouts after rc.7, since their concepts were in
+the rc.8 calibration set. The rc.8 and rc.9 reports still label them holdouts, as they were recorded at run time; by
+this rule they were known briefs, and 0.4.0 has no untouched holdout left. The next change gets fresh ones.
 
 ## Run
 

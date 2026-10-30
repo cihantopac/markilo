@@ -13,7 +13,7 @@
 <p align="center">
   <a href="https://github.com/cihantopac/markilo/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/cihantopac/markilo/actions/workflows/ci.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-d12c12"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-0.4.0--rc.9-101218">
+  <img alt="Version" src="https://img.shields.io/badge/version-0.4.0-101218">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-101218">
 </p>
 
@@ -74,26 +74,27 @@ registry search has been done yet; the guidelines say so.</sub>
 
 ## Measured quality
 
-Markilo is benchmarked end to end with nobody steering: on three realistic products (an independent SaaS, a mobile
-app, a multi-product family) and two **holdout** products written before the latest changes and never used for
-tuning (a developer tool, an online shop). The plugin researches, writes the brief, designs, critiques, and finalizes
-only what passes its own gate. Blind judges then rate every critiqued concept from the brief and the images alone.
-Every run, image and score is in [bench/](bench).
+Markilo is benchmarked end to end with nobody steering, on seven realistic products (an independent SaaS, a mobile
+app, a multi-product family, a developer tool, an online shop, a B2B platform and a learning app). Four of them were
+**holdouts** for a while: written before the changes they test and never used for tuning until those results were
+in. The plugin researches, writes the brief, designs, critiques, and finalizes only what passes its own gate. Blind
+judges then rate every critiqued concept from the brief and the images alone. Every run, image and score is in
+[bench/](bench).
 
-| Version        | Runs                | Passed the gate | Opus 5.5 judge would present (of concepts it judged) | Time per run | Cost per run (API equivalent) |
-| -------------- | ------------------- | --------------- | ---------------------------------------------------- | ------------ | ----------------------------- |
-| 0.4.0-rc.1     | 3                   | 0               | —                                                    | 11–21 min    | $2.61–3.67                    |
-| 0.4.0-rc.2     | 3                   | 1               | —                                                    | 8–15 min     | $1.60–2.68                    |
-| 0.4.0-rc.3     | 3                   | 2               | 0 of 2 (the two that passed)                         | 14–24 min    | $3.15–4.37                    |
-| 0.4.0-rc.5     | 9 (6 on holdouts)   | 2               | 0 of 12                                              | 10–19 min    | $2.29–4.41                    |
-| 0.4.0-rc.7     | 11 (2 new holdouts) | 0               | 2 of 5 — both rejected by the gate                   | 6–16 min     | $1.66–3.30                    |
-| 0.4.0-rc.8     | 9                   | 0               | 0 of 3 — the recalibrated gate agreed on all 3       | 8–18 min     | $1.91–3.48                    |
-| **0.4.0-rc.9** | **9**               | **2**           | **Portwise 2 of 4 looks, Dozeline 0 of 4**           | 14–28 min    | $3.00–7.13                    |
+| Version          | Runs                | Passed the gate | Opus 5.5 judge would present (of concepts it judged) | Time per run | Cost per run (API equivalent) |
+| ---------------- | ------------------- | --------------- | ---------------------------------------------------- | ------------ | ----------------------------- |
+| 0.4.0-rc.1       | 3                   | 0               | —                                                    | 11–21 min    | $2.61–3.67                    |
+| 0.4.0-rc.2       | 3                   | 1               | —                                                    | 8–15 min     | $1.60–2.68                    |
+| 0.4.0-rc.3       | 3                   | 2               | 0 of 2 (the two that passed)                         | 14–24 min    | $3.15–4.37                    |
+| 0.4.0-rc.5       | 9 (6 on holdouts)   | 2               | 0 of 12                                              | 10–19 min    | $2.29–4.41                    |
+| 0.4.0-rc.7       | 11 (2 new holdouts) | 0               | 2 of 5 — both rejected by the gate                   | 6–16 min     | $1.66–3.30                    |
+| 0.4.0-rc.8       | 9                   | 0               | 0 of 3 — the recalibrated gate agreed on all 3       | 8–18 min     | $1.91–3.48                    |
+| **0.4.0** (rc.9) | **9**               | **2**           | **Portwise 2 of 4 looks, Dozeline 0 of 4**           | 14–28 min    | $3.00–7.13                    |
 
 What this shows, plainly:
 
-- **Unattended, Markilo rarely reaches its own gate** — 2 of the last 20 validation runs, 1 of 8 on holdout briefs
-  written before the changes they test. rc.3's two of three did not hold up on new briefs.
+- **Unattended, Markilo rarely reaches its own gate** — 4 of the 38 validation runs since rc.5, 1 of 8 on briefs that
+  were still untouched holdouts when they ran. rc.3's two of three did not hold up on new briefs.
 - **Markilo's best unattended work sits on the line of "presentable".** rc.9 (sketch review that only strikes clear
   failures, a calibrated cold-look gate on Opus) developed 22 of 27 directions and passed two identities. A strict
   judge looked at each borderline mark four times: Portwise was presentable in two of four looks, Dozeline in none.
