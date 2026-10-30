@@ -1,7 +1,7 @@
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, lstatSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, join, resolve } from 'node:path';
 import { MarkiloError } from '../core/errors.js';
-import { isDir } from '../core/fsx.js';
+import { isRealDir as isDir } from '../core/fsx.js';
 import { portableRelative, slugify } from '../core/paths.js';
 
 export type PackageKind = 'site' | 'app' | 'library' | 'client' | 'service' | 'unknown';
@@ -135,7 +135,8 @@ function probe(dir: string): {
       const r = rel ? `${rel}/${e}` : e;
       let st: ReturnType<typeof statSync>;
       try {
-        st = statSync(full);
+        st = lstatSync(full);
+        if (st.isSymbolicLink()) continue;
       } catch {
         continue;
       }

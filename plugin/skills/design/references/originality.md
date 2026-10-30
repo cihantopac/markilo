@@ -14,11 +14,18 @@ Markilo designs original marks. Research informs differentiation; it is never a 
 ## Process
 
 1. **Before design**: collect reference marks for direct competitors, category leaders and famous marks in
-   the same form family (`markilo reference add`). Note the category's visual conventions.
+   the same form family (`markilo research competitors`, `markilo reference add`). Note the category's conventions.
+   Evidence levels that verdicts depend on: visual references (minimal: 3 incl. 1 direct; adequate: 8 incl. 3 direct
+   and 2 category/form-family), registry searches (minimal: 1 logged search for the name; adequate: 2 registers incl.
+   WIPO or TMview, covering the suggested classes), competitor names (minimal 1, adequate 3).
 2. **During design**: run `markilo verify` after every meaningful change. It compares the concept with all
    references (silhouette under rotation/mirroring, perceptual hashes, structure, color) and with the
    other concepts.
-3. **Thresholds**: similarity ≥ 0.78 = high risk → redesign from the idea up. 0.62–0.78 = review → explain
+3. **Verdicts**: `redesign` (measured copy-level similarity or a stock shape), `needs-review` (possible conflict),
+   `insufficient-evidence` (no references or no registry search — nothing reassuring may be said), and
+   `no-conflicts-found` (nothing found within the stated scope; never proof of availability). Every report has a
+   confidence level (low/medium/high) and a list of what would raise it — pass it on to the user.
+   **Thresholds**: similarity ≥ 0.78 = high risk → redesign from the idea up. 0.62–0.78 = review → explain
    to the user why it is or is not a problem, or revise. Conceptual similarity (same idea, different
    drawing) is not measured — judge it yourself and say so.
 4. **Names**: `markilo name check` for spelling/sound/stem overlap with competitor names; high risk names

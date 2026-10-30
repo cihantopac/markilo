@@ -91,6 +91,16 @@ export function guidelinesMarkdown(g: GuidelinesInput): string {
       `- License: ${kit.typography.license ?? 'see fonts/ license file'}. The wordmark is outlined, so using the logo never requires the font.`,
     );
   } else L.push('- No brand typeface recorded. The wordmark is outlined artwork.');
+  if (kit.originality) {
+    L.push('', '## Originality check', '');
+    L.push(
+      `Approved with originality verdict **${kit.originality.verdict}** (confidence ${kit.originality.confidence})${kit.originality.acceptedRisk ? ', with the remaining risk explicitly accepted' : ''}. See \`${kit.originality.report}\`.`,
+    );
+    L.push(
+      '',
+      "Markilo's checks are not a trademark clearance. Have a trademark attorney search before registering or launching widely.",
+    );
+  }
   L.push('', '## Do not', '', ...DONTS.map((d) => `- ${d}`), '');
   L.push(
     '---',

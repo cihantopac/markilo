@@ -1,4 +1,5 @@
 import { MarkiloError } from '../core/errors.js';
+import { sanitizeTree } from './sanitize.js';
 import { escapeAttr, intrinsicBox, parseXml, serializeXml, walk, type XmlElement } from './xml.js';
 
 /** Rewrites every id (and every reference to it) with a prefix so several copies can share one document. */
@@ -40,7 +41,8 @@ export function nestSvg(
   box: Placement,
   opts: { idPrefix?: string; extraAttrs?: Record<string, string> } = {},
 ): string {
-  const root = parseXml(source);
+  // Everything that gets embedded (gallery, guidelines, compositions) is sanitized first: inputs can be third-party files.
+  const root = sanitizeTree(parseXml(source));
   const vb = intrinsicBox(root);
   if (!vb) throw new MarkiloError('INVALID_SVG', 'Cannot place an SVG without viewBox or width/height.');
   prefixIds(root, opts.idPrefix ?? `m${++counter}-`);

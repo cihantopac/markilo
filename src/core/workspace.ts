@@ -2,7 +2,7 @@ import { existsSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { MarkiloError } from './errors.js';
 import { isDir, nowIso, readJson, writeFileSafe, writeJson } from './fsx.js';
-import { isSlug, resolveInside, slugify } from './paths.js';
+import { isSlug, resolveInsideReal, slugify } from './paths.js';
 import type {
   AnswerLog,
   BrandProfile,
@@ -162,7 +162,7 @@ export class Workspace {
   // ----- paths -----
   brandDir(slug: string): string {
     if (!isSlug(slug)) throw new MarkiloError('INVALID_INPUT', `"${slug}" is not a valid brand slug.`);
-    return resolveInside(this.root, join('brands', slug));
+    return resolveInsideReal(this.root, join('brands', slug));
   }
   briefPath = (slug: string) => join(this.brandDir(slug), 'brief.json');
   profilePath = (slug: string) => join(this.brandDir(slug), 'profile.json');
@@ -173,7 +173,7 @@ export class Workspace {
   reportsDir = (slug: string) => join(this.brandDir(slug), 'reports');
   finalDir = (slug: string) => join(this.brandDir(slug), 'final');
   exportsDir = (slug: string) => join(this.brandDir(slug), 'exports');
-  galleryDir = () => join(this.root, 'gallery');
+  galleryDir = () => resolveInsideReal(this.root, 'gallery');
   conceptsDir = (slug: string) => join(this.brandDir(slug), 'concepts');
   conceptDir(slug: string, id: string): string {
     if (!isSlug(id)) throw new MarkiloError('INVALID_INPUT', `"${id}" is not a valid concept id.`);
@@ -181,7 +181,7 @@ export class Workspace {
   }
   /** Resolves a file referenced from concept.json, refusing paths that leave the concept folder. */
   conceptFile(slug: string, id: string, rel: string): string {
-    return resolveInside(this.conceptDir(slug, id), rel);
+    return resolveInsideReal(this.conceptDir(slug, id), rel);
   }
 
   // ----- documents -----

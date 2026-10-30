@@ -20,7 +20,9 @@ beforeAll(async () => {
   ({ ws, dir } = synthBrand());
   const v = await verifyConcept(ws, 'nimbra', 'fold');
   expect(v.status).toBe('verified');
-  finalizeConcept(ws, 'nimbra', 'fold', { tagline: 'Notes that fold into structure' });
+  expect(v.originality.verdict).toBe('insufficient-evidence');
+  expect(() => finalizeConcept(ws, 'nimbra', 'fold')).toThrow(/insufficient-evidence/);
+  finalizeConcept(ws, 'nimbra', 'fold', { tagline: 'Notes that fold into structure', acceptRisk: true });
   result = await exportBrand(ws, 'nimbra');
 }, 120_000);
 

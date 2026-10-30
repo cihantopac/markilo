@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import type { QualityReport } from '../analyze/quality.js';
 import { readJson, readText, writeGenerated } from '../core/fsx.js';
-import { portableRelative } from '../core/paths.js';
+import { portableRelative, resolveInsideReal } from '../core/paths.js';
 import type { Concept, WorkspaceBrand } from '../core/types.js';
 import type { Workspace } from '../core/workspace.js';
 import { composeLockup } from '../design/lockup.js';
@@ -130,12 +130,12 @@ function scoreBadges(s: Subject): string {
   if (s.originality)
     out.push(
       badge(
-        `originality: ${s.originality.verdict}`,
+        `originality: ${s.originality.verdict}${s.originality.confidence ? ` · ${s.originality.confidence} confidence` : ''}`,
         s.originality.verdict === 'redesign'
           ? 'bad'
-          : s.originality.verdict === 'needs-review'
-            ? 'warn'
-            : 'good',
+          : s.originality.verdict === 'no-conflicts-found'
+            ? 'good'
+            : 'warn',
       ),
     );
   if (s.locked) out.push(badge('locked identity', 'lock'));
@@ -190,7 +190,7 @@ function subjectsFor(ws: Workspace, b: WorkspaceBrand): Subject[] {
   const kitFile = kitPath(ws, b.slug);
   const kit = maybeJson<BrandKit>(kitFile);
   if (kit) {
-    const f = (rel?: string) => (rel ? readText(join(ws.finalDir(b.slug), rel)) : undefined);
+    const f = (rel?: string) => (rel ? readText(resolveInsideReal(ws.finalDir(b.slug), rel)) : undefined);
     const symbol = f(kit.files.symbol);
     const wordmark = f(kit.files.wordmark);
     const lockup = f(kit.files.lockupHorizontal);

@@ -17,6 +17,7 @@ import { compareNames, type NameComparison, pronunciationNotes } from '../name/s
 import { REGISTRIES, suggestNiceClasses } from '../name/trademark.js';
 import { createRaster, dihedral } from '../render/image.js';
 import { encodePng } from '../render/png.js';
+import { assessEvidence, type Confidence, type EvidenceAssessment } from './evidence.js';
 
 export interface ReferenceEntry {
   id: string;
@@ -42,12 +43,23 @@ export function readReferences(ws: Workspace, brand: string): ReferenceIndex {
   return existsSync(p) ? readJson<ReferenceIndex>(p) : { schema: 'markilo/references@1', references: [] };
 }
 
+export type OriginalityVerdict = 'redesign' | 'needs-review' | 'insufficient-evidence' | 'no-conflicts-found';
+export type AssessedRisk = RiskLevel | 'unknown';
+
 export interface OriginalityReport {
-  schema: 'markilo/originality@1';
+  schema: 'markilo/originality@2';
   brand: string;
   concept: string;
   generatedAt: string;
-  verdict: 'clear-to-continue' | 'needs-review' | 'redesign';
+  /**
+   * redesign: measured high similarity or a stock shape. needs-review: a possible conflict a person must judge.
+   * insufficient-evidence: too little research to say anything reassuring. no-conflicts-found: nothing found within
+   * the stated scope (never proof of availability).
+   */
+  verdict: OriginalityVerdict;
+  /** How much the verdict can be trusted, from the evidence behind it. */
+  confidence: Confidence;
+  evidence: EvidenceAssessment;
   scope: {
     referencesCompared: number;
     references: { id: string; name: string; source: string; retrievedAt: string }[];
@@ -56,13 +68,19 @@ export interface OriginalityReport {
     registrySearchesLogged: { ref: string; retrievedAt: string; notes?: string }[];
   };
   visual: {
-    risk: RiskLevel;
+    risk: AssessedRisk;
     thresholds: typeof RISK_THRESHOLDS;
     matches: (Comparison & { name: string; source: string; image?: string })[];
   };
   diversity: { concept: string; visual: number; risk: RiskLevel; reasons: string[] }[];
   genericity?: Genericity;
-  name: { candidate: string; risk: RiskLevel; comparisons: NameComparison[]; pronunciation: string[] };
+  name: {
+    candidate: string;
+    risk: AssessedRisk;
+    comparisons: NameComparison[];
+    pronunciation: string[];
+    registryConflicts: { registry: string; marks: string[] }[];
+  };
   trademark: {
     suggestedClasses: number[];
     classReasons: string[];
@@ -190,20 +208,50 @@ export async function buildOriginalityReport(
     ? { classes: brief.niceClasses, reasons: ['from brief'] }
     : suggestNiceClasses(desc);
   const profile = ws.profile(brand);
-  const registrySearches = profile.sources
-    .filter((s) => s.type === 'registry')
-    .map((s) => ({ ref: s.ref, retrievedAt: s.retrievedAt, ...(s.notes ? { notes: s.notes } : {}) }));
+  const registrySources = profile.sources.filter((s) => s.type === 'registry');
+  const registrySearches = registrySources.map((s) => ({
+    ref: s.ref,
+    retrievedAt: s.retrievedAt,
+    notes: [
+      s.registry &&
+        `${s.registry.id}: "${s.registry.query}"${s.registry.classes?.length ? ` classes ${s.registry.classes.join(',')}` : ''}${s.registry.resultCount !== undefined ? `, ${s.registry.resultCount} results reviewed` : ''}`,
+      s.notes,
+    ]
+      .filter(Boolean)
+      .join(' — '),
+  }));
+  const registryConflicts = registrySources
+    .filter((s) => s.registry?.conflicts?.length)
+    .map((s) => ({ registry: s.registry!.id, marks: s.registry!.conflicts! }));
+  const evidence = assessEvidence({
+    brandName: brief.name,
+    references: refs,
+    sources: profile.sources,
+    competitorNames,
+    suggestedClasses: nice.classes,
+  });
 
   const g = concept.files.symbol ? await genericity(sample) : undefined;
-  const visualRisk = maxRisk(matches.map((m) => m.risk));
+  // "low" is only claimed when something was actually compared; otherwise the risk is unknown.
+  const visualRisk: AssessedRisk = matches.length ? maxRisk(matches.map((m) => m.risk)) : 'unknown';
   const diversityRisk = maxRisk(diversity.map((d) => d.risk));
-  const nameRisk = maxRisk(nameComparisons.map((n) => n.risk));
-  const verdict: OriginalityReport['verdict'] =
+  const measuredNameRisk = nameComparisons.length ? maxRisk(nameComparisons.map((n) => n.risk)) : 'unknown';
+  const nameRisk: AssessedRisk =
+    registryConflicts.length && (measuredNameRisk === 'low' || measuredNameRisk === 'unknown')
+      ? 'review'
+      : measuredNameRisk;
+  const verdict: OriginalityVerdict =
     visualRisk === 'high' || g?.level === 'generic'
       ? 'redesign'
-      : visualRisk === 'review' || nameRisk !== 'low' || g?.level === 'near-primitive'
+      : visualRisk === 'review' ||
+          nameRisk === 'review' ||
+          nameRisk === 'high' ||
+          g?.level === 'near-primitive'
         ? 'needs-review'
-        : 'clear-to-continue';
+        : evidence.visual.coverage === 'none' || evidence.registry.coverage === 'none'
+          ? 'insufficient-evidence'
+          : 'no-conflicts-found';
+  const confidence = verdict === 'redesign' ? 'high' : evidence.confidence;
 
   const limitations = [
     `Compared against ${refs.length} reference mark(s) collected for this brand; marks outside that set were not compared.`,
@@ -221,11 +269,13 @@ export async function buildOriginalityReport(
     );
 
   const report: OriginalityReport = {
-    schema: 'markilo/originality@1',
+    schema: 'markilo/originality@2',
     brand,
     concept: conceptId,
     generatedAt: new Date().toISOString(),
     verdict,
+    confidence,
+    evidence,
     scope: {
       referencesCompared: matches.length,
       references: refs.map((r) => ({ id: r.id, name: r.name, source: r.source, retrievedAt: r.retrievedAt })),
@@ -241,6 +291,7 @@ export async function buildOriginalityReport(
       risk: nameRisk,
       comparisons: nameComparisons.slice(0, 10),
       pronunciation: pronunciationNotes(brief.name),
+      registryConflicts,
     },
     trademark: {
       suggestedClasses: nice.classes,
@@ -256,9 +307,11 @@ export async function buildOriginalityReport(
   return { report, jsonPath, mdPath };
 }
 
-const VERDICT_TEXT: Record<OriginalityReport['verdict'], string> = {
-  'clear-to-continue':
-    'No high-risk overlaps found within the research scope. Continue, keeping the limitations below in mind.',
+const VERDICT_TEXT: Record<OriginalityVerdict, string> = {
+  'no-conflicts-found':
+    'Nothing similar was found within the research scope below. This is not proof that the mark or name is available.',
+  'insufficient-evidence':
+    'Not enough research has been done to call this concept original. Collect the evidence listed below before relying on it.',
   'needs-review': 'Some overlaps need a human look before this concept moves forward.',
   redesign:
     'High similarity or a stock-primitive silhouette. Rework the concept rather than tweaking details.',
@@ -272,7 +325,15 @@ export function originalityMarkdown(r: OriginalityReport, concept: Concept): str
     `Brand \`${r.brand}\` · concept \`${r.concept}\` · generated ${r.generatedAt.slice(0, 16).replace('T', ' ')} UTC`,
     '',
   );
-  lines.push(`**Verdict: ${r.verdict}.** ${VERDICT_TEXT[r.verdict]}`, '');
+  lines.push(`**Verdict: ${r.verdict}** · confidence **${r.confidence}**. ${VERDICT_TEXT[r.verdict]}`, '');
+  lines.push('## Evidence behind this verdict', '');
+  lines.push('| Dimension | Coverage | What was done |', '| --- | --- | --- |');
+  lines.push(`| Visual references | ${r.evidence.visual.coverage} | ${r.evidence.visual.have} |`);
+  lines.push(`| Trademark registers | ${r.evidence.registry.coverage} | ${r.evidence.registry.have} |`);
+  lines.push(`| Competitor names | ${r.evidence.names.coverage} | ${r.evidence.names.have} |`);
+  lines.push('');
+  if (r.evidence.missing.length)
+    lines.push('To raise confidence:', '', ...r.evidence.missing.map((m) => `- ${m}`), '');
   lines.push('## Research scope', '');
   lines.push(`- Reference marks compared: ${r.scope.referencesCompared}`);
   for (const ref of r.scope.references)
@@ -344,6 +405,8 @@ export function originalityMarkdown(r: OriginalityReport, concept: Concept): str
       );
     lines.push('');
   }
+  for (const c of r.name.registryConflicts)
+    lines.push(`- Registry search in ${c.registry} found possibly conflicting marks: ${c.marks.join(', ')}.`);
   for (const n of r.name.pronunciation) lines.push(`- ${n}`);
   lines.push('', '## Trademark pre-screening', '');
   lines.push(

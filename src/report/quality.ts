@@ -81,6 +81,8 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
     warnings: merged.checks.filter((c) => c.status === 'warn').map((c) => `${c.label}: ${c.message}`),
     originality: {
       verdict: orig.report.verdict,
+      confidence: orig.report.confidence,
+      missingEvidence: orig.report.evidence.missing.slice(0, 4),
       topMatch: orig.report.visual.matches[0]
         ? {
             name: orig.report.visual.matches[0].name,

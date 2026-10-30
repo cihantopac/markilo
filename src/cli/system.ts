@@ -1,9 +1,18 @@
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
+import {
+  copyFileSync,
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+} from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import { MarkiloError } from '../core/errors.js';
 import { isDir, writeFileSafe } from '../core/fsx.js';
-import { resolveInside } from '../core/paths.js';
+import { resolveInsideReal } from '../core/paths.js';
 import type { Workspace } from '../core/workspace.js';
 import { fontsDir, listFonts } from '../design/fonts.js';
 import { ensureRenderer } from '../render/resvg.js';
@@ -87,7 +96,7 @@ export function installAssets(
       `No exported "${group}" assets for ${brand}.`,
       `Run "markilo export --brand ${brand} --only ${group}" first.`,
     );
-  const dest = resolveInside(cwd, into);
+  const dest = resolveInsideReal(cwd, into);
   const plan: { from: string; to: string; action: 'create' | 'overwrite' | 'skip-existing' }[] = [];
   const walk = (dir: string) => {
     for (const f of readdirSync(dir)) {
@@ -109,6 +118,9 @@ export function installAssets(
       if (p.action === 'skip-existing') continue;
       const to = resolve(cwd, p.to);
       mkdirSync(dirname(to), { recursive: true });
+      if (existsSync(to) && lstatSync(to).isSymbolicLink()) {
+        throw new MarkiloError('UNSAFE_PATH', `Refusing to overwrite a symbolic link: ${p.to}`);
+      }
       copyFileSync(resolve(ws.root, p.from), to);
     }
   }

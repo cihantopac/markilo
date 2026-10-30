@@ -1,5 +1,14 @@
 import { createHash, randomBytes } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { dirname } from 'node:path';
 import { MarkiloError } from './errors.js';
 
@@ -10,6 +19,14 @@ export interface WriteOptions {
 
 /** Atomic write (temp file + rename) that never silently overwrites. */
 export function writeFileSafe(path: string, data: string | Uint8Array, opts: WriteOptions = {}): void {
+  // Never write through a symbolic link: it could point anywhere on the machine.
+  try {
+    if (lstatSync(path).isSymbolicLink()) {
+      throw new MarkiloError('UNSAFE_PATH', `Refusing to write through a symbolic link: ${path}`);
+    }
+  } catch (err) {
+    if (err instanceof MarkiloError) throw err;
+  }
   if (!opts.force && existsSync(path)) {
     throw new MarkiloError('EXISTS', `File already exists: ${path}`, 'Pass --force to overwrite it.');
   }
@@ -54,6 +71,15 @@ export function sha256(data: string | Uint8Array): string {
 export function isFile(path: string): boolean {
   try {
     return statSync(path).isFile();
+  } catch {
+    return false;
+  }
+}
+
+/** A real directory, not a symbolic link to one. */
+export function isRealDir(path: string): boolean {
+  try {
+    return lstatSync(path).isDirectory();
   } catch {
     return false;
   }

@@ -23,11 +23,20 @@ export interface WorkspaceManifest {
 
 export interface Source {
   id: string;
-  type: 'url' | 'repo' | 'file' | 'user' | 'search' | 'registry';
+  type: 'url' | 'repo' | 'file' | 'user' | 'search' | 'registry' | 'app-store';
   ref: string;
   retrievedAt: string;
   notes?: string;
+  /**
+   * authoritative: official registries and records; primary: the brand's or competitor's own site, app listing or
+   * repository; secondary: press, reviews, directories, search snippets; user: stated by the user.
+   */
+  reliability?: SourceReliability;
+  /** For registry sources: what was searched, so originality reports can state their coverage precisely. */
+  registry?: { id: string; query: string; classes?: number[]; resultCount?: number; conflicts?: string[] };
 }
+
+export type SourceReliability = 'authoritative' | 'primary' | 'secondary' | 'user';
 
 export type FindingTopic =
   | 'product'

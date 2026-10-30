@@ -3,6 +3,7 @@ import { basename, join } from 'node:path';
 import { hexToOklch, oklchToHex } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
 import { nowIso, readJson, readText, writeGenerated, writeJson } from '../core/fsx.js';
+import { resolveInsideReal } from '../core/paths.js';
 import type { Workspace } from '../core/workspace.js';
 import { composeLockup } from '../design/lockup.js';
 import { lintSvg } from '../svg/lint.js';
@@ -27,6 +28,8 @@ export interface BrandKit {
   typography?: { fontId: string; weight: number; family?: string; license?: string };
   tagline?: string;
   approvedAt: string;
+  /** Originality status at approval time, so exports and guidelines can say what was (not) checked. */
+  originality?: { verdict: string; confidence: string; acceptedRisk: boolean; report: string };
 }
 
 export const kitPath = (ws: Workspace, brand: string) => join(ws.finalDir(brand), 'brand.json');
@@ -44,11 +47,16 @@ export function loadKit(
     );
   }
   const kit = readJson<BrandKit>(p);
+  const HEX = /^#[0-9a-fA-F]{6}$/;
+  for (const [k, v] of Object.entries(kit.palette ?? {})) {
+    if (typeof v !== 'string' || !HEX.test(v))
+      throw new MarkiloError('INVALID_INPUT', `final/brand.json palette.${k} must be #rrggbb.`);
+  }
   return {
     ...kit,
     read(file) {
       const rel = kit.files[file];
-      return rel ? readText(join(ws.finalDir(brand), rel)) : undefined;
+      return rel ? readText(resolveInsideReal(ws.finalDir(brand), rel)) : undefined;
     },
   };
 }
@@ -64,10 +72,33 @@ export function finalizeConcept(
   ws: Workspace,
   brand: string,
   conceptId: string,
-  opts: { tagline?: string; force?: boolean } = {},
+  opts: { tagline?: string; force?: boolean; acceptRisk?: boolean } = {},
 ): BrandKit {
   ws.assertNotLocked(brand);
   const concept = ws.concept(brand, conceptId);
+  const reportFile = join(ws.reportsDir(brand), `originality-${conceptId}.json`);
+  if (!existsSync(reportFile)) {
+    throw new MarkiloError(
+      'INVALID_INPUT',
+      `Concept ${conceptId} has no originality report.`,
+      `Run "markilo verify --brand ${brand} --concept ${conceptId}" first.`,
+    );
+  }
+  const orig = readJson<{ verdict: string; confidence?: string }>(reportFile);
+  if (orig.verdict === 'redesign') {
+    throw new MarkiloError(
+      'INVALID_INPUT',
+      `Concept ${conceptId} has originality verdict "redesign" and cannot be approved.`,
+      'Rework the concept and verify it again.',
+    );
+  }
+  if (orig.verdict !== 'no-conflicts-found' && !opts.acceptRisk) {
+    throw new MarkiloError(
+      'INVALID_INPUT',
+      `Originality verdict is "${orig.verdict}" (confidence ${orig.confidence ?? 'unknown'}).`,
+      'Collect the missing evidence and verify again, or, if the user knowingly accepts the risk, pass --accept-risk.',
+    );
+  }
   const dir = ws.finalDir(brand);
   if (existsSync(kitPath(ws, brand)) && !opts.force) {
     throw new MarkiloError(
@@ -139,6 +170,12 @@ export function finalizeConcept(
     ...(concept.typography ? { typography: concept.typography } : {}),
     ...(opts.tagline ? { tagline: opts.tagline } : {}),
     approvedAt: nowIso(),
+    originality: {
+      verdict: orig.verdict,
+      confidence: orig.confidence ?? 'unknown',
+      acceptedRisk: orig.verdict !== 'no-conflicts-found',
+      report: `../reports/originality-${conceptId}.md`,
+    },
   };
   writeJson(kitPath(ws, brand), kit);
   ws.saveConcept({ ...concept, status: 'approved' });
@@ -159,6 +196,10 @@ export function lockIdentity(
     force?: boolean;
   },
 ): BrandKit {
+  for (const [k, v] of Object.entries({ primary: input.primary, paper: input.paper, ink: input.ink })) {
+    if (v !== undefined && !/^#[0-9a-fA-F]{6}$/.test(v))
+      throw new MarkiloError('INVALID_INPUT', `--${k} must be #rrggbb.`);
+  }
   const dir = ws.finalDir(brand);
   if (existsSync(kitPath(ws, brand)) && !input.force)
     throw new MarkiloError('EXISTS', `${brand} already has a kit.`, 'Pass --force to replace it.');

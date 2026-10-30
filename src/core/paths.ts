@@ -1,4 +1,5 @@
-import { isAbsolute, normalize, relative, resolve, sep } from 'node:path';
+import { existsSync, realpathSync } from 'node:fs';
+import { dirname, isAbsolute, normalize, relative, resolve, sep } from 'node:path';
 import { MarkiloError } from './errors.js';
 
 /** Lowercase ASCII slug; folds Turkish and other Latin diacritics so "Şirket Ürün" → "sirket-urun". */
@@ -48,6 +49,36 @@ export function resolveInside(root: string, target: string): string {
   if (rel === '') return full;
   if (rel.startsWith(`..${sep}`) || rel === '..' || isAbsolute(rel)) {
     throw new MarkiloError('UNSAFE_PATH', `Refusing to access "${target}" because it is outside ${base}.`);
+  }
+  return full;
+}
+
+/** realpath of the deepest existing ancestor, with the missing tail re-appended. */
+function realExisting(path: string): string {
+  let probe = path;
+  const tail: string[] = [];
+  while (!existsSync(probe)) {
+    const parent = dirname(probe);
+    if (parent === probe) return path;
+    tail.unshift(probe.slice(parent.length).replace(/^[\\/]/, ''));
+    probe = parent;
+  }
+  return [realpathSync(probe), ...tail].join(sep);
+}
+
+/**
+ * Like resolveInside, and also follows symbolic links on the existing part of the path: the real location must stay
+ * inside the real root. Stops a symlinked folder from redirecting writes or reads elsewhere.
+ */
+export function resolveInsideReal(root: string, target: string): string {
+  const full = resolveInside(root, target);
+  const realRoot = realExisting(resolve(root));
+  const rel = relative(realRoot, realExisting(full));
+  if (rel.startsWith(`..${sep}`) || rel === '..' || isAbsolute(rel)) {
+    throw new MarkiloError(
+      'UNSAFE_PATH',
+      `Refusing to access "${target}": it resolves outside ${realRoot} through a symbolic link.`,
+    );
   }
   return full;
 }

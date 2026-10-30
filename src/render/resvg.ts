@@ -39,7 +39,12 @@ export interface RenderOptions {
  * Renders SVG markup to a straight-alpha RGBA raster. Text is not rendered with system fonts on purpose:
  * brand masters must use outlines, and this keeps output identical across machines.
  */
+export const MAX_RENDER_SIDE = 8192;
+
 export async function renderSvg(svg: string, opts: RenderOptions): Promise<Raster> {
+  if (!(opts.width > 0) || opts.width > MAX_RENDER_SIDE || (opts.height ?? 0) > MAX_RENDER_SIDE) {
+    throw new MarkiloError('INVALID_INPUT', `Render size must be between 1 and ${MAX_RENDER_SIDE} px.`);
+  }
   await ensureRenderer();
   let resvg: InstanceType<typeof Resvg>;
   try {
@@ -54,6 +59,14 @@ export async function renderSvg(svg: string, opts: RenderOptions): Promise<Raste
     });
   } catch (err) {
     throw new MarkiloError('INVALID_SVG', `Renderer rejected the SVG: ${String(err)}`);
+  }
+  const outH = resvg.width > 0 ? (opts.width * resvg.height) / resvg.width : 0;
+  if (!opts.height && outH > MAX_RENDER_SIDE) {
+    resvg.free();
+    throw new MarkiloError(
+      'INVALID_SVG',
+      `The SVG's aspect ratio would render ${Math.round(outH)} px tall (limit ${MAX_RENDER_SIDE}).`,
+    );
   }
   const img = resvg.render();
   const raster: Raster = { width: img.width, height: img.height, data: unpremultiply(img.pixels) };

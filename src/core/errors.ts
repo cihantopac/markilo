@@ -8,6 +8,7 @@ export type ErrorCode =
   | 'INVALID_SVG'
   | 'NETWORK_DISABLED'
   | 'NETWORK'
+  | 'BLOCKED_ADDRESS'
   | 'ROBOTS_DISALLOWED'
   | 'LOCKED'
   | 'NO_WORKSPACE'

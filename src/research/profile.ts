@@ -7,6 +7,7 @@ import type {
   FindingStatus,
   FindingTopic,
   Source,
+  SourceReliability,
 } from '../core/types.js';
 import type { RepoScan } from './repo.js';
 import type { SiteScan } from './site.js';
@@ -44,7 +45,18 @@ export function addSource(
       x.retrievedAt.slice(0, 10) === (s.retrievedAt ?? nowIso()).slice(0, 10),
   );
   if (dup) return dup;
+  const reliability: SourceReliability =
+    s.reliability ??
+    (s.type === 'registry'
+      ? 'authoritative'
+      : s.type === 'user'
+        ? 'user'
+        : s.type === 'search'
+          ? 'secondary'
+          : 'primary');
   const src: Source = {
+    reliability,
+    ...(s.registry ? { registry: s.registry } : {}),
     id: nextId('S', p.sources),
     retrievedAt: s.retrievedAt ?? nowIso(),
     type: s.type,
@@ -152,26 +164,54 @@ export function mergeRepoScan(p: BrandProfile, scan: RepoScan): { source: Source
   return { source, added: p.findings.length - before };
 }
 
-export function mergeSiteScan(p: BrandProfile, scan: SiteScan): { source: Source; added: number } {
+export function mergeSiteScan(
+  p: BrandProfile,
+  scan: SiteScan,
+  opts: { subject?: 'brand' | 'competitor'; competitor?: string } = {},
+): { source: Source; added: number; gaps: number } {
+  const who = opts.competitor ? `${opts.competitor}: ` : '';
+  const competitor = opts.subject === 'competitor';
   const source = addSource(p, {
     type: 'url',
     ref: scan.finalUrl,
     retrievedAt: scan.retrievedAt,
-    notes: `HTTP ${scan.status}; stylesheets read: ${scan.stylesheetsRead.length}`,
+    notes: `${scan.pages.length} page(s) read${scan.usedSitemap ? ' via sitemap' : ''}; ${scan.accessIssues.length} not readable; ${scan.stylesheetsRead.length} stylesheet(s)`,
   });
   const before = p.findings.length;
-  const obs = (topic: FindingTopic, statement: string) =>
-    addFinding(p, { topic, statement, status: 'observed', sourceIds: [source.id] });
-  if (scan.title) obs('naming', `Page title: "${scan.title}"`);
-  if (scan.description) obs('product', `Meta description: "${scan.description}"`);
+  const gapsBefore = p.gaps.length;
+  const obs = (topic: FindingTopic, statement: string, sourceId = source.id) =>
+    addFinding(p, {
+      topic: competitor ? 'competitor' : topic,
+      statement: `${who}${statement}`,
+      status: 'observed',
+      sourceIds: [sourceId],
+    });
+  if (scan.title) obs('naming', `Home page title: "${scan.title}"`);
+  if (scan.description) obs('product', `Home page description: "${scan.description}"`);
   if (scan.headings.length)
     obs(
       'product',
-      `Main headings: ${scan.headings
+      `Home page headings: ${scan.headings
         .slice(0, 4)
         .map((x) => `"${x}"`)
         .join(', ')}`,
     );
+  for (const page of scan.pages.slice(1, 12)) {
+    const ps = addSource(p, { type: 'url', ref: page.url, retrievedAt: scan.retrievedAt });
+    const bits = [
+      page.title && `title "${page.title}"`,
+      page.headings[0] && `heading "${page.headings[0]}"`,
+      page.description && `description "${page.description}"`,
+    ].filter(Boolean);
+    if (bits.length) obs('product', `${new URL(page.url).pathname}: ${bits.join('; ')}`, ps.id);
+  }
+  if (scan.organization) {
+    const o = scan.organization;
+    obs(
+      'product',
+      `Structured data (JSON-LD) declares ${[o.name && `name "${o.name}"`, o.legalName && `legal name "${o.legalName}"`, o.foundingDate && `founded ${o.foundingDate}`, o.logo && `logo ${o.logo}`].filter(Boolean).join(', ')}${o.sameAs.length ? `; profiles: ${o.sameAs.slice(0, 6).join(', ')}` : ''}.`,
+    );
+  }
   if (scan.themeColor) obs('color', `theme-color meta: ${scan.themeColor}`);
   if (scan.colors.length)
     obs(
@@ -192,14 +232,33 @@ export function mergeSiteScan(p: BrandProfile, scan: SiteScan): { source: Source
       'visual-identity',
       `Logo candidates: ${scan.logoCandidates.length} <img>, ${scan.inlineSvgLogos} inline <svg>.`,
     );
-  if (scan.language) obs('audience', `Page language attribute: ${scan.language}`);
-  for (const c of scan.colors)
-    if (!p.existingIdentity.colors.some((x) => x.hex === c.hex))
-      p.existingIdentity.colors.push({ hex: c.hex, count: c.count, source: source.id });
-  for (const f of scan.fonts)
-    if (!p.existingIdentity.fonts.some((x) => x.family === f))
-      p.existingIdentity.fonts.push({ family: f, source: source.id });
-  return { source, added: p.findings.length - before };
+  if (scan.language && !competitor) obs('audience', `Page language attribute: ${scan.language}`);
+  const gap = (t: string) => {
+    if (!p.gaps.includes(t)) p.gaps.push(t);
+  };
+  if (scan.clientRenderedPages)
+    gap(
+      `${who}${scan.clientRenderedPages} page(s) of ${new URL(scan.finalUrl).hostname} render their text with JavaScript; content could not be read. Ask for screenshots or use a browser.`,
+    );
+  const blocked = scan.accessIssues.filter((a) => a.reason.includes('robots')).length;
+  if (blocked)
+    gap(
+      `${who}${blocked} page(s) of ${new URL(scan.finalUrl).hostname} are disallowed by robots.txt and were not read.`,
+    );
+  const failed = scan.accessIssues.length - blocked;
+  if (failed)
+    gap(
+      `${who}${failed} page(s) or stylesheets of ${new URL(scan.finalUrl).hostname} could not be read (${[...new Set(scan.accessIssues.map((a) => a.reason))].slice(0, 3).join(', ')}).`,
+    );
+  if (!competitor) {
+    for (const c of scan.colors)
+      if (!p.existingIdentity.colors.some((x) => x.hex === c.hex))
+        p.existingIdentity.colors.push({ hex: c.hex, count: c.count, source: source.id });
+    for (const f of scan.fonts)
+      if (!p.existingIdentity.fonts.some((x) => x.family === f))
+        p.existingIdentity.fonts.push({ family: f, source: source.id });
+  }
+  return { source, added: p.findings.length - before, gaps: p.gaps.length - gapsBefore };
 }
 
 /** Compact view for agents: counts per topic and status, plus open gaps. */

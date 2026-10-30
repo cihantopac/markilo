@@ -33,7 +33,13 @@ export const escapeText = (s: string): string =>
  * Parses an XML document and returns the root element.
  * DOCTYPE declarations are rejected outright: they enable entity expansion attacks and SVG never needs them.
  */
+export const XML_LIMITS = { maxBytes: 10_000_000, maxDepth: 256, maxElements: 200_000 };
+
 export function parseXml(src: string): XmlElement {
+  if (src.length > XML_LIMITS.maxBytes) {
+    throw new MarkiloError('INVALID_SVG', `SVG is larger than ${XML_LIMITS.maxBytes / 1_000_000} MB.`);
+  }
+  let elements = 0;
   let i = 0;
   const stack: XmlElement[] = [];
   let root: XmlElement | undefined;
@@ -92,6 +98,8 @@ export function parseXml(src: string): XmlElement {
       NAME.lastIndex = i;
       const m = NAME.exec(src);
       if (!m) fail('bad tag name');
+      if (++elements > XML_LIMITS.maxElements) fail(`more than ${XML_LIMITS.maxElements} elements`);
+      if (stack.length >= XML_LIMITS.maxDepth) fail(`nesting deeper than ${XML_LIMITS.maxDepth} levels`);
       const el: XmlElement = { type: 'element', name: m![0], attrs: {}, children: [] };
       i = NAME.lastIndex;
       for (;;) {

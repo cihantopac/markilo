@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { lstatSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, extname, join, resolve } from 'node:path';
 import { normalizeColor } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
@@ -61,7 +61,7 @@ const SKIP_DIRS = new Set([
 ]);
 /** Files that may hold secrets are never opened. */
 const SENSITIVE =
-  /(^\.env(\..*)?$)|(\.(pem|key|p12|pfx|keystore|jks|mobileprovision)$)|(^id_[rd]sa)|(credentials?)|(secrets?\.)|(\.npmrc$)|(\.netrc$)/i;
+  /(^\.env(\..*)?$)|(\.(pem|key|p8|p12|pfx|keystore|jks|mobileprovision|kdbx|ppk|asc|gpg|tfvars|tfstate)$)|(^id_(rsa|dsa|ecdsa|ed25519))|(credentials?)|(secrets?[._-])|(\.npmrc$)|(\.netrc$)|(\.pypirc$)|(\.git-credentials$)|(^service-account.*\.json$)|(^google-services\.json$)|(^GoogleService-Info\.plist$)|(^\.htpasswd$)|(\.sqlite3?$)|(\.db$)/i;
 const STYLE_EXT = new Set(['.css', '.scss', '.sass', '.less', '.styl', '.pcss']);
 const CODE_EXT = new Set([
   '.ts',
@@ -100,7 +100,9 @@ function* walkFiles(root: string, depth = 0): Generator<string> {
     const full = join(root, name);
     let st: ReturnType<typeof statSync>;
     try {
-      st = statSync(full);
+      // lstat: symbolic links are never followed (no escaping the tree, no loops).
+      st = lstatSync(full);
+      if (st.isSymbolicLink()) continue;
     } catch {
       continue;
     }

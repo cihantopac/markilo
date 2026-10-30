@@ -50,13 +50,24 @@ export function encodePng(img: Raster): Buffer {
   ]);
 }
 
+export const MAX_IMAGE_PIXELS = 40_000_000;
+
 export function decodeImage(buf: Uint8Array): Raster {
   if (buf[0] === 0x89 && buf[1] === 0x50) {
+    if (buf.length < 24) throw new MarkiloError('INVALID_INPUT', 'Truncated PNG.');
+    const { width, height } = pngSize(buf);
+    if (width * height > MAX_IMAGE_PIXELS || width > 16_384 || height > 16_384) {
+      throw new MarkiloError('INVALID_INPUT', `PNG is too large to analyze (${width}×${height}).`);
+    }
     const png = PNG.sync.read(Buffer.from(buf));
     return { width: png.width, height: png.height, data: new Uint8Array(png.data) };
   }
   if (buf[0] === 0xff && buf[1] === 0xd8) {
-    const j = jpeg.decode(buf, { useTArray: true, maxMemoryUsageInMB: 256 });
+    const j = jpeg.decode(buf, {
+      useTArray: true,
+      maxMemoryUsageInMB: 256,
+      maxResolutionInMP: MAX_IMAGE_PIXELS / 1_000_000,
+    });
     return { width: j.width, height: j.height, data: new Uint8Array(j.data) };
   }
   throw new MarkiloError(

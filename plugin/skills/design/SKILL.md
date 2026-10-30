@@ -59,8 +59,9 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    `markilo research site <url> --brand <slug> --allow-network`. Look at existing logos you found
    (`Read` them). Decide: new identity, refresh, redesign or keep (see `references/workflow.md`).
 2. **Research** — delegate to the `markilo:brand-researcher` agent for market, audience, competitors,
-   category conventions, cultural/linguistic checks and trademark pre-screening. It records sourced
-   findings and collects reference marks (`markilo reference add`).
+   category conventions, cultural/linguistic checks and trademark pre-screening. With the user's OK it runs
+   `markilo research competitors` (findings + their logos/icons as reference marks) and `markilo research app` for
+   store listings, and logs every registry search with `profile add-source --type registry --registry … --query …`.
 3. **Brief** — synthesize `markilo profile show --brand <slug>` into the brief
    (`markilo brief update --brand <slug> --file …`). Ask only what you truly cannot infer — usually 2–5
    questions, asked together, each with your suggested answer.
@@ -76,6 +77,9 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    "Copy feedback for Claude" button.
 8. **Refine** — iterate on the chosen concept (optical corrections, construction, wordmark spacing,
    palette), re-verifying each round. Then `markilo finalize --brand <slug> --concept <id> --tagline …`.
+   Finalize only succeeds when the originality verdict is `no-conflicts-found`. If it is `insufficient-evidence` or
+   `needs-review`, show the user what is missing or flagged and either collect the evidence or ask whether they accept
+   the risk; only with their explicit yes add `--accept-risk`. Never present `insufficient-evidence` as "original".
 9. **Export** — `markilo export --brand <slug>`, then `markilo gallery` again.
 10. **Deliver** — summarize: where the files are, the guidelines (`exports/guidelines/index.html`),
     quality and originality results, limitations (trademark clearance needs a lawyer), and offer
