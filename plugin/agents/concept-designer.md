@@ -54,10 +54,13 @@ Steps:
    `Read` `sketches/variants/variants.png`. Choose by eye among the top-ranked, then commit it with
    `markilo construct <winner.json> --brand <slug> --concept <id> --set <name=value,…>` (writes `symbol.svg`,
    `construction.json` and `review/construction.png`).
-5. Wordmark: `markilo wordmark --text "<Name>" --font <id> --weight <n> --tracking=<t> --color <ink> -o
-   brand/brands/<slug>/concepts/<id>/wordmark.svg --force` and register it with
-   `markilo concept update --brand <slug> --concept <id> --wordmark wordmark.svg`. Use `--locale tr` for Turkish names.
-   Choose the typeface for the brand's character, not by default: `markilo fonts` lists what is available; if none
+5. Wordmark — explore before you choose, like the symbol: `markilo wordmarks --brand <slug> --concept <id>` sets the
+   name in the concept's face and three contrasting ones next to the symbol (`review/wordmarks.png`); add
+   `--fonts a,b --weights 500,700` for your own shortlist and `--tracking -20,0,20` to space the chosen face. `Read`
+   the board, pick the face whose character matches the symbol's (its curves, its weight, its corners), and commit it
+   with `markilo wordmarks --brand <slug> --concept <id> --pick wN` (writes `wordmark.svg` and the typography). Use
+   `--locale tr` for Turkish names. Choose the typeface for the brand's character, not by default: `markilo fonts`
+   lists what is available; if none
    fits and the caller says network use is approved, `markilo fonts search <style> --allow-network` and
    `markilo fonts add <id> --allow-network` give you ~1,800 open-licensed families. Edit letters when the idea calls
    for it (a signature cut, ligature or terminal) — build them with a `glyph` spec and `"role": "wordmark"` so the

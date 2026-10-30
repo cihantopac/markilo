@@ -17,6 +17,9 @@ All notable changes to this project are documented here. The format follows
   when two members read as the same mark (copy-level shape and close colours) and notes members told apart only by
   colour. `construct --member <name>` builds a product from the same spec. The workflow guide no longer asks for
   sibling similarity under 0.62, which ruled out shared constructions and was never checked.
+- `markilo wordmarks`: the name in the concept's face and three contrasting ones (or a shortlist, weights and
+  spacings) next to the symbol on one board, each measured; `--pick` commits one with its typography. The blind judge
+  called most benchmark wordmarks generic: they were the first font the designer tried.
 - The gate reports a `nearMiss` (only the average is short, every required criterion ≥ 6 and the critic said yes); it
   gets one targeted round on its lowest criteria before rejection. The bar does not move.
 

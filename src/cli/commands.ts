@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, extname, join, resolve } from 'node:path';
 import { type CalibrationMark, calibrate } from '../analyze/calibrate.js';
 import { contrastRatio, deltaE2000, normalizeColor } from '../analyze/color.js';
@@ -15,7 +15,7 @@ import {
   sketchReadiness,
 } from '../construct/vary.js';
 import { MarkiloError } from '../core/errors.js';
-import { isDir, nowIso, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
+import { isDir, nowIso, readJson, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
 import { isSlug, portableRelative, slugify } from '../core/paths.js';
 import type {
   BrandRole,
@@ -34,6 +34,7 @@ import { fontInfo, listFonts, loadBundledFace, loadFontFile } from '../design/fo
 import { composeLockup } from '../design/lockup.js';
 import { generatePalette } from '../design/palette.js';
 import { wordmarkSvg } from '../design/wordmark.js';
+import { defaultFonts, exploreWordmarks } from '../design/wordmarks.js';
 import { GROUP_INFO, resolveDeliverables, suggestDeliverables } from '../export/deliverables.js';
 import { EXPORT_GROUPS, type ExportGroup, exportBrand } from '../export/exporter.js';
 import { inkMetrics } from '../export/geometry.js';
@@ -1637,6 +1638,111 @@ export const COMMANDS: CommandSpec[] = [
       });
       writeFileSafe(file(c, c.req('out')), svg, { force: c.bool('force') });
       return { out: c.req('out'), font: face.label, license: face.license, bytes: svg.length };
+    },
+  },
+  {
+    name: 'wordmarks',
+    summary:
+      "Set the name in several faces, weights and spacings next to the concept's symbol on one board, measure each, and commit the pick (--pick).",
+    usage:
+      'wordmarks --brand <slug> --concept <id> [--text <text>] [--fonts a,b,…] [--weights 500,700] [--tracking -20,0,20] [--case as-is|lower|upper] [--locale tr] | --pick <wN>',
+    options: {
+      ...brandOpt,
+      concept: { type: 'string', description: 'Concept id' },
+      text: { type: 'string', description: 'Text (default: the brand name)' },
+      fonts: {
+        type: 'string',
+        description: "Font ids (default: the concept's face and three contrasting ones)",
+      },
+      weights: { type: 'string', description: "Weights (default: the concept's weight)" },
+      tracking: { type: 'string', description: 'Letter spacing values in 1/1000 em (default 0)' },
+      case: { type: 'string', description: 'as-is | lower | upper' },
+      locale: { type: 'string', description: 'Casing locale (tr for Turkish i/İ)' },
+      pick: { type: 'string', description: 'Commit a candidate (w1, w2, …) as the concept wordmark' },
+    },
+    async run(c) {
+      const w = ws(c);
+      const brand = c.req('brand');
+      const id = c.req('concept');
+      const concept = w.concept(brand, id);
+      const dir = join(w.conceptDir(brand, id), 'review', 'wordmarks');
+      if (c.str('pick')) {
+        const pick = c.str('pick')!;
+        const listed = existsSync(join(dir, 'wordmarks.json'))
+          ? readJson<{
+              candidates: { id: string; font: string; family: string; weight: number; tracking: number }[];
+            }>(join(dir, 'wordmarks.json')).candidates.find((x) => x.id === pick)
+          : undefined;
+        if (!listed || !/^w\d+$/.test(pick))
+          throw new MarkiloError(
+            'NOT_FOUND',
+            `No wordmark candidate "${pick}".`,
+            'Run markilo wordmarks first.',
+          );
+        copyFileSync(join(dir, `${pick}.svg`), w.conceptFile(brand, id, 'wordmark.svg'));
+        const { judgment: _old, critique: _answer, ...rest } = concept;
+        w.saveConcept({
+          ...rest,
+          files: { ...concept.files, wordmark: 'wordmark.svg' },
+          typography: {
+            fontId: listed.font,
+            weight: listed.weight,
+            family: listed.family,
+            license: fontInfo(listed.font).license,
+            tracking: listed.tracking,
+          },
+        });
+        w.logDecision(
+          brand,
+          'Wordmark',
+          `${id}: ${listed.family} ${listed.weight}, tracking ${listed.tracking}.`,
+        );
+        return {
+          wordmark: w.conceptFile(brand, id, 'wordmark.svg'),
+          typography: { font: listed.font, weight: listed.weight, tracking: listed.tracking },
+          ...(_old || _answer
+            ? { note: 'Critic scores were cleared: the identity changed and needs a new review.' }
+            : {}),
+          next: `markilo verify --brand ${brand} --concept ${id}`,
+        };
+      }
+      const nums = (k: string, d: number[]) => {
+        const v = c
+          .list(k)
+          .flatMap((x) => x.split(','))
+          .filter(Boolean)
+          .map(Number);
+        if (v.some((n) => !Number.isFinite(n))) throw new MarkiloError('USAGE', `--${k} takes numbers.`);
+        return v.length ? v : d;
+      };
+      const fonts = c
+        .list('fonts')
+        .flatMap((x) => x.split(','))
+        .map((x) => x.trim())
+        .filter(Boolean);
+      for (const f of fonts) fontInfo(f);
+      const symbolFile = concept.files.symbol ? w.conceptFile(brand, id, concept.files.symbol) : undefined;
+      const { candidates, board } = await exploreWordmarks({
+        text: c.str('text') ?? w.brand(brand).name,
+        fonts: fonts.length ? fonts : defaultFonts(concept.typography?.fontId),
+        weights: nums('weights', [concept.typography?.weight ?? 600]),
+        tracking: nums('tracking', [0]),
+        color: concept.palette.ink ?? '#16181d',
+        paper: concept.palette.paper ?? '#ffffff',
+        ...(symbolFile && existsSync(symbolFile) ? { symbol: readText(symbolFile) } : {}),
+        ...(c.str('case') ? { case: c.str('case') as 'as-is' } : {}),
+        ...(c.str('locale') ? { locale: c.str('locale')! } : {}),
+      });
+      for (const v of candidates) writeGenerated(join(dir, `${v.id}.svg`), v.svg);
+      const boardPath = join(w.conceptDir(brand, id), 'review', 'wordmarks.png');
+      writeGenerated(boardPath, board);
+      const listed = candidates.map(({ svg: _svg, ...v }) => v);
+      writeJson(join(dir, 'wordmarks.json'), { concept: id, candidates: listed });
+      return {
+        board: boardPath,
+        candidates: listed,
+        next: `Read the board; commit one with markilo wordmarks --brand ${brand} --concept ${id} --pick <wN>, or explore spacing for it with --fonts <font> --tracking -20,0,20.`,
+      };
     },
   },
   {

@@ -31,6 +31,7 @@ const GROUPS: [string, string[]][] = [
       'concept list',
       'concept update',
       'wordmark',
+      'wordmarks',
       'lockup',
       'palette',
       'fonts',
