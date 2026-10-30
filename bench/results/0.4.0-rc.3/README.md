@@ -4,6 +4,17 @@
 takes its own recommended answers). Scenario briefs and fixture projects are in `bench/scenarios/`; run them with
 `node scripts/bench.mjs run all`, then `judge` and `report`.
 
+## Per scenario
+
+| Scenario | Runs | Passed the gate | Blind judge would present it | Minutes (median) | Cost per run (median) |
+| --- | --- | --- | --- | --- | --- |
+| Multi-product family | 1 | 0 of 1 | 0 of 1 | 24.2 | $4.37 |
+| Mobile app | 1 | 1 of 1 | 1 of 1 | 15.2 | $3.15 |
+| Independent SaaS | 1 | 1 of 1 | 1 of 1 | 14.1 | $3.34 |
+
+Holdout scenarios were written before the changes being measured and never run while tuning. For a family, the
+master brand counts.
+
 ## Results
 
 | Scenario | Brand | Success | Developed | Passed gate | Finalized · critic | Blind judge | Checks pass/warn/fail | Originality | Files |
@@ -21,6 +32,7 @@ Markilo's own design-critic agent (average of its judgment scores). The blind ju
 only the brief and rendered images of each concept, with no rationale or scores: the average of distinctiveness,
 memorability, brand fit, craft and versatility (0–10), and whether it would present the mark as is. It sees the
 symbol on white, its 16–256 px sheet and, for a finalized concept, the horizontal lockup — not the app-icon tile.
+Judge model: claude-sonnet-5-5.
 
 ## Concepts
 

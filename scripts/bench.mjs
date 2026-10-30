@@ -4,7 +4,7 @@
 // API-price equivalent reported by Claude Code) and how an independent, blind judge rates the marks.
 //
 //   node scripts/bench.mjs list
-//   node scripts/bench.mjs run <id…|all> [--out <dir>] [--model <alias>] [--budget <usd>]
+//   node scripts/bench.mjs run <id…|all> [--out <dir>] [--model <alias>] [--budget <usd>] [--repeat <n>]
 //   node scripts/bench.mjs judge [<dir>] [--model <alias>]
 //   node scripts/bench.mjs report [<dir>]
 //   node scripts/bench.mjs refresh <id> <run folder>  (re-measure a kept run folder; cost and tokens are kept)
@@ -223,75 +223,80 @@ function run(ids, out) {
   const pick = ids.includes('all') ? all : all.filter((s) => ids.includes(s.id));
   if (!pick.length)
     throw new Error(`No scenario matches ${ids.join(', ')} (see "node scripts/bench.mjs list").`);
-  for (const s of pick) {
-    const work = mkdtempSync(join(tmpdir(), `markilo-bench-${s.id}-`));
-    if (existsSync(join(SCEN, s.id, 'project')))
-      cpSync(join(SCEN, s.id, 'project'), work, { recursive: true });
-    const sessionId = randomUUID();
-    const started = Date.now();
-    const r = spawnSync(
-      'claude',
-      [
-        '-p',
-        '--session-id',
-        sessionId,
-        '--permission-mode',
-        'auto',
-        '--allowedTools',
-        'WebSearch WebFetch',
-        '--output-format',
-        'json',
-        '--max-budget-usd',
-        String(budget(s)),
-        ...model,
-      ],
-      {
-        cwd: work,
-        input: prompt(s),
-        encoding: 'utf8',
-        maxBuffer: 64 * 1024 * 1024,
-        timeout: 3 * 60 * 60 * 1000,
-      },
-    );
-    let result;
-    try {
-      result = JSON.parse(r.stdout);
-    } catch {}
-    const dest = join(out, s.id);
-    const m = collect(work, dest);
-    const record = {
-      scenario: s.id,
-      title: s.title,
-      kind: s.kind,
-      brief: { ask: s.ask, owner: s.owner },
-      markilo: version,
-      ranAt: new Date(started).toISOString(),
-      minutes: Math.round((Date.now() - started) / 600) / 100,
-      exitCode: r.status,
-      isError: result?.is_error ?? true,
-      stopReason: result?.subtype ?? (r.error ? String(r.error.message) : null),
-      costUsdApiEquivalent: result?.total_cost_usd ?? null,
-      budgetUsd: budget(s),
-      model: opts.model ?? 'default',
-      models: Object.keys(result?.modelUsage ?? {}),
-      tokens: usage(result),
-      turns: result?.num_turns ?? null,
-      subagents: subagents(sessionId),
-      claim: lastJsonLine(result?.result),
-      ...m,
+  const repeat = Math.max(1, Number(opts.repeat ?? 1));
+  for (const s of pick)
+    for (let k = 1; k <= repeat; k++) runOnce(s, out, k === 1 ? s.id : `${s.id}-r${k}`, k);
+}
+
+function runOnce(s, out, slot, attempt) {
+  const work = mkdtempSync(join(tmpdir(), `markilo-bench-${s.id}-`));
+  if (existsSync(join(SCEN, s.id, 'project'))) cpSync(join(SCEN, s.id, 'project'), work, { recursive: true });
+  const sessionId = randomUUID();
+  const started = Date.now();
+  const r = spawnSync(
+    'claude',
+    [
+      '-p',
+      '--session-id',
       sessionId,
-    };
-    writeFileSync(join(dest, 'result.json'), `${JSON.stringify(record, null, 2)}\n`);
-    console.log(
-      JSON.stringify({
-        scenario: s.id,
-        success: m.brands.map((b) => `${b.slug}:${b.success}`),
-        cost: record.costUsdApiEquivalent,
-        minutes: record.minutes,
-        workdir: work,
-      }),
-    );
-  }
+      '--permission-mode',
+      'auto',
+      '--allowedTools',
+      'WebSearch WebFetch',
+      '--output-format',
+      'json',
+      '--max-budget-usd',
+      String(budget(s)),
+      ...model,
+    ],
+    {
+      cwd: work,
+      input: prompt(s),
+      encoding: 'utf8',
+      maxBuffer: 64 * 1024 * 1024,
+      timeout: 3 * 60 * 60 * 1000,
+    },
+  );
+  let result;
+  try {
+    result = JSON.parse(r.stdout);
+  } catch {}
+  const dest = join(out, slot);
+  const m = collect(work, dest);
+  const record = {
+    scenario: s.id,
+    attempt,
+    holdout: Boolean(s.holdout),
+    title: s.title,
+    kind: s.kind,
+    brief: { ask: s.ask, owner: s.owner },
+    markilo: version,
+    ranAt: new Date(started).toISOString(),
+    minutes: Math.round((Date.now() - started) / 600) / 100,
+    exitCode: r.status,
+    isError: result?.is_error ?? true,
+    stopReason: result?.subtype ?? (r.error ? String(r.error.message) : null),
+    costUsdApiEquivalent: result?.total_cost_usd ?? null,
+    budgetUsd: budget(s),
+    model: opts.model ?? 'default',
+    models: Object.keys(result?.modelUsage ?? {}),
+    tokens: usage(result),
+    turns: result?.num_turns ?? null,
+    subagents: subagents(sessionId),
+    claim: lastJsonLine(result?.result),
+    ...m,
+    sessionId,
+  };
+  writeFileSync(join(dest, 'result.json'), `${JSON.stringify(record, null, 2)}\n`);
+  console.log(
+    JSON.stringify({
+      scenario: slot,
+      success: m.brands.map((b) => `${b.slug}:${b.success}`),
+      cost: record.costUsdApiEquivalent,
+      minutes: record.minutes,
+      workdir: work,
+    }),
+  );
 }
 
 const JUDGE = (
@@ -373,6 +378,10 @@ function judge(out) {
   }
 }
 
+const median = (a) => {
+  const s = [...a].sort((x, y) => x - y);
+  return s.length ? (s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2) : 0;
+};
 const judgeAvg = (v) =>
   v ? (v.distinctiveness + v.memorability + v.brandFit + v.craft + v.versatility) / 5 : null;
 const f1 = (n) => (n === null || n === undefined ? '—' : n.toFixed(1));
@@ -387,11 +396,34 @@ function report(out) {
   const detail = [];
   let measured = version;
   let runModel = 'default';
-  for (const id of readdirSync(out).filter((d) => existsSync(join(out, d, 'result.json')))) {
+  const judgeModels = new Set();
+  // Per scenario across repeated runs: how often an identity passed the gate and the blind judge.
+  const perScenario = new Map();
+  for (const id of readdirSync(out)
+    .filter((d) => existsSync(join(out, d, 'result.json')))
+    .sort((a, b) => a.localeCompare(b, 'en', { numeric: true }))) {
     const r = readJson(join(out, id, 'result.json'));
     const j = readJson(join(out, id, 'judge.json')) ?? [];
+    for (const x of j) if (x.model) judgeModels.add(x.model);
     measured = r.markilo ?? measured;
     runModel = r.model ?? runModel;
+    const agg = perScenario.get(r.scenario) ?? {
+      title: r.title,
+      holdout: Boolean(r.holdout),
+      runs: 0,
+      passed: 0,
+      presented: 0,
+      minutes: [],
+      cost: [],
+    };
+    agg.runs++;
+    agg.minutes.push(r.minutes);
+    agg.cost.push(r.costUsdApiEquivalent ?? 0);
+    const master = r.brands.find((b) => b.role === 'master') ?? r.brands[0];
+    if (master?.success) agg.passed++;
+    if (master?.success && j.find((x) => x.brand === master.slug && x.final)?.judge?.presentAsIs)
+      agg.presented++;
+    perScenario.set(r.scenario, agg);
     for (const b of r.brands) {
       for (const c of b.concepts) {
         const v = j.find((x) => x.brand === b.slug && x.concept === c.id)?.judge;
@@ -422,6 +454,15 @@ ${runs.length} end-to-end run${runs.length === 1 ? '' : 's'} of the installed pl
 takes its own recommended answers). Scenario briefs and fixture projects are in \`bench/scenarios/\`; run them with
 \`node scripts/bench.mjs run all\`, then \`judge\` and \`report\`.
 
+## Per scenario
+
+| Scenario | Runs | Passed the gate | Blind judge would present it | Minutes (median) | Cost per run (median) |
+| --- | --- | --- | --- | --- | --- |
+${[...perScenario.values()].map((a) => `| ${a.title}${a.holdout ? ' (holdout)' : ''} | ${a.runs} | ${a.passed} of ${a.runs} | ${a.presented} of ${a.runs} | ${median(a.minutes).toFixed(1)} | $${median(a.cost).toFixed(2)} |`).join('\n')}
+
+Holdout scenarios were written before the changes being measured and never run while tuning. For a family, the
+master brand counts.
+
 ## Results
 
 | Scenario | Brand | Success | Developed | Passed gate | Finalized · critic | Blind judge | Checks pass/warn/fail | Originality | Files |
@@ -434,6 +475,7 @@ Markilo's own design-critic agent (average of its judgment scores). The blind ju
 only the brief and rendered images of each concept, with no rationale or scores: the average of distinctiveness,
 memorability, brand fit, craft and versatility (0–10), and whether it would present the mark as is. It sees the
 symbol on white, its 16–256 px sheet and, for a finalized concept, the horizontal lockup — not the app-icon tile.
+Judge model: ${judgeModels.size ? [...judgeModels].join(', ') : '—'}.
 
 ## Concepts
 
