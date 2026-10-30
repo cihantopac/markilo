@@ -70,6 +70,8 @@ export function validateBrief(v: unknown): Issues {
         if (!isObj(c) || typeof c.name !== 'string') issues.push(`competitors[${i}].name is required`);
       });
   }
+  if (v.codePaths !== undefined && !isStrArray(v.codePaths))
+    issues.push('codePaths must be an array of strings');
   if (v.niceClasses !== undefined) {
     if (
       !Array.isArray(v.niceClasses) ||

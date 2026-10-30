@@ -36,6 +36,24 @@ Recommend a mode with evidence (measurements of the current mark + findings) and
 - "Export / give me favicons": Export (+ `install-assets` dry run).
 - "Show me": `markilo gallery`.
 
+## Monorepos
+
+1. `markilo research monorepo <repo>` lists packages with `kind` (site, app, client, library, service) and whether they
+   are `brandable` (user-facing). Libraries and services are not brands.
+2. Agree with the user on: the master brand, which packages get their own identity, which are locked (preserved), and
+   the parent of each (e.g. apps living inside a platform product).
+3. `markilo research monorepo <repo> --register --groups products,apps --parent <master> --lock <slugs> --scan` creates the
+   brands, stores each package folder in the brief's `codePaths`, and scans each one into its own profile. Run it once
+   per parent if different groups have different parents.
+4. Read the design-system docs and icon sets the scans report before proposing anything — an existing system is
+   equity.
+5. Scale the work: master + family system first; sites one at a time; many apps (10+) are usually best served by a
+   shared **app icon system** (one grid, one container shape, one color logic, a distinct glyph per app) rather than
+   separate identities. Do apps in batches of 4–6 concept-designer agents.
+6. To place exports back into the repo from a separate brand folder:
+   `markilo install-assets --brand <slug> --group web --into public --project <repo>/<package>` (dry run, then `--apply`
+   after the user agrees).
+
 ## Multi-product families
 
 1. `markilo init --family "<Family>"`, then `brand add` for the master brand and each product

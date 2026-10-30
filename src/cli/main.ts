@@ -52,7 +52,9 @@ function usage(): string {
     }
     lines.push('');
   }
-  lines.push('Output is JSON on stdout; errors are JSON on stderr with a stable "code".');
+  lines.push(
+    'Output is JSON on stdout (compact when piped; MARKILO_PRETTY=1 to indent); errors are JSON on stderr with a stable "code".',
+  );
   return lines.join('\n');
 }
 
@@ -79,7 +81,9 @@ async function main(argv: string[]): Promise<number> {
   }
   const ctx = parseCommand(found.spec, found.rest, process.cwd());
   const result = await found.spec.run(ctx);
-  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  // Compact JSON when another program (such as Claude) reads the output: indentation costs tokens.
+  const pretty = process.stdout.isTTY || process.env.MARKILO_PRETTY === '1';
+  process.stdout.write(`${JSON.stringify(result, null, pretty ? 2 : undefined)}\n`);
   return 0;
 }
 

@@ -89,6 +89,8 @@ export interface Brief {
   lockedAssets?: { path: string; reason: string }[];
   deliverables?: string[];
   niceClasses?: number[];
+  /** Source folders of this brand in a repository or monorepo (used by `research repo` without a path). */
+  codePaths?: string[];
   notes?: string;
 }
 

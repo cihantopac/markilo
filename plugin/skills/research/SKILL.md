@@ -15,7 +15,10 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 1. Find or create the workspace: `markilo brand list` — else `markilo init` and `markilo brand add "<Name>"`.
 2. Check what is already known: `markilo profile show --brand <slug>` and `markilo answers --brand <slug>`.
    Do not repeat finished research; extend it.
-3. Local sources: `markilo research repo <path> --brand <slug>` for repositories. `Read` the existing logo files it lists.
+3. Local sources: for repositories run `markilo research monorepo <path>` first. Several sites/apps → confirm the list and
+   locked members with the user, then `markilo research monorepo <path> --register --groups … --parent <master> --lock … --scan`
+   (one call researches every package). Single project → `markilo research repo <path> --brand <slug>`. Read the design
+   docs and icon sets the scan reports. `Read` the existing logo files it lists.
 4. Website: ask the user before fetching. Then `markilo research site <url> --brand <slug> --allow-network`.
 5. Market research: delegate to the `markilo:brand-researcher` agent with the brand slug, what is known, and which
    topics are missing. For a small brand, do it yourself following the playbook.

@@ -52,8 +52,10 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
 Work through these stages. Tell the user which stage you are in. If they asked for one stage only
 (for example "just export"), do that stage, using what is already in the workspace.
 
-1. **Discover** — `markilo brand list` (or `markilo init` + `markilo brand add`). For a repository:
-   `markilo research repo <path> --brand <slug>`. For a URL: ask, then
+1. **Discover** — `markilo brand list` (or `markilo init` + `markilo brand add`). For a repository, first run
+   `markilo research monorepo <path>`: if it lists several sites/apps, treat the work as a family (see
+   `references/workflow.md` → Monorepos) and confirm the brand list and any locked members with the user before
+   `--register`. For a single project: `markilo research repo <path> --brand <slug>`. For a URL: ask, then
    `markilo research site <url> --brand <slug> --allow-network`. Look at existing logos you found
    (`Read` them). Decide: new identity, refresh, redesign or keep (see `references/workflow.md`).
 2. **Research** — delegate to the `markilo:brand-researcher` agent for market, audience, competitors,

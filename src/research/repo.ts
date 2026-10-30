@@ -8,7 +8,10 @@ import { portableRelative } from '../core/paths.js';
 export interface RepoScan {
   root: string;
   scannedFiles: number;
+  /** True when the file budget ran out before the whole tree was walked. */
+  truncated: boolean;
   skippedSensitive: number;
+  logoCount: number;
   project: { name?: string; description?: string; keywords?: string[]; homepage?: string };
   readme?: { title?: string; summary?: string; path: string };
   frameworks: string[];
@@ -17,6 +20,10 @@ export interface RepoScan {
   colors: { hex: string; count: number; files: number }[];
   fonts: { family: string; source: string }[];
   html: { path: string; title?: string; description?: string; themeColor?: string }[];
+  /** Folders holding a set of small SVG icons (app icon families, icon libraries). */
+  iconSets: { dir: string; count: number; examples: string[] }[];
+  /** Design-system / brand documentation found in the tree, with the colors they mention. */
+  designDocs: { path: string; title?: string; colors: string[] }[];
 }
 
 const SKIP_DIRS = new Set([
@@ -42,6 +49,9 @@ const SKIP_DIRS = new Set([
   '__pycache__',
   '.venv',
   'venv',
+  '__screenshots__',
+  '__snapshots__',
+  'storage',
   '.turbo',
   '.cache',
   '.parcel-cache',
@@ -71,8 +81,11 @@ const CODE_EXT = new Set([
 ]);
 const IMG_EXT = new Set(['.svg', '.png', '.ico', '.jpg', '.jpeg', '.webp', '.icns']);
 const LOGO_NAME =
-  /(logo|brand|wordmark|logomark|favicon|apple-touch|app-?icon|ic_launcher|mark|icon-\d+|android-chrome|mstile|safari-pinned)/i;
-const MAX_FILES = 6000;
+  /(logo|brand|wordmark|logomark|favicon|apple-touch|app-?icon|ic_launcher|mark|icon-\d+|android-chrome|mstile|safari-pinned|(^|[-_./])icon([-_.]|$))/i;
+const ICON_DIR = /(^|\/)(icons?|logos?|brand|branding|brands|app-?icons)(\/|$)/i;
+const DESIGN_DOC =
+  /(design-?system|brand|style-?guide|identity|visual-language|tokens|colou?rs?|typography)/i;
+export const DEFAULT_MAX_FILES = 25_000;
 const MAX_BYTES = 1_500_000;
 
 function* walkFiles(root: string, depth = 0): Generator<string> {
@@ -154,13 +167,16 @@ export function extractHtmlSignals(html: string) {
 }
 
 /** Scans a local repository for product and identity signals. Read-only; never opens secret-like files. */
-export function scanRepo(rootInput: string): RepoScan {
+export function scanRepo(rootInput: string, opts: { maxFiles?: number } = {}): RepoScan {
+  const maxFiles = opts.maxFiles ?? DEFAULT_MAX_FILES;
   const root = resolve(rootInput);
   if (!isDir(root)) throw new MarkiloError('NOT_FOUND', `Not a directory: ${rootInput}`);
   const scan: RepoScan = {
     root: rootInput,
     scannedFiles: 0,
+    truncated: false,
     skippedSensitive: 0,
+    logoCount: 0,
     project: {},
     frameworks: [],
     logos: [],
@@ -168,13 +184,19 @@ export function scanRepo(rootInput: string): RepoScan {
     colors: [],
     fonts: [],
     html: [],
+    iconSets: [],
+    designDocs: [],
   };
+  const svgDirs = new Map<string, { count: number; small: number; examples: string[] }>();
   const colorCount = new Map<string, { count: number; files: Set<string> }>();
   const fonts = new Map<string, string>();
   const frameworks = new Set<string>();
 
   for (const file of walkFiles(root)) {
-    if (scan.scannedFiles >= MAX_FILES) break;
+    if (scan.scannedFiles >= maxFiles) {
+      scan.truncated = true;
+      break;
+    }
     const name = basename(file);
     const rel = portableRelative(root, file);
     if (SENSITIVE.test(name)) {
@@ -190,8 +212,35 @@ export function scanRepo(rootInput: string): RepoScan {
       continue;
     }
 
-    if (IMG_EXT.has(ext) && (LOGO_NAME.test(rel) || /appiconset|mipmap-|imageset/i.test(rel))) {
-      scan.logos.push({ path: rel, kind: ext.slice(1), bytes: size });
+    if (
+      IMG_EXT.has(ext) &&
+      (LOGO_NAME.test(rel) || ICON_DIR.test(rel) || /appiconset|mipmap-|imageset/i.test(rel))
+    ) {
+      scan.logoCount++;
+      if (scan.logos.length < 60) scan.logos.push({ path: rel, kind: ext.slice(1), bytes: size });
+    }
+    if (ext === '.svg') {
+      const dir = rel.includes('/') ? rel.slice(0, rel.lastIndexOf('/')) : '.';
+      const e = svgDirs.get(dir) ?? { count: 0, small: 0, examples: [] };
+      e.count++;
+      if (size < 25_000) e.small++;
+      if (e.examples.length < 6) e.examples.push(name);
+      svgDirs.set(dir, e);
+    }
+    if (
+      (ext === '.md' || ext === '.mdx') &&
+      DESIGN_DOC.test(rel) &&
+      scan.designDocs.length < 40 &&
+      size <= MAX_BYTES
+    ) {
+      try {
+        const text = readFileSync(file, 'utf8');
+        const colors = [...new Set(extractCssSignals(text).colors)].slice(0, 12);
+        const title = firstMatch(/^#\s+(.+)$/m, text);
+        scan.designDocs.push({ path: rel, ...(title ? { title } : {}), colors });
+      } catch {
+        // Unreadable doc; skip.
+      }
     }
     if (size > MAX_BYTES) continue;
 
@@ -303,11 +352,32 @@ export function scanRepo(rootInput: string): RepoScan {
     .slice(0, 16);
   scan.fonts = [...fonts.entries()].map(([family, source]) => ({ family, source })).slice(0, 12);
   scan.frameworks = [...frameworks];
-  scan.logos = scan.logos.slice(0, 60);
+  scan.iconSets = [...svgDirs.entries()]
+    .filter(([, e]) => e.count >= 5 && e.small >= e.count * 0.8)
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 12)
+    .map(([dir, e]) => ({ dir, count: e.count, examples: e.examples }));
   scan.html = scan.html.slice(0, 10);
   return scan;
 }
 
 export function isReadableImage(path: string): boolean {
   return isFile(path) && ['.svg', '.png', '.jpg', '.jpeg'].includes(extname(path).toLowerCase());
+}
+
+/** Token-friendly digest of a scan; the full scan is written to the workspace cache. */
+export function summarizeScan(scan: RepoScan) {
+  return {
+    root: scan.root,
+    scannedFiles: scan.scannedFiles,
+    ...(scan.truncated ? { truncated: true } : {}),
+    project: scan.project.name || scan.project.description ? scan.project : undefined,
+    readme: scan.readme?.title,
+    frameworks: scan.frameworks,
+    logos: { count: scan.logoCount, examples: scan.logos.slice(0, 6).map((l) => l.path) },
+    iconSets: scan.iconSets.slice(0, 5).map((s) => `${s.dir} (${s.count})`),
+    designDocs: scan.designDocs.slice(0, 8).map((d) => d.path),
+    colors: scan.colors.slice(0, 6).map((c) => c.hex),
+    fonts: scan.fonts.slice(0, 6).map((f) => f.family),
+  };
 }

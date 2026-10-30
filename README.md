@@ -13,7 +13,7 @@
 <p align="center">
   <a href="https://github.com/cihantopac/markilo/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/cihantopac/markilo/actions/workflows/ci.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-f45d2c"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-0.1.0-14161f">
+  <img alt="Version" src="https://img.shields.io/badge/version-0.2.0-14161f">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-14161f">
 </p>
 
@@ -47,6 +47,8 @@ and exported (`branding/`).</sub>
   marketing templates, design tokens and brand guidelines — ~200 files with a manifest of sizes and hashes.
 - **Brand Preview Gallery.** One offline HTML file comparing concepts on realistic surfaces (browser tab, home screen,
   Dock, store listing, link preview, business card) with feedback you can paste back to Claude.
+- **Monorepo-aware.** Finds the sites, apps and packages of a monorepo, registers the user-facing ones as brands of a
+  family, and researches each separately — including existing icon sets and design-system docs.
 - **Families and locked brands.** Multi-product families share a system; existing identities can be **locked** so they
   are reproduced byte-for-byte and never redesigned.
 
@@ -114,6 +116,17 @@ you  › /markilo:design ./ — we're launching this as a product, it needs an i
      › Refine + finalize "Pulse" → Export: 196 files, guidelines, tokens
      › Want me to copy the web icons into ./public? (dry run shows 10 new files, 0 overwrites)
 ```
+
+### Monorepos and product families
+
+```text
+/markilo:research This is our product family monorepo at ./ — sites in products/, apps in apps/. BOSS is locked.
+```
+
+Markilo runs `research monorepo`, shows you the packages it considers brands, and after you confirm registers them
+(with their folders) and scans each one. Work then proceeds family-first: shared system, master brand, sites one by one,
+and many apps as one coherent app-icon system. Exports can be copied into any package with
+`install-assets --project <folder>` (dry run first).
 
 ## What you get
 

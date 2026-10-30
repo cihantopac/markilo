@@ -4,7 +4,7 @@ import { loadMark } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
 import { compareMarks, genericity } from '../analyze/similarity.js';
 import { MarkiloError } from '../core/errors.js';
-import { nowIso, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
+import { isDir, nowIso, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
 import { isSlug, slugify } from '../core/paths.js';
 import type {
   BrandRole,
@@ -30,6 +30,7 @@ import { renderPng } from '../render/resvg.js';
 import { renderReviewSheet } from '../render/sheet.js';
 import { buildOriginalityReport, readReferences, referenceIndexPath } from '../report/originality.js';
 import { verifyConcept } from '../report/quality.js';
+import { scanMonorepo } from '../research/monorepo.js';
 import {
   addFinding,
   addSource,
@@ -37,7 +38,7 @@ import {
   mergeSiteScan,
   summarizeProfile,
 } from '../research/profile.js';
-import { scanRepo } from '../research/repo.js';
+import { DEFAULT_MAX_FILES, scanRepo, summarizeScan } from '../research/repo.js';
 import { fetchBinary, scanSite } from '../research/site.js';
 import { lintSvg } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
@@ -184,21 +185,122 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'research repo',
     summary:
-      'Scan a local repository for product and identity signals and record them in the Brand Intelligence Profile.',
-    usage: 'research repo <path> --brand <slug>',
-    options: brandOpt,
+      "Scan a repository folder for product and identity signals (logos, icon sets, design docs, colors, fonts) and record them in the Brand Intelligence Profile. Without <path>, scans the brief's codePaths.",
+    usage: 'research repo [<path>] --brand <slug> [--full] [--max-files <n>]',
+    options: {
+      ...brandOpt,
+      full: { type: 'boolean', description: 'Print the full scan instead of a summary' },
+      'max-files': { type: 'string', description: 'File budget (default 25000)' },
+    },
     async run(c) {
       const w = ws(c);
       const slug = c.req('brand');
-      const scan = scanRepo(file(c, pos(c, 0, 'path')));
-      scan.root = pos(c, 0, 'path');
+      const paths = c.positionals.length ? [c.positionals[0]!] : (w.brief(slug).codePaths ?? []);
+      if (!paths.length)
+        throw new MarkiloError(
+          'USAGE',
+          'Give a <path> or set codePaths in the brief (research monorepo --register does this).',
+        );
       const p = w.profile(slug);
-      const merged = mergeRepoScan(p, scan);
+      const results = [];
+      for (const path of paths) {
+        const scan = scanRepo(file(c, path), { maxFiles: c.num('max-files', DEFAULT_MAX_FILES)! });
+        scan.root = path;
+        const merged = mergeRepoScan(p, scan);
+        writeJson(
+          join(w.cacheDir(slug), `repo-${slugify(path.replace(/[\\/:]+/g, '-')).slice(0, 40)}.json`),
+          scan,
+        );
+        results.push(
+          c.bool('full')
+            ? { source: merged.source.id, findingsAdded: merged.added, scan }
+            : { source: merged.source.id, findingsAdded: merged.added, ...summarizeScan(scan) },
+        );
+      }
       w.saveProfile(slug, p);
+      return results.length === 1 ? results[0] : results;
+    },
+  },
+  {
+    name: 'research monorepo',
+    summary:
+      'Find the sites, apps and packages of a monorepo and which deserve an identity. With --register, add them as brands (codePaths set); with --scan, also research each one.',
+    usage:
+      'research monorepo <path> [--register [--groups products,apps] [--parent <slug>] [--role <role>] [--lock a,b]] [--scan]',
+    options: {
+      register: { type: 'boolean', description: 'Add brandable packages as brands in the workspace' },
+      groups: { type: 'string', description: 'Only these top-level folders (e.g. products,apps)' },
+      parent: { type: 'string', description: 'Parent brand slug for registered brands' },
+      role: {
+        type: 'string',
+        description: 'Role for registered brands (default: product for sites, sub-brand for apps)',
+      },
+      lock: { type: 'string', description: 'Slugs to register as locked (preserved, never redesigned)' },
+      scan: { type: 'boolean', description: 'Run research repo for every registered brand' },
+      all: { type: 'boolean', description: 'Include non-brandable packages (libraries, services)' },
+    },
+    async run(c) {
+      const root = pos(c, 0, 'path');
+      const mono = scanMonorepo(file(c, root));
+      const groups = c.list('groups');
+      const picked = mono.candidates.filter(
+        (x) => (c.bool('all') || x.brandable) && (!groups.length || groups.includes(x.group)),
+      );
+      if (!c.bool('register')) {
+        return {
+          ...mono,
+          candidates: mono.candidates.map(({ slug, path, group, kind, brandable, reason, title }) => ({
+            slug,
+            path,
+            group,
+            kind,
+            brandable,
+            reason,
+            ...(title ? { title } : {}),
+          })),
+          next: `markilo research monorepo ${root} --register --groups ${Object.keys(mono.groups).join(',')} [--parent <slug>] [--lock <slugs>] --scan`,
+        };
+      }
+      const w = ws(c);
+      const locks = new Set(c.list('lock'));
+      const registered: { slug: string; status: string; summary?: unknown }[] = [];
+      for (const cand of picked) {
+        const exists = w.manifest.brands.some((b) => b.slug === cand.slug);
+        const codePath = join(root, cand.path);
+        if (!exists) {
+          const role =
+            (c.str('role') as BrandRole | undefined) ?? (cand.kind === 'app' ? 'sub-brand' : 'product');
+          w.addBrand({
+            name: cand.title && cand.title.length <= 40 ? cand.title : cand.name,
+            slug: cand.slug,
+            role,
+            ...(c.str('parent') ? { parent: c.str('parent')! } : {}),
+            locked: locks.has(cand.slug),
+          });
+        }
+        const brief = w.brief(cand.slug);
+        if (!brief.codePaths?.includes(codePath))
+          writeJson(w.briefPath(cand.slug), { ...brief, codePaths: [...(brief.codePaths ?? []), codePath] });
+        const entry: { slug: string; status: string; summary?: unknown } = {
+          slug: cand.slug,
+          status: exists ? 'existing' : locks.has(cand.slug) ? 'added (locked)' : 'added',
+        };
+        if (c.bool('scan')) {
+          const scan = scanRepo(file(c, codePath));
+          scan.root = codePath;
+          const prof = w.profile(cand.slug);
+          mergeRepoScan(prof, scan);
+          w.saveProfile(cand.slug, prof);
+          entry.summary = summarizeScan(scan);
+        }
+        registered.push(entry);
+      }
+      for (const l of locks)
+        if (!picked.some((x) => x.slug === l))
+          registered.push({ slug: l, status: 'not found among candidates' });
       return {
-        source: merged.source.id,
-        findingsAdded: merged.added,
-        scan: { ...scan, logos: scan.logos.slice(0, 15) },
+        registered,
+        note: 'Locked brands still need their existing files: markilo lock --brand <slug> --symbol … --primary …',
       };
     },
   },
@@ -266,7 +368,30 @@ export const COMMANDS: CommandSpec[] = [
           });
       }
       w.saveProfile(slug, p);
-      return { source: merged.source.id, findingsAdded: merged.added, scan, cachedAssets: saved };
+      writeJson(
+        join(w.cacheDir(slug), `site-${new URL(scan.finalUrl).hostname.replace(/[^a-z0-9.-]/gi, '_')}.json`),
+        scan,
+      );
+      const digest = c.bool('full')
+        ? scan
+        : {
+            url: scan.finalUrl,
+            title: scan.title,
+            description: scan.description,
+            themeColor: scan.themeColor,
+            headings: scan.headings.slice(0, 4),
+            colors: scan.colors.slice(0, 6).map((x) => x.hex),
+            fonts: scan.fonts,
+            icons: scan.icons.length,
+            logoCandidates: scan.logoCandidates.length + scan.inlineSvgLogos,
+            language: scan.language,
+          };
+      return {
+        source: merged.source.id,
+        findingsAdded: merged.added,
+        scan: digest,
+        cachedAssets: saved.length,
+      };
     },
   },
   {
@@ -759,9 +884,14 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'install-assets',
     summary:
-      'Copy an exported group (e.g. web) into your project. Dry run unless --apply; never overwrites without --force.',
-    usage: 'install-assets --brand <slug> --group web --into <dir> [--apply] [--force]',
+      'Copy an exported group (e.g. web) into your project (the current folder, or --project for another folder such as a monorepo package). Dry run unless --apply; never overwrites without --force.',
+    usage:
+      'install-assets --brand <slug> --group web --into <dir> [--project <project dir>] [--apply] [--force]',
     options: {
+      project: {
+        type: 'string',
+        description: 'Project folder to install into (default: current folder). Ask the user first.',
+      },
       ...brandOpt,
       group: { type: 'string', description: 'Export group to copy' },
       into: { type: 'string', description: 'Destination inside the project' },
@@ -769,7 +899,9 @@ export const COMMANDS: CommandSpec[] = [
       force: { type: 'boolean', description: 'Overwrite existing files' },
     },
     async run(c) {
-      return installAssets(ws(c), c.req('brand'), c.req('group'), c.req('into'), c.cwd, {
+      const projectDir = c.str('project') ? file(c, c.str('project')!) : c.cwd;
+      if (!isDir(projectDir)) throw new MarkiloError('NOT_FOUND', `Project folder not found: ${projectDir}`);
+      return installAssets(ws(c), c.req('brand'), c.req('group'), c.req('into'), projectDir, {
         apply: c.bool('apply'),
         force: c.bool('force'),
       });

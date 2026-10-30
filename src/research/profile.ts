@@ -101,7 +101,7 @@ export function mergeRepoScan(p: BrandProfile, scan: RepoScan): { source: Source
   const source = addSource(p, {
     type: 'repo',
     ref: scan.root,
-    notes: `${scan.scannedFiles} files scanned; ${scan.skippedSensitive} secret-like files skipped unread`,
+    notes: `${scan.scannedFiles} files scanned${scan.truncated ? ' (file budget reached; partial)' : ''}; ${scan.skippedSensitive} secret-like files skipped unread`,
   });
   const before = p.findings.length;
   const obs = (topic: FindingTopic, statement: string) =>
