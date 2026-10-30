@@ -12,12 +12,18 @@ Request: $ARGUMENTS
 
 Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts.
 
-1. `markilo gallery` (optionally `--brand <slug>`). It writes `brand/gallery/index.html` — a single self-contained file
-   that works offline.
-2. Give the user the path (and the `file://` URL from the output). If a browser tool is available, you may open it to
-   check the layout.
-3. Explain the review flow: each concept card has Keep / Refine / Drop, revision tags (bolder, simpler, more
-   distinctive, different color, different typeface, …) and a short note; "Copy request for Claude" produces lines
-   such as `/markilo:refine <brand> <concept>: bolder; different typeface` and a Keep/Drop summary to paste back.
-4. When feedback arrives, log it (`markilo answers`), update statuses (`markilo concept update --status`), and continue
-   with the refine skill.
+1. Preferred: start `markilo gallery --serve` as a **background** Bash command (it keeps running). Its first output
+   line has `serving`: a `http://127.0.0.1:<port>/…?t=<token>` URL. Give the user that URL. The server only listens
+   on this computer, needs the token, serves only the gallery and exported artwork, and stops by itself when idle.
+   Without a background shell, run `markilo gallery` instead: it writes `brand/gallery/index.html`, a self-contained
+   file that works offline; give the user its `file://` URL.
+2. Explain the review flow in two lines: on each concept choose Keep / Refine / Drop, add revision tags or a note, click
+   on the big mark to pin what should change at that spot, tick "Compare" on two or more concepts to see them side by
+   side and mark one "Prefer this". Then press **Send to Claude** (served) or **Download decisions** (file) and tell
+   you when done.
+3. Read the decisions: `markilo feedback --brand <slug>` (after a download: `markilo feedback --import <file>`). It
+   returns each decision with tags, notes and pinned spots (e.g. "at top-right: thicker stem"), the preferred concept
+   and ready-to-act requests. Repeat them back to the user in one short summary.
+4. Act: `markilo feedback --brand <slug> --apply` marks dropped concepts rejected and kept ones shortlisted (only after
+   the user confirmed the summary). Log what was decided (`markilo answers`) and continue with the refine skill for
+   each "refine" request — pinned spots tell you where on the mark the change belongs.

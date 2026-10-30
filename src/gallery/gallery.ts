@@ -208,10 +208,12 @@ async function subjectCard(s: Subject, opts: { review?: boolean } = {}): Promise
     <div class="seg">${['keep', 'refine', 'drop'].map((v) => `<button type="button" data-pick="${v}">${v[0]!.toUpperCase()}${v.slice(1)}</button>`).join('')}</div>
     <div class="chips">${REVISION_CHIPS.map((c) => `<button type="button" class="chip" data-chip="${escapeAttr(c)}">${escapeText(c)}</button>`).join('')}</div>
     <input type="text" class="note" placeholder="Anything specific? (optional)">
+    <ol class="pins" title="Click on the large mark to point at a spot"></ol>
+    <label class="cmp"><input type="checkbox" data-cmp="${key}"> Compare</label>
   </div>`;
   return `<article class="card${s.status === 'rejected' ? ' rejected' : ''}" id="${escapeAttr(`${s.brand.slug}-${s.key}`)}">
   <header><h3>${escapeText(s.title)}</h3><span class="status">${escapeText(s.status)}</span></header>
-  <div class="stage"><div class="ground" style="background:${g.native}">${hero}</div><div class="ground small" style="background:${g.opposite}">${alt}</div></div>
+  <div class="stage"><div class="ground${decide ? ' pinnable' : ''}" data-key="${key}" style="background:${g.native}">${hero}</div><div class="ground small" style="background:${g.opposite}">${alt}</div></div>
   ${lock && s.symbol ? `<div class="lockup" style="background:${g.native}">${fitInline(lock, 300, 54)}</div>` : ''}
   ${sizes ? `<div class="sizes" style="background:${g.native}">${sizes}</div>` : ''}
   <div class="pills">${pills}</div>
@@ -220,6 +222,11 @@ async function subjectCard(s: Subject, opts: { review?: boolean } = {}): Promise
   <details><summary>Details &amp; mockups</summary>
     ${s.concept ? `<p class="muted">${escapeText(s.concept.rationale)}</p>` : ''}
     <div class="swatches">${palette.map((c) => `<span style="background:${c}" title="${c}"></span>`).join('')}<code>${palette.join(' · ')}</code></div>
+    ${
+      s.concept?.readsAs?.length
+        ? `<h4>First impressions (critic, before reading the idea)</h4><p class="muted">${s.concept.readsAs.map(escapeText).join(' · ')}</p>`
+        : ''
+    }
     ${checks}${sim}${judgment}
     <div class="mockups">${await mockups(s)}</div>
   </details>
@@ -473,34 +480,63 @@ h4{margin:10px 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.04e
 .bizcard .front{border-radius:6px;aspect-ratio:85/55;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.15)}.bizcard .back{margin-top:6px;background:#fff;color:#222;border-radius:6px;padding:8px;display:grid;gap:2px;box-shadow:0 4px 14px rgba(0,0,0,.1)}.bizcard small{color:#777;font-size:9px}
 .family .fmrow{display:flex;gap:16px;flex-wrap:wrap}.fm{display:grid;justify-items:center;gap:6px;background:#fff;color:#222;border-radius:12px;padding:12px;border:1px solid var(--line)}
 .approved{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:10px}.approved-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}.approved-grid .ground{height:150px}.approved-grid .ground.wide{grid-column:span 2}.links a{margin-right:12px;color:var(--accent)}.ground svg,.lockup svg,.approved-grid svg{max-width:92%;height:auto}.assets{margin-top:12px}.assets a{margin-right:8px;font-size:12px}.empty{color:var(--muted)}
+.pinnable{position:relative;cursor:crosshair}.pin{position:absolute;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;box-shadow:0 0 0 2px #fff}
+.pins{margin:0;padding-left:20px;display:grid;gap:4px}.pins:empty{display:none}.pins li input{width:100%;border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:transparent;color:inherit;font:inherit;font-size:12px}
+.cmp{font-size:12px;color:var(--muted)}
+dialog#cmpd{max-width:min(1100px,96vw);width:100%;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:16px}dialog#cmpd::backdrop{background:rgba(0,0,0,.45)}
+dialog#cmpd button,dialog#cmpd input{font:inherit;color:inherit;border:1px solid var(--line);background:transparent;border-radius:8px;padding:7px 12px}dialog#cmpd input{width:100%;margin:10px 0}
+.cmpgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.cmpcol{display:grid;gap:8px;align-content:start}.cmpcol h3{margin:0;font-size:15px}.cmpcol .prefer.on{background:var(--good);border-color:var(--good);color:#fff}
 .bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 16px;display:flex;gap:10px;align-items:center;z-index:9}
 .bar .sum{flex:1;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar button{border:1px solid var(--line);background:transparent;border-radius:8px;padding:7px 12px}.bar button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 @media (max-width:640px){.stage{grid-template-columns:1fr 72px}.bar .sum{display:none}}
 </style></head><body>
-<header class="top"><div><h1>${escapeText(title)} · ${reviewing ? 'review' : 'brand identity'}</h1><p>${reviewing ? 'Pick Keep, Refine or Drop on each concept, add revision tags, then copy the request for Claude.' : 'Approved identity, its variants and exported files. Explored concepts are kept for reference.'}</p></div><button type="button" id="theme">Theme</button></header>
+<header class="top"><div><h1>${escapeText(title)} · ${reviewing ? 'review' : 'brand identity'}</h1><p>${reviewing ? 'Pick Keep, Refine or Drop, click on a mark to point at a spot, compare concepts side by side, then send your decisions to Claude.' : 'Approved identity, its variants and exported files. Explored concepts are kept for reference.'}</p></div><button type="button" id="theme">Theme</button></header>
 <main>${body}</main>
-${reviewing ? '' : '<style>.bar{display:none}body{padding-bottom:16px}</style>'}<div class="bar"><span class="sum" id="sum">No decisions yet.</span><button type="button" id="clear">Clear</button><button type="button" class="primary" id="copy">Copy request for Claude</button></div>
+${reviewing ? '' : '<style>.bar{display:none}body{padding-bottom:16px}</style>'}<div class="bar"><span class="sum" id="sum">No decisions yet.</span><button type="button" id="clear">Clear</button><button type="button" id="cmpbtn">Compare (0)</button><button type="button" id="copy">Copy request</button><button type="button" class="primary" id="send">Save decisions</button></div>
+<dialog id="cmpd"><div class="cmpgrid" id="cmpgrid"></div><input type="text" id="cmpreason" placeholder="Why do you prefer it? (optional, then press Prefer this)"><p class="muted" id="cmpwhy"></p><button type="button" id="cmpclose">Close</button></dialog>
 <script>
 (()=>{const K='markilo-review:'+location.pathname;let st={};try{st=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){}
+const q=new URLSearchParams(location.search),TOKEN=q.get('t'),SERVED=location.protocol.startsWith('http')&&!!TOKEN;
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}render()};
-const boxes=[...document.querySelectorAll('.decide')];
-function render(){boxes.forEach(b=>{const v=st[b.dataset.key]||{};b.classList.toggle('refine',v.pick==='refine');
+const boxes=[...document.querySelectorAll('.decide')];const get=k=>st[k]=st[k]||{};
+const where=(x,y)=>(y<34?'top':y>66?'bottom':'middle')+'-'+(x<34?'left':x>66?'right':'center');
+function render(){boxes.forEach(b=>{const k=b.dataset.key,v=st[k]||{};b.classList.toggle('refine',v.pick==='refine');
 b.querySelectorAll('[data-pick]').forEach(x=>x.classList.toggle('on',x.dataset.pick===v.pick));
 b.querySelectorAll('[data-chip]').forEach(x=>x.classList.toggle('on',(v.chips||[]).includes(x.dataset.chip)));
-const n=b.querySelector('.note');if(document.activeElement!==n)n.value=v.note||''});
-const e=Object.entries(st).filter(([,v])=>v.pick);document.getElementById('sum').textContent=e.length?e.map(([k,v])=>v.pick+' '+k.split('/')[1]).join(' · '):'No decisions yet.'}
-boxes.forEach(b=>{const k=b.dataset.key;const get=()=>st[k]=st[k]||{};
-b.querySelectorAll('[data-pick]').forEach(x=>x.onclick=()=>{const v=get();v.pick=v.pick===x.dataset.pick?undefined:x.dataset.pick;save()});
-b.querySelectorAll('[data-chip]').forEach(x=>x.onclick=()=>{const v=get();v.chips=v.chips||[];const c=x.dataset.chip;v.chips=v.chips.includes(c)?v.chips.filter(y=>y!==c):[...v.chips,c];save()});
-b.querySelector('.note').oninput=e=>{get().note=e.target.value;save()}});
-function request(){const L=[];const by=p=>Object.entries(st).filter(([,v])=>v.pick===p);
-for(const[k,v]of by('refine')){const[b,id]=k.split('/');const w=[...(v.chips||[])];if(v.note)w.push(v.note);L.push('/markilo:refine '+b+' '+id+(w.length?': '+w.join('; '):''))}
-const keep=by('keep').map(([k])=>k.split('/')[1]),drop=by('drop').map(([k])=>k.split('/')[1]);
-if(keep.length)L.push('Keep as is: '+keep.join(', '));if(drop.length)L.push('Drop (mark rejected): '+drop.join(', '));
+const n=b.querySelector('.note');if(document.activeElement!==n)n.value=v.note||'';
+const c=b.querySelector('[data-cmp]');if(c)c.checked=!!v.compare;
+const ol=b.querySelector('.pins');const focused=ol.contains(document.activeElement);if(!focused){ol.innerHTML='';(v.pins||[]).forEach((p,i)=>{const li=document.createElement('li');const inp=document.createElement('input');inp.placeholder='What should change here ('+where(p.x,p.y)+')?';inp.value=p.note||'';inp.oninput=e=>{p.note=e.target.value;try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}};li.append(inp);ol.append(li)})}
+const g=document.querySelector('.pinnable[data-key="'+CSS.escape(k)+'"]');if(g){g.querySelectorAll('.pin').forEach(p=>p.remove());(v.pins||[]).forEach((p,i)=>{const d=document.createElement('span');d.className='pin';d.style.left=p.x+'%';d.style.top=p.y+'%';d.textContent=i+1;d.title='Remove pin';d.onclick=e=>{e.stopPropagation();v.pins.splice(i,1);save()};g.append(d)})}});
+const e=Object.entries(st).filter(([k,v])=>k!=='_prefer'&&v.pick);document.getElementById('sum').textContent=e.length?e.map(([k,v])=>v.pick+' '+k.split('/')[1]).join(' · '):'No decisions yet.';
+document.getElementById('cmpbtn').textContent='Compare ('+Object.values(st).filter(v=>v&&v.compare).length+')'}
+boxes.forEach(b=>{const k=b.dataset.key;
+b.querySelectorAll('[data-pick]').forEach(x=>x.onclick=()=>{const v=get(k);v.pick=v.pick===x.dataset.pick?undefined:x.dataset.pick;save()});
+b.querySelectorAll('[data-chip]').forEach(x=>x.onclick=()=>{const v=get(k);v.chips=v.chips||[];const c=x.dataset.chip;v.chips=v.chips.includes(c)?v.chips.filter(y=>y!==c):[...v.chips,c];save()});
+b.querySelector('.note').oninput=e=>{get(k).note=e.target.value;try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}};
+const c=b.querySelector('[data-cmp]');if(c)c.onchange=()=>{get(k).compare=c.checked;save()}});
+document.querySelectorAll('.pinnable').forEach(g=>g.onclick=ev=>{const r=g.getBoundingClientRect();const v=get(g.dataset.key);v.pins=v.pins||[];if(v.pins.length>=6)return;
+v.pins.push({x:Math.round((ev.clientX-r.left)/r.width*100),y:Math.round((ev.clientY-r.top)/r.height*100),note:''});if(!v.pick)v.pick='refine';save();
+const ol=document.querySelector('.decide[data-key="'+CSS.escape(g.dataset.key)+'"] .pins');const last=ol&&ol.lastElementChild;if(last)last.querySelector('input').focus()});
+function feedback(){const d=[];for(const[k,v]of Object.entries(st)){if(k==='_prefer'||!v||!(v.pick||(v.pins||[]).length||v.note))continue;const[brand,concept]=k.split('/');
+d.push({brand,concept,decision:v.pick||null,tags:v.chips||[],note:v.note||'',pins:(v.pins||[]).map((p,i)=>({n:i+1,x:p.x,y:p.y,where:where(p.x,p.y),note:p.note||''}))})}
+return{schema:'markilo/feedback@1',gallery:location.pathname,savedAt:new Date().toISOString(),decisions:d,preferred:st._prefer||null}}
+function request(){const f=feedback(),L=[];for(const d of f.decisions.filter(x=>x.decision==='refine')){const w=[...d.tags];if(d.note)w.push(d.note);d.pins.forEach(p=>w.push('at '+p.where+(p.note?': '+p.note:'')));L.push('/markilo:refine '+d.brand+' '+d.concept+(w.length?': '+w.join('; '):''))}
+const keep=f.decisions.filter(x=>x.decision==='keep').map(x=>x.concept),drop=f.decisions.filter(x=>x.decision==='drop').map(x=>x.concept);
+if(keep.length)L.push('Keep as is: '+keep.join(', '));if(drop.length)L.push('Drop (mark rejected): '+drop.join(', '));if(f.preferred)L.push('Preferred: '+f.preferred.concept+(f.preferred.why?' — '+f.preferred.why:''));
 return L.length?L.join('\\n'):'(no decisions yet)'}
-document.getElementById('copy').onclick=async()=>{const t=request();try{await navigator.clipboard.writeText(t);document.getElementById('copy').textContent='Copied ✓';setTimeout(()=>document.getElementById('copy').textContent='Copy request for Claude',1500)}catch(e){prompt('Copy this request:',t)}};
+const flash=(id,t,orig)=>{const b=document.getElementById(id);b.textContent=t;setTimeout(()=>b.textContent=orig,1800)};
+document.getElementById('copy').onclick=async()=>{const t=request();try{await navigator.clipboard.writeText(t);flash('copy','Copied ✓','Copy request')}catch(e){prompt('Copy this request:',t)}};
+const send=document.getElementById('send');send.textContent=SERVED?'Send to Claude':'Download decisions';
+send.onclick=async()=>{const f=feedback();if(SERVED){try{const r=await fetch('/feedback',{method:'POST',headers:{'content-type':'application/json','x-markilo-token':TOKEN},body:JSON.stringify(f)});flash('send',r.ok?'Sent ✓ — tell Claude':'Not saved ('+r.status+')','Send to Claude')}catch(e){flash('send','Not saved','Send to Claude')}}
+else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(f,null,2)],{type:'application/json'}));a.download='markilo-feedback.json';a.click();flash('send','Saved — run markilo feedback --import','Download decisions')}};
 document.getElementById('clear').onclick=()=>{st={};save()};
+const dlg=document.getElementById('cmpd');document.getElementById('cmpclose').onclick=()=>dlg.close();
+document.getElementById('cmpbtn').onclick=()=>{const keys=Object.entries(st).filter(([k,v])=>k!=='_prefer'&&v&&v.compare).map(([k])=>k);if(keys.length<2){alert('Tick "Compare" on two or more concepts first.');return}
+const grid=document.getElementById('cmpgrid');grid.innerHTML='';for(const k of keys){const card=document.querySelector('.decide[data-key="'+CSS.escape(k)+'"]').closest('.card');const col=document.createElement('div');col.className='cmpcol';
+const h=document.createElement('h3');h.textContent=card.querySelector('h3').textContent;col.append(h);for(const sel of['.stage','.lockup','.sizes','.pills','.idea']){const n=card.querySelector(sel);if(n){const c=n.cloneNode(true);c.querySelectorAll('.pin').forEach(p=>p.remove());c.querySelectorAll('.pinnable').forEach(p=>p.classList.remove('pinnable'));col.append(c)}}
+const b=document.createElement('button');b.type='button';b.className='prefer'+(st._prefer&&st._prefer.key===k?' on':'');b.textContent='Prefer this';b.onclick=()=>{const why=document.getElementById('cmpreason').value.trim();st._prefer={key:k,brand:k.split('/')[0],concept:k.split('/')[1],why,over:keys.filter(x=>x!==k).map(x=>x.split('/')[1])};save();dlg.close()};col.append(b);grid.append(col)}
+document.getElementById('cmpwhy').textContent=st._prefer?'Current preference: '+st._prefer.concept+(st._prefer.why?' — '+st._prefer.why:''):'';dlg.showModal()};
 document.getElementById('theme').onclick=()=>{const d=document.documentElement;d.dataset.theme=d.dataset.theme==='dark'?'light':'dark'};
 render()})();
 </script>

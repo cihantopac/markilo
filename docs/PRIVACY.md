@@ -1,12 +1,19 @@
 # Privacy and data handling
 
 - **Local by default.** The toolchain reads and writes files on your machine and makes no network requests, except
-  `markilo research site`, which requires `--allow-network` and is only used after you agree.
+  the research commands (`research site`, `research competitors`, `research app`, `fonts search/add`), which require
+  `--allow-network` and are only used after you agree.
+- **Gallery server.** `markilo gallery --serve` listens on `127.0.0.1` only (never on your network), requires a random
+  token in the URL, rejects other host names (DNS rebinding), serves only the gallery page and approved/exported
+  artwork (never research, profiles, answers or feedback), accepts at most 512 KB of validated decisions and stops when
+  idle. Decisions are stored in the workspace's `feedback/` folder and nowhere else.
 - **What is stored.** Everything lives in your project's `brand/` workspace: briefs, research findings with their
   sources, answers you gave, concepts, reports and exports. Raw captures (`research/cache/`) and competitor references
-  (`research/references/`) are git-ignored by the workspace's own `.gitignore`.
+  (`research/references/`), including the context sheets that show your mark next to competitors, are git-ignored by
+  the workspace's own `.gitignore`; older workspaces get new ignore rules the next time Markilo opens them.
 - **Secrets.** The repository scanner never opens `.env*`, private keys, keystores, `.npmrc`, `.netrc` or credential
-  files; it only counts that it skipped them. Findings store relative paths, not absolute ones.
+  files; it only counts that it skipped them. Findings and sources store paths relative to the project, never absolute
+  paths (they would reveal your user name and folder layout); `markilo profile tidy` rewrites older profiles.
 - **External services.** Web searches and fetches done by Claude (WebSearch/WebFetch) are governed by your Claude Code
   settings. Markilo's skills ask before searching with private or unreleased names.
 - **Your project.** Markilo writes outside `brand/` only through `install-assets --apply`, never overwriting existing

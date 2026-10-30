@@ -71,16 +71,17 @@ Topics: product, audience, market, competitor, visual-identity, typography, colo
 
 ## Deliver
 
-| Command                                                                                                              | Purpose                                                                               |
-| -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `finalize --brand s --concept ID [--tagline T] [--note "usage rule"]... [--accept-risk] [--force]`                   | Freeze masters, build lockups (horizontal/stacked/compact), write `final/brand.json`. |
-| `lock --brand s --primary #hex [--symbol f] [--wordmark f] [--lockup f]`                                             | Register an existing identity to preserve byte-for-byte.                              |
-| `deliverables --brand s [--set g,…] [--add g,…] [--remove g,…]`                                                      | Which groups this brand needs; suggests from product type and platforms.              |
-| `export --brand s [--only logos,web,ios,macos,android,windows,social,marketing,tokens,guidelines] [--all] [--clean]` | Chosen groups (deliverables) + `asset-manifest.json`.                                 |
-| `gallery [--brand s]`                                                                                                | `brand/gallery/index.html`.                                                           |
-| `install-assets --brand s --group web --into public [--project <dir>] [--apply] [--force]`                           | Dry run unless `--apply`. Never overwrites without `--force`.                         |
-| `shortcut install\|uninstall\|status [--yes]`                                                                        | Optional personal `/markilo` skill.                                                   |
-| `doctor`                                                                                                             | Environment check.                                                                    |
+| Command                                                                                                              | Purpose                                                                                                                                           |
+| -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `finalize --brand s --concept ID [--tagline T] [--note "usage rule"]... [--accept-risk] [--force]`                   | Freeze masters, build lockups (horizontal/stacked/compact), write `final/brand.json`.                                                             |
+| `lock --brand s --primary #hex [--symbol f] [--wordmark f] [--lockup f]`                                             | Register an existing identity to preserve byte-for-byte.                                                                                          |
+| `deliverables --brand s [--set g,…] [--add g,…] [--remove g,…]`                                                      | Which groups this brand needs; suggests from product type and platforms.                                                                          |
+| `export --brand s [--only logos,web,ios,macos,android,windows,social,marketing,tokens,guidelines] [--all] [--clean]` | Chosen groups (deliverables) + `asset-manifest.json`.                                                                                             |
+| `gallery [--brand s] [--serve [--port N]]`                                                                           | `brand/gallery/index.html`; `--serve` serves it on 127.0.0.1 (token, read-only, stops when idle) so "Send to Claude" saves decisions.             |
+| `feedback [--brand s] [--import file] [--apply]`                                                                     | Decisions from the gallery: keep/refine/drop, tags, notes, pinned spots, preferred concept, ready-to-act requests; `--apply` sets concept status. |
+| `install-assets --brand s --group web --into public [--project <dir>] [--apply] [--force]`                           | Dry run unless `--apply`. Never overwrites without `--force`.                                                                                     |
+| `shortcut install\|uninstall\|status [--yes]`                                                                        | Optional personal `/markilo` skill.                                                                                                               |
+| `doctor`                                                                                                             | Environment check.                                                                                                                                |
 
 Error codes: USAGE, NOT_FOUND, EXISTS, UNSAFE_PATH, INVALID_INPUT, INVALID_SVG, NETWORK_DISABLED, NETWORK,
 ROBOTS_DISALLOWED, LOCKED, NO_WORKSPACE, INTERNAL.

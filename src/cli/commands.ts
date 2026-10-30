@@ -37,7 +37,9 @@ import { GROUP_INFO, resolveDeliverables, suggestDeliverables } from '../export/
 import { EXPORT_GROUPS, type ExportGroup, exportBrand } from '../export/exporter.js';
 import { inkMetrics } from '../export/geometry.js';
 import { finalizeConcept, lockIdentity } from '../export/kit.js';
+import { feedbackRequests, parseFeedback, readLatestFeedback, storeFeedback } from '../gallery/feedback.js';
 import { buildGallery } from '../gallery/gallery.js';
+import { serveGallery } from '../gallery/serve.js';
 import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarity.js';
 import { suggestNiceClasses, trademarkSearchPlan } from '../name/trademark.js';
 import { renderPng } from '../render/resvg.js';
@@ -1305,12 +1307,78 @@ export const COMMANDS: CommandSpec[] = [
   },
   {
     name: 'gallery',
-    summary: 'Build the self-contained HTML Brand Preview Gallery (concepts, scores, mockups, exports).',
-    usage: 'gallery [--brand <slug>]...',
-    options: { brand: { type: 'string', short: 'b', multiple: true, description: 'Limit to brands' } },
+    summary:
+      'Build the self-contained HTML Brand Preview Gallery (concepts, scores, mockups, exports). With --serve it is served on 127.0.0.1 so "Send to Claude" saves decisions for `markilo feedback`.',
+    usage: 'gallery [--brand <slug>]... [--serve [--port <n>] [--idle <minutes>]]',
+    options: {
+      brand: { type: 'string', short: 'b', multiple: true, description: 'Limit to brands' },
+      serve: { type: 'boolean', description: 'Serve on 127.0.0.1 and accept decisions from the page' },
+      port: { type: 'string', description: 'Port for --serve (default: a free one)' },
+      idle: { type: 'string', description: 'Stop after this many idle minutes (default 120)' },
+    },
     async run(c) {
-      const r = await buildGallery(ws(c), { brands: c.list('brand') });
-      return { gallery: r.path, subjects: r.subjects, open: `file://${r.path.replace(/\\/g, '/')}` };
+      const w = ws(c);
+      const r = await buildGallery(w, { brands: c.list('brand') });
+      if (!c.bool('serve'))
+        return { gallery: r.path, subjects: r.subjects, open: `file://${r.path.replace(/\\/g, '/')}` };
+      const srv = await serveGallery(w, {
+        port: c.num('port', 0)!,
+        idleMinutes: c.num('idle', 120)!,
+        onSaved: (path) => process.stderr.write(`${JSON.stringify({ feedbackSaved: path })}\n`),
+      });
+      // Printed before blocking, so whoever started the server (often an agent, in the background) gets the URL.
+      process.stdout.write(
+        `${JSON.stringify({ gallery: r.path, serving: srv.url, stop: 'Ctrl+C, or it stops when idle', read: 'markilo feedback' })}\n`,
+      );
+      const stop = () => srv.close();
+      process.once('SIGINT', stop);
+      process.once('SIGTERM', stop);
+      const end = await srv.done;
+      return { stopped: true, feedbackSaved: end.saved };
+    },
+  },
+  {
+    name: 'feedback',
+    summary:
+      'Read the decisions saved from the gallery (keep/refine/drop, revision tags, notes, pinned spots, preferred concept); --import a downloaded file; --apply marks dropped concepts rejected and kept ones shortlisted.',
+    usage: 'feedback [--brand <slug>] [--import <markilo-feedback.json>] [--apply]',
+    options: {
+      ...brandOpt,
+      import: { type: 'string', description: 'A markilo-feedback.json downloaded from the gallery' },
+      apply: { type: 'boolean', description: 'Apply keep/drop decisions to concept status' },
+    },
+    async run(c) {
+      const w = ws(c);
+      if (c.str('import')) {
+        const text = readText(file(c, c.str('import')!));
+        if (text.length > 512 * 1024)
+          throw new MarkiloError('INVALID_INPUT', 'Feedback file is larger than 512 KB.');
+        storeFeedback(w, parseFeedback(JSON.parse(text)));
+      }
+      const f = readLatestFeedback(w);
+      if (!f)
+        return {
+          feedback: null,
+          next: 'Ask the user to open the gallery (markilo gallery --serve) and press "Send to Claude", or to import a downloaded file.',
+        };
+      const brand = c.str('brand');
+      const decisions = f.decisions.filter((d) => !brand || d.brand === brand);
+      const applied: string[] = [];
+      if (c.bool('apply'))
+        for (const d of decisions) {
+          if (d.decision !== 'keep' && d.decision !== 'drop') continue;
+          const cur = w.concept(d.brand, d.concept);
+          if (cur.status === 'approved') continue;
+          w.saveConcept({ ...cur, status: d.decision === 'drop' ? 'rejected' : 'shortlisted' });
+          applied.push(`${d.brand}/${d.concept} → ${d.decision === 'drop' ? 'rejected' : 'shortlisted'}`);
+        }
+      return {
+        savedAt: f.savedAt,
+        decisions,
+        preferred: f.preferred,
+        requests: feedbackRequests({ ...f, decisions }),
+        ...(c.bool('apply') ? { applied } : {}),
+      };
     },
   },
   {

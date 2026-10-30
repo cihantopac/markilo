@@ -84,9 +84,10 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    that still misses is set to `rejected` (`markilo concept update --status rejected`) so the gallery hides it.
    If fewer than two concepts pass, say so plainly, show what passed, and propose new directions — do not fill the
    gallery with weak work. Two strong concepts beat four mediocre ones.
-7. **Review** — `markilo gallery`, give the user the file path, summarize each concept in two lines with
-   its measured strengths and risks, and ask for their pick and feedback. The gallery has a
-   "Copy feedback for Claude" button.
+7. **Review** — open the gallery as the gallery skill describes (`markilo gallery --serve` in the background, or the
+   offline file), summarize each concept in two lines with its measured strengths and risks, and ask the user to
+   decide there: Keep / Refine / Drop, pins on the mark, side-by-side comparison, then "Send to Claude". Read the
+   decisions with `markilo feedback --brand <slug>` instead of asking the user to retype them.
 8. **Refine** — iterate on the chosen concept (optical corrections, construction, wordmark spacing,
    palette), re-verifying each round. Then `markilo finalize --brand <slug> --concept <id> --tagline …`.
    Finalize only succeeds when the originality verdict is `no-conflicts-found`. If it is `insufficient-evidence` or
