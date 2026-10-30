@@ -4,7 +4,7 @@
 // API-price equivalent reported by Claude Code) and how an independent, blind judge rates the marks.
 //
 //   node scripts/bench.mjs list
-//   node scripts/bench.mjs run <id…|all> [--out <dir>] [--model <alias>]
+//   node scripts/bench.mjs run <id…|all> [--out <dir>] [--model <alias>] [--budget <usd>]
 //   node scripts/bench.mjs judge [<dir>] [--model <alias>]
 //   node scripts/bench.mjs report [<dir>]
 //   node scripts/bench.mjs refresh <id> <run folder>  (re-measure a kept run folder; cost and tokens are kept)
@@ -73,6 +73,7 @@ const scenarios = () =>
     .filter((d) => existsSync(join(SCEN, d, 'scenario.json')))
     .map((d) => readJson(join(SCEN, d, 'scenario.json')));
 const model = opts.model ? ['--model', opts.model] : [];
+const budget = (s) => Number(opts.budget ?? s.budgetUsd ?? 20);
 
 function prompt(s) {
   return `/markilo ${s.ask}
@@ -124,6 +125,7 @@ function measure(ws) {
             c.critique?.present !== false,
           readsAs: c.readsAs ?? [],
           sketchPick: c.sketchReview?.pick ?? null,
+          sketchNotes: c.sketchReview?.notes ?? null,
           checks: q?.summary ?? null,
           originality: o
             ? {
@@ -240,7 +242,7 @@ function run(ids, out) {
         '--output-format',
         'json',
         '--max-budget-usd',
-        String(s.budgetUsd ?? 20),
+        String(budget(s)),
         ...model,
       ],
       {
@@ -269,7 +271,8 @@ function run(ids, out) {
       isError: result?.is_error ?? true,
       stopReason: result?.subtype ?? (r.error ? String(r.error.message) : null),
       costUsdApiEquivalent: result?.total_cost_usd ?? null,
-      budgetUsd: s.budgetUsd ?? 20,
+      budgetUsd: budget(s),
+      model: opts.model ?? 'default',
       models: Object.keys(result?.modelUsage ?? {}),
       tokens: usage(result),
       turns: result?.num_turns ?? null,
@@ -383,24 +386,28 @@ function report(out) {
   const pairs = [];
   const detail = [];
   let measured = version;
+  let runModel = 'default';
   for (const id of readdirSync(out).filter((d) => existsSync(join(out, d, 'result.json')))) {
     const r = readJson(join(out, id, 'result.json'));
     const j = readJson(join(out, id, 'judge.json')) ?? [];
     measured = r.markilo ?? measured;
+    runModel = r.model ?? runModel;
     for (const b of r.brands) {
       for (const c of b.concepts) {
         const v = j.find((x) => x.brand === b.slug && x.concept === c.id)?.judge;
         if (v && c.critic !== null)
           pairs.push({ critic: c.critic, judge: judgeAvg(v), gate: passed(c, r), present: v.presentAsIs });
-        if (c.critic !== null || c.sketchPick)
+        const dropped = c.critic === null && c.sketchNotes !== null && !c.sketchPick;
+        const sketchReading = /Reads as:\s*([^.]*)/.exec(c.sketchNotes ?? '')?.[1];
+        if (c.critic !== null || c.sketchNotes !== null)
           detail.push(
-            `| ${b.name} | ${c.id} | ${c.status} | ${f1(c.critic)} | ${passed(c, r) ? 'passed' : 'not passed'} | ${v ? `${f1(judgeAvg(v))} · ${v.presentAsIs ? 'present' : 'not as is'}` : '—'} | ${(c.readsAs ?? []).join('; ') || '—'} | ${v?.readsAs?.join('; ') ?? '—'} |`,
+            `| ${b.name} | ${c.id} | ${dropped ? 'dropped at sketch review' : c.status} | ${f1(c.critic)} | ${dropped ? '—' : passed(c, r) ? 'passed' : 'not passed'} | ${v ? `${f1(judgeAvg(v))} · ${v.presentAsIs ? 'present' : 'not as is'}` : '—'} | ${(c.readsAs ?? []).join('; ') || (sketchReading ? `sketches: ${sketchReading}` : '—')} | ${v?.readsAs?.join('; ') ?? '—'} |`,
           );
       }
       const final = b.concepts.find((c) => c.id === b.finalized);
       const v = j.find((x) => x.brand === b.slug && x.final)?.judge;
       rows.push(
-        `| ${r.title} | ${b.name}${b.locked ? ' (locked)' : ''} | ${b.success ? 'yes' : 'no'} | ${b.concepts.filter((c) => passed(c, r)).length}/${b.concepts.length} | ${final ? `${final.id} · ${f1(final.critic)}` : '—'} | ${v ? `${f1(judgeAvg(v))}${v.presentAsIs ? ' · present' : ' · not as is'}` : '—'} | ${final?.checks ? `${final.checks.pass}/${final.checks.warn}/${final.checks.fail}` : '—'} | ${final?.originality?.verdict ?? '—'} | ${b.exported} |`,
+        `| ${r.title} | ${b.name}${b.locked ? ' (locked)' : ''} | ${b.success ? 'yes' : 'no'} | ${b.concepts.filter((c) => c.critic !== null).length}/${b.concepts.length} | ${b.concepts.filter((c) => passed(c, r)).length}/${b.concepts.length} | ${final ? `${final.id} · ${f1(final.critic)}` : '—'} | ${v ? `${f1(judgeAvg(v))}${v.presentAsIs ? ' · present' : ' · not as is'}` : '—'} | ${final?.checks ? `${final.checks.pass}/${final.checks.warn}/${final.checks.fail}` : '—'} | ${final?.originality?.verdict ?? '—'} | ${b.exported} |`,
       );
     }
     const t = r.tokens;
@@ -409,22 +416,24 @@ function report(out) {
     );
   }
   const agree = pairs.filter((p) => p.gate === p.present).length;
-  const md = `# Markilo ${measured} benchmark
+  const md = `# Markilo ${measured} benchmark${runModel !== 'default' ? ` (--model ${runModel})` : ''}
 
-Three end-to-end runs of the installed plugin in headless Claude Code, with the product owner unavailable (Markilo
+${runs.length} end-to-end run${runs.length === 1 ? '' : 's'} of the installed plugin in headless Claude Code, with the product owner unavailable (Markilo
 takes its own recommended answers). Scenario briefs and fixture projects are in \`bench/scenarios/\`; run them with
 \`node scripts/bench.mjs run all\`, then \`judge\` and \`report\`.
 
 ## Results
 
-| Scenario | Brand | Success | Passed gate | Finalized · critic | Blind judge | Checks pass/warn/fail | Originality | Files |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Scenario | Brand | Success | Developed | Passed gate | Finalized · critic | Blind judge | Checks pass/warn/fail | Originality | Files |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 ${rows.join('\n')}
 
-Success means a concept passed the quality gate, was finalized with no failing check and exported. Critic is
+Success means a concept passed the quality gate, was finalized with no failing check and exported. Developed means
+the concept got past the sketch review and was critiqued. Critic is
 Markilo's own design-critic agent (average of its judgment scores). The blind judge is a separate model call that saw
 only the brief and rendered images of each concept, with no rationale or scores: the average of distinctiveness,
-memorability, brand fit, craft and versatility (0–10), and whether it would present the mark as is.
+memorability, brand fit, craft and versatility (0–10), and whether it would present the mark as is. It sees the
+symbol on white, its 16–256 px sheet and, for a finalized concept, the horizontal lockup — not the app-icon tile.
 
 ## Concepts
 
@@ -434,7 +443,7 @@ ${detail.join('\n')}
 
 ## Critic vs blind judge
 
-${pairs.length ? `${pairs.length} concepts reached the critique. The gate and the blind judge agreed on ${agree} of them (gate passed ↔ judge would present as is). Mean critic score ${f1(pairs.reduce((a, p) => a + p.critic, 0) / pairs.length)}, mean judge score ${f1(pairs.reduce((a, p) => a + p.judge, 0) / pairs.length)}.` : 'Not judged yet.'}
+${pairs.length ? `${pairs.length} concept${pairs.length === 1 ? '' : 's'} reached the critique. The gate and the blind judge agreed on ${agree} of them (gate passed ↔ judge would present as is). Mean critic score ${f1(pairs.reduce((a, p) => a + p.critic, 0) / pairs.length)}, mean judge score ${f1(pairs.reduce((a, p) => a + p.judge, 0) / pairs.length)}.` : 'Not judged yet.'}
 
 ## Cost and effort
 

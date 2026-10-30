@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "dozeline",
+    "concept": "settling-line",
+    "final": true,
+    "judge": {
+      "readsAs": [
+        "a thick wavy squiggle settling into a flat line with a ball nestled in a notch, like a head resting on a pillow or a worm",
+        "a person lying down or a rolling ball on a slide",
+        "an abstract ambiguous blob, possibly a generic wellness or fintech glyph"
+      ],
+      "distinctiveness": 6,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 5,
+      "versatility": 4,
+      "presentAsIs": false,
+      "why": "The warm amber, the settling-wave idea and the avoidance of moon and star clichés are all good, but the symbol is awkward and ambiguous, with a lumpy left terminal and a fussy notch around the dot; it turns to mush at 16–32px, it is a wide shape with no app-icon container, and the wordmark is a generic geometric sans in low-contrast cream."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.1100906
+  }
+]

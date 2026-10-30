@@ -1,0 +1,93 @@
+{
+  "scenario": "saas-invoicing",
+  "title": "Independent SaaS",
+  "kind": "saas",
+  "brief": {
+    "ask": "Create a brand identity for Tallyline, the invoicing and cash-flow forecasting product in this folder.",
+    "owner": "Owner preferences: calm and trustworthy, friendly to freelancers, not the generic fintech blue-and-green. Web app only."
+  },
+  "markilo": "0.4.0-rc.2",
+  "ranAt": "2026-10-30T12:58:17.556Z",
+  "minutes": 8.14,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 1.6042258,
+  "budgetUsd": 20,
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 35079,
+    "output": 55488,
+    "cacheRead": 2800289,
+    "cacheWrite": 256314
+  },
+  "turns": 5,
+  "subagents": 9,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Üç yön (horizon, bridge, cairn) iki sketch turunda da critic'ten 'none' aldı ve reddedildi; kalite kapısına geçen konsept olmadığı için export, install-assets ve gallery çalıştırılmadı."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "tallyline",
+      "name": "Tallyline",
+      "role": "product",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "bridge",
+          "title": "Crossing T",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 letter r/n plus block; s2 umbrella/fan with a block; s3 doorway or arch; s4 lowercase n (or m) / gate; s5 two blobs with a swoosh. No T now, but s1/s3/s4 are a different letter or a door, s2 is generic, s5 is two blobs and fails 16 px as a shape. Dropped.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "cairn",
+          "title": "Cairn",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 sliced stone/macaron; s2 diagonal-striped squircle (candy or pill); s3 sliced pie or play-like wedge; s4 split egg/pebble. All four fail 16 px thin cuts, stock-shape similarity 74-87 percent, and one pebble is not a cairn. Dropped.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "horizon",
+          "title": "Horizon",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 striped retro sunset; s2 striped dome/slabs; s3 half-disc with line; s4 pie chart wedge (growth-chart-adjacent); s5 striped sunset. Banded sun is the Outrun/synthwave sunset cliché and a half-circle sunrise is generic; s3/s4 fail 16 px. Dropped.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "f3b99b54-a2ca-45a7-ad88-28a1e71bf2e4"
+}

@@ -1,0 +1,126 @@
+{
+  "scenario": "family-workspace",
+  "title": "Multi-product family",
+  "kind": "family",
+  "brief": {
+    "ask": "Create the brand family for Lumenfold, the office suite in this monorepo: the Lumenfold master brand and product icons for Lumenfold Docs, Sheets and Sign.",
+    "owner": "Owner preferences: privacy-first and European, calm and precise. The three product icons must clearly belong to one family and still be told apart at small sizes. Web apps only."
+  },
+  "markilo": "0.4.0-rc.2",
+  "ranAt": "2026-10-30T12:58:17.789Z",
+  "minutes": 9.3,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 1.819200899999999,
+  "budgetUsd": 25,
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 42863,
+    "output": 74624,
+    "cacheRead": 3296787,
+    "cacheWrite": 250882
+  },
+  "turns": 4,
+  "subagents": 9,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "All three directions (crease-light, folded-disc, ribbon-l) received sketch-pick 'none' from the critic in two rounds and were rejected, so no concept reached develop, the quality gate, finalize, export or the gallery."
+  },
+  "workspace": true,
+  "family": "Lumenfold",
+  "brands": [
+    {
+      "slug": "lumenfold",
+      "name": "Lumenfold",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "crease-light",
+          "title": "Lit Crease",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 toilet/boot; s2 open lid; s3 flag or boot; s4 clipboard with folded corner (page cliche); s5 hinged flap; s6 stacked drawers; s7 boot/hockey stick; s8 wallet or envelope. No fold or light idea reads; all are two blobs. Drop direction.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "folded-disc",
+          "title": "Folded Disc",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 peeling sticker; s2 swirl/yin-yang cookie; s3 peeled sticker or moon; s4 crescent moon with a slice; s5 smiley. Peeling sticker or page curl is a known UI/app-icon idiom, says nothing about privacy or suite, and only the single big wedge survives 16 px. Drop.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "ribbon-l",
+          "title": "Folded Ribbon L",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 brochure or map; s2 warning triangle or Delta; s3 flag or T; s4 open book; s5 play button on a book. Open book and play are clichés, the triangle is a known logo shape, and no L or fold idea is ownable. Drop.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "docs",
+      "name": "Lumenfold Docs",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "sheets",
+      "name": "Lumenfold Sheets",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "sign",
+      "name": "Lumenfold Sign",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "7596923e-a3b9-491e-b243-ceac14709b6b"
+}

@@ -68,6 +68,7 @@
             "rounded tab with a slash"
           ],
           "sketchPick": "s4",
+          "sketchNotes": "Keep: arched window in a solid wall with a sill; European, calm, privacy via enclosure, passes 16px. Fix: risk of reading as a door, tombstone or padlock-less generic tile; thicken sill, refine arch proportions, avoid plain rounded-square tile. Siblings: change what the sill/inner division does (Docs lines, Sheets grid cell, Sign a notch). Drop s1 (generic tile with a slash).",
           "checks": {
             "pass": 14,
             "warn": 0,
@@ -108,6 +109,7 @@
             "folded paper corner"
           ],
           "sketchPick": "s3",
+          "sketchNotes": "Keep: two-facet sheet in perspective, only candidate passing 16px, ownable vs stock fold/triangle. Fix: gap wider so facets separate at 16px; make facet angle less random and more precise; avoid reading as a book or box. Siblings: vary facet count/angle or one accent facet per product.",
           "checks": {
             "pass": 15,
             "warn": 1,
@@ -130,6 +132,7 @@
           "gate": false,
           "readsAs": [],
           "sketchPick": null,
+          "sketchNotes": "Second sketch pass also produced no viable sketch (Z-reading, house, dog-ear, tetris); dropped.",
           "checks": null,
           "originality": null
         }

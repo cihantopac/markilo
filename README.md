@@ -72,6 +72,32 @@ registry search has been done yet; the guidelines say so.</sub>
   replaced. Claude Code is home; Codex, Cursor and other agents can run the same workflow through the CLI
   (`agent-setup`, see [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md)).
 
+## Measured quality
+
+Markilo is benchmarked end to end on three realistic products — an independent SaaS, a mobile app and a
+multi-product family — with nobody steering: the plugin researches, writes the brief, designs, critiques, and
+finalizes only what passes its own gate. Every run, image and score is in [bench/](bench).
+
+| Version    | Model      | Identities that passed the gate | Concepts critiqued | Gate agrees with a blind judge | Time per run | Cost per run (API equivalent) |
+| ---------- | ---------- | ------------------------------- | ------------------ | ------------------------------ | ------------ | ----------------------------- |
+| 0.4.0-rc.1 | Sonnet 5.5 | 0 of 3                          | 7                  | 7 of 7                         | 11–21 min    | $2.61–3.67                    |
+| 0.4.0-rc.2 | Sonnet 5.5 | 1 of 3 (mobile app)             | 1                  | 0 of 1                         | 8–15 min     | $1.60–2.68                    |
+| 0.4.0-rc.2 | Opus 5.5   | 0 of 1 (SaaS only)              | 1                  | 1 of 1                         | 17 min       | $5.23                         |
+
+What this shows, plainly:
+
+- **Unattended, Markilo does not yet reliably reach a presentable identity.** One run in seven produced an identity
+  that passed the gate, and the independent judge would not have presented it as is. It is built to work with you:
+  you pick directions and react in the gallery. Markilo's own identity (`branding/`, an Opus session with five
+  directions and more rounds than the benchmark allows) passed the gate and the same blind judge rated it
+  presentable — one data point, not a rate.
+- **It does not ship weak work.** The critic gate and a blind judge that sees only the brief and the images agreed on
+  8 of 9 critiqued concepts; the one disagreement was the judge being stricter. Failures are reported as failures —
+  nothing is finalized or exported.
+- **Failures got cheaper.** rc.1 developed clichés (a folded page for documents, tally marks for "Tallyline") that
+  the gate rejected after two rounds. rc.2's sketch review strikes them before development: the three runs cost 37%
+  less and took a third less time.
+
 ## Install
 
 Requirements: [Claude Code](https://code.claude.com) and Node.js ≥ 20.10. Nothing else — the toolchain ships prebuilt
@@ -237,7 +263,8 @@ Details: [docs/PRIVACY.md](docs/PRIVACY.md) · [SECURITY.md](SECURITY.md).
 - Raster images (PNG/JPEG) are analyzed for similarity; vector tracing of raster logos is not included.
 - Icon Composer (`.icon`) files are not written directly; Markilo exports the layer sources to import.
 - X (Twitter) image sizes could not be verified against x.com documentation (blocked to automated readers).
-- Design quality still depends on the model and on your direction. Markilo raises the floor; taste is a conversation.
+- Design quality still depends on the model and on your direction: unattended runs rarely pass the critic gate (see
+  [Measured quality](#measured-quality)). Markilo raises the floor and refuses to hide weak work; taste is a conversation.
 
 ## Develop
 

@@ -1,0 +1,130 @@
+{
+  "scenario": "mobile-sleep",
+  "title": "Mobile app",
+  "kind": "mobile",
+  "brief": {
+    "ask": "Create a brand identity for Dozeline, the iOS and Android wind-down and sleep journal app in this folder.",
+    "owner": "Owner preferences: calm, warm, not clinical, no moons or stars cliché. The app icon must be recognisable on a home screen at small sizes. English and Turkish markets."
+  },
+  "markilo": "0.4.0-rc.2",
+  "ranAt": "2026-10-30T12:58:17.662Z",
+  "minutes": 14.77,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 2.683519399999999,
+  "budgetUsd": 20,
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 48862,
+    "output": 96180,
+    "cacheRead": 6462578,
+    "cacheWrite": 370362
+  },
+  "turns": 9,
+  "subagents": 13,
+  "claim": {
+    "passed": [
+      "settling-line"
+    ],
+    "finalized": "settling-line",
+    "notes": "Only settling-line passed the gate (avg 6.54, marginal; still reads as a reclining figure and has a sub-pixel dot gap at 16px) and was finalized with the insufficient-evidence originality risk accepted, since no trademark registry was searched."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "dozeline",
+      "name": "Dozeline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "ajar-light",
+          "title": "Ajar Light",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 broken shards (fail); s2 door/bottle silhouette; s3 ellipse with parallelogram (eye/pill/UI toggle); s4 d with misregistered stem (letter, glitchy); s5 L plus wedge (fail). Door and floor-light idea does not read at a glance; s4 is a stock letter with a slit. Different move: one bold light-wedge spilling from a gap, no letter, no door frame.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "d-glow",
+          "title": "Lit d",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 d with play-button triangle counter; s2 lamp/bell/dome with post; s3 plain heavy bold d; s4 d cut by a stripe (glitch/clipped). No glow idea survives; s3 is just a stock letter, s1 triangle is a play button. Different move: drop the d letterform; make warmth from one non-letter shape (e.g. soft light spill) instead.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "settling-line",
+          "title": "Settling Line",
+          "status": "approved",
+          "critic": 6.54,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 6,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 7,
+            "balance": 7,
+            "craft": 6,
+            "typography": 7,
+            "color": 8,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 6
+          },
+          "present": true,
+          "gate": true,
+          "readsAs": [
+            "person lying down with head resting on a bed",
+            "squiggle/worm with a dot",
+            "wave or hill flattening out"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 wave/heartbeat with dot; s2 squiggle with dot; s3 level line rising in one swell to a ball (lever/pulled thread); s4 caret+dot (fail); s5 d-hook (fail). Keep s3: one-colour, survives 16px, ownable gesture, warm round ends. Fix: tune the swell so it does not read as a chart step or joystick; make the line end softer and heavier, ball slightly smaller, optically balance the flat tail so the whole sits centred; keep stroke thick for 16px. Stay away from ECG/graph reading.",
+          "checks": {
+            "pass": 13,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.267
+          }
+        }
+      ],
+      "finalized": "settling-line",
+      "exported": 116,
+      "byGroup": {
+        "logos": 54,
+        "web": 11,
+        "ios": 6,
+        "android": 29,
+        "social": 11,
+        "tokens": 3,
+        "guidelines": 2
+      },
+      "success": true
+    }
+  ],
+  "sessionId": "0d7efa1a-8dfb-4496-9b31-5eaab4b2849a"
+}

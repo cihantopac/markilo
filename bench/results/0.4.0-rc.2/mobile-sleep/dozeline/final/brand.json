@@ -1,0 +1,49 @@
+{
+  "schema": "markilo/kit@1",
+  "brand": "dozeline",
+  "name": "Dozeline",
+  "concept": "settling-line",
+  "locked": false,
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "lockupHorizontal": "lockup-horizontal.svg",
+    "lockupStacked": "lockup-stacked.svg",
+    "lockupCompact": "lockup-compact.svg"
+  },
+  "palette": {
+    "primary": "#E3A63F",
+    "secondary": "#9a5230",
+    "ink": "#faf1e2",
+    "paper": "#2b211c",
+    "dark": "#100d08"
+  },
+  "typography": {
+    "fontId": "dm-sans",
+    "weight": 500,
+    "family": "DM Sans",
+    "license": "OFL-1.1"
+  },
+  "tagline": "Settle in.",
+  "notes": [
+    "Use amber on umber for the app icon; on cream use the umber wordmark and a darker clay or umber mark.",
+    "Do not uppercase the wordmark without the Turkish locale (keep the dotted i)."
+  ],
+  "approvedAt": "2026-10-30T13:12:35.576Z",
+  "originality": {
+    "verdict": "insufficient-evidence",
+    "confidence": "low",
+    "acceptedRisk": true,
+    "report": "../reports/originality-settling-line.md",
+    "evidence": {
+      "visual": "10 brand(s) from 11 reference file(s): 10 direct competitor, 0 category/form-family; sources 4 official, 6 app store, 0 logo catalog, 0 unverified",
+      "registry": "no registry searches logged for \"Dozeline\"",
+      "registryCoverage": "none"
+    }
+  },
+  "gate": {
+    "status": "passed",
+    "average": 6.54,
+    "reasons": []
+  }
+}

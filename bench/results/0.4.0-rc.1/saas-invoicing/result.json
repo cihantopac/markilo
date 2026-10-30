@@ -67,6 +67,7 @@
             "sliced page with a stray stripe"
           ],
           "sketchPick": "s2",
+          "sketchNotes": "s2 (sheet cut on a rising diagonal, far piece slid up) is the only one with a forward idea beyond paper; s1 is a book/door icon, s5 a generic app tile, s3 a bar chart, s4 a plus sign. Risk: generic split shape. Develop: make the slide offset and gap deliberate, give the pieces slightly different corner treatment so it reads as an invoice, use the teal only on the lifted piece, check it holds at 16px.",
           "checks": {
             "pass": 14,
             "warn": 3,
@@ -89,6 +90,7 @@
           "gate": false,
           "readsAs": [],
           "sketchPick": null,
+          "sketchNotes": "All three are a stock slab T with a nibble: stem too thin (fails 16px, optical balance), step reads as a clipped edge, ochre patch in s2 looks like a stray pixel. Not distinctive or memorable enough to reach 7. Try instead: drop the T-with-step; build the mark from the tally idea (four short uprights struck by one horizon bar, the bar in ochre) with heavy strokes so it holds at 16px, or a T whose stem is the single ochre stroke under a plum bar.",
           "checks": null,
           "originality": null
         },
@@ -120,6 +122,7 @@
             "barcode-comb with slash"
           ],
           "sketchPick": "s1",
+          "sketchNotes": "Only sketch that says tally+line+forecast in one glance and survives 16px; the bending clay fifth is the ownable move. Risks: reads as a barcode or tally icon. Develop: cut to 3 or 4 fatter strokes, give the fifth a longer, more confident curve that clearly leaves the group, tighten spacing so it holds at 16px.",
           "checks": {
             "pass": 18,
             "warn": 2,

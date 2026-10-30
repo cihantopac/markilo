@@ -1,0 +1,122 @@
+{
+  "scenario": "saas-invoicing",
+  "title": "Independent SaaS",
+  "kind": "saas",
+  "brief": {
+    "ask": "Create a brand identity for Tallyline, the invoicing and cash-flow forecasting product in this folder.",
+    "owner": "Owner preferences: calm and trustworthy, friendly to freelancers, not the generic fintech blue-and-green. Web app only."
+  },
+  "markilo": "0.4.0-rc.2",
+  "ranAt": "2026-10-30T13:07:33.637Z",
+  "minutes": 16.51,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 5.2251772,
+  "budgetUsd": 9,
+  "model": "opus",
+  "models": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 41109,
+    "output": 110980,
+    "cacheRead": 5294237,
+    "cacheWrite": 382945
+  },
+  "turns": 2,
+  "subagents": 10,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "No concept passed the critic quality gate within two rounds (signature reached 6.23 avg with distinctiveness and memorability at 5; horizon and ledger-loop were dropped at sketch review), so finalize, export, install-assets and gallery were not run."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "tallyline",
+      "name": "Tallyline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "horizon",
+          "title": "Horizon Tally",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as (round 2): s1 two slabs with a notch, battery/plug; s2 a flag or USB plug; s3 a chat-bubble app tile (cliché icon); s4 a UI slider handle on a track, or a flattened Tetris T piece. The line now leads, but the abstraction became generic block geometry with no ownable idea; none would reach distinctiveness 7. Direction dropped.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "ledger-loop",
+          "title": "Ledger Loop",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as (round 2): s1 a plain capital L; s2 an L with a chamfer cut, set square; s3 a two-tone L, ski/skate; s4 an L with an underline, a chair or right-angle symbol. All read first as the letter L, not the brand's initial or a forecast span. That is the wrong letter for Tallyline and stock geometry. Direction dropped.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "signature",
+          "title": "Signature Line",
+          "status": "rejected",
+          "critic": 6.23,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 7,
+            "typography": 7,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 8
+          },
+          "present": false,
+          "gate": false,
+          "readsAs": [
+            "a hamburger menu icon knocked askew",
+            "fanned stack of planks or papers (Stack Overflow-like bars over an orange base)",
+            "speed or motion lines"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as (round 2): s1 handwritten 'tl' with a self-crossing knot, busy; s2 'tl' in one monoline stroke, the level baseline run reads; s3 a cursive l / litre sign; s4 'te'. Pick s2: the dot is gone, the initials read at 16 px, and the single level run before the rise carries 'line' and calm. Keep it strictly monoline and geometric (constant width, true arcs, no calligraphic contrast) so it never drifts toward Tally Solutions' cursive wordmark. Lengthen the level run so the line, not the loop, is the signature. Never pair it with black plus red; the coral accent must stay clearly non-red. Check the l loop counter stays open at 16 px.",
+          "checks": {
+            "pass": 19,
+            "warn": 0,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.439
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "a5e741bd-2c0b-40eb-9431-fc577ee74260"
+}

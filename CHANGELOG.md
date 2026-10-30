@@ -17,8 +17,11 @@ All notable changes to this project are documented here. The format follows
   by hand and their "no" had nowhere to go.
 - `scripts/smoke.mjs`: an empty folder to installed assets with the bundle alone; CI runs it on every OS and on the copy
   that `claude plugin install` produces from the marketplace.
-- `bench.mjs refresh` re-measures a kept run folder; the report lists every critiqued concept with the critic's and
-  the blind judge's first readings.
+- `bench.mjs refresh` re-measures a kept run folder, `--model` and `--budget` set the run's model and cost cap, and the
+  report lists every concept — including directions dropped at sketch review — with the critic's and the blind
+  judge's first readings.
+- Benchmark results for rc.1 and rc.2 (`bench/results/`) and a "Measured quality" section in the README: one of seven
+  unattended runs passed the gate; the gate and a blind judge agreed on 8 of 9 critiqued concepts.
 
 ### Changed
 

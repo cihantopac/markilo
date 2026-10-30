@@ -68,6 +68,7 @@
             "furniture/UI lamp pictogram"
           ],
           "sketchPick": "s2",
+          "sketchNotes": "Keep s2: D whose counter is a lampshade; legible D, ownable, 97% at 16px, warm. Fix: the notch at top-left of the D looks like an error, so resolve it or remove it. Enlarge the trapezoid counter and drop or integrate the small bar so it does not read as a bulb or a face. Avoid s3 (cone and stripes, traffic cone) and s4 (bulb or dome).",
           "checks": {
             "pass": 17,
             "warn": 3,
@@ -108,6 +109,7 @@
             "stepped hill silhouette"
           ],
           "sketchPick": "s3",
+          "sketchNotes": "Director pick (judgment, second pass): s3 holds the 'line' of the name and avoids a third D-mark (bedside-glow and one-line-d are D-based). Fix: heavier stroke, thicker tail, avoid audio-wave/scribble read, fill artboard.",
           "checks": {
             "pass": 15,
             "warn": 0,
@@ -148,6 +150,7 @@
             "keyring or eyelet loop"
           ],
           "sketchPick": "s1",
+          "sketchNotes": "Keep s1: best score (0.72), lowest stock similarity (47%), clear d, and the nodding stem is a gentle idea. Fix: make the bow read as drooping, not a decorative curl or cane hook: shorten the overhang and give it a rounded terminal that sits lower. Keep the stroke weight uniform and the counter open at 16px. s4 is a split ring and reads as a different letter.",
           "checks": {
             "pass": 13,
             "warn": 2,

@@ -1,0 +1,23 @@
+[
+  {
+    "brand": "tallyline",
+    "concept": "signature",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "three stacked bars settling to a flat baseline, like a pile of sticks or a fanned stack",
+        "a tally mark or ledger lines flattening out, a forecast curve resolving",
+        "a menu or hamburger icon, slightly tilted"
+      ],
+      "distinctiveness": 6,
+      "memorability": 5,
+      "brandFit": 7,
+      "craft": 6,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The warm terracotta and charcoal palette avoids fintech blue-green and the tilted bars flattening to a baseline suggest a tally and a forecast settling, but the shape is simple enough to read as a generic menu or stack icon, and the abstract tilt lacks a clear ownable idea."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.10660309999999999
+  }
+]

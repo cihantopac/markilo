@@ -10,6 +10,24 @@ company) plus the owner's preferences:
 | [mobile-sleep](scenarios/mobile-sleep)         | Dozeline — wind-down and sleep journal app (Flutter, iOS + Android, EN + TR) | Clichés to avoid (moons, stars), home-screen legibility, mobile exports |
 | [family-workspace](scenarios/family-workspace) | Lumenfold — office suite with Docs, Sheets and Sign (monorepo)               | A master brand and three product icons that belong together             |
 
+## Results
+
+| Run                                         | Model      | Passed the gate | Developed / directions | Blind judge agrees | Minutes (total) | Cost (API equivalent) |
+| ------------------------------------------- | ---------- | --------------- | ---------------------- | ------------------ | --------------- | --------------------- |
+| [0.4.0-rc.1](results/0.4.0-rc.1)            | Sonnet 5.5 | 0 of 3          | 7 / 9                  | 7 of 7             | 48              | $9.76                 |
+| [0.4.0-rc.2](results/0.4.0-rc.2)            | Sonnet 5.5 | 1 of 3          | 1 / 9                  | 0 of 1             | 32              | $6.10                 |
+| [0.4.0-rc.2, Opus](results/0.4.0-rc.2-opus) | Opus 5.5   | 0 of 1          | 1 / 3                  | 1 of 1             | 17              | $5.23                 |
+
+What changed between rc.1 and rc.2, and why: in rc.1 every concept that the gate rejected had passed the sketch
+review with a cliché the critic had named itself ("may read as a barcode", "a folded page corner"), and the critic's
+"would not present it" had nowhere to be recorded. rc.2 makes the sketch review a procedure that strikes such sketches,
+counts the product's own object as a cliché, and applies the gate in code. Runs that cannot succeed now stop at the
+sketch review. The one identity that passed (Dozeline, critic 6.5) was marginal; the blind judge would not present it.
+The Opus run checked whether the model was the bottleneck: on the SaaS brief it was not.
+
+Judging cost about $1.20 in total. Each run counts against a Claude subscription's usage limits instead of being
+billed; the costs are what the same tokens would cost on the API.
+
 ## Run
 
 ```bash
