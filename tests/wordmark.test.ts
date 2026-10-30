@@ -43,6 +43,19 @@ describe('fonts and wordmarks', () => {
     expect(s.height).toBeGreaterThan(s.width * 0.6);
     expect(lintSvg(h.svg).ok).toBe(true);
   });
+  it('places the symbol by its ink, so artboard margins do not widen the gap', async () => {
+    const { inkMetrics } = await import('../src/export/geometry.js');
+    const wm = wordmarkSvg(loadBundledFace('inter', 600), 'Nimbra');
+    // The same mark with a much larger artboard margin must give the same lockup when placed by ink.
+    const tight =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M10 10h80v80H10z"/></svg>';
+    const loose =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-100 -100 300 300"><path d="M10 10h80v80H10z"/></svg>';
+    const a = composeLockup(tight, wm, { layout: 'horizontal', symbolInk: (await inkMetrics(tight)).bbox });
+    const b = composeLockup(loose, wm, { layout: 'horizontal', symbolInk: (await inkMetrics(loose)).bbox });
+    expect(b.width).toBeCloseTo(a.width, 0);
+    expect(composeLockup(loose, wm, { layout: 'horizontal' }).width).toBeGreaterThan(a.width);
+  });
 });
 
 describe('optimized compositions', () => {

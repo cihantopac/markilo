@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0-beta.4] - 2026-10-30
+
+### Fixed
+
+- Lockups place the symbol by its ink rather than its artboard, so the artboard margin no longer widens the gap or
+  shrinks the symbol next to the type (horizontal, stacked, compact and social images).
+
+### Added
+
+- `finalize --note "<usage rule>"` (repeatable): usage rules decided at approval appear in the guidelines.
+
 ## [0.3.0-beta.3] - 2026-10-30
 
 ### Fixed
@@ -116,7 +127,8 @@ All notable changes to this project are documented here. The format follows
 - Self-contained HTML Brand Preview Gallery with mockups and a feedback export.
 - Locked identities that are reproduced byte-for-byte and never redesigned.
 
-[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.3...HEAD
+[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.4...HEAD
+[0.3.0-beta.4]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.3...markilo--v0.3.0-beta.4
 [0.3.0-beta.3]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.2...markilo--v0.3.0-beta.3
 [0.3.0-beta.2]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.1...markilo--v0.3.0-beta.2
 [0.3.0-beta.1]: https://github.com/cihantopac/markilo/compare/markilo--v0.2.0...markilo--v0.3.0-beta.1

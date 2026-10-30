@@ -21,15 +21,19 @@ beforeAll(async () => {
   const v = await verifyConcept(ws, 'nimbra', 'fold');
   expect(v.status).toBe('verified');
   expect(v.originality.verdict).toBe('insufficient-evidence');
-  expect(() => finalizeConcept(ws, 'nimbra', 'fold')).toThrow(/insufficient-evidence/);
+  await expect(finalizeConcept(ws, 'nimbra', 'fold')).rejects.toThrow(/insufficient-evidence/);
   // A concept whose artwork fails a technical check (e.g. invisible on its own paper) is not approved silently.
   const c = ws.concept('nimbra', 'fold');
   ws.saveConcept({ ...c, palette: { ...c.palette, paper: '#1b2140' } });
   await verifyConcept(ws, 'nimbra', 'fold');
-  expect(() => finalizeConcept(ws, 'nimbra', 'fold')).toThrow(/failing technical checks/);
+  await expect(finalizeConcept(ws, 'nimbra', 'fold')).rejects.toThrow(/failing technical checks/);
   ws.saveConcept({ ...ws.concept('nimbra', 'fold'), palette: { ...c.palette } });
   await verifyConcept(ws, 'nimbra', 'fold');
-  finalizeConcept(ws, 'nimbra', 'fold', { tagline: 'Notes that fold into structure', acceptRisk: true });
+  await finalizeConcept(ws, 'nimbra', 'fold', {
+    tagline: 'Notes that fold into structure',
+    acceptRisk: true,
+    notes: ['Never use the accent as an error color.'],
+  });
   result = await exportBrand(ws, 'nimbra');
 }, 120_000);
 
@@ -82,6 +86,9 @@ describe('export kit', () => {
     // No registry search was logged in this workspace, so the guidelines must say so in both formats.
     for (const f of ['guidelines/index.html', 'guidelines/brand-guidelines.md'])
       expect(readFileSync(out(f), 'utf8')).toContain('No trademark registry search was done');
+    expect(readFileSync(out('guidelines/index.html'), 'utf8')).toContain(
+      'Never use the accent as an error color.',
+    );
     expect(pngSize(readFileSync(out('windows/Assets/Square150x150Logo.scale-200.png')))).toEqual({
       width: 300,
       height: 300,

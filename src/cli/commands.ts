@@ -34,6 +34,7 @@ import { generatePalette } from '../design/palette.js';
 import { wordmarkSvg } from '../design/wordmark.js';
 import { GROUP_INFO, resolveDeliverables, suggestDeliverables } from '../export/deliverables.js';
 import { EXPORT_GROUPS, type ExportGroup, exportBrand } from '../export/exporter.js';
+import { inkMetrics } from '../export/geometry.js';
 import { finalizeConcept, lockIdentity } from '../export/kit.js';
 import { buildGallery } from '../gallery/gallery.js';
 import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarity.js';
@@ -1037,11 +1038,18 @@ export const COMMANDS: CommandSpec[] = [
     name: 'finalize',
     summary:
       'Approve a concept: freeze optimized masters, generate lockups (horizontal, stacked, compact) and brand.json.',
-    usage: 'finalize --brand <slug> --concept <id> [--tagline <text>] [--accept-risk] [--force]',
+    usage:
+      'finalize --brand <slug> --concept <id> [--tagline <text>] [--note <usage rule>]... [--accept-risk] [--force]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
       tagline: { type: 'string', description: 'Tagline for social images' },
+      note: {
+        type: 'string',
+        multiple: true,
+        description:
+          'Usage rule for the guidelines, e.g. "Never use the accent as an error color" (repeatable)',
+      },
       'accept-risk': {
         type: 'boolean',
         description: 'User knowingly approves despite an originality verdict other than no-conflicts-found',
@@ -1050,8 +1058,10 @@ export const COMMANDS: CommandSpec[] = [
     },
     async run(c) {
       const w = ws(c);
-      const kit = finalizeConcept(w, c.req('brand'), c.req('concept'), {
+      const notes = c.list('note').length ? (c.values.note as string[]) : [];
+      const kit = await finalizeConcept(w, c.req('brand'), c.req('concept'), {
         ...(c.str('tagline') ? { tagline: c.str('tagline')! } : {}),
+        ...(notes.length ? { notes } : {}),
         force: c.bool('force'),
         acceptRisk: c.bool('accept-risk'),
       });
@@ -1563,8 +1573,10 @@ export const COMMANDS: CommandSpec[] = [
       }
       if (!symbolPath || !wordmarkPath || !out)
         throw new MarkiloError('USAGE', 'Give --symbol, --wordmark and -o, or --brand and --concept.');
-      const l = composeLockup(readText(symbolPath), readText(wordmarkPath), {
+      const symbolSvg = readText(symbolPath);
+      const l = composeLockup(symbolSvg, readText(wordmarkPath), {
         layout,
+        symbolInk: (await inkMetrics(symbolSvg)).bbox,
         ...(c.num('scale') ? { symbolScale: c.num('scale')! } : {}),
         ...(c.num('gap') ? { gap: c.num('gap')! } : {}),
       });

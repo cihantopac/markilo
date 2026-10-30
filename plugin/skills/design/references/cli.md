@@ -67,7 +67,7 @@ Topics: product, audience, market, competitor, visual-identity, typography, colo
 
 | Command                                                                                                              | Purpose                                                                               |
 | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `finalize --brand s --concept ID [--tagline T] [--accept-risk] [--force]`                                            | Freeze masters, build lockups (horizontal/stacked/compact), write `final/brand.json`. |
+| `finalize --brand s --concept ID [--tagline T] [--note "usage rule"]... [--accept-risk] [--force]`                   | Freeze masters, build lockups (horizontal/stacked/compact), write `final/brand.json`. |
 | `lock --brand s --primary #hex [--symbol f] [--wordmark f] [--lockup f]`                                             | Register an existing identity to preserve byte-for-byte.                              |
 | `deliverables --brand s [--set g,…] [--add g,…] [--remove g,…]`                                                      | Which groups this brand needs; suggests from product type and platforms.              |
 | `export --brand s [--only logos,web,ios,macos,android,windows,social,marketing,tokens,guidelines] [--all] [--clean]` | Chosen groups (deliverables) + `asset-manifest.json`.                                 |

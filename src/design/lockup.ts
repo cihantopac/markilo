@@ -1,6 +1,6 @@
 import { MarkiloError } from '../core/errors.js';
 import { fmt, nestSvg } from '../svg/compose.js';
-import { intrinsicBox, parseXml } from '../svg/xml.js';
+import { intrinsicBox, parseXml, serializeXml } from '../svg/xml.js';
 
 export type LockupLayout = 'horizontal' | 'stacked';
 
@@ -11,6 +11,20 @@ export interface LockupOptions {
   /** Gap between symbol and wordmark as a multiple of cap height. */
   gap?: number;
   title?: string;
+  /**
+   * Where the symbol's ink is, in its viewBox units. When given, the symbol is placed by its ink rather than its
+   * artboard, so the artboard margin no longer widens the gap or shrinks the symbol next to the type.
+   */
+  symbolInk?: { x: number; y: number; w: number; h: number };
+}
+
+/** The same artwork with its viewBox cropped to a box (used to place a symbol by its ink). */
+function cropTo(svg: string, b: { x: number; y: number; w: number; h: number }): string {
+  const root = parseXml(svg);
+  delete root.attrs.width;
+  delete root.attrs.height;
+  root.attrs.viewBox = `${fmt(round(b.x))} ${fmt(round(b.y))} ${fmt(round(b.w))} ${fmt(round(b.h))}`;
+  return serializeXml(root);
 }
 
 export interface Lockup {
@@ -36,7 +50,9 @@ function wordmarkMetrics(svg: string) {
 }
 
 /** Composes symbol + wordmark with proportions tied to the wordmark's cap height. */
-export function composeLockup(symbolSvg: string, wordmark: string, opts: LockupOptions): Lockup {
+export function composeLockup(symbolIn: string, wordmark: string, opts: LockupOptions): Lockup {
+  const symbolSvg = opts.symbolInk ? cropTo(symbolIn, opts.symbolInk) : symbolIn;
+  const inked = !!opts.symbolInk;
   const sym = intrinsicBox(parseXml(symbolSvg));
   if (!sym) throw new MarkiloError('INVALID_SVG', 'Symbol SVG needs a viewBox.');
   const wm = wordmarkMetrics(wordmark);
@@ -52,9 +68,9 @@ export function composeLockup(symbolSvg: string, wordmark: string, opts: LockupO
   let width: number;
   let height: number;
   if (opts.layout === 'horizontal') {
-    const sh = CAP * (opts.symbolScale ?? 1.6);
+    const sh = CAP * (opts.symbolScale ?? (inked ? 1.2 : 1.6));
     const sw = sh * symRatio;
-    const gap = CAP * (opts.gap ?? 0.75);
+    const gap = CAP * (opts.gap ?? (inked ? 0.55 : 0.75));
     // Center the symbol on the cap-height band, not on the ink box (descenders would pull it down).
     const capCenter = capTopInBox + CAP / 2;
     const top = Math.min(0, capCenter - sh / 2);
@@ -66,9 +82,9 @@ export function composeLockup(symbolSvg: string, wordmark: string, opts: LockupO
       nestSvg(symbolSvg, { x: 0, y: symY, width: sw, height: sh }) +
       nestSvg(wordmark, { x: sw + gap, y: wmY, width: wmW, height: wmH });
   } else {
-    const sh = CAP * (opts.symbolScale ?? 2.8);
+    const sh = CAP * (opts.symbolScale ?? (inked ? 2.2 : 2.8));
     const sw = sh * symRatio;
-    const gap = CAP * (opts.gap ?? 0.7);
+    const gap = CAP * (opts.gap ?? (inked ? 0.6 : 0.7));
     width = Math.max(sw, wmW);
     height = sh + gap + wmH;
     body =

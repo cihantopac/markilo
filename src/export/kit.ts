@@ -8,6 +8,7 @@ import type { Workspace } from '../core/workspace.js';
 import { composeLockup } from '../design/lockup.js';
 import { lintSvg } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
+import { inkMetrics } from './geometry.js';
 
 /** The approved, frozen identity that every export is derived from. Lives in brands/<slug>/final/. */
 export interface BrandKit {
@@ -27,6 +28,8 @@ export interface BrandKit {
   palette: { primary: string; secondary?: string; accent?: string; ink: string; paper: string; dark: string };
   typography?: { fontId: string; weight: number; family?: string; license?: string };
   tagline?: string;
+  /** Usage rules decided at approval (e.g. "never use the accent as an error color"); shown in the guidelines. */
+  notes?: string[];
   approvedAt: string;
   /** Originality status at approval time, so exports and guidelines can say what was (not) checked. */
   originality?: {
@@ -75,12 +78,12 @@ function inkFor(primary: string): { ink: string; dark: string } {
 }
 
 /** Freezes an approved concept into final/: optimized masters, generated lockups and brand.json. */
-export function finalizeConcept(
+export async function finalizeConcept(
   ws: Workspace,
   brand: string,
   conceptId: string,
-  opts: { tagline?: string; force?: boolean; acceptRisk?: boolean } = {},
-): BrandKit {
+  opts: { tagline?: string; force?: boolean; acceptRisk?: boolean; notes?: string[] } = {},
+): Promise<BrandKit> {
   ws.assertNotLocked(brand);
   const concept = ws.concept(brand, conceptId);
   const reportFile = join(ws.reportsDir(brand), `originality-${conceptId}.json`);
@@ -146,6 +149,8 @@ export function finalizeConcept(
     return svg;
   };
   const symbol = take(concept.files.symbol, 'symbol.svg');
+  // Lockups place the symbol by its ink, so artboard margins do not change the gap or the symbol's size.
+  const symbolInk = symbol ? (await inkMetrics(symbol)).bbox : undefined;
   const wordmark = take(concept.files.wordmark, 'wordmark.svg');
   if (symbol) files.symbol = 'symbol.svg';
   if (wordmark) files.wordmark = 'wordmark.svg';
@@ -160,6 +165,7 @@ export function finalizeConcept(
     if (!symbol || !wordmark) return undefined;
     const l = composeLockup(symbol, wordmark, {
       layout,
+      ...(symbolInk ? { symbolInk } : {}),
       title: concept.title,
       ...(scale ? { symbolScale: scale } : {}),
       ...(gap ? { gap } : {}),
@@ -171,7 +177,7 @@ export function finalizeConcept(
     files.lockupHorizontal = 'lockup-horizontal.svg';
   if (lockup(concept.files.lockupStacked, 'lockup-stacked.svg', 'stacked'))
     files.lockupStacked = 'lockup-stacked.svg';
-  if (lockup(undefined, 'lockup-compact.svg', 'horizontal', 1.3, 0.5))
+  if (lockup(undefined, 'lockup-compact.svg', 'horizontal', 1, 0.4))
     files.lockupCompact = 'lockup-compact.svg';
 
   const { ink, dark } = inkFor(concept.palette.primary);
@@ -192,6 +198,7 @@ export function finalizeConcept(
     },
     ...(concept.typography ? { typography: concept.typography } : {}),
     ...(opts.tagline ? { tagline: opts.tagline } : {}),
+    ...(opts.notes?.length ? { notes: opts.notes } : {}),
     approvedAt: nowIso(),
     originality: {
       verdict: orig.verdict,

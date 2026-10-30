@@ -99,6 +99,7 @@ export function guidelinesMarkdown(g: GuidelinesInput): string {
     );
     for (const line of evidenceLines(kit)) L.push('', line);
   }
+  if (kit.notes?.length) L.push('', '## Usage notes', '', ...kit.notes.map((n) => `- ${n}`));
   L.push('', '## Do not', '', ...DONTS.map((d) => `- ${d}`), '');
   L.push(
     '---',
@@ -178,6 +179,7 @@ ${
         .join('')}`
     : ''
 }
+${kit.notes?.length ? `<h2>Usage notes</h2><ul>${kit.notes.map((n) => `<li>${escapeText(n)}</li>`).join('')}</ul>` : ''}
 <h2>Do not</h2><ul class="dont">${DONTS.map((d) => `<li>${escapeText(d)}</li>`).join('')}</ul>
 </main></body></html>
 `;
