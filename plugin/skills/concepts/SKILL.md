@@ -20,7 +20,7 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 3. Sketch first: for each direction, a `markilo:concept-designer` agent in `sketch` mode (brand slug, concept id,
    direction text, brief summary, palette, typeface), in parallel. Then one `markilo:design-critic` agent does a
    **sketch review** of every board and records `--sketch-pick <id|none>`. Directions with `none` get one more sketch
-   pass with the critic's suggested move, or are dropped. Then a concept-designer in `develop <sketch id>` mode
+   pass with the critic's suggested move and a second review, or are dropped; never override a `none` yourself. Then a concept-designer in `develop <sketch id>` mode
    finishes each picked sketch.
 4. After the agents finish: `markilo diversity --brand <slug>`. Merge or replace directions that are too similar.
 5. Ask the `markilo:design-critic` agent to review all concepts (it reads the review sheets and records judgment).
