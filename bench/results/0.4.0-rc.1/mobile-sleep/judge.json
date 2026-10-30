@@ -1,0 +1,65 @@
+[
+  {
+    "brand": "dozeline",
+    "concept": "bedside-glow",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a bedside table lamp on a pool of warm light",
+        "a lamp or lighting-shop icon",
+        "a hat or a mushroom on a plate"
+      ],
+      "distinctiveness": 4,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 5,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "It is a warm, moon-free and legible lamp that fits the wind-down idea, but the literal lamp looks like stock clip art, the brown and ochre colours are muddy, and the cut-out where the base meets the glow pool is awkward, with no hint of sleep or journaling."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.1054944
+  },
+  {
+    "brand": "dozeline",
+    "concept": "dimming-steps",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a letter m made of descending arches",
+        "a stepped waterfall or staircase of rounded pipes",
+        "a hand or a melting, dripping shape"
+      ],
+      "distinctiveness": 6,
+      "memorability": 6,
+      "brandFit": 6,
+      "craft": 6,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "The warm terracotta, rounded strokes and descending arches give a calm, non-cliché feel with no moon or star, but at 16–32px the steps blur into a lumpy 'm' that doesn't clearly say 'D' or dozing, and its 'wind-down' idea only comes across if you already know it."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.1054245
+  },
+  {
+    "brand": "dozeline",
+    "concept": "one-line-d",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a lowercase 'd' as a soft, chunky rounded letterform",
+        "a looped ribbon or hook, like a sage-green rounded 'd' or loop",
+        "a generic friendly app/lifestyle monogram"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 6,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "A warm, calm sage rounded 'd' that holds up well at small sizes and avoids moon and star clichés, but it is a fairly generic bold-monogram shape. The slightly lopsided, tilted stem looks accidental, and nothing in it says sleep or winding down."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.105526
+  }
+]

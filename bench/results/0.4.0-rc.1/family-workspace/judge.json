@@ -1,0 +1,44 @@
+[
+  {
+    "brand": "lumenfold",
+    "concept": "aperture",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "tombstone or arched doorway with a slash",
+        "a mailbox or capsule with a diagonal cut",
+        "a generic app-icon blob"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 4,
+      "craft": 5,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "The arch with a diagonal cut is bold and holds up at small sizes, but it reads as a tombstone or a blocked door rather than light or folding, and nothing in it signals an office suite or a product family."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.1118561
+  },
+  {
+    "brand": "lumenfold",
+    "concept": "crease",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "folded page corner",
+        "sticky note or paper sheet",
+        "document or app tile"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 7,
+      "craft": 6,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The folded-corner sheet is calm and precise and holds up at 16px and in mono, but the fold is a familiar paper cliché, nothing in it signals privacy or Europe, and small teal slivers show at the edges of the gold triangle."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.10926050000000001
+  }
+]

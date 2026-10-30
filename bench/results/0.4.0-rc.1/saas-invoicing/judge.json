@@ -1,0 +1,44 @@
+[
+  {
+    "brand": "tallyline",
+    "concept": "soft-fold",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "kıvrık köşeli bir belge/fatura, üzerinden geçen çapraz bir çizgiyle",
+        "kalem ya da fırça darbesi ile çizilmiş bir sayfa",
+        "kesilmiş ya da yırtılmış not kâğıdı"
+      ],
+      "distinctiveness": 6,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 6,
+      "versatility": 5,
+      "presentAsIs": false,
+      "why": "Pas kırmızısı ile koyu petrol yeşili paleti kategorideki mavi-yeşil klişesinden temiz biçimde ayrılıyor ve fatura fikrini sıcak bir tonla anlatıyor, ancak çapraz kesik ile kıvrık köşe birbirinden kopuk duruyor, simge bir fatura ikonu ile 'tally' çizgisi arasında kararsız kalıyor ve 16-32 px'te parçalar dağılıp okunmaz hale geliyor."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.11309440000000001
+  },
+  {
+    "brand": "tallyline",
+    "concept": "tally-run",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "tally marks (five-bar gate)",
+        "counting or tallying",
+        "a crossed-out or struck-through set of bars"
+      ],
+      "distinctiveness": 6,
+      "memorability": 7,
+      "brandFit": 8,
+      "craft": 6,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "The tally-mark idea suits the name directly, and the deep teal with terracotta avoids generic fintech blue-green. But the fourth bar is clipped awkwardly by the slash, the bars are oddly offset and the slash is heavy, so the mark can read as 'crossed out', and at 16–24px it turns into a muddy cluster."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.1053042
+  }
+]

@@ -1,0 +1,143 @@
+{
+  "scenario": "saas-invoicing",
+  "title": "Independent SaaS",
+  "kind": "saas",
+  "brief": {
+    "ask": "Create a brand identity for Tallyline, the invoicing and cash-flow forecasting product in this folder.",
+    "owner": "Owner preferences: calm and trustworthy, friendly to freelancers, not the generic fintech blue-and-green. Web app only."
+  },
+  "markilo": "0.4.0-rc.1",
+  "ranAt": "2026-10-30T12:36:24.719Z",
+  "minutes": 10.7,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 2.6128683000000015,
+  "budgetUsd": 20,
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "tokens": {
+    "input": 370,
+    "output": 86775,
+    "cacheRead": 6332393,
+    "cacheWrite": 387644
+  },
+  "turns": 4,
+  "subagents": 13,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "No concept passed the quality gate after two rounds (tally-run averaged 6.33 against the 6.5 threshold, soft-fold 5.0, steady-t dropped at sketch review), so nothing was finalized, exported or installed."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "tallyline",
+      "name": "Tallyline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "soft-fold",
+          "title": "Soft Fold",
+          "status": "rejected",
+          "critic": 5.38,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 5,
+            "balance": 5,
+            "craft": 6,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 5
+          },
+          "present": null,
+          "gate": false,
+          "readsAs": [
+            "orange document or sticky note with folded corner",
+            "letter F / flag shape",
+            "sliced page with a stray stripe"
+          ],
+          "sketchPick": "s2",
+          "checks": {
+            "pass": 14,
+            "warn": 3,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.411
+          }
+        },
+        {
+          "id": "steady-t",
+          "title": "Steady T",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "tally-run",
+          "title": "Tally Run",
+          "status": "rejected",
+          "critic": 6.85,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 7,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 8,
+            "balance": 7,
+            "craft": 7,
+            "typography": 6,
+            "color": 8,
+            "cultural-fit": 8,
+            "timelessness": 7,
+            "premium-perception": 6,
+            "versatility": 6
+          },
+          "present": null,
+          "gate": true,
+          "readsAs": [
+            "tally marks",
+            "strike-through / cancelled bars",
+            "barcode-comb with slash"
+          ],
+          "sketchPick": "s1",
+          "checks": {
+            "pass": 18,
+            "warn": 2,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.275
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "7d75e3cd-b6f3-4713-bf69-ef8b1a3f2ad5"
+}

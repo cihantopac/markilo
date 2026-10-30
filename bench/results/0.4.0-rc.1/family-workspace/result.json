@@ -1,0 +1,177 @@
+{
+  "scenario": "family-workspace",
+  "title": "Multi-product family",
+  "kind": "family",
+  "brief": {
+    "ask": "Create the brand family for Lumenfold, the office suite in this monorepo: the Lumenfold master brand and product icons for Lumenfold Docs, Sheets and Sign.",
+    "owner": "Owner preferences: privacy-first and European, calm and precise. The three product icons must clearly belong to one family and still be told apart at small sizes. Web apps only."
+  },
+  "markilo": "0.4.0-rc.1",
+  "ranAt": "2026-10-30T12:36:24.996Z",
+  "minutes": 16.62,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.669617399999999,
+  "budgetUsd": 25,
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 40812,
+    "output": 153313,
+    "cacheRead": 8126178,
+    "cacheWrite": 466978
+  },
+  "turns": 3,
+  "subagents": 12,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Crease (avg ~6.8, distinctiveness/memorability 5) and Aperture (avg ~6.0) both failed the quality gate after two rounds and Ribbon was dropped at sketch review, so nothing was finalized, exported or installed."
+  },
+  "workspace": true,
+  "family": "Lumenfold",
+  "brands": [
+    {
+      "slug": "lumenfold",
+      "name": "Lumenfold",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "aperture",
+          "title": "Aperture",
+          "status": "rejected",
+          "critic": 6,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 5,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 8,
+            "balance": 7,
+            "craft": 5,
+            "typography": 5,
+            "color": 5,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 6
+          },
+          "present": null,
+          "gate": false,
+          "readsAs": [
+            "arch-topped door or tombstone",
+            "mail slot or ticket",
+            "rounded tab with a slash"
+          ],
+          "sketchPick": "s4",
+          "checks": {
+            "pass": 14,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.449
+          }
+        },
+        {
+          "id": "crease",
+          "title": "Crease",
+          "status": "rejected",
+          "critic": 6.85,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 8,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 7,
+            "craft": 7,
+            "typography": 7,
+            "color": 7,
+            "cultural-fit": 8,
+            "timelessness": 7,
+            "premium-perception": 6,
+            "versatility": 7
+          },
+          "present": null,
+          "gate": false,
+          "readsAs": [
+            "dog-eared page / file icon",
+            "sticky note with peeled corner",
+            "folded paper corner"
+          ],
+          "sketchPick": "s3",
+          "checks": {
+            "pass": 15,
+            "warn": 1,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.501
+          }
+        },
+        {
+          "id": "ribbon",
+          "title": "Ribbon",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "docs",
+      "name": "Lumenfold Docs",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "sheets",
+      "name": "Lumenfold Sheets",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "sign",
+      "name": "Lumenfold Sign",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "0cf9f6f7-a9f2-4a94-b2aa-9c057ca07031"
+}

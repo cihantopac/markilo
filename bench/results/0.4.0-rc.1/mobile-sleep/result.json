@@ -1,0 +1,171 @@
+{
+  "scenario": "mobile-sleep",
+  "title": "Mobile app",
+  "kind": "mobile",
+  "brief": {
+    "ask": "Create a brand identity for Dozeline, the iOS and Android wind-down and sleep journal app in this folder.",
+    "owner": "Owner preferences: calm, warm, not clinical, no moons or stars cliché. The app icon must be recognisable on a home screen at small sizes. English and Turkish markets."
+  },
+  "markilo": "0.4.0-rc.1",
+  "ranAt": "2026-10-30T12:36:24.807Z",
+  "minutes": 20.54,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.4836843000000024,
+  "budgetUsd": 20,
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 13813,
+    "output": 126774,
+    "cacheRead": 8681192,
+    "cacheWrite": 472474
+  },
+  "turns": 2,
+  "subagents": 14,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "All three concepts (dimming-steps 6.2, bedside-glow 5.6, one-line-d 6.4 avg) failed the quality gate after two rounds and were rejected, so nothing was finalized, exported or installed."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "dozeline",
+      "name": "Dozeline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "bedside-glow",
+          "title": "Bedside Glow",
+          "status": "rejected",
+          "critic": 5.62,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 7,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 5,
+            "typography": 6,
+            "color": 6,
+            "cultural-fit": 7,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 5
+          },
+          "present": null,
+          "gate": false,
+          "readsAs": [
+            "table lamp icon",
+            "witch or bowler hat on a plate",
+            "furniture/UI lamp pictogram"
+          ],
+          "sketchPick": "s2",
+          "checks": {
+            "pass": 17,
+            "warn": 3,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.418
+          }
+        },
+        {
+          "id": "dimming-steps",
+          "title": "A Single Settling Line",
+          "status": "rejected",
+          "critic": 6.15,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 5,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 4,
+            "color": 8,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": null,
+          "gate": false,
+          "readsAs": [
+            "letter m (or m/h glyph)",
+            "fingers or dripping arches",
+            "stepped hill silhouette"
+          ],
+          "sketchPick": "s3",
+          "checks": {
+            "pass": 15,
+            "warn": 0,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.326
+          }
+        },
+        {
+          "id": "one-line-d",
+          "title": "One-Line d",
+          "status": "rejected",
+          "critic": 6.38,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 5,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 9,
+            "balance": 7,
+            "craft": 7,
+            "typography": 6,
+            "color": 6,
+            "cultural-fit": 8,
+            "timelessness": 7,
+            "premium-perception": 5,
+            "versatility": 8
+          },
+          "present": null,
+          "gate": false,
+          "readsAs": [
+            "lowercase d",
+            "ring or hook",
+            "keyring or eyelet loop"
+          ],
+          "sketchPick": "s1",
+          "checks": {
+            "pass": 13,
+            "warn": 2,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.384
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "f7e38491-4165-4c80-9b19-cc56e59fae79"
+}

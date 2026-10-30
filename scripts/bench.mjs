@@ -299,7 +299,7 @@ const JUDGE = (
 ) => `You are an independent, demanding identity-design judge. You have not seen any rationale or score.
 Brief: ${s.ask} ${s.owner}
 Open these images with the Read tool: ${files.join(', ')} — ${final ? `the approved identity for ${name}` : `a logo concept for ${name}`}.
-Answer in English with ONE line of JSON and nothing else:
+Answer with ONE line of JSON and nothing else, every value in English whatever language you usually answer in:
 {"readsAs":["first impression","second","third"],"distinctiveness":0-10,"memorability":0-10,"brandFit":0-10,"craft":0-10,"versatility":0-10,"presentAsIs":true|false,"why":"one sentence"}
 Calibration: 3 = clip art or a stock shape, 5 = competent but forgettable, 7 = strong and ownable, 9 = category-defining.`;
 
