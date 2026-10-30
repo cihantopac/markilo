@@ -1,0 +1,7 @@
+{"grid":64,"idea":"Two rounded corner brackets facing each other form the two arches of an m; the slit between them is the frame's cut, marked by one accent handle.",
+"params":{"w":96},
+"layers":[
+{"name":"left","fill":"primary","shape":{"path":{"d":"M230 800V500A140 140 0 0 1 370 360H478V800","width":"w","cap":"butt","join":"miter"}}},
+{"name":"right","fill":"primary","shape":{"path":{"d":"M794 800V500A140 140 0 0 0 654 360H546V800","width":"w","cap":"butt","join":"miter"}}},
+{"name":"handle","fill":"accent","shape":{"rect":{"c":[512,740],"w":44,"h":120}}}
+],"fit":0.08}

@@ -1,0 +1,10 @@
+{"grid":64,"idea":"An m whose top edge has been dragged loose: the bar is lifted off its three legs and slid sideways, the selection caught mid-move.",
+"params":{"w":110,"gap":40,"top":330,"dx":90},
+"vary":{"w":[100,116],"gap":[32,44],"dx":[60,100]},
+"layers":[
+{"name":"legs","fill":"primary","shape":{"union":[
+{"rect":{"x":150,"y":"top+w+gap","w":"w","h":"850-top-w-gap"}},
+{"rect":{"x":"512-w/2","y":"top+w+gap","w":"w","h":"850-top-w-gap"}},
+{"rect":{"x":"874-w","y":"top+w+gap","w":"w","h":"850-top-w-gap"}}]}},
+{"name":"bar","fill":"accent","shape":{"rect":{"x":"150+dx","y":"top","w":"724-dx+80","h":"w"}}}
+],"fit":0.06}

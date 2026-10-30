@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0-beta.7] - 2026-10-30
+
+### Fixed
+
+- Workspaces git-ignore every `research/` capture folder (third-party logos and pages), and older workspaces get the
+  new rules the next time Markilo opens them; the research guidance says where downloads belong.
+
+### Changed
+
+- Markilo's own identity was redone by running Markilo on itself (`branding/`); README images and the plugin icon are
+  unedited exports.
+
 ## [0.3.0-beta.6] - 2026-10-30
 
 ### Fixed
@@ -144,7 +156,8 @@ All notable changes to this project are documented here. The format follows
 - Self-contained HTML Brand Preview Gallery with mockups and a feedback export.
 - Locked identities that are reproduced byte-for-byte and never redesigned.
 
-[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.6...HEAD
+[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.7...HEAD
+[0.3.0-beta.7]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.6...markilo--v0.3.0-beta.7
 [0.3.0-beta.6]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.5...markilo--v0.3.0-beta.6
 [0.3.0-beta.5]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.4...markilo--v0.3.0-beta.5
 [0.3.0-beta.4]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.3...markilo--v0.3.0-beta.4

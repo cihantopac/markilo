@@ -1,0 +1,60 @@
+{
+ "grid": 64,
+ "idea": "The m is struck through by one steep accent incision that runs past both ends: a ruled line, a mark made, nothing moved.",
+ "params": {},
+ "defs": {
+  "g": {
+   "glyph": {
+    "text": "m",
+    "font": "sora",
+    "weight": 700,
+    "height": 430,
+    "c": [
+     512,
+     545
+    ]
+   }
+  },
+  "l": {
+   "line": {
+    "points": [
+     [
+      620,
+      230
+     ],
+     [
+      430,
+      830
+     ]
+    ],
+    "width": 22,
+    "cap": "butt"
+   }
+  }
+ },
+ "layers": [
+  {
+   "name": "m",
+   "fill": "primary",
+   "shape": {
+    "gap": {
+     "shape": {
+      "ref": "g"
+     },
+     "cut": {
+      "ref": "l"
+     },
+     "width": 10
+    }
+   }
+  },
+  {
+   "name": "line",
+   "fill": "accent",
+   "shape": {
+    "ref": "l"
+   }
+  }
+ ],
+ "fit": 0.06
+}

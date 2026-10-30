@@ -1,0 +1,7 @@
+{"idea":"An m whose right stem is cut once at the nib angle; the cut face is accent.","grid":64,
+"params":{"w":60},
+"defs":{"m":{"glyph":{"text":"m","font":"manrope","weight":700,"height":620,"c":[512,512]}},
+"top":{"polygon":{"points":[[0,0],[1024,0],[1024,520],[0,520]]}}},
+"layers":[{"name":"m","fill":"primary","shape":{"subtract":[{"ref":"m"},{"polygon":{"points":[[0,760],[1024,420],[1024,1024],[0,1024]]}}]}},
+{"name":"face","fill":"accent","shape":{"intersect":[{"ref":"m"},{"polygon":{"points":[[0,760],[1024,420],[1024,480],[0,820]]}}]}}],
+"fit":0.06}

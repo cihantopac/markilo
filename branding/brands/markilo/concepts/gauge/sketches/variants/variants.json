@@ -1,0 +1,492 @@
+{
+  "spec": "s8.json",
+  "paper": "#fafaf7",
+  "variants": [
+    {
+      "id": "v13",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.484,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandmark icon",
+        "visual": 0.451,
+        "risk": "low"
+      },
+      "score": 0.715,
+      "params": {
+        "g": 60,
+        "s": 40,
+        "top": 450
+      },
+      "warnings": []
+    },
+    {
+      "id": "v17",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 0,
+        "legibility16": 0.93,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.461,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.467,
+        "risk": "low"
+      },
+      "score": 0.713,
+      "params": {
+        "g": 60,
+        "s": 80,
+        "top": 450
+      },
+      "warnings": []
+    },
+    {
+      "id": "v16",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.479,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.47,
+        "risk": "low"
+      },
+      "score": 0.712,
+      "params": {
+        "g": 60,
+        "s": 60,
+        "top": 480
+      },
+      "warnings": []
+    },
+    {
+      "id": "v18",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.468,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.482,
+        "risk": "low"
+      },
+      "score": 0.712,
+      "params": {
+        "g": 60,
+        "s": 80,
+        "top": 480
+      },
+      "warnings": []
+    },
+    {
+      "id": "v12",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.475,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.484,
+        "risk": "low"
+      },
+      "score": 0.71,
+      "params": {
+        "g": 48,
+        "s": 80,
+        "top": 480
+      },
+      "warnings": []
+    },
+    {
+      "id": "v14",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.49,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandmark icon",
+        "visual": 0.468,
+        "risk": "low"
+      },
+      "score": 0.709,
+      "params": {
+        "g": 60,
+        "s": 40,
+        "top": 480
+      },
+      "warnings": []
+    },
+    {
+      "id": "v15",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 0,
+        "legibility16": 0.93,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.472,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.478,
+        "risk": "low"
+      },
+      "score": 0.707,
+      "params": {
+        "g": 60,
+        "s": 60,
+        "top": 450
+      },
+      "warnings": []
+    },
+    {
+      "id": "v08",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.496,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandmark icon",
+        "visual": 0.473,
+        "risk": "low"
+      },
+      "score": 0.706,
+      "params": {
+        "g": 48,
+        "s": 40,
+        "top": 480
+      },
+      "warnings": []
+    },
+    {
+      "id": "v10",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.486,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.483,
+        "risk": "low"
+      },
+      "score": 0.706,
+      "params": {
+        "g": 48,
+        "s": 60,
+        "top": 480
+      },
+      "warnings": []
+    },
+    {
+      "id": "v07",
+      "quality": {
+        "pass": 11,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.491,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandmark icon",
+        "visual": 0.457,
+        "risk": "low"
+      },
+      "score": 0.681,
+      "params": {
+        "g": 48,
+        "s": 40,
+        "top": 450
+      },
+      "warnings": []
+    },
+    {
+      "id": "v09",
+      "quality": {
+        "pass": 11,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.48,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.481,
+        "risk": "low"
+      },
+      "score": 0.679,
+      "params": {
+        "g": 48,
+        "s": 60,
+        "top": 450
+      },
+      "warnings": []
+    },
+    {
+      "id": "v11",
+      "quality": {
+        "pass": 11,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.93,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.47,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.483,
+        "risk": "low"
+      },
+      "score": 0.677,
+      "params": {
+        "g": 48,
+        "s": 80,
+        "top": 450
+      },
+      "warnings": []
+    },
+    {
+      "id": "v03",
+      "quality": {
+        "pass": 11,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.488,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.484,
+        "risk": "low"
+      },
+      "score": 0.676,
+      "params": {
+        "g": 36,
+        "s": 60,
+        "top": 450
+      },
+      "warnings": []
+    },
+    {
+      "id": "v04",
+      "quality": {
+        "pass": 11,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.491,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandmark icon",
+        "visual": 0.48,
+        "risk": "low"
+      },
+      "score": 0.676,
+      "params": {
+        "g": 36,
+        "s": 60,
+        "top": 480
+      },
+      "warnings": []
+    },
+    {
+      "id": "v05",
+      "quality": {
+        "pass": 11,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.478,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.495,
+        "risk": "low"
+      },
+      "score": 0.676,
+      "params": {
+        "g": 36,
+        "s": 80,
+        "top": 450
+      },
+      "warnings": []
+    },
+    {
+      "id": "v01",
+      "quality": {
+        "pass": 11,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.498,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandmark icon",
+        "visual": 0.474,
+        "risk": "low"
+      },
+      "score": 0.675,
+      "params": {
+        "g": 36,
+        "s": 40,
+        "top": 450
+      },
+      "warnings": []
+    },
+    {
+      "id": "v06",
+      "quality": {
+        "pass": 11,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.482,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.496,
+        "risk": "low"
+      },
+      "score": 0.674,
+      "params": {
+        "g": 36,
+        "s": 80,
+        "top": 480
+      },
+      "warnings": []
+    },
+    {
+      "id": "v02",
+      "quality": {
+        "pass": 11,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.501,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandmark icon",
+        "visual": 0.478,
+        "risk": "low"
+      },
+      "score": 0.673,
+      "params": {
+        "g": 36,
+        "s": 40,
+        "top": 480
+      },
+      "warnings": []
+    }
+  ]
+}

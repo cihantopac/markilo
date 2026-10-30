@@ -1,4 +1,12 @@
 {
   "schema": "markilo/answers@1",
-  "questions": []
+  "questions": [
+    {
+      "id": "Q1",
+      "question": "Brief decisions (mark, color, grounds, name, personality, appmark, wordmark, tagline)",
+      "answer": "Keep current identity as one unchanged candidate; 3-5 new directions, at most one evolves corner-bracket idea; warm accent away from Claude coral; both grounds first-class; name stays; precise/honest/craft; appmark symbol only; lowercase grotesk wordmark; keep tagline unless stronger (one alternative allowed); no trademark searches possible (gap, owner decides at finalize); owner approves all strong directions and wants sketch stage run straight through.",
+      "askedAt": "2026-10-30T02:56:04.881Z",
+      "answeredAt": "2026-10-30T02:56:04.881Z"
+    }
+  ]
 }

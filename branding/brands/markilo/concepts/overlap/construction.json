@@ -1,0 +1,137 @@
+{
+  "idea": "m of two arches sharing a lit stem whose foot is cut at 45 degrees. Tip flat-topped.",
+  "params": {
+    "w": 130,
+    "gap": 84,
+    "r": 160,
+    "c": 100,
+    "ft": 440
+  },
+  "defs": {
+    "A": {
+      "path": {
+        "d": "M300 860L300 560A{r} {r} 0 0 1 {300+2*r} 560L{300+2*r} 860",
+        "width": "w",
+        "cap": "butt",
+        "join": "round"
+      }
+    },
+    "B": {
+      "path": {
+        "d": "M300 860L300 560A{r} {r} 0 0 1 {300+2*r} 560L{300+2*r} 860",
+        "width": "w",
+        "cap": "butt",
+        "join": "round"
+      },
+      "move": [
+        "2*r",
+        0
+      ]
+    },
+    "X": {
+      "intersect": [
+        {
+          "ref": "A"
+        },
+        {
+          "ref": "B"
+        },
+        {
+          "rect": {
+            "x": 0,
+            "y": "ft",
+            "w": 1024,
+            "h": 1024
+          }
+        }
+      ]
+    }
+  },
+  "layers": [
+    {
+      "name": "arches",
+      "fill": "primary",
+      "shape": {
+        "subtract": [
+          {
+            "gap": {
+              "shape": {
+                "union": [
+                  {
+                    "ref": "A"
+                  },
+                  {
+                    "ref": "B"
+                  }
+                ]
+              },
+              "cut": {
+                "ref": "X"
+              },
+              "width": "gap"
+            }
+          },
+          {
+            "polygon": {
+              "points": [
+                [
+                  685,
+                  861
+                ],
+                [
+                  "685-c",
+                  861
+                ],
+                [
+                  685,
+                  "861-c"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "overlap",
+      "fill": "accent",
+      "shape": {
+        "subtract": [
+          {
+            "ref": "X"
+          },
+          {
+            "polygon": {
+              "points": [
+                [
+                  685,
+                  861
+                ],
+                [
+                  "685-c",
+                  861
+                ],
+                [
+                  685,
+                  "861-c"
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "fit": 0.08,
+  "vary": {
+    "gap": [
+      56,
+      64
+    ],
+    "ft": [
+      420,
+      450,
+      480
+    ]
+  }
+}

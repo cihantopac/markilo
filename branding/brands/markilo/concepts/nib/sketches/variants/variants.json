@@ -1,0 +1,224 @@
+{
+  "spec": "spec.json",
+  "paper": "#f7f5f0",
+  "variants": [
+    {
+      "id": "v05",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.89,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.345,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.366,
+        "risk": "low"
+      },
+      "score": 0.725,
+      "params": {
+        "s": 0.3,
+        "h": 56,
+        "yc": 600
+      },
+      "warnings": []
+    },
+    {
+      "id": "v01",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.88,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.339,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.36,
+        "risk": "low"
+      },
+      "score": 0.724,
+      "params": {
+        "s": 0.2,
+        "h": 56,
+        "yc": 600
+      },
+      "warnings": []
+    },
+    {
+      "id": "v07",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.89,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.348,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.367,
+        "risk": "low"
+      },
+      "score": 0.724,
+      "params": {
+        "s": 0.3,
+        "h": 72,
+        "yc": 600
+      },
+      "warnings": []
+    },
+    {
+      "id": "v02",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.9,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.348,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.394,
+        "risk": "low"
+      },
+      "score": 0.722,
+      "params": {
+        "s": 0.2,
+        "h": 56,
+        "yc": 640
+      },
+      "warnings": []
+    },
+    {
+      "id": "v04",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.9,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.351,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.393,
+        "risk": "low"
+      },
+      "score": 0.721,
+      "params": {
+        "s": 0.2,
+        "h": 72,
+        "yc": 640
+      },
+      "warnings": []
+    },
+    {
+      "id": "v06",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.9,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.349,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.397,
+        "risk": "low"
+      },
+      "score": 0.721,
+      "params": {
+        "s": 0.3,
+        "h": 56,
+        "yc": 640
+      },
+      "warnings": []
+    },
+    {
+      "id": "v08",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.9,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.351,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.396,
+        "risk": "low"
+      },
+      "score": 0.721,
+      "params": {
+        "s": 0.3,
+        "h": 72,
+        "yc": 640
+      },
+      "warnings": []
+    },
+    {
+      "id": "v03",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 1,
+        "legibility16": 0.88,
+        "failing": [
+          "Thinnest detail at 16 px: Thin strokes/gaps are ~0.63 px wide at 16 px (≥ 1.2 px stays crisp)."
+        ]
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.343,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.361,
+        "risk": "low"
+      },
+      "score": 0.503,
+      "params": {
+        "s": 0.2,
+        "h": 72,
+        "yc": 600
+      },
+      "warnings": []
+    }
+  ]
+}

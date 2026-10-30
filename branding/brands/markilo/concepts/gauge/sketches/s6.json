@@ -1,0 +1,9 @@
+{"idea":"A plain m whose two shoulders sit lower by a fixed step each, a scale read left to right, the last leg lit amber as the reading.",
+"grid":64,
+"defs":{
+ "tip":{"rect":{"x":702,"y":560,"w":104,"h":240}}
+},
+"layers":[
+ {"name":"body","fill":"primary","shape":{"gap":{"shape":{"path":{"d":"M270 800L270 300M270 461A121 121 0 0 1 512 461L512 800M512 521A121 121 0 0 1 754 521L754 800","width":104,"cap":"butt","join":"miter"}},"cut":{"ref":"tip"},"width":22}}},
+ {"name":"reading","fill":"accent","shape":{"ref":"tip"}}
+],"fit":0.06}

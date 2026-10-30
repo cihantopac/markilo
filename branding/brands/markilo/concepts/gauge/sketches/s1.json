@@ -1,0 +1,11 @@
+{"idea":"An m whose left stem is a ruler edge with graduated notches cut in, and whose last leg dips into amber: the reading taken on the scale.",
+"grid":64,
+"defs":{
+ "m":{"path":{"d":"M280 790L280 330M280 470A116 116 0 0 1 512 470L512 790M512 470A116 116 0 0 1 744 470L744 790","width":112,"cap":"butt","join":"miter"}},
+ "tip":{"rect":{"x":688,"y":560,"w":112,"h":230}}
+},
+"layers":[
+ {"name":"body","fill":"primary","shape":{"gap":{"shape":{"subtract":[{"ref":"m"},
+   {"rect":{"x":200,"y":380,"w":94,"h":40}},{"rect":{"x":200,"y":470,"w":62,"h":40}},{"rect":{"x":200,"y":560,"w":94,"h":40}},{"rect":{"x":200,"y":650,"w":62,"h":40}},{"rect":{"x":200,"y":740,"w":94,"h":40}}]},"cut":{"ref":"tip"},"width":24}}},
+ {"name":"reading","fill":"accent","shape":{"ref":"tip"}}
+],"fit":0.06}

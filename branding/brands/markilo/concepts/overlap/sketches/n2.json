@@ -1,0 +1,10 @@
+{"idea":"An m of two ramp-shouldered arches: one 45-degree cut per arch, the second stepped up; the shared stem, cut by that same angle, is lit as the evidence.",
+"params":{"w":120,"gap":36,"aw":300,"k":150,"dy":-90},
+"vary":{"dy":[-120,-90,-60],"w":[110,130],"k":[110,170]},
+"defs":{
+"A":{"path":{"d":"M300 860L300 {560+k}L{300+k} 560L{300+aw} 560L{300+aw} 860","width":"w","cap":"butt","join":"miter"}},
+"B":{"path":{"d":"M300 {860-dy}L300 {560+k}L{300+k} 560L{300+aw} 560L{300+aw} {860-dy}","width":"w","cap":"butt","join":"miter"},"move":["aw","dy"]},
+"X":{"intersect":[{"ref":"A"},{"ref":"B"}]}},
+"layers":[
+{"name":"arches","fill":"primary","shape":{"gap":{"shape":{"union":[{"ref":"A"},{"ref":"B"}]},"cut":{"ref":"X"},"width":"gap"}}},
+{"name":"overlap","fill":"accent","shape":{"ref":"X"}}],"fit":0.08,"nudge":[-28,0]}

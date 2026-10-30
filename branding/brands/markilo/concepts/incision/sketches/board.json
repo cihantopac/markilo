@@ -1,0 +1,100 @@
+{
+  "concept": "incision",
+  "paper": "#f5f3ee",
+  "sketches": [
+    {
+      "id": "s2",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.93,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.466,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandmark icon",
+        "visual": 0.432,
+        "risk": "low"
+      },
+      "score": 0.691,
+      "warnings": [],
+      "caption": "A scalpel-thin slit across the first shoulder of the m; the accent lives inside the cut, the letter stays whole."
+    },
+    {
+      "id": "s9",
+      "quality": {
+        "pass": 10,
+        "warn": 0,
+        "fail": 0,
+        "legibility16": 0.92,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.495,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Figma AI icon",
+        "visual": 0.448,
+        "risk": "low"
+      },
+      "score": 0.704,
+      "warnings": [],
+      "caption": "A V-shaped bite taken from the first shoulder: the letter loses a wedge of itself, like a sample cut from stock."
+    },
+    {
+      "id": "s10",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.95,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.433,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.467,
+        "risk": "low"
+      },
+      "score": 0.701,
+      "warnings": [
+        "m and faces overlap; in one-color versions they merge. Use \"gap\" to separate them."
+      ],
+      "caption": "A slanted wedge cut into the first shoulder; the freshly exposed faces of the cut glow crimson."
+    },
+    {
+      "id": "s11",
+      "quality": {
+        "pass": 13,
+        "warn": 0,
+        "fail": 0,
+        "legibility16": 0.95,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.436,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "RealFaviconGenerator",
+        "visual": 0.422,
+        "risk": "low"
+      },
+      "score": 0.741,
+      "warnings": [],
+      "caption": "A deep crimson wedge sits in a notch of the first shoulder, a split between the first stem and the rest, so the m looks like it has been opened with a blade."
+    }
+  ]
+}

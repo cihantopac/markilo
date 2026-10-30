@@ -1,0 +1,9 @@
+{"idea":"A square-shouldered m whose three tops step down by a constant ratio; a single amber bar floats above the last leg at the height the scale would continue to.",
+"grid":64,
+"defs":{
+ "m":{"path":{"d":"M270 800L270 300L512 300L512 800M512 392L754 392L754 800","width":104,"cap":"butt","join":"miter"}}
+},
+"layers":[
+ {"name":"body","fill":"primary","shape":{"ref":"m"}},
+ {"name":"reading","fill":"accent","shape":{"rect":{"x":702,"y":204,"w":104,"h":64}}}
+],"fit":0.06}

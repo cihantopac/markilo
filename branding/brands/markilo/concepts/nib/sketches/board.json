@@ -1,0 +1,121 @@
+{
+  "concept": "nib",
+  "paper": "#f7f5f0",
+  "sketches": [
+    {
+      "id": "s1",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.92,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "shield",
+        "similarity": 0.684,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Canva (round app mark)",
+        "visual": 0.569,
+        "risk": "low"
+      },
+      "score": 0.587,
+      "warnings": [],
+      "caption": "A chisel-cut block whose two slits turn it into a lowercase m: the tool and the letter are the same object, the freshly cut face is the accent."
+    },
+    {
+      "id": "s2",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.96,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "triangle",
+        "similarity": 0.568,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Figma AI",
+        "visual": 0.529,
+        "risk": "low"
+      },
+      "score": 0.649,
+      "warnings": [],
+      "caption": "A marker's chisel tip in profile: a barrel sheared at the writing angle, with the felt tip sliding off as one accent parallelogram."
+    },
+    {
+      "id": "s3",
+      "quality": {
+        "pass": 13,
+        "warn": 0,
+        "fail": 0,
+        "legibility16": 0.96,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.613,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "RealFaviconGenerator",
+        "visual": 0.471,
+        "risk": "low"
+      },
+      "score": 0.68,
+      "warnings": [],
+      "caption": "An m written with a broad nib: every stroke ends in the same slanted cut, and the last stem is still wet, the accent."
+    },
+    {
+      "id": "s4",
+      "quality": {
+        "pass": 13,
+        "warn": 0,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "triangle",
+        "similarity": 0.464,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Vercel",
+        "visual": 0.406,
+        "risk": "low"
+      },
+      "score": 0.732,
+      "warnings": [],
+      "caption": "A chisel barrel planted on the stroke it leaves: the tip's slanted cut is repeated in the sheared ends of the accent mark beneath, so tool and trace share one angle."
+    },
+    {
+      "id": "s5",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.92,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.397,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Linear",
+        "visual": 0.424,
+        "risk": "low"
+      },
+      "score": 0.709,
+      "warnings": [],
+      "caption": "A real lowercase m planed off on the writing angle: its top is the chisel face, and the cut sliver is the accent."
+    }
+  ]
+}

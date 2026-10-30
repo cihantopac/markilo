@@ -1,0 +1,14 @@
+{
+ "grid": 64,
+ "idea": "A slanted wedge cut into the first shoulder; the freshly exposed faces of the cut glow crimson.",
+ "params": {},
+ "defs": {
+  "g": { "glyph": { "text": "m", "font": "space-grotesk", "weight": 700, "height": 430, "c": [512, 545] } },
+  "w": { "polygon": { "points": [[395, 455], [320, 330], [480, 300]] } }
+ },
+ "layers": [
+  { "name": "m", "fill": "primary", "shape": { "subtract": [ { "ref": "g" }, { "ref": "w" } ] } },
+  { "name": "faces", "fill": "accent", "shape": { "subtract": [ { "intersect": [ { "ref": "g" }, { "offset": { "shape": { "polygon": { "points": [[395, 455], [320, 330], [480, 300]] } }, "by": 20 } } ] }, { "ref": "w" } ] } }
+ ],
+ "fit": 0.06
+}

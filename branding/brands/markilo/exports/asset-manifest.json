@@ -2,9 +2,9 @@
   "schema": "markilo/assets@1",
   "brand": "markilo",
   "name": "Markilo",
-  "concept": "crop",
+  "concept": "overlap",
   "locked": false,
-  "generatedAt": "2026-10-29T23:55:35.167Z",
+  "generatedAt": "2026-10-30T03:32:06.347Z",
   "generator": "markilo",
   "specSources": {
     "web": [
@@ -47,42 +47,42 @@
     {
       "path": "logos/primary/primary-color.svg",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — full color, for light backgrounds",
+      "purpose": "Primary logo (horizontal lockup) — full color, for light backgrounds like #f6f6f4",
       "derivedFrom": "primary.svg",
       "format": "svg",
-      "bytes": 2104,
-      "sha256": "8a2d7a1488756ab492233948df2baa90a336f56a7ac3278e06ece7351abd368f"
+      "bytes": 2920,
+      "sha256": "80eab572136025457cf139428fc65944d026fe3c5f46bfcd716ed91b478724ad"
     },
     {
       "path": "logos/primary/primary-color.png",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — full color, for light backgrounds, transparent PNG",
+      "purpose": "Primary logo (horizontal lockup) — full color, for light backgrounds like #f6f6f4, transparent PNG",
       "derivedFrom": "primary.svg",
       "format": "png",
       "width": 2000,
-      "height": 456,
-      "bytes": 20112,
-      "sha256": "102713052ae7918e48ef63e9cb2763f07bd79c80d87d4765807723f8d18362d4"
+      "height": 320,
+      "bytes": 22119,
+      "sha256": "da6e848401fbab8bf7edf3568a17750a34d5980ea413ed9b9ebf0ddb0e31f5ed"
     },
     {
       "path": "logos/primary/primary-reversed.svg",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — for dark backgrounds (#120c0a)",
+      "purpose": "Primary logo (horizontal lockup) — for dark backgrounds (#0b0d13)",
       "derivedFrom": "primary.svg",
       "format": "svg",
-      "bytes": 2098,
-      "sha256": "b5494b179c39430ef057121557845ba0d17f96f65d970a4b535e4abe00990cf0"
+      "bytes": 2914,
+      "sha256": "94a810dec76ead442ce1aa3813a03853fd946ce478152cbaa5ee052d9db1e463"
     },
     {
       "path": "logos/primary/primary-reversed.png",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — for dark backgrounds (#120c0a), transparent PNG",
+      "purpose": "Primary logo (horizontal lockup) — for dark backgrounds (#0b0d13), transparent PNG",
       "derivedFrom": "primary.svg",
       "format": "png",
       "width": 2000,
-      "height": 456,
-      "bytes": 18636,
-      "sha256": "b59e1fa91c8679c2aebb7cf017281f9766256854d60a7c4001e45141f5e56805"
+      "height": 320,
+      "bytes": 20449,
+      "sha256": "170fd1cf2e5172dcf14a080891afaaf34f364aa2179753388bdd4122a9428b18"
     },
     {
       "path": "logos/primary/primary-black.svg",
@@ -90,8 +90,8 @@
       "purpose": "Primary logo (horizontal lockup) — one-color black (print, fax, engraving)",
       "derivedFrom": "primary.svg",
       "format": "svg",
-      "bytes": 2052,
-      "sha256": "376c07b2a824345a68ba1481df55aefb7110b6e0f278eca625109e597e1c01d2"
+      "bytes": 2868,
+      "sha256": "82d814dd84d0d5f6e73a7e02abccefe5ec9b2d78b390de774f3199d629ac9cbe"
     },
     {
       "path": "logos/primary/primary-black.png",
@@ -100,9 +100,9 @@
       "derivedFrom": "primary.svg",
       "format": "png",
       "width": 2000,
-      "height": 456,
-      "bytes": 17084,
-      "sha256": "8066c4a375df9f83550b1a5a35cc9212a8163008680ed8be1bb6a32162b995f8"
+      "height": 320,
+      "bytes": 18578,
+      "sha256": "e4a74c20db49f65f951ef2451c9b5448452b6ba3944a8c1bf26fdbe1cea52cd6"
     },
     {
       "path": "logos/primary/primary-white.svg",
@@ -110,8 +110,8 @@
       "purpose": "Primary logo (horizontal lockup) — one-color white (knockout on photos and dark fills)",
       "derivedFrom": "primary.svg",
       "format": "svg",
-      "bytes": 2083,
-      "sha256": "1bef7de7b5ceedfcd50a77f464d1615a45f3d349a04426ae6d080a5b5a51edcd"
+      "bytes": 2899,
+      "sha256": "0d800dd8b29ac57015640cbf516c33d26a74faee210022291420cc5cf0b23ce8"
     },
     {
       "path": "logos/primary/primary-white.png",
@@ -120,69 +120,69 @@
       "derivedFrom": "primary.svg",
       "format": "png",
       "width": 2000,
-      "height": 456,
-      "bytes": 18355,
-      "sha256": "1c8783d03ec1b14a0c1767fd6e24930e72c527b7377f26903e219f8deba63cdf"
+      "height": 320,
+      "bytes": 19943,
+      "sha256": "151e75ca03d071c4fa21e0cd21aad0ab37a6fd8228fba4df11dd5fb39b6846fd"
     },
     {
       "path": "logos/primary/primary-ink.svg",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — one-color brand ink #14161f",
+      "purpose": "Primary logo (horizontal lockup) — one-color brand ink #101218",
       "derivedFrom": "primary.svg",
       "format": "svg",
-      "bytes": 2089,
-      "sha256": "64dd19334bca1a2ea627ceade97a1557782ec0f1bafe82d4b9d1d4705e85b6a7"
+      "bytes": 2905,
+      "sha256": "7da8e68eb9e9b108dfec3c530fd903584e99cb78e685d35fa4c6b25e257c1463"
     },
     {
       "path": "logos/primary/primary-ink.png",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — one-color brand ink #14161f, transparent PNG",
+      "purpose": "Primary logo (horizontal lockup) — one-color brand ink #101218, transparent PNG",
       "derivedFrom": "primary.svg",
       "format": "png",
       "width": 2000,
-      "height": 456,
-      "bytes": 19735,
-      "sha256": "d078672cbfba90b86b6c0b822f1ffca598bea6f36515c6483dd5f9e0e2362727"
+      "height": 320,
+      "bytes": 21569,
+      "sha256": "adb5c96438a64a56e62a8736acf19da848003d38723cf81b4a0017911b472640"
     },
     {
       "path": "logos/secondary/secondary-color.svg",
       "group": "logos",
-      "purpose": "Secondary logo (stacked lockup) — full color, for light backgrounds",
+      "purpose": "Secondary logo (stacked lockup) — full color, for light backgrounds like #f6f6f4",
       "derivedFrom": "secondary.svg",
       "format": "svg",
-      "bytes": 2123,
-      "sha256": "7bd01240a0e008e2f6af2da057b246fc9982f7b1f8389b5ca73c7dbb65d1c89b"
+      "bytes": 3001,
+      "sha256": "b7ca691d1dd9d8714b3d4f17f380ae5fa873ece95a92db00615214b60577b89a"
     },
     {
       "path": "logos/secondary/secondary-color.png",
       "group": "logos",
-      "purpose": "Secondary logo (stacked lockup) — full color, for light backgrounds, transparent PNG",
+      "purpose": "Secondary logo (stacked lockup) — full color, for light backgrounds like #f6f6f4, transparent PNG",
       "derivedFrom": "secondary.svg",
       "format": "png",
       "width": 2000,
-      "height": 1944,
-      "bytes": 42017,
-      "sha256": "d4455900cbdf17de218cbb57617d33c0998bb34cb67301ff10c349d5dd0d052f"
+      "height": 1520,
+      "bytes": 49768,
+      "sha256": "082e0ba6fb26dc454ee64c0098e5728110f85de80dc8ef091499075255c73bb4"
     },
     {
       "path": "logos/secondary/secondary-reversed.svg",
       "group": "logos",
-      "purpose": "Secondary logo (stacked lockup) — for dark backgrounds (#120c0a)",
+      "purpose": "Secondary logo (stacked lockup) — for dark backgrounds (#0b0d13)",
       "derivedFrom": "secondary.svg",
       "format": "svg",
-      "bytes": 2117,
-      "sha256": "35cc79acd14fcdad307d768e66474a396a1583d74bf93a88edfaee13b897650b"
+      "bytes": 2995,
+      "sha256": "d312867e8ad441fe6d59abcb7e521dacf539b17da58bccbf14c02e0058fecf14"
     },
     {
       "path": "logos/secondary/secondary-reversed.png",
       "group": "logos",
-      "purpose": "Secondary logo (stacked lockup) — for dark backgrounds (#120c0a), transparent PNG",
+      "purpose": "Secondary logo (stacked lockup) — for dark backgrounds (#0b0d13), transparent PNG",
       "derivedFrom": "secondary.svg",
       "format": "png",
       "width": 2000,
-      "height": 1944,
-      "bytes": 39720,
-      "sha256": "a43eb048611cea5504fece08baacfb388bb4117726b402bed9e32940a8662361"
+      "height": 1520,
+      "bytes": 45613,
+      "sha256": "b6db5d73c4dde4b4dc23983d0a6e856e88798d2dc4565985fa02a963ed246267"
     },
     {
       "path": "logos/secondary/secondary-black.svg",
@@ -190,8 +190,8 @@
       "purpose": "Secondary logo (stacked lockup) — one-color black (print, fax, engraving)",
       "derivedFrom": "secondary.svg",
       "format": "svg",
-      "bytes": 2071,
-      "sha256": "bfb780c0f66ab4988be57bbba75bc50cb409c8f606498b980eebb39b8d96a587"
+      "bytes": 2949,
+      "sha256": "aeedcdf83de31f1751aa91596e00baf94607cfde11af979ea91d59d70b908169"
     },
     {
       "path": "logos/secondary/secondary-black.png",
@@ -200,9 +200,9 @@
       "derivedFrom": "secondary.svg",
       "format": "png",
       "width": 2000,
-      "height": 1944,
-      "bytes": 38905,
-      "sha256": "0f17e8fd8c9d9bf77b1ed7bf4ddc1ce94bbd20812bd7c16f4ffb568363c4b250"
+      "height": 1520,
+      "bytes": 43137,
+      "sha256": "f1cf0076e2d4e51a6938806bf965a82d3d63c1bae4672c4f12815a89e34df011"
     },
     {
       "path": "logos/secondary/secondary-white.svg",
@@ -210,8 +210,8 @@
       "purpose": "Secondary logo (stacked lockup) — one-color white (knockout on photos and dark fills)",
       "derivedFrom": "secondary.svg",
       "format": "svg",
-      "bytes": 2102,
-      "sha256": "f3c6845daa9a5a0a62a1084f564c8c591632d285d84d16c03c77e7bbfd78d493"
+      "bytes": 2980,
+      "sha256": "3f13da1c8691174c4bbc286ed70dcafd10ce78dc5bad6d6eea86f096a5a53c68"
     },
     {
       "path": "logos/secondary/secondary-white.png",
@@ -220,69 +220,69 @@
       "derivedFrom": "secondary.svg",
       "format": "png",
       "width": 2000,
-      "height": 1944,
-      "bytes": 39480,
-      "sha256": "2ea11b30f93766f62a8fbd635864852ecf55d98b7dc5bd74f7024cd5b05fce90"
+      "height": 1520,
+      "bytes": 44713,
+      "sha256": "7867a57f01a0b28edb6ec3fa926e72b8f01430324c7c88af77502d74f769e27f"
     },
     {
       "path": "logos/secondary/secondary-ink.svg",
       "group": "logos",
-      "purpose": "Secondary logo (stacked lockup) — one-color brand ink #14161f",
+      "purpose": "Secondary logo (stacked lockup) — one-color brand ink #101218",
       "derivedFrom": "secondary.svg",
       "format": "svg",
-      "bytes": 2108,
-      "sha256": "631d5243ec1ab7a0430cdca950db74962ff8b4c9ae7013a7c611b1b45d69e39d"
+      "bytes": 2986,
+      "sha256": "99dacd7263e2487cfaae0df28d30730e78c984fd30f375e68fac8247be31cfb0"
     },
     {
       "path": "logos/secondary/secondary-ink.png",
       "group": "logos",
-      "purpose": "Secondary logo (stacked lockup) — one-color brand ink #14161f, transparent PNG",
+      "purpose": "Secondary logo (stacked lockup) — one-color brand ink #101218, transparent PNG",
       "derivedFrom": "secondary.svg",
       "format": "png",
       "width": 2000,
-      "height": 1944,
-      "bytes": 42181,
-      "sha256": "d113b8db2d77684eed12fa79db7a10a81514da252f0ae1d328d1fcab11a04133"
+      "height": 1520,
+      "bytes": 49678,
+      "sha256": "a875fc671aa83a273cc107fdb706311fe5e447e0c8768a7368cd38ca870576f1"
     },
     {
       "path": "logos/compact/compact-color.svg",
       "group": "logos",
-      "purpose": "Compact lockup for navigation bars and tight spaces — full color, for light backgrounds",
+      "purpose": "Compact lockup for navigation bars and tight spaces — full color, for light backgrounds like #f6f6f4",
       "derivedFrom": "compact.svg",
       "format": "svg",
-      "bytes": 2104,
-      "sha256": "f07e78a3f0621e1d69c539f2bff448222f1683c1dcc98804c835ee8d6db6b194"
+      "bytes": 2923,
+      "sha256": "e0a8899a43003c56c4aa0078e35b7e3dcec763cc0cc9f055f0d4afc5d0a7b953"
     },
     {
       "path": "logos/compact/compact-color.png",
       "group": "logos",
-      "purpose": "Compact lockup for navigation bars and tight spaces — full color, for light backgrounds, transparent PNG",
+      "purpose": "Compact lockup for navigation bars and tight spaces — full color, for light backgrounds like #f6f6f4, transparent PNG",
       "derivedFrom": "compact.svg",
       "format": "png",
       "width": 2000,
-      "height": 402,
-      "bytes": 19981,
-      "sha256": "5b8f31806f184b9b2eb2ffa30c18db9e55fa0a84d4875337271b1c8642163cfc"
+      "height": 304,
+      "bytes": 21929,
+      "sha256": "f88e7b477fb421f57d4e212cf73a00b4fc3bdd772c10157a4404402f916d7563"
     },
     {
       "path": "logos/compact/compact-reversed.svg",
       "group": "logos",
-      "purpose": "Compact lockup for navigation bars and tight spaces — for dark backgrounds (#120c0a)",
+      "purpose": "Compact lockup for navigation bars and tight spaces — for dark backgrounds (#0b0d13)",
       "derivedFrom": "compact.svg",
       "format": "svg",
-      "bytes": 2098,
-      "sha256": "47a0bd52310c6aee636dc1271a7a96509eba6f21d6a6d24936255d9d6b11a97a"
+      "bytes": 2917,
+      "sha256": "3cb098f869745807cebe71d1c017cef1525bd50eb3de1217fb2d9d4c068b8711"
     },
     {
       "path": "logos/compact/compact-reversed.png",
       "group": "logos",
-      "purpose": "Compact lockup for navigation bars and tight spaces — for dark backgrounds (#120c0a), transparent PNG",
+      "purpose": "Compact lockup for navigation bars and tight spaces — for dark backgrounds (#0b0d13), transparent PNG",
       "derivedFrom": "compact.svg",
       "format": "png",
       "width": 2000,
-      "height": 402,
-      "bytes": 18788,
-      "sha256": "8aeafd8e45dd838d2799d23abb03c77464e271aced7a0e5dff36ac9162862094"
+      "height": 304,
+      "bytes": 20568,
+      "sha256": "702db808d39790966f44b2ca1de3f8cd838baf5507dd6d9be3bc087351a253c5"
     },
     {
       "path": "logos/compact/compact-black.svg",
@@ -290,8 +290,8 @@
       "purpose": "Compact lockup for navigation bars and tight spaces — one-color black (print, fax, engraving)",
       "derivedFrom": "compact.svg",
       "format": "svg",
-      "bytes": 2052,
-      "sha256": "7d68397fe3c57966a22b3183721752282ff1e4c96ff007e7686b4c0d92e0929e"
+      "bytes": 2871,
+      "sha256": "e2293a66f44297c615e5b9c9b088fcbd8efc7965cade957551caa74bf63b75ce"
     },
     {
       "path": "logos/compact/compact-black.png",
@@ -300,9 +300,9 @@
       "derivedFrom": "compact.svg",
       "format": "png",
       "width": 2000,
-      "height": 402,
-      "bytes": 17174,
-      "sha256": "1ca48b76b48e5db6922990847df612de30c60b9f0c6fd82181191d4c09b6c33b"
+      "height": 304,
+      "bytes": 18587,
+      "sha256": "c85f5335fe150c826381dff81b88b7a35d6046074acbae75754174a47e659519"
     },
     {
       "path": "logos/compact/compact-white.svg",
@@ -310,8 +310,8 @@
       "purpose": "Compact lockup for navigation bars and tight spaces — one-color white (knockout on photos and dark fills)",
       "derivedFrom": "compact.svg",
       "format": "svg",
-      "bytes": 2083,
-      "sha256": "c7a74ad55d725a4386ec7cca3e730ff391909daa6e6d8e69a7f109a926590a35"
+      "bytes": 2902,
+      "sha256": "fa0b96dfc72d3c18e94dca9be0b4fe4921d1c68efb7725fe501e11e8871300f0"
     },
     {
       "path": "logos/compact/compact-white.png",
@@ -320,69 +320,69 @@
       "derivedFrom": "compact.svg",
       "format": "png",
       "width": 2000,
-      "height": 402,
-      "bytes": 18567,
-      "sha256": "c6472768bba2b9d49dbce1faed0f12e50b60fe9ef5294624228ad2b2f1bdc5d6"
+      "height": 304,
+      "bytes": 19987,
+      "sha256": "42e3c530c1ca25201505b5a86a1f7d04ae93b86f5acc6a1e3a26df838c1d9e16"
     },
     {
       "path": "logos/compact/compact-ink.svg",
       "group": "logos",
-      "purpose": "Compact lockup for navigation bars and tight spaces — one-color brand ink #14161f",
+      "purpose": "Compact lockup for navigation bars and tight spaces — one-color brand ink #101218",
       "derivedFrom": "compact.svg",
       "format": "svg",
-      "bytes": 2089,
-      "sha256": "944ba23ffafd844911fe1b2f59999ea78a6fbe2f13b60565d7b2826efabfe883"
+      "bytes": 2908,
+      "sha256": "7fa0cbb6bf0e95fbfa337fd0db2d605c803a8486a686318524e81697617e1104"
     },
     {
       "path": "logos/compact/compact-ink.png",
       "group": "logos",
-      "purpose": "Compact lockup for navigation bars and tight spaces — one-color brand ink #14161f, transparent PNG",
+      "purpose": "Compact lockup for navigation bars and tight spaces — one-color brand ink #101218, transparent PNG",
       "derivedFrom": "compact.svg",
       "format": "png",
       "width": 2000,
-      "height": 402,
-      "bytes": 19742,
-      "sha256": "b52ea363578cef3d5c96c6552714c257452c6051ae52dd530646e05d687d815f"
+      "height": 304,
+      "bytes": 21329,
+      "sha256": "73517e7d208d7dd0e12b955f73d297f35fd91dc37bb0b45ee23624d2a8fce6d1"
     },
     {
       "path": "logos/symbol/symbol-color.svg",
       "group": "logos",
-      "purpose": "Symbol / brandmark — full color, for light backgrounds",
+      "purpose": "Symbol / brandmark — full color, for light backgrounds like #f6f6f4",
       "derivedFrom": "symbol.svg",
       "format": "svg",
-      "bytes": 272,
-      "sha256": "a626c80c74562a4c7280c09c116c031f881b14363a7e3cf44868088175759c41"
+      "bytes": 1036,
+      "sha256": "97f18dad1bea0411da0baa72554ea9a2a74693a8fa096fe6b99753d247181c3f"
     },
     {
       "path": "logos/symbol/symbol-color.png",
       "group": "logos",
-      "purpose": "Symbol / brandmark — full color, for light backgrounds, transparent PNG",
+      "purpose": "Symbol / brandmark — full color, for light backgrounds like #f6f6f4, transparent PNG",
       "derivedFrom": "symbol.svg",
       "format": "png",
       "width": 1024,
       "height": 1024,
-      "bytes": 8668,
-      "sha256": "8f2c5471bae7c3eeb968726d22fadbd47d61728eb3a864f8c820aa285455be47"
+      "bytes": 14379,
+      "sha256": "ee69db2e04c078b13e575964aa0c3293a34c0bb5c10c0ef4209f4217667f9b59"
     },
     {
       "path": "logos/symbol/symbol-reversed.svg",
       "group": "logos",
-      "purpose": "Symbol / brandmark — for dark backgrounds (#120c0a)",
+      "purpose": "Symbol / brandmark — for dark backgrounds (#0b0d13)",
       "derivedFrom": "symbol.svg",
       "format": "svg",
-      "bytes": 269,
-      "sha256": "64accddea87323cbafcddd7a8d80feffe3215b30d858254c3e5edd8bb9b39370"
+      "bytes": 1033,
+      "sha256": "0f5bb2cc32d1f95d7079f3fcfa8b0c08bcfaa6e39c5255d57c05a962e625afd3"
     },
     {
       "path": "logos/symbol/symbol-reversed.png",
       "group": "logos",
-      "purpose": "Symbol / brandmark — for dark backgrounds (#120c0a), transparent PNG",
+      "purpose": "Symbol / brandmark — for dark backgrounds (#0b0d13), transparent PNG",
       "derivedFrom": "symbol.svg",
       "format": "png",
       "width": 1024,
       "height": 1024,
-      "bytes": 8159,
-      "sha256": "41410c3934843a443d6a5967f7befb37924b67af138331d37f01c490f67da3ca"
+      "bytes": 13229,
+      "sha256": "a6b68f930c50c27257c540f2abfdc10586098da4aabddfc9783043bac78bce43"
     },
     {
       "path": "logos/symbol/symbol-black.svg",
@@ -390,8 +390,8 @@
       "purpose": "Symbol / brandmark — one-color black (print, fax, engraving)",
       "derivedFrom": "symbol.svg",
       "format": "svg",
-      "bytes": 242,
-      "sha256": "54c590f5d99e78ccb96e2626152f4f6d2f7dc285a846ac8276bff7f41bf36667"
+      "bytes": 1006,
+      "sha256": "4c9c37c7e5b66d03fbf1029c9b20bee31160f70bf96adecaaf95e85922a6474b"
     },
     {
       "path": "logos/symbol/symbol-black.png",
@@ -401,8 +401,8 @@
       "format": "png",
       "width": 1024,
       "height": 1024,
-      "bytes": 8369,
-      "sha256": "7f69909503c5aff06f42510e34984badc8fe689544c61b6ab99eb9c7e4f8c521"
+      "bytes": 12278,
+      "sha256": "7dc9e1bab2038088eb3af36be5112dc50bb84d156a97ad171bed35bd27627eff"
     },
     {
       "path": "logos/symbol/symbol-white.svg",
@@ -410,8 +410,8 @@
       "purpose": "Symbol / brandmark — one-color white (knockout on photos and dark fills)",
       "derivedFrom": "symbol.svg",
       "format": "svg",
-      "bytes": 266,
-      "sha256": "f3e45b5aca1b0b95ed7c1e45f749c6e65cd9d61cfc4ba29c3ef3ce5b58547e19"
+      "bytes": 1030,
+      "sha256": "1358619888675eb0fdeea36870e77efb4e792e820a22643d624a698b3a1230ee"
     },
     {
       "path": "logos/symbol/symbol-white.png",
@@ -421,68 +421,68 @@
       "format": "png",
       "width": 1024,
       "height": 1024,
-      "bytes": 7832,
-      "sha256": "a8bb7d70d6de401e5735f3a17ed910d7c26a9c8d478b69d840895c26c41292b8"
+      "bytes": 12478,
+      "sha256": "c0a8a6f185c6a889076723f50ec7b652a6672860ec6f71662efd471e5b04fccf"
     },
     {
       "path": "logos/symbol/symbol-ink.svg",
       "group": "logos",
-      "purpose": "Symbol / brandmark — one-color brand ink #14161f",
+      "purpose": "Symbol / brandmark — one-color brand ink #101218",
       "derivedFrom": "symbol.svg",
       "format": "svg",
-      "bytes": 272,
-      "sha256": "0aaf92e6ff10a7ce52f336cc2235388514e752fc4261b9a432d3db9993baace1"
+      "bytes": 1036,
+      "sha256": "ae26450a01777dc368ac35e302e04911db9aaf25b898fd374eae5ba232720f56"
     },
     {
       "path": "logos/symbol/symbol-ink.png",
       "group": "logos",
-      "purpose": "Symbol / brandmark — one-color brand ink #14161f, transparent PNG",
+      "purpose": "Symbol / brandmark — one-color brand ink #101218, transparent PNG",
       "derivedFrom": "symbol.svg",
       "format": "png",
       "width": 1024,
       "height": 1024,
-      "bytes": 8647,
-      "sha256": "c84e92f01ed4c1f943f6cc114160eaa991fab5709aaa1bef170f137394cabc23"
+      "bytes": 13739,
+      "sha256": "930b2fad77a0cc860f0dc4d375e9e699ec64f3784e55abe56e472dbde37e965f"
     },
     {
       "path": "logos/wordmark/wordmark-color.svg",
       "group": "logos",
-      "purpose": "Wordmark — full color, for light backgrounds",
+      "purpose": "Wordmark — full color, for light backgrounds like #f6f6f4",
       "derivedFrom": "wordmark.svg",
       "format": "svg",
-      "bytes": 1598,
-      "sha256": "f7e97bd9412bd2722413bd4f1bf4104c680e815f9b40d4c8d0b56fa62feecc08"
+      "bytes": 1675,
+      "sha256": "e1147bd4a3d13de906e1b65274fde504e1b31400d7807b494fb7785b06a93950"
     },
     {
       "path": "logos/wordmark/wordmark-color.png",
       "group": "logos",
-      "purpose": "Wordmark — full color, for light backgrounds, transparent PNG",
+      "purpose": "Wordmark — full color, for light backgrounds like #f6f6f4, transparent PNG",
       "derivedFrom": "wordmark.svg",
       "format": "png",
       "width": 2000,
-      "height": 445,
-      "bytes": 24521,
-      "sha256": "81386964c4ca124a9621b321b145b764929dbeff45b43bbfeb9720462bc958e9"
+      "height": 415,
+      "bytes": 24229,
+      "sha256": "bfd2501111aad2bec769381e07e5460e1c8a2050388b5960080a4b2a3d040c11"
     },
     {
       "path": "logos/wordmark/wordmark-reversed.svg",
       "group": "logos",
-      "purpose": "Wordmark — for dark backgrounds (#120c0a)",
+      "purpose": "Wordmark — for dark backgrounds (#0b0d13)",
       "derivedFrom": "wordmark.svg",
       "format": "svg",
-      "bytes": 1595,
-      "sha256": "6d8e0ba5a5147ee24799f78676fd5bb2d92ba61df08fcb9c291d340528bc37f9"
+      "bytes": 1672,
+      "sha256": "4c7d4ac583955f2394f9e0940af87dadc4e16f70c62dc76e6545798d14f44279"
     },
     {
       "path": "logos/wordmark/wordmark-reversed.png",
       "group": "logos",
-      "purpose": "Wordmark — for dark backgrounds (#120c0a), transparent PNG",
+      "purpose": "Wordmark — for dark backgrounds (#0b0d13), transparent PNG",
       "derivedFrom": "wordmark.svg",
       "format": "png",
       "width": 2000,
-      "height": 445,
-      "bytes": 22670,
-      "sha256": "d03bc49a5dc314fab5ac6ff53637388097e9fa4bfb71cf38fa941c72f006674c"
+      "height": 415,
+      "bytes": 22405,
+      "sha256": "fcdb6208ca1c512f6a06fa4fc1917d4a7c280e8c399fcc5e6821e7dc7db6606e"
     },
     {
       "path": "logos/wordmark/wordmark-black.svg",
@@ -490,8 +490,8 @@
       "purpose": "Wordmark — one-color black (print, fax, engraving)",
       "derivedFrom": "wordmark.svg",
       "format": "svg",
-      "bytes": 1576,
-      "sha256": "e7d3aed83f76caf8e44930fb0fe15115384e757138dfe2e14b1d64f251623d73"
+      "bytes": 1653,
+      "sha256": "ef884ce1f79ab6eaa26774cda0f36023c3727bbec098c3279eb826c7a21e0b55"
     },
     {
       "path": "logos/wordmark/wordmark-black.png",
@@ -500,9 +500,9 @@
       "derivedFrom": "wordmark.svg",
       "format": "png",
       "width": 2000,
-      "height": 445,
-      "bytes": 21673,
-      "sha256": "aba33e3aba67fc6fa9a5c575da0b027d8906c2a15fa7a47442bb9268086ba994"
+      "height": 415,
+      "bytes": 21221,
+      "sha256": "70a2b713eb50dbbb68308b8f565574a25f1ef22c90afb02954d8ff8715645737"
     },
     {
       "path": "logos/wordmark/wordmark-white.svg",
@@ -510,8 +510,8 @@
       "purpose": "Wordmark — one-color white (knockout on photos and dark fills)",
       "derivedFrom": "wordmark.svg",
       "format": "svg",
-      "bytes": 1595,
-      "sha256": "6d8e0ba5a5147ee24799f78676fd5bb2d92ba61df08fcb9c291d340528bc37f9"
+      "bytes": 1672,
+      "sha256": "4c7d4ac583955f2394f9e0940af87dadc4e16f70c62dc76e6545798d14f44279"
     },
     {
       "path": "logos/wordmark/wordmark-white.png",
@@ -520,29 +520,49 @@
       "derivedFrom": "wordmark.svg",
       "format": "png",
       "width": 2000,
-      "height": 445,
-      "bytes": 22670,
-      "sha256": "d03bc49a5dc314fab5ac6ff53637388097e9fa4bfb71cf38fa941c72f006674c"
+      "height": 415,
+      "bytes": 22405,
+      "sha256": "fcdb6208ca1c512f6a06fa4fc1917d4a7c280e8c399fcc5e6821e7dc7db6606e"
     },
     {
       "path": "logos/wordmark/wordmark-ink.svg",
       "group": "logos",
-      "purpose": "Wordmark — one-color brand ink #14161f",
+      "purpose": "Wordmark — one-color brand ink #101218",
       "derivedFrom": "wordmark.svg",
       "format": "svg",
-      "bytes": 1598,
-      "sha256": "f7e97bd9412bd2722413bd4f1bf4104c680e815f9b40d4c8d0b56fa62feecc08"
+      "bytes": 1675,
+      "sha256": "e1147bd4a3d13de906e1b65274fde504e1b31400d7807b494fb7785b06a93950"
     },
     {
       "path": "logos/wordmark/wordmark-ink.png",
       "group": "logos",
-      "purpose": "Wordmark — one-color brand ink #14161f, transparent PNG",
+      "purpose": "Wordmark — one-color brand ink #101218, transparent PNG",
       "derivedFrom": "wordmark.svg",
       "format": "png",
       "width": 2000,
-      "height": 445,
-      "bytes": 24521,
-      "sha256": "81386964c4ca124a9621b321b145b764929dbeff45b43bbfeb9720462bc958e9"
+      "height": 415,
+      "bytes": 24229,
+      "sha256": "bfd2501111aad2bec769381e07e5460e1c8a2050388b5960080a4b2a3d040c11"
+    },
+    {
+      "path": "logos/overview.png",
+      "group": "logos",
+      "purpose": "Overview of every logo file on its intended background",
+      "derivedFrom": "brand.json",
+      "format": "png",
+      "width": 1584,
+      "height": 968,
+      "bytes": 73043,
+      "sha256": "ad6406799e76d2e9fe947c7939a2d162e5ff4b08aada0090e2499cc6b135475f"
+    },
+    {
+      "path": "logos/README.md",
+      "group": "logos",
+      "purpose": "Which logo file to use where",
+      "derivedFrom": "brand.json",
+      "format": "md",
+      "bytes": 556,
+      "sha256": "cac2ae198c642bf7ccebe9be2c0d4aea8ce6a8b21bd290e1333b9871acb918ba"
     },
     {
       "path": "logos/appmark/appmark.svg",
@@ -550,8 +570,8 @@
       "purpose": "Appmark: symbol on brand tile (avatars, app listings)",
       "derivedFrom": "symbol.svg",
       "format": "svg",
-      "bytes": 378,
-      "sha256": "0f2910dd9042195a4ff19275adc9007b58de1b65f93f21579d2f8a7fc6f19ef2"
+      "bytes": 1145,
+      "sha256": "69a3f620362c2c234eeacd2a3b1b72b63beded924c6fed0fc1da9a41b9e503e4"
     },
     {
       "path": "logos/appmark/appmark.png",
@@ -561,8 +581,8 @@
       "format": "png",
       "width": 1024,
       "height": 1024,
-      "bytes": 12623,
-      "sha256": "837ce09d5344083217ce2db126efb207c3c79a791d727567660196f6f325a46d"
+      "bytes": 16537,
+      "sha256": "049f2843d637ed913c39750a96dbba8fa5f8ab1a1376967ce7f3e9f123287836"
     },
     {
       "path": "web/favicon.svg",
@@ -570,8 +590,8 @@
       "purpose": "SVG favicon (adapts to dark browser UI)",
       "derivedFrom": "symbol.svg",
       "format": "svg",
-      "bytes": 348,
-      "sha256": "a5ef3d1dd9eb264e1527e2e365edb5d2e5fb8bbaf32b8f2abc5f8885dad4bd74"
+      "bytes": 1115,
+      "sha256": "a5dc2abbbb87422f3c0f61167678f56d33ffae75e6b8a313bc245844369b0561"
     },
     {
       "path": "web/favicon.ico",
@@ -579,8 +599,8 @@
       "purpose": "Legacy favicon (16/32/48 px)",
       "derivedFrom": "symbol.svg",
       "format": "ico",
-      "bytes": 732,
-      "sha256": "b06645c68b863d98dc5993c2f613bef85e23064760a55af3f54a493096d892c0"
+      "bytes": 1172,
+      "sha256": "063e838ea8c93731ace0dd642ca2b722cc4547f5f1cb4b06fd8451b7864375dc"
     },
     {
       "path": "web/apple-touch-icon.png",
@@ -590,8 +610,8 @@
       "format": "png",
       "width": 180,
       "height": 180,
-      "bytes": 789,
-      "sha256": "f072a12f8e2fec993123658b249ba296443e7ae52c049d13751d32cb0a479cf3"
+      "bytes": 1418,
+      "sha256": "013ef093181165ec3e023d0d78bbd1b9e8ce1aec6b77e3942cfe2dedf4efd60d"
     },
     {
       "path": "web/icon-192.png",
@@ -601,8 +621,8 @@
       "format": "png",
       "width": 192,
       "height": 192,
-      "bytes": 1596,
-      "sha256": "4f0bab89e0f65cffa8ba9297f7376e8ec3e7cf35d3014bed4f673d34770aec9c"
+      "bytes": 2211,
+      "sha256": "dc58511749fbd6ba702d68bdf2f5c7e3771e75171164a3de051e44b695f01d61"
     },
     {
       "path": "web/icon-384.png",
@@ -612,8 +632,8 @@
       "format": "png",
       "width": 384,
       "height": 384,
-      "bytes": 3441,
-      "sha256": "42321d3bcbd97221fd235aab676247dcbec14fc60602ae98397a92c4d1540599"
+      "bytes": 4672,
+      "sha256": "9e7d2267c343e8bdf0a2a0ac3ace6a2bff86bb40264dd6cce176a4125f8f37d5"
     },
     {
       "path": "web/icon-512.png",
@@ -623,8 +643,8 @@
       "format": "png",
       "width": 512,
       "height": 512,
-      "bytes": 5008,
-      "sha256": "ea2f19cfaf9bb6ad793fdb383a54a8c71c55846a371c97487d215f8c9a527b50"
+      "bytes": 6619,
+      "sha256": "deeba58e8804eba84e22a3bed4240a118ebe197efbe742cb98d80e8ed3e945ae"
     },
     {
       "path": "web/icon-maskable-192.png",
@@ -634,8 +654,8 @@
       "format": "png",
       "width": 192,
       "height": 192,
-      "bytes": 760,
-      "sha256": "a6d09f8462b3d5c1107f2bbdbbfc2bb90738fbb238c8dafa7b07a532c029c510"
+      "bytes": 1403,
+      "sha256": "92143ec884861a7e84b80548246c8ac4cbb9dcbce7de333bd0ce00bf2139561e"
     },
     {
       "path": "web/icon-maskable-512.png",
@@ -645,8 +665,8 @@
       "format": "png",
       "width": 512,
       "height": 512,
-      "bytes": 2835,
-      "sha256": "bb385d680acd31f86222876fd81608abf8a91adc2ffd9c75417acc85bd845fc0"
+      "bytes": 4653,
+      "sha256": "cd7881ed2d57b205f39c0d620685cc6630de6344fea8856651ead5dd88e87fcf"
     },
     {
       "path": "web/site.webmanifest",
@@ -655,7 +675,7 @@
       "derivedFrom": "brand.json",
       "format": "webmanifest",
       "bytes": 774,
-      "sha256": "1cf59fd4cc73b44e48d3c673a8999bdecd72ac247e252a58b83950594e3acc1d"
+      "sha256": "d7ac6be3482e2370180d82d2796f330facfde1adc7cf44868840b3fb795bfd4e"
     },
     {
       "path": "web/head-snippet.html",
@@ -664,1186 +684,7 @@
       "derivedFrom": "brand.json",
       "format": "html",
       "bytes": 613,
-      "sha256": "b6d22dc342f7a541c9c02463f696d9202a5fd02ba94400c5a69d87787e3d41d2"
-    },
-    {
-      "path": "ios/AppIcon.appiconset/AppIcon-1024.png",
-      "group": "ios",
-      "purpose": "iOS/iPadOS app icon 1024, opaque, unmasked",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 8512,
-      "sha256": "a7c25722b6a396aafacc378363d329b27d2501c987ddfb885f26257b3c21b5e9"
-    },
-    {
-      "path": "ios/AppIcon.appiconset/AppIcon-1024-dark.png",
-      "group": "ios",
-      "purpose": "iOS 18+ dark appearance icon (transparent background)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 7042,
-      "sha256": "277e031d2154f6196140bdfc7fd9ddaa81050895d71d83bd4e2f046185166716"
-    },
-    {
-      "path": "ios/AppIcon.appiconset/AppIcon-1024-tinted.png",
-      "group": "ios",
-      "purpose": "iOS 18+ tinted appearance icon (grayscale)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 8825,
-      "sha256": "b74cca192fd3f27e8f90204cf6302cd5b3095f854ae576bf4b3ca5d68051d9d5"
-    },
-    {
-      "path": "ios/icon-composer/background.svg",
-      "group": "ios",
-      "purpose": "Icon Composer background layer",
-      "derivedFrom": "brand.json",
-      "format": "svg",
-      "bytes": 146,
-      "sha256": "173d3f8d8c741f8cbe2a39ebdf0146f0ba9fc391562d25f9911b5940aa9f2136"
-    },
-    {
-      "path": "ios/icon-composer/foreground.svg",
-      "group": "ios",
-      "purpose": "Icon Composer foreground layer (import into Icon Composer)",
-      "derivedFrom": "symbol.svg",
-      "format": "svg",
-      "bytes": 306,
-      "sha256": "93c82eafd9b0f1930b9f356d5566068fc59348385166ddd5118cf7766afcd5e9"
-    },
-    {
-      "path": "ios/AppIcon.appiconset/Contents.json",
-      "group": "ios",
-      "purpose": "Xcode asset catalog entry",
-      "derivedFrom": "brand.json",
-      "format": "json",
-      "bytes": 716,
-      "sha256": "554e38d628f366d5c6347da539a9a7b9c23b3a40ba53ef166403b0410a4644cb"
-    },
-    {
-      "path": "macos/AppIcon-1024-square.svg",
-      "group": "macos",
-      "purpose": "macOS 26+ full-bleed square source (system rounds it; use with Icon Composer)",
-      "derivedFrom": "symbol.svg",
-      "format": "svg",
-      "bytes": 351,
-      "sha256": "8a0ab941799c6819525298b47fdaa1ab8037d85f3b0482950bd966073b2c4706"
-    },
-    {
-      "path": "macos/AppIcon-1024-square.png",
-      "group": "macos",
-      "purpose": "macOS 26+ full-bleed 1024 PNG",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 8044,
-      "sha256": "7f1b33f16da8f430aaf7a008c43dd74b4ead53170d28ce1cece999a08036c7ed"
-    },
-    {
-      "path": "macos/AppIcon-1024-legacy.svg",
-      "group": "macos",
-      "purpose": "Legacy macOS icon on the 824 px grid (for .icns)",
-      "derivedFrom": "symbol.svg",
-      "format": "svg",
-      "bytes": 380,
-      "sha256": "0da8d97b3f3154b476b038b9c45d85306ffd4dd2beb673deaf3fbfd2f01dd20b"
-    },
-    {
-      "path": "macos/AppIcon.iconset/icon_16x16.png",
-      "group": "macos",
-      "purpose": "iconset 16",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 16,
-      "height": 16,
-      "bytes": 250,
-      "sha256": "ac81e23e0d7940538e2db1b248468b7d0b18db0440e085068705dec01069ad17"
-    },
-    {
-      "path": "macos/AppIcon.iconset/icon_16x16@2x.png",
-      "group": "macos",
-      "purpose": "iconset 16@2x",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 32,
-      "height": 32,
-      "bytes": 339,
-      "sha256": "9ead7a22d51cc4cde6cf921a8d017383200ae8165f347bf52e43498988cd9614"
-    },
-    {
-      "path": "macos/AppIcon.iconset/icon_32x32.png",
-      "group": "macos",
-      "purpose": "iconset 32",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 32,
-      "height": 32,
-      "bytes": 339,
-      "sha256": "9ead7a22d51cc4cde6cf921a8d017383200ae8165f347bf52e43498988cd9614"
-    },
-    {
-      "path": "macos/AppIcon.iconset/icon_32x32@2x.png",
-      "group": "macos",
-      "purpose": "iconset 32@2x",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 64,
-      "height": 64,
-      "bytes": 529,
-      "sha256": "bfbe36921fc28fcc3f61246b2af3625293ad5d7ff0a1adf4adf272f946c16785"
-    },
-    {
-      "path": "macos/AppIcon.iconset/icon_128x128.png",
-      "group": "macos",
-      "purpose": "iconset 128",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 128,
-      "height": 128,
-      "bytes": 913,
-      "sha256": "6e2d56c45c06d0cc34517db64946d8313d9597296ee9e07f4a3a38ab41ffff2d"
-    },
-    {
-      "path": "macos/AppIcon.iconset/icon_128x128@2x.png",
-      "group": "macos",
-      "purpose": "iconset 128@2x",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 256,
-      "height": 256,
-      "bytes": 1968,
-      "sha256": "4dddbcba0562761d7ffb7d256542ec0d44f3e65cc272f7426b892af1e93f691e"
-    },
-    {
-      "path": "macos/AppIcon.iconset/icon_256x256.png",
-      "group": "macos",
-      "purpose": "iconset 256",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 256,
-      "height": 256,
-      "bytes": 1968,
-      "sha256": "4dddbcba0562761d7ffb7d256542ec0d44f3e65cc272f7426b892af1e93f691e"
-    },
-    {
-      "path": "macos/AppIcon.iconset/icon_256x256@2x.png",
-      "group": "macos",
-      "purpose": "iconset 256@2x",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 512,
-      "height": 512,
-      "bytes": 4857,
-      "sha256": "fc460cb2527d172003b1887c3d5098bb8c209ffec0a56e40f4fa73aa3ea633f7"
-    },
-    {
-      "path": "macos/AppIcon.iconset/icon_512x512.png",
-      "group": "macos",
-      "purpose": "iconset 512",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 512,
-      "height": 512,
-      "bytes": 4857,
-      "sha256": "fc460cb2527d172003b1887c3d5098bb8c209ffec0a56e40f4fa73aa3ea633f7"
-    },
-    {
-      "path": "macos/AppIcon.iconset/icon_512x512@2x.png",
-      "group": "macos",
-      "purpose": "iconset 512@2x",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 12923,
-      "sha256": "13f0b63bbff9c652877a1805c838a1b37d48a0b177816d267fa97aaff69b59a1"
-    },
-    {
-      "path": "macos/AppIcon.icns",
-      "group": "macos",
-      "purpose": "macOS .icns (16–1024 px, legacy grid) for Electron/Tauri and older macOS",
-      "derivedFrom": "symbol.svg",
-      "format": "icns",
-      "bytes": 29031,
-      "sha256": "b369728910c2680d702125a8ae499d8729599e6eb5b693defb1b0cd6fd72121f"
-    },
-    {
-      "path": "android/res/mipmap-mdpi/ic_launcher_foreground.png",
-      "group": "android",
-      "purpose": "Adaptive icon foreground 108px (mdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 108,
-      "height": 108,
-      "bytes": 305,
-      "sha256": "e41f22fa059aeb8eda6d0dd8a43361476c6c3b03734f54d3de72e84e4f1e7e60"
-    },
-    {
-      "path": "android/res/mipmap-mdpi/ic_launcher_background.png",
-      "group": "android",
-      "purpose": "Adaptive icon background 108px (mdpi)",
-      "derivedFrom": "brand.json",
-      "format": "png",
-      "width": 108,
-      "height": 108,
-      "bytes": 240,
-      "sha256": "45268b50763fee589f4d74536c8aee346aafd0912e52f98bfd473d82136250e1"
-    },
-    {
-      "path": "android/res/mipmap-mdpi/ic_launcher_monochrome.png",
-      "group": "android",
-      "purpose": "Themed icon (monochrome) layer 108px (mdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 108,
-      "height": 108,
-      "bytes": 279,
-      "sha256": "1c6b381b593378278e96d6f08e5e4ba166245faee982ef90c0dd15c124598d77"
-    },
-    {
-      "path": "android/res/mipmap-mdpi/ic_launcher.png",
-      "group": "android",
-      "purpose": "Legacy launcher icon 48px (mdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 48,
-      "height": 48,
-      "bytes": 415,
-      "sha256": "ea2e001633cb1306ec1ef3642115571e21ac88e6fb4f42599f32dc751119b85b"
-    },
-    {
-      "path": "android/res/mipmap-mdpi/ic_launcher_round.png",
-      "group": "android",
-      "purpose": "Legacy round launcher icon 48px (mdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 48,
-      "height": 48,
-      "bytes": 619,
-      "sha256": "dc90a99ba08552d70cb0fc7d5668a346462977db929be2ab285f9d2fbc83d200"
-    },
-    {
-      "path": "android/res/mipmap-hdpi/ic_launcher_foreground.png",
-      "group": "android",
-      "purpose": "Adaptive icon foreground 162px (hdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 162,
-      "height": 162,
-      "bytes": 504,
-      "sha256": "786c805b234c2e1d7e611bbe5eea62ab76975131bdcf893940c525d90d541d03"
-    },
-    {
-      "path": "android/res/mipmap-hdpi/ic_launcher_background.png",
-      "group": "android",
-      "purpose": "Adaptive icon background 162px (hdpi)",
-      "derivedFrom": "brand.json",
-      "format": "png",
-      "width": 162,
-      "height": 162,
-      "bytes": 375,
-      "sha256": "f2ca1e6ff4da10e69d251ac4b782d33d8f0bd1ff911725a75e00c221e8fb5a00"
-    },
-    {
-      "path": "android/res/mipmap-hdpi/ic_launcher_monochrome.png",
-      "group": "android",
-      "purpose": "Themed icon (monochrome) layer 162px (hdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 162,
-      "height": 162,
-      "bytes": 453,
-      "sha256": "a9b70be5009ece907269d765605ed582e20f69b654590b5baab909d1d998c8d0"
-    },
-    {
-      "path": "android/res/mipmap-hdpi/ic_launcher.png",
-      "group": "android",
-      "purpose": "Legacy launcher icon 72px (hdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 72,
-      "height": 72,
-      "bytes": 593,
-      "sha256": "0b52292ec0308e5ebec03eaf36fd9ae575ae82abe56eb5ceebbb3d420cb99ce8"
-    },
-    {
-      "path": "android/res/mipmap-hdpi/ic_launcher_round.png",
-      "group": "android",
-      "purpose": "Legacy round launcher icon 72px (hdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 72,
-      "height": 72,
-      "bytes": 928,
-      "sha256": "3595cbcf930a47eb0154c2fabc4f4467e654c3da6bbf6390e1b6fcef0da34244"
-    },
-    {
-      "path": "android/res/mipmap-xhdpi/ic_launcher_foreground.png",
-      "group": "android",
-      "purpose": "Adaptive icon foreground 216px (xhdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 216,
-      "height": 216,
-      "bytes": 595,
-      "sha256": "b95e49cb97e8225763afc66bd774147253e7f5d51aba8d6328563f7ea74aa424"
-    },
-    {
-      "path": "android/res/mipmap-xhdpi/ic_launcher_background.png",
-      "group": "android",
-      "purpose": "Adaptive icon background 216px (xhdpi)",
-      "derivedFrom": "brand.json",
-      "format": "png",
-      "width": 216,
-      "height": 216,
-      "bytes": 517,
-      "sha256": "61935906de3deed3ce51df0a5f4fa7f012c73ec4a1f9bc6111f9c206c0194805"
-    },
-    {
-      "path": "android/res/mipmap-xhdpi/ic_launcher_monochrome.png",
-      "group": "android",
-      "purpose": "Themed icon (monochrome) layer 216px (xhdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 216,
-      "height": 216,
-      "bytes": 549,
-      "sha256": "3de33312e146d2760912240662557d7f87d72c1554f7527a412cc276630561e4"
-    },
-    {
-      "path": "android/res/mipmap-xhdpi/ic_launcher.png",
-      "group": "android",
-      "purpose": "Legacy launcher icon 96px (xhdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 96,
-      "height": 96,
-      "bytes": 759,
-      "sha256": "22ffc873ce011a88bc99073a6a7ddbf07b3d6be09c1cc002deb57bab1dd6d28f"
-    },
-    {
-      "path": "android/res/mipmap-xhdpi/ic_launcher_round.png",
-      "group": "android",
-      "purpose": "Legacy round launcher icon 96px (xhdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 96,
-      "height": 96,
-      "bytes": 1104,
-      "sha256": "97ea4c2a4f5e9d9db18034fd3aad45f8786bb996d82c63aa332a0857a62fc02f"
-    },
-    {
-      "path": "android/res/mipmap-xxhdpi/ic_launcher_foreground.png",
-      "group": "android",
-      "purpose": "Adaptive icon foreground 324px (xxhdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 324,
-      "height": 324,
-      "bytes": 1031,
-      "sha256": "d237566b752438e301f2ac18fc00f42e03d5374937846884394bd27be310713e"
-    },
-    {
-      "path": "android/res/mipmap-xxhdpi/ic_launcher_background.png",
-      "group": "android",
-      "purpose": "Adaptive icon background 324px (xxhdpi)",
-      "derivedFrom": "brand.json",
-      "format": "png",
-      "width": 324,
-      "height": 324,
-      "bytes": 905,
-      "sha256": "529eb45b9b814a2d57980201b8c5138b8173bae4e130ebefd4d1e07af06ae364"
-    },
-    {
-      "path": "android/res/mipmap-xxhdpi/ic_launcher_monochrome.png",
-      "group": "android",
-      "purpose": "Themed icon (monochrome) layer 324px (xxhdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 324,
-      "height": 324,
-      "bytes": 969,
-      "sha256": "038746608459245938a6f678b11c35944af14d9b1d1fb4a5c39c69b590077d39"
-    },
-    {
-      "path": "android/res/mipmap-xxhdpi/ic_launcher.png",
-      "group": "android",
-      "purpose": "Legacy launcher icon 144px (xxhdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 144,
-      "height": 144,
-      "bytes": 1097,
-      "sha256": "8d03a053e4f7f9600ae5cd6b0c1fd1869fc948dd9ef09e63de13a34e4f9237f9"
-    },
-    {
-      "path": "android/res/mipmap-xxhdpi/ic_launcher_round.png",
-      "group": "android",
-      "purpose": "Legacy round launcher icon 144px (xxhdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 144,
-      "height": 144,
-      "bytes": 1620,
-      "sha256": "c117c50f9bb7233bb12daf8f229589d11269e7a6241633b55072559abde6570b"
-    },
-    {
-      "path": "android/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
-      "group": "android",
-      "purpose": "Adaptive icon foreground 432px (xxxhdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 432,
-      "height": 432,
-      "bytes": 1448,
-      "sha256": "53b22153464a2ddc4719bacb812efaf15226cdf0658bd5fd6a507fe37de523d4"
-    },
-    {
-      "path": "android/res/mipmap-xxxhdpi/ic_launcher_background.png",
-      "group": "android",
-      "purpose": "Adaptive icon background 432px (xxxhdpi)",
-      "derivedFrom": "brand.json",
-      "format": "png",
-      "width": 432,
-      "height": 432,
-      "bytes": 1360,
-      "sha256": "43e82016650c854419bc47a532120fda1e5370f558bc6dc66e932bd742246aa3"
-    },
-    {
-      "path": "android/res/mipmap-xxxhdpi/ic_launcher_monochrome.png",
-      "group": "android",
-      "purpose": "Themed icon (monochrome) layer 432px (xxxhdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 432,
-      "height": 432,
-      "bytes": 1373,
-      "sha256": "4906181c8a9df5eba186c0e145759747d8dde2d9ce3ce40057134b6532f41701"
-    },
-    {
-      "path": "android/res/mipmap-xxxhdpi/ic_launcher.png",
-      "group": "android",
-      "purpose": "Legacy launcher icon 192px (xxxhdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 192,
-      "height": 192,
-      "bytes": 1559,
-      "sha256": "87fc1139aab37df50384176ca27a6fbdd6d305af45cc46cc663db17ffb3178cd"
-    },
-    {
-      "path": "android/res/mipmap-xxxhdpi/ic_launcher_round.png",
-      "group": "android",
-      "purpose": "Legacy round launcher icon 192px (xxxhdpi)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 192,
-      "height": 192,
-      "bytes": 2183,
-      "sha256": "be25679141632fb33519db682d0ddbfe9ed536871c51ac155be92fd4eca10091"
-    },
-    {
-      "path": "android/res/mipmap-anydpi-v26/ic_launcher.xml",
-      "group": "android",
-      "purpose": "Adaptive icon definition (API 26+)",
-      "derivedFrom": "brand.json",
-      "format": "xml",
-      "bytes": 365,
-      "sha256": "b5ef3d940d21c1843f1517bb1c2a38d0a6221ff5c6a2bda1e5a4073447303955"
-    },
-    {
-      "path": "android/res/mipmap-anydpi-v26/ic_launcher_round.xml",
-      "group": "android",
-      "purpose": "Adaptive round icon definition (API 26+)",
-      "derivedFrom": "brand.json",
-      "format": "xml",
-      "bytes": 365,
-      "sha256": "b5ef3d940d21c1843f1517bb1c2a38d0a6221ff5c6a2bda1e5a4073447303955"
-    },
-    {
-      "path": "android/res/values/ic_launcher_colors.xml",
-      "group": "android",
-      "purpose": "Brand color resource",
-      "derivedFrom": "brand.json",
-      "format": "xml",
-      "bytes": 112,
-      "sha256": "bd44efb808b4bbd86cdd5d703ee750c2ddde7a3364420812f21dbe6e0d5f40f3"
-    },
-    {
-      "path": "android/play-store-icon-512.png",
-      "group": "android",
-      "purpose": "Google Play listing icon 512×512 (Play applies the mask)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 512,
-      "height": 512,
-      "bytes": 3064,
-      "sha256": "deaac9748574417c969607a381d3fab744147cd54762f545f2df231362264f2c"
-    },
-    {
-      "path": "windows/app.ico",
-      "group": "windows",
-      "purpose": "Windows app icon (16/24/32/48/64/256 px)",
-      "derivedFrom": "symbol.svg",
-      "format": "ico",
-      "bytes": 2583,
-      "sha256": "1102c2d978fa3adeb5dae891ec6ac304066453395e135eeb9d895f056d67c092"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.scale-100.png",
-      "group": "windows",
-      "purpose": "App list icon 44 @100%",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 44,
-      "height": 44,
-      "bytes": 279,
-      "sha256": "0fab0a1ad7be4ee0f111898ec7028d20f28789cbbe71d7fb3e7bdb7a88de30c4"
-    },
-    {
-      "path": "windows/Assets/Square150x150Logo.scale-100.png",
-      "group": "windows",
-      "purpose": "Medium tile 150 @100% (required to publish)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 150,
-      "height": 150,
-      "bytes": 460,
-      "sha256": "c790eb6e2c37d0ce9bec67ed84a138e7517beb4e3b19e28095ee72647d08fecd"
-    },
-    {
-      "path": "windows/Assets/StoreLogo.scale-100.png",
-      "group": "windows",
-      "purpose": "Store logo 50 @100%",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 50,
-      "height": 50,
-      "bytes": 285,
-      "sha256": "b46dc6d146300e19f064cf04a264374db2ea6f584633e078f26adbd571c3b167"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.scale-200.png",
-      "group": "windows",
-      "purpose": "App list icon 44 @200%",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 88,
-      "height": 88,
-      "bytes": 386,
-      "sha256": "eab4fb1b0b0d528828480bed6b35dea062ae93ba33d91a65bbfdbcc018ee8e4a"
-    },
-    {
-      "path": "windows/Assets/Square150x150Logo.scale-200.png",
-      "group": "windows",
-      "purpose": "Medium tile 150 @200% (required to publish)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 300,
-      "height": 300,
-      "bytes": 1011,
-      "sha256": "24c912dc26fcd75260648d7a34d2d891b95ccc94b55f5d406b0ab310ae6acafb"
-    },
-    {
-      "path": "windows/Assets/StoreLogo.scale-200.png",
-      "group": "windows",
-      "purpose": "Store logo 50 @200%",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 100,
-      "height": 100,
-      "bytes": 458,
-      "sha256": "c6d1d84070ca61b0def661d6ec515c0dea1a7db606b11caa95eb323e6fd73172"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.scale-400.png",
-      "group": "windows",
-      "purpose": "App list icon 44 @400%",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 176,
-      "height": 176,
-      "bytes": 767,
-      "sha256": "e51ec101bfdc22912058f42293cfa590c4e361c68dcf589461b0057d40018635"
-    },
-    {
-      "path": "windows/Assets/Square150x150Logo.scale-400.png",
-      "group": "windows",
-      "purpose": "Medium tile 150 @400% (required to publish)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 600,
-      "height": 600,
-      "bytes": 2794,
-      "sha256": "cb1c4c0527d103aa096d741dc5bf011324febfff157ecae5ca80b828bcba24af"
-    },
-    {
-      "path": "windows/Assets/StoreLogo.scale-400.png",
-      "group": "windows",
-      "purpose": "Store logo 50 @400%",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 200,
-      "height": 200,
-      "bytes": 936,
-      "sha256": "af6a1b960aa05bf92fb867a80ce29c2cd9ce1a25488ef44e1c390d1afe4f9bc6"
-    },
-    {
-      "path": "windows/Assets/Square71x71Logo.scale-100.png",
-      "group": "windows",
-      "purpose": "Small tile 71 @100%",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 71,
-      "height": 71,
-      "bytes": 279,
-      "sha256": "8c55f47a7bce90a656145e6a7e49c037ddf932c19cc91dca3f603c6e138d7778"
-    },
-    {
-      "path": "windows/Assets/Square310x310Logo.scale-100.png",
-      "group": "windows",
-      "purpose": "Large tile 310 @100%",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 310,
-      "height": 310,
-      "bytes": 1038,
-      "sha256": "28a23a8a554aa63b76f19a1600074260a9a9194eb4834fc47e2684676027b372"
-    },
-    {
-      "path": "windows/Assets/Square71x71Logo.scale-200.png",
-      "group": "windows",
-      "purpose": "Small tile 71 @200%",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 142,
-      "height": 142,
-      "bytes": 504,
-      "sha256": "99a754a26a87924cf756164ea48a009541bb4a94d1148aa951da8f5798d33d12"
-    },
-    {
-      "path": "windows/Assets/Square310x310Logo.scale-200.png",
-      "group": "windows",
-      "purpose": "Large tile 310 @200%",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 620,
-      "height": 620,
-      "bytes": 2820,
-      "sha256": "ce83989d9aca4a3abf63b9e7fe6e8ef9c505148ce64ebf0bc68737093784f245"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-16.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 16px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 16,
-      "height": 16,
-      "bytes": 181,
-      "sha256": "df7f69f04b5d6f59908fa4868ca3e53158c6eed688017d9faa2ce4d9462eb6a5"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-16_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 16px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 16,
-      "height": 16,
-      "bytes": 168,
-      "sha256": "4654ea1cd933ab912c888c9433db799c8365fcd9c75c9af165910a79313e9ec5"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-16_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 16px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 16,
-      "height": 16,
-      "bytes": 181,
-      "sha256": "df7f69f04b5d6f59908fa4868ca3e53158c6eed688017d9faa2ce4d9462eb6a5"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-20.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 20px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 20,
-      "height": 20,
-      "bytes": 212,
-      "sha256": "59c5975f1675ae6aec9d34ddca095172d6d6e11eceaac6cbb875199294abf4da"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-20_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 20px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 20,
-      "height": 20,
-      "bytes": 190,
-      "sha256": "628d67c413ab8b97d3ef12f7888d1ba63868d360e01b1b07279171629e37caba"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-20_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 20px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 20,
-      "height": 20,
-      "bytes": 212,
-      "sha256": "59c5975f1675ae6aec9d34ddca095172d6d6e11eceaac6cbb875199294abf4da"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-24.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 24px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 24,
-      "height": 24,
-      "bytes": 175,
-      "sha256": "ffb0fa2aa4434ea94c59795758e63e8e4320f838e25d4b153a0a1a6eac138c5e"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-24_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 24px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 24,
-      "height": 24,
-      "bytes": 164,
-      "sha256": "1923440c6e5e78c3d992e02007ba53b870f240af5b5b7134bbfbfc6cb542b735"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-24_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 24px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 24,
-      "height": 24,
-      "bytes": 175,
-      "sha256": "ffb0fa2aa4434ea94c59795758e63e8e4320f838e25d4b153a0a1a6eac138c5e"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-30.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 30px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 30,
-      "height": 30,
-      "bytes": 220,
-      "sha256": "c6c786ff9c99e1db28cfd1c1b00e67bda4fcf45d58f35523da274b3c0b1887e2"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-30_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 30px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 30,
-      "height": 30,
-      "bytes": 197,
-      "sha256": "33118b2e4aec08c446381a591df6db02990a58f41374fe4717e0c0b5e3b73c9f"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-30_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 30px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 30,
-      "height": 30,
-      "bytes": 220,
-      "sha256": "c6c786ff9c99e1db28cfd1c1b00e67bda4fcf45d58f35523da274b3c0b1887e2"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-32.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 32px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 32,
-      "height": 32,
-      "bytes": 210,
-      "sha256": "c8fc7a3d1f7216e09580d151c62e633671d379d2277b901ea3b03e7bf78a8d76"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-32_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 32px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 32,
-      "height": 32,
-      "bytes": 199,
-      "sha256": "8f19b2d0d07bc1ef7ff1f2bda6c118574db1a251e39935dc372a33bc26f1cd97"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-32_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 32px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 32,
-      "height": 32,
-      "bytes": 210,
-      "sha256": "c8fc7a3d1f7216e09580d151c62e633671d379d2277b901ea3b03e7bf78a8d76"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-36.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 36px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 36,
-      "height": 36,
-      "bytes": 242,
-      "sha256": "b7aa8cea60207374ce3e665f6e4b976519ec01f7396ae75e031cf3011b480acd"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-36_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 36px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 36,
-      "height": 36,
-      "bytes": 213,
-      "sha256": "57151e99e2a7725300ad69688695d8e6f91e7a46b109a975213126dce829629e"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-36_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 36px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 36,
-      "height": 36,
-      "bytes": 242,
-      "sha256": "b7aa8cea60207374ce3e665f6e4b976519ec01f7396ae75e031cf3011b480acd"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-40.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 40px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 40,
-      "height": 40,
-      "bytes": 262,
-      "sha256": "aea17233254158ab310ce5cbf12d3f76c9df85ee41467b7a6e59f5dd452e52a6"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-40_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 40px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 40,
-      "height": 40,
-      "bytes": 245,
-      "sha256": "59f40d56f1d9429af82ef544ac74ccc94428690578a3eb20769e3e00b6f78078"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-40_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 40px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 40,
-      "height": 40,
-      "bytes": 262,
-      "sha256": "aea17233254158ab310ce5cbf12d3f76c9df85ee41467b7a6e59f5dd452e52a6"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-48.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 48px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 48,
-      "height": 48,
-      "bytes": 267,
-      "sha256": "b1ee2f95e5d05e94274401d506c88c05511c660a69d82a28c13fd7a9bfc4f545"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-48_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 48px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 48,
-      "height": 48,
-      "bytes": 253,
-      "sha256": "5e8a59dfee0852eeb937064f743f6f3e03ec0b427cb293b6a92bb9b362380080"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-48_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 48px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 48,
-      "height": 48,
-      "bytes": 267,
-      "sha256": "b1ee2f95e5d05e94274401d506c88c05511c660a69d82a28c13fd7a9bfc4f545"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-60.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 60px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 60,
-      "height": 60,
-      "bytes": 267,
-      "sha256": "adfa5f19dcb364c0189d029bd426af3d27ad7fb6d4d287d6eb70b7086ff2e144"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-60_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 60px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 60,
-      "height": 60,
-      "bytes": 244,
-      "sha256": "fcc473582e3532670f85fae1233d7f13b86003201223ba7d91329fdf05bb0d23"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-60_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 60px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 60,
-      "height": 60,
-      "bytes": 267,
-      "sha256": "adfa5f19dcb364c0189d029bd426af3d27ad7fb6d4d287d6eb70b7086ff2e144"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-64.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 64px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 64,
-      "height": 64,
-      "bytes": 337,
-      "sha256": "be168a9b935c1c442484bcfb2e8ceb6314c1e9d0623f88a57df458126e9f1faf"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-64_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 64px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 64,
-      "height": 64,
-      "bytes": 310,
-      "sha256": "813d73d501f691d61431d8d3d2661a9b450f40e0c4918d788eb7b9db383c2e05"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-64_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 64px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 64,
-      "height": 64,
-      "bytes": 337,
-      "sha256": "be168a9b935c1c442484bcfb2e8ceb6314c1e9d0623f88a57df458126e9f1faf"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-72.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 72px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 72,
-      "height": 72,
-      "bytes": 336,
-      "sha256": "5841d5c56ba557e3b1ed763389516d5bde599b995a72047da0eed37c0f38ab30"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-72_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 72px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 72,
-      "height": 72,
-      "bytes": 323,
-      "sha256": "072d3bc5d80ffc8b28f3716dd0494ade5f469be1e51c908173ce60e7bcd9e9b5"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-72_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 72px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 72,
-      "height": 72,
-      "bytes": 336,
-      "sha256": "5841d5c56ba557e3b1ed763389516d5bde599b995a72047da0eed37c0f38ab30"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-80.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 80px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 80,
-      "height": 80,
-      "bytes": 311,
-      "sha256": "ce66d7cac75fbbf9a4ad7c19d35c2ca7c90eaf2ece1400cd3acd8517c8d63736"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-80_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 80px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 80,
-      "height": 80,
-      "bytes": 296,
-      "sha256": "d9e2ec94919094da30825dc6e037164a8b639b61a8c95e63fe6a922630fdad6f"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-80_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 80px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 80,
-      "height": 80,
-      "bytes": 311,
-      "sha256": "ce66d7cac75fbbf9a4ad7c19d35c2ca7c90eaf2ece1400cd3acd8517c8d63736"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-96.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 96px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 96,
-      "height": 96,
-      "bytes": 407,
-      "sha256": "d84ce2d6e76049158cec25a7923bb33970c4bf565a12341643d24cbb06f150a9"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-96_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 96px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 96,
-      "height": 96,
-      "bytes": 389,
-      "sha256": "26ecd7b332238899ca6ae4821957c9076e60b29861153f399e32fdb4e4641c3c"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-96_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 96px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 96,
-      "height": 96,
-      "bytes": 407,
-      "sha256": "d84ce2d6e76049158cec25a7923bb33970c4bf565a12341643d24cbb06f150a9"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-256.png",
-      "group": "windows",
-      "purpose": "Taskbar/app list 256px (plated)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 256,
-      "height": 256,
-      "bytes": 1239,
-      "sha256": "a603b09683b70e4c21364a7458e935f54d7030a5727747f190ad182c4a2e3156"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-256_altform-unplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 256px, unplated for dark theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 256,
-      "height": 256,
-      "bytes": 1197,
-      "sha256": "031b1fc3cfb08912b78590d91312df2602768e27e83c7e360a71ffc3cdd5b4b0"
-    },
-    {
-      "path": "windows/Assets/Square44x44Logo.targetsize-256_altform-lightunplated.png",
-      "group": "windows",
-      "purpose": "Taskbar 256px, unplated for light theme",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 256,
-      "height": 256,
-      "bytes": 1239,
-      "sha256": "a603b09683b70e4c21364a7458e935f54d7030a5727747f190ad182c4a2e3156"
-    },
-    {
-      "path": "windows/Assets/Wide310x150Logo.scale-100.png",
-      "group": "windows",
-      "purpose": "MSIX Wide310x150Logo 310×150",
-      "derivedFrom": "lockup-horizontal.svg",
-      "format": "png",
-      "width": 310,
-      "height": 150,
-      "bytes": 1598,
-      "sha256": "c40520d9f66db5b76110a627b4f15af692149999d3e8f0091858172248ff9b44"
-    },
-    {
-      "path": "windows/Assets/SplashScreen.scale-100.png",
-      "group": "windows",
-      "purpose": "MSIX SplashScreen 620×300",
-      "derivedFrom": "lockup-horizontal.svg",
-      "format": "png",
-      "width": 620,
-      "height": 300,
-      "bytes": 3300,
-      "sha256": "2706dde62fc96a45e6a9500765c0008c13b580f709dcfaa85ab143c79700059c"
-    },
-    {
-      "path": "windows/Assets/Wide310x150Logo.scale-200.png",
-      "group": "windows",
-      "purpose": "MSIX Wide310x150Logo 620×300",
-      "derivedFrom": "lockup-horizontal.svg",
-      "format": "png",
-      "width": 620,
-      "height": 300,
-      "bytes": 3300,
-      "sha256": "2706dde62fc96a45e6a9500765c0008c13b580f709dcfaa85ab143c79700059c"
-    },
-    {
-      "path": "windows/Assets/SplashScreen.scale-200.png",
-      "group": "windows",
-      "purpose": "MSIX SplashScreen 1240×600",
-      "derivedFrom": "lockup-horizontal.svg",
-      "format": "png",
-      "width": 1240,
-      "height": 600,
-      "bytes": 8157,
-      "sha256": "e2378d534d9ad9032840ae064b1aff06f0d787cbc70faafb55a8856748133460"
+      "sha256": "54284a34cad29e17011fb2cb51508c1d8a6d5f4c3dc12627a1cdffc0f6f05498"
     },
     {
       "path": "social/og-image.svg",
@@ -1851,8 +692,8 @@
       "purpose": "Open Graph / link preview image (editable source)",
       "derivedFrom": "lockup-horizontal.svg",
       "format": "svg",
-      "bytes": 20187,
-      "sha256": "36f8e48e7ff0844221bb675a094d9fa00d8aaeba374079a6de62071c9df5c080"
+      "bytes": 23111,
+      "sha256": "5aed166cc91d5e1f587e0594271789300646007622ec843a3b5feca59d75548e"
     },
     {
       "path": "social/og-image.png",
@@ -1862,28 +703,28 @@
       "format": "png",
       "width": 1200,
       "height": 630,
-      "bytes": 17336,
-      "sha256": "2158316d1a2898fee702dcab4cf99f049a38fb9448943a2d762de36839af92cf"
+      "bytes": 21783,
+      "sha256": "2ea2faf8275a243fcf29675fdd5604f5f45039af6c2adff7a33577280251ddd1"
     },
     {
       "path": "social/og-image-dark.svg",
       "group": "social",
-      "purpose": "Open Graph image, dark variant (editable source)",
+      "purpose": "Open Graph image on the alternate (dark) ground (editable source)",
       "derivedFrom": "lockup-horizontal.svg",
       "format": "svg",
-      "bytes": 20187,
-      "sha256": "147625243c8872cc231fe14164941fdf5ed8d882e96b06c2020ba25ee6aace1f"
+      "bytes": 23111,
+      "sha256": "e770b03115336eb6b58c269112bf922136080424c44e7295dd63be737e330222"
     },
     {
       "path": "social/og-image-dark.png",
       "group": "social",
-      "purpose": "Open Graph image, dark variant 1200×630",
+      "purpose": "Open Graph image on the alternate (dark) ground 1200×630",
       "derivedFrom": "lockup-horizontal.svg",
       "format": "png",
       "width": 1200,
       "height": 630,
-      "bytes": 16361,
-      "sha256": "3d64a957090fc69151bcfdcd18ac4ca780e7175a594b6038941d8fa411c13375"
+      "bytes": 20387,
+      "sha256": "bd19a75969096b9c6b42bdd1671fd7de9f4e07eda8daea2a1b371dad0315835a"
     },
     {
       "path": "social/github-social-preview.svg",
@@ -1891,8 +732,8 @@
       "purpose": "GitHub repository social preview (editable source)",
       "derivedFrom": "lockup-horizontal.svg",
       "format": "svg",
-      "bytes": 20177,
-      "sha256": "41899193ceda4ef85b3aa04b50a9a0fed590868c5224fb0bb238c6e20cf4c28f"
+      "bytes": 23107,
+      "sha256": "415c83e442cdb23f0d38beec56f3abb1c6562958d30a6bffb291ab2546b54a2e"
     },
     {
       "path": "social/github-social-preview.png",
@@ -1902,8 +743,8 @@
       "format": "png",
       "width": 1280,
       "height": 640,
-      "bytes": 17698,
-      "sha256": "5892d966c32d6dac984f0e65a0fc2aed8e761895b97608044749eea29435bd3f"
+      "bytes": 22700,
+      "sha256": "31c7ae2305643919ad53531bca6dff3d89b151e34dfd8f15dcd63271ad4c6f66"
     },
     {
       "path": "social/x-header.svg",
@@ -1911,8 +752,8 @@
       "purpose": "X (Twitter) profile header (editable source)",
       "derivedFrom": "lockup-horizontal.svg",
       "format": "svg",
-      "bytes": 2341,
-      "sha256": "3d8651a37e52f6292000321a756410daf6c6e915ddda92aadd0e16b32324bf16"
+      "bytes": 3971,
+      "sha256": "b205e36bf7ade5f99a37281475f51a72dbc23ea72edfc16b183d6478fc88c29c"
     },
     {
       "path": "social/x-header.png",
@@ -1922,8 +763,8 @@
       "format": "png",
       "width": 1500,
       "height": 500,
-      "bytes": 11044,
-      "sha256": "ecdabea7804c79693c8df3764d3acd67039feee596296ae57762710b556477f4"
+      "bytes": 16615,
+      "sha256": "f915b7bc3268518ec18aac63c6ca4e0c06e425700915e1268fd3f3a821686c85"
     },
     {
       "path": "social/linkedin-cover.svg",
@@ -1931,8 +772,8 @@
       "purpose": "LinkedIn page cover (editable source)",
       "derivedFrom": "lockup-horizontal.svg",
       "format": "svg",
-      "bytes": 2339,
-      "sha256": "b579855bc5b27c8003f8279dcc1b1c3f616319a350bb5a369ba1777eebf31bf9"
+      "bytes": 3972,
+      "sha256": "1569bfd969120643573b20b028acabeb8475fb9f8edd5296eb021a2c0a569469"
     },
     {
       "path": "social/linkedin-cover.png",
@@ -1942,8 +783,8 @@
       "format": "png",
       "width": 1512,
       "height": 256,
-      "bytes": 6837,
-      "sha256": "399516f7aba06308179094ea24ed57525c0954a3276dcbe63b3c2f5c149fad01"
+      "bytes": 10211,
+      "sha256": "375634837a52cb5168fda1d8c3d19b6715728e1c0be9d7007e1dd54f4629c049"
     },
     {
       "path": "social/avatar-500.png",
@@ -1953,97 +794,8 @@
       "format": "png",
       "width": 500,
       "height": 500,
-      "bytes": 2770,
-      "sha256": "07121b8bbd88d65b54fd7486d6b77394942b6db49347ffc121c8a2f88661597e"
-    },
-    {
-      "path": "marketing/watermark-white.svg",
-      "group": "marketing",
-      "purpose": "Watermark (white, 35% opacity) for photos and video",
-      "derivedFrom": "symbol.svg",
-      "format": "svg",
-      "bytes": 324,
-      "sha256": "78c128bd10320d07c3f4af53dddfc6deca6d7b84636d5affd96970bb0ed5b23a"
-    },
-    {
-      "path": "marketing/watermark-white.png",
-      "group": "marketing",
-      "purpose": "Watermark PNG (white)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 512,
-      "height": 512,
-      "bytes": 3186,
-      "sha256": "6b15fd1a5c6214b4dca4c42a7e1f920b6db29568aa817d4ba70019040fba82b6"
-    },
-    {
-      "path": "marketing/watermark-black.svg",
-      "group": "marketing",
-      "purpose": "Watermark (black, 35% opacity) for photos and video",
-      "derivedFrom": "symbol.svg",
-      "format": "svg",
-      "bytes": 324,
-      "sha256": "665882995e41d2d11f815957ae4468f23a7af49de9c2cb7b6b253d0b8c6253ec"
-    },
-    {
-      "path": "marketing/watermark-black.png",
-      "group": "marketing",
-      "purpose": "Watermark PNG (black)",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 512,
-      "height": 512,
-      "bytes": 3109,
-      "sha256": "34f19b88d0a931f43404e76e4df2c537ffd26d8d689cb48a8edf06a8c01384f0"
-    },
-    {
-      "path": "marketing/email-signature.png",
-      "group": "marketing",
-      "purpose": "Email signature logo 600×160 (display at 300×80)",
-      "derivedFrom": "lockup-horizontal.svg",
-      "format": "png",
-      "width": 600,
-      "height": 160,
-      "bytes": 3654,
-      "sha256": "d53a74ec54500d2dec1e3b452e7ff8f737d67d1aac68a08e3e9a5660e1970167"
-    },
-    {
-      "path": "marketing/slide-title.svg",
-      "group": "marketing",
-      "purpose": "Title slide template 1920×1080 (live text, Space Grotesk)",
-      "derivedFrom": "lockup-horizontal.svg",
-      "format": "svg",
-      "bytes": 2222,
-      "sha256": "da2cdc71273e50a13995490c779f86508bd9df8a315dcf5cff0c1f9a81264e89"
-    },
-    {
-      "path": "marketing/slide-title.png",
-      "group": "marketing",
-      "purpose": "Title slide preview",
-      "derivedFrom": "lockup-horizontal.svg",
-      "format": "png",
-      "width": 1920,
-      "height": 1080,
-      "bytes": 24472,
-      "sha256": "bd85b31d5faf18eddf31a013938897dff2c184d4c436e143d087ee7fd4692447"
-    },
-    {
-      "path": "marketing/business-card-front.svg",
-      "group": "marketing",
-      "purpose": "Business card front, 85×55 mm (add 3 mm bleed for print)",
-      "derivedFrom": "lockup-horizontal.svg",
-      "format": "svg",
-      "bytes": 1903,
-      "sha256": "503778aaf1f8e17ea7692a33ab5f3928ee320669d70807e508550226a7fb7702"
-    },
-    {
-      "path": "marketing/business-card-back.svg",
-      "group": "marketing",
-      "purpose": "Business card back template, 85×55 mm (live text)",
-      "derivedFrom": "symbol.svg",
-      "format": "svg",
-      "bytes": 784,
-      "sha256": "45c238520cba31acb64da422b94dfdbdbdec47111c38b4e192df46fe90670d67"
+      "bytes": 4178,
+      "sha256": "cdc7f6d9f01781cb07af73effd163b482322d0e3755491b866b4be15da49ce34"
     },
     {
       "path": "tokens/tokens.json",
@@ -2051,8 +803,8 @@
       "purpose": "Design tokens (W3C DTCG format)",
       "derivedFrom": "brand.json",
       "format": "json",
-      "bytes": 3184,
-      "sha256": "f9e38cd428d0347bcad5d96cad8034077b235096b8f0148edac1502e7345d533"
+      "bytes": 4149,
+      "sha256": "79609097d9fa429b043efb8bb0c1035236c5d6ac05f1475cd3f6913f39c4bf12"
     },
     {
       "path": "tokens/tokens.css",
@@ -2060,8 +812,8 @@
       "purpose": "CSS custom properties",
       "derivedFrom": "brand.json",
       "format": "css",
-      "bytes": 810,
-      "sha256": "d59d1eca947084db8a8e588dcf707efbab0fd4c5420df0e216fe3e151db71159"
+      "bytes": 1172,
+      "sha256": "64ad1892ab8eb5f3ad78d2278c6183a178ea24147e7e0701ba1d3845dc3ff412"
     },
     {
       "path": "tokens/palette.json",
@@ -2069,8 +821,8 @@
       "purpose": "Palette with contrast pairs and warnings",
       "derivedFrom": "brand.json",
       "format": "json",
-      "bytes": 2069,
-      "sha256": "791ea670376c3ca3213b45d7d7f0a0bfd968edc55b2d2ceb0983c2c90e0ccaf9"
+      "bytes": 2664,
+      "sha256": "fcde7f19be6adb0b4089478158d4479309de3fca5fab932cf6c717d3535c4310"
     },
     {
       "path": "guidelines/brand-guidelines.md",
@@ -2078,8 +830,8 @@
       "purpose": "Brand usage guidelines (Markdown)",
       "derivedFrom": "brand.json",
       "format": "md",
-      "bytes": 2417,
-      "sha256": "aeb9d0ba1b7d928c069ddd8cc62f2dc8c47200041dcdc7339e2fed7aad5edffd"
+      "bytes": 3111,
+      "sha256": "66e585ec7db3121138f3fadb665aa1aa8961689a43e23b1cec313bb5d7fef8bd"
     },
     {
       "path": "guidelines/index.html",
@@ -2087,8 +839,8 @@
       "purpose": "Brand usage guidelines (self-contained HTML)",
       "derivedFrom": "brand.json",
       "format": "html",
-      "bytes": 9391,
-      "sha256": "88230f7df53f1c4607603dcafa9015b98cdd417e9d0942fc0f5053ea72371d79"
+      "bytes": 14118,
+      "sha256": "fd47aa360511576f1868cac5c84ed9c8800e708a303eeefe064460cf6afa3f31"
     }
   ],
   "skipped": [],

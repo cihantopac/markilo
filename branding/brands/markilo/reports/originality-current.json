@@ -1,0 +1,926 @@
+{
+  "schema": "markilo/originality@2",
+  "brand": "markilo",
+  "concept": "current",
+  "generatedAt": "2026-10-30T03:07:10.897Z",
+  "verdict": "insufficient-evidence",
+  "confidence": "low",
+  "evidence": {
+    "visual": {
+      "coverage": "adequate",
+      "have": "41 reference mark(s): 36 direct competitor, 5 category/form-family",
+      "next": []
+    },
+    "registry": {
+      "coverage": "none",
+      "have": "no registry searches logged for \"Markilo\"",
+      "next": [
+        "search an international database (WIPO Global Brand Database or TMview)",
+        "search at least one national register for your main market (e.g. USPTO, TÜRKPATENT, UKIPO)",
+        "include the suggested Nice classes (9, 42, 41)",
+        "log each search: markilo profile add-source --type registry --registry <id> --query \"<name>\" --classes … --results <n>"
+      ]
+    },
+    "names": {
+      "coverage": "adequate",
+      "have": "43 competitor name(s) compared",
+      "next": []
+    },
+    "confidence": "low",
+    "missing": [
+      "search an international database (WIPO Global Brand Database or TMview)",
+      "search at least one national register for your main market (e.g. USPTO, TÜRKPATENT, UKIPO)",
+      "include the suggested Nice classes (9, 42, 41)",
+      "log each search: markilo profile add-source --type registry --registry <id> --query \"<name>\" --classes … --results <n>"
+    ]
+  },
+  "scope": {
+    "referencesCompared": 41,
+    "references": [
+      {
+        "id": "brandmark-1",
+        "name": "Brandmark",
+        "source": "https://brandmark.io/images/logo.svg",
+        "retrievedAt": "2026-10-30T02:51:09.643Z"
+      },
+      {
+        "id": "brandmark-icon-2",
+        "name": "Brandmark icon",
+        "source": "https://brandmark.io/favicons/project/apple-touch-icon.png",
+        "retrievedAt": "2026-10-30T02:51:09.748Z"
+      },
+      {
+        "id": "designs-ai-3",
+        "name": "Designs.ai",
+        "source": "https://designs.ai/en",
+        "retrievedAt": "2026-10-30T02:51:14.805Z"
+      },
+      {
+        "id": "canva-4",
+        "name": "Canva",
+        "source": "https://www.canva.com/create/logos/",
+        "retrievedAt": "2026-10-30T02:51:19.930Z"
+      },
+      {
+        "id": "realfavicongenerator-5",
+        "name": "RealFaviconGenerator",
+        "source": "https://realfavicongenerator.net/",
+        "retrievedAt": "2026-10-30T02:51:21.844Z"
+      },
+      {
+        "id": "realfavicongenerator-icon-6",
+        "name": "RealFaviconGenerator icon",
+        "source": "https://realfavicongenerator.net/apple-icon.png?3d34da988478439b",
+        "retrievedAt": "2026-10-30T02:51:21.979Z"
+      },
+      {
+        "id": "claude-code-7",
+        "name": "Claude Code",
+        "source": "https://claude.com/product/claude-code",
+        "retrievedAt": "2026-10-30T02:51:24.826Z"
+      },
+      {
+        "id": "claude-code-icon-8",
+        "name": "Claude Code icon",
+        "source": "https://claude.com/icon.png",
+        "retrievedAt": "2026-10-30T02:51:24.931Z"
+      },
+      {
+        "id": "cursor-9",
+        "name": "Cursor",
+        "source": "https://cursor.com/",
+        "retrievedAt": "2026-10-30T02:51:26.906Z"
+      },
+      {
+        "id": "cursor-icon-10",
+        "name": "Cursor icon",
+        "source": "https://cursor.com/marketing-static/icon-192x192-light.png",
+        "retrievedAt": "2026-10-30T02:51:27.048Z"
+      },
+      {
+        "id": "github-copilot-11",
+        "name": "GitHub Copilot",
+        "source": "https://github.com/features/copilot",
+        "retrievedAt": "2026-10-30T02:51:29.583Z"
+      },
+      {
+        "id": "github-copilot-icon-12",
+        "name": "GitHub Copilot icon",
+        "source": "https://github.com/fluidicon.png",
+        "retrievedAt": "2026-10-30T02:51:29.833Z"
+      },
+      {
+        "id": "windsurf-13",
+        "name": "Windsurf",
+        "source": "https://devin.ai/desktop",
+        "retrievedAt": "2026-10-30T02:51:32.273Z"
+      },
+      {
+        "id": "windsurf-icon-14",
+        "name": "Windsurf icon",
+        "source": "https://devin.ai/icon.png",
+        "retrievedAt": "2026-10-30T02:51:32.392Z"
+      },
+      {
+        "id": "cline-15",
+        "name": "Cline",
+        "source": "https://cline.bot/",
+        "retrievedAt": "2026-10-30T02:51:41.135Z"
+      },
+      {
+        "id": "cline-icon-16",
+        "name": "Cline icon",
+        "source": "https://cline.bot/assets/branding/favicons/favicon-256x256.png",
+        "retrievedAt": "2026-10-30T02:51:41.271Z"
+      },
+      {
+        "id": "continue-17",
+        "name": "Continue",
+        "source": "https://continue.dev/continue-logo-black.svg",
+        "retrievedAt": "2026-10-30T02:51:43.862Z"
+      },
+      {
+        "id": "continue-icon-18",
+        "name": "Continue icon",
+        "source": "https://continue.dev/favicon.png",
+        "retrievedAt": "2026-10-30T02:51:44.111Z"
+      },
+      {
+        "id": "gemini-cli-19",
+        "name": "Gemini CLI",
+        "source": "https://geminicli.com/",
+        "retrievedAt": "2026-10-30T02:51:46.640Z"
+      },
+      {
+        "id": "gemini-cli-icon-20",
+        "name": "Gemini CLI icon",
+        "source": "https://geminicli.com/icon.png",
+        "retrievedAt": "2026-10-30T02:51:46.891Z"
+      },
+      {
+        "id": "adobe-express-21",
+        "name": "Adobe Express",
+        "source": "https://www.adobe.com/express/create/logo/media_102940297718a91db18c1dc3a34a429ec0e8263f9.png?width=750&#x26;format=png&#x26;optimize=medium",
+        "retrievedAt": "2026-10-30T02:51:48.664Z"
+      },
+      {
+        "id": "figma-ai-22",
+        "name": "Figma AI",
+        "source": "https://www.figma.com/ai/",
+        "retrievedAt": "2026-10-30T02:51:52.346Z"
+      },
+      {
+        "id": "figma-ai-icon-23",
+        "name": "Figma AI icon",
+        "source": "https://static.figma.com/app/icon/2/icon-256.png",
+        "retrievedAt": "2026-10-30T02:51:52.554Z"
+      },
+      {
+        "id": "hatchful-24",
+        "name": "Hatchful",
+        "source": "https://cdn.shopify.com/b/shopify-brochure2-assets/d9340911ca8c679b148dd4a205ad2ffa.svg",
+        "retrievedAt": "2026-10-30T02:51:56.146Z"
+      },
+      {
+        "id": "hatchful-icon-25",
+        "name": "Hatchful icon",
+        "source": "https://cdn.shopify.com/b/shopify-brochure2-assets/c97c60ca19c64a8b5378d9f9e971f7bd.png",
+        "retrievedAt": "2026-10-30T02:51:56.262Z"
+      },
+      {
+        "id": "app-icon-generator-26",
+        "name": "App Icon Generator",
+        "source": "https://www.appicon.co/",
+        "retrievedAt": "2026-10-30T02:51:58.928Z"
+      },
+      {
+        "id": "github-copilot-goggles-mascot-correct-27",
+        "name": "GitHub Copilot (goggles mascot, correct)",
+        "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/githubcopilot.svg",
+        "retrievedAt": "2026-10-30T02:57:02.628Z"
+      },
+      {
+        "id": "openai-codex-28",
+        "name": "OpenAI Codex",
+        "source": "https://unpkg.com/@lobehub/icons-static-svg@latest/icons/codex.svg",
+        "retrievedAt": "2026-10-30T02:57:02.869Z"
+      },
+      {
+        "id": "aider-github-org-avatar-29",
+        "name": "Aider (GitHub org avatar)",
+        "source": "https://avatars.githubusercontent.com/Aider-AI",
+        "retrievedAt": "2026-10-30T02:57:03.218Z"
+      },
+      {
+        "id": "claude-anthropic-spark-mark-30",
+        "name": "Claude (Anthropic spark mark)",
+        "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/claude.svg",
+        "retrievedAt": "2026-10-30T02:57:03.573Z"
+      },
+      {
+        "id": "anthropic-company-a-mark-31",
+        "name": "Anthropic (company A mark)",
+        "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/anthropic.svg",
+        "retrievedAt": "2026-10-30T02:57:03.814Z"
+      },
+      {
+        "id": "aider-site-logo-32",
+        "name": "Aider (site logo)",
+        "source": "https://aider.chat/assets/logo.svg",
+        "retrievedAt": "2026-10-30T02:57:16.001Z"
+      },
+      {
+        "id": "looka-favicon-33",
+        "name": "Looka (favicon)",
+        "source": "https://looka.com/favicon.ico",
+        "retrievedAt": "2026-10-30T02:57:16.239Z"
+      },
+      {
+        "id": "claude-app-icon-claude-ai-34",
+        "name": "Claude app icon (claude.ai)",
+        "source": "https://claude.ai/apple-touch-icon.png",
+        "retrievedAt": "2026-10-30T02:57:16.477Z"
+      },
+      {
+        "id": "vercel-35",
+        "name": "Vercel",
+        "source": "https://vercel.com/apple-touch-icon.png",
+        "retrievedAt": "2026-10-30T02:57:16.718Z"
+      },
+      {
+        "id": "linear-36",
+        "name": "Linear",
+        "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/linear.svg",
+        "retrievedAt": "2026-10-30T02:57:16.962Z"
+      },
+      {
+        "id": "raycast-37",
+        "name": "Raycast",
+        "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/raycast.svg",
+        "retrievedAt": "2026-10-30T02:57:17.206Z"
+      },
+      {
+        "id": "figma-38",
+        "name": "Figma",
+        "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/figma.svg",
+        "retrievedAt": "2026-10-30T02:57:17.448Z"
+      },
+      {
+        "id": "brandfetch-39",
+        "name": "Brandfetch",
+        "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/brandfetch.svg",
+        "retrievedAt": "2026-10-30T02:57:17.694Z"
+      },
+      {
+        "id": "canva-round-app-mark-40",
+        "name": "Canva (round app mark)",
+        "source": "https://svgl.app/library/canva.svg",
+        "retrievedAt": "2026-10-30T02:57:37.195Z"
+      },
+      {
+        "id": "app-icon-generator-appicon-co-og-icon-41",
+        "name": "App Icon Generator (appicon.co og icon)",
+        "source": "https://appicon.co/icon-large.png",
+        "retrievedAt": "2026-10-30T02:57:37.447Z"
+      }
+    ],
+    "conceptsCompared": [
+      "frame",
+      "gauge",
+      "nib",
+      "overlap"
+    ],
+    "nameCompetitors": 43,
+    "registrySearchesLogged": []
+  },
+  "visual": {
+    "risk": "low",
+    "thresholds": {
+      "review": 0.62,
+      "high": 0.78
+    },
+    "matches": [
+      {
+        "a": "current",
+        "b": "realfavicongenerator-5",
+        "visual": 0.284,
+        "shape": 0.297,
+        "color": 0.455,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.304,
+            "details": {
+              "iou": 0.304,
+              "transform": "identity"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.172,
+            "details": {
+              "pHash": 0.563,
+              "dHash": 0.641
+            }
+          },
+          "structure": {
+            "score": 0.407,
+            "details": {
+              "descriptorDistance": 0.237,
+              "holes": "0 vs 0",
+              "components": "3 vs 3"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "RealFaviconGenerator",
+        "source": "https://realfavicongenerator.net/"
+      },
+      {
+        "a": "current",
+        "b": "app-icon-generator-appicon-co-og-icon-41",
+        "visual": 0.275,
+        "shape": 0.295,
+        "color": 0.166,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.373,
+            "details": {
+              "iou": 0.373,
+              "transform": "rot180"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.131,
+            "details": {
+              "pHash": 0.594,
+              "dHash": 0.484
+            }
+          },
+          "structure": {
+            "score": 0.302,
+            "details": {
+              "descriptorDistance": 0.249,
+              "holes": "0 vs 0",
+              "components": "3 vs 4"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "App Icon Generator (appicon.co og icon)",
+        "source": "https://appicon.co/icon-large.png"
+      },
+      {
+        "a": "current",
+        "b": "github-copilot-11",
+        "visual": 0.268,
+        "shape": 0.28,
+        "color": 0.455,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.241,
+            "details": {
+              "iou": 0.241,
+              "transform": "rot90"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.194,
+            "details": {
+              "pHash": 0.578,
+              "dHash": 0.641
+            }
+          },
+          "structure": {
+            "score": 0.446,
+            "details": {
+              "descriptorDistance": 0.222,
+              "holes": "0 vs 0",
+              "components": "3 vs 3"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "GitHub Copilot",
+        "source": "https://github.com/features/copilot"
+      },
+      {
+        "a": "current",
+        "b": "linear-36",
+        "visual": 0.258,
+        "shape": 0.27,
+        "color": 0.455,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.279,
+            "details": {
+              "iou": 0.279,
+              "transform": "rot270"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.131,
+            "details": {
+              "pHash": 0.594,
+              "dHash": 0.453
+            }
+          },
+          "structure": {
+            "score": 0.389,
+            "details": {
+              "descriptorDistance": 0.205,
+              "holes": "0 vs 0",
+              "components": "3 vs 4"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "Linear",
+        "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/linear.svg"
+      },
+      {
+        "a": "current",
+        "b": "raycast-37",
+        "visual": 0.242,
+        "shape": 0.253,
+        "color": 0.455,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.233,
+            "details": {
+              "iou": 0.233,
+              "transform": "rot270"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.175,
+            "details": {
+              "pHash": 0.625,
+              "dHash": 0.5
+            }
+          },
+          "structure": {
+            "score": 0.372,
+            "details": {
+              "descriptorDistance": 0.214,
+              "holes": "0 vs 0",
+              "components": "3 vs 7"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "Raycast",
+        "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/raycast.svg"
+      },
+      {
+        "a": "current",
+        "b": "brandfetch-39",
+        "visual": 0.236,
+        "shape": 0.246,
+        "color": 0.455,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.284,
+            "details": {
+              "iou": 0.284,
+              "transform": "mirror+rot180"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.088,
+            "details": {
+              "pHash": 0.563,
+              "dHash": 0.344
+            }
+          },
+          "structure": {
+            "score": 0.33,
+            "details": {
+              "descriptorDistance": 0.235,
+              "holes": "0 vs 0",
+              "components": "3 vs 1"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "Brandfetch",
+        "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/brandfetch.svg"
+      },
+      {
+        "a": "current",
+        "b": "cursor-icon-10",
+        "visual": 0.22,
+        "shape": 0.234,
+        "color": 0.27,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.358,
+            "details": {
+              "iou": 0.358,
+              "transform": "rot90"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.134,
+            "details": {
+              "pHash": 0.563,
+              "dHash": 0.578
+            }
+          },
+          "structure": {
+            "score": 0.086,
+            "details": {
+              "descriptorDistance": 0.357,
+              "holes": "0 vs 0",
+              "components": "3 vs 1"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "Cursor icon",
+        "source": "https://cursor.com/marketing-static/icon-192x192-light.png"
+      },
+      {
+        "a": "current",
+        "b": "adobe-express-21",
+        "visual": 0.22,
+        "shape": 0.229,
+        "color": 0.502,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.298,
+            "details": {
+              "iou": 0.298,
+              "transform": "rot270"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.266,
+            "details": {
+              "pHash": 0.656,
+              "dHash": 0.578
+            }
+          },
+          "structure": {
+            "score": 0.056,
+            "details": {
+              "descriptorDistance": 0.372,
+              "holes": "0 vs 1",
+              "components": "3 vs 4"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "Adobe Express",
+        "source": "https://www.adobe.com/express/create/logo/media_102940297718a91db18c1dc3a34a429ec0e8263f9.png?width=750&#x26;format=png&#x26;optimize=medium"
+      },
+      {
+        "a": "current",
+        "b": "claude-code-icon-8",
+        "visual": 0.219,
+        "shape": 0.229,
+        "color": 0.469,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.246,
+            "details": {
+              "iou": 0.246,
+              "transform": "mirror+rot270"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.097,
+            "details": {
+              "pHash": 0.563,
+              "dHash": 0.516
+            }
+          },
+          "structure": {
+            "score": 0.324,
+            "details": {
+              "descriptorDistance": 0.238,
+              "holes": "0 vs 0",
+              "components": "3 vs 1"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "Claude Code icon",
+        "source": "https://claude.com/icon.png"
+      },
+      {
+        "a": "current",
+        "b": "claude-anthropic-spark-mark-30",
+        "visual": 0.219,
+        "shape": 0.229,
+        "color": 0.455,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.247,
+            "details": {
+              "iou": 0.247,
+              "transform": "mirror+rot270"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.097,
+            "details": {
+              "pHash": 0.563,
+              "dHash": 0.516
+            }
+          },
+          "structure": {
+            "score": 0.325,
+            "details": {
+              "descriptorDistance": 0.237,
+              "holes": "0 vs 0",
+              "components": "3 vs 1"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "Claude (Anthropic spark mark)",
+        "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/claude.svg"
+      }
+    ]
+  },
+  "diversity": [
+    {
+      "concept": "frame",
+      "visual": 0.304,
+      "risk": "low",
+      "reasons": [
+        "No strong overlap in silhouette, composition or structure."
+      ]
+    },
+    {
+      "concept": "gauge",
+      "visual": 0.327,
+      "risk": "low",
+      "reasons": [
+        "No strong overlap in silhouette, composition or structure."
+      ]
+    },
+    {
+      "concept": "nib",
+      "visual": 0.289,
+      "risk": "low",
+      "reasons": [
+        "No strong overlap in silhouette, composition or structure."
+      ]
+    },
+    {
+      "concept": "overlap",
+      "visual": 0.298,
+      "risk": "low",
+      "reasons": [
+        "No strong overlap in silhouette, composition or structure."
+      ]
+    }
+  ],
+  "genericity": {
+    "closest": "square",
+    "similarity": 0.375,
+    "level": "distinct"
+  },
+  "name": {
+    "candidate": "Markilo",
+    "risk": "low",
+    "comparisons": [
+      {
+        "candidate": "Markilo",
+        "other": "Gemini CLI",
+        "score": 0.595,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.222,
+          "jaroWinkler": 0.587,
+          "sound": 0.444,
+          "skeleton": 0.6,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Brandmark icon",
+        "score": 0.589,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.462,
+          "jaroWinkler": 0.717,
+          "sound": 0.462,
+          "skeleton": 0.333,
+          "sharedStem": "mark"
+        },
+        "reasons": [
+          "Shares the stem \"mark\"."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Vercel",
+        "score": 0.543,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.286,
+          "jaroWinkler": 0.54,
+          "sound": 0.571,
+          "skeleton": 0.5,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Gemini CLI icon",
+        "score": 0.508,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.231,
+          "jaroWinkler": 0.626,
+          "sound": 0.417,
+          "skeleton": 0.429,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Aider (site logo)",
+        "score": 0.47,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.308,
+          "jaroWinkler": 0.633,
+          "sound": 0.417,
+          "skeleton": 0.333,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Figma AI icon",
+        "score": 0.442,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.364,
+          "jaroWinkler": 0.52,
+          "sound": 0.375,
+          "skeleton": 0.2,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Claude Code",
+        "score": 0.422,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.2,
+          "jaroWinkler": 0.465,
+          "sound": 0.444,
+          "skeleton": 0.2,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Looka",
+        "score": 0.407,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.143,
+          "jaroWinkler": 0.448,
+          "sound": 0.429,
+          "skeleton": 0.25,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Cursor",
+        "score": 0.407,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.143,
+          "jaroWinkler": 0.54,
+          "sound": 0.429,
+          "skeleton": 0.25,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Continue",
+        "score": 0.407,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.125,
+          "jaroWinkler": 0.423,
+          "sound": 0.429,
+          "skeleton": 0,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      }
+    ],
+    "pronunciation": [],
+    "registryConflicts": []
+  },
+  "trademark": {
+    "suggestedClasses": [
+      9,
+      42,
+      41
+    ],
+    "classReasons": [
+      "from brief"
+    ],
+    "registries": [
+      {
+        "name": "WIPO Global Brand Database",
+        "url": "https://branddb.wipo.int/",
+        "how": "Search \"Brand name\" with the fuzzy/phonetic strategy, then filter by Nice class. Also try the image search with the symbol PNG."
+      },
+      {
+        "name": "TMview (EUIPO and partner offices)",
+        "url": "https://www.tmdn.org/tmview/",
+        "how": "Search the name, enable \"similar\" matching, filter by Nice class and status \"registered\" or \"filed\"."
+      },
+      {
+        "name": "USPTO Trademark Search",
+        "url": "https://tmsearch.uspto.gov/",
+        "how": "Use the wordmark field with wildcards (e.g. nimbr*) and review live marks in the relevant classes."
+      },
+      {
+        "name": "TÜRKPATENT Marka Araştırma",
+        "url": "https://www.turkpatent.gov.tr/arastirma-yap?form=trademark",
+        "how": "Search the brand text and review results in the selected Nice classes."
+      },
+      {
+        "name": "UK IPO trade mark search",
+        "url": "https://trademarks.ipo.gov.uk/ipo-tmtext",
+        "how": "Search by word, then filter by class."
+      }
+    ]
+  },
+  "limitations": [
+    "Compared against 41 reference mark(s) collected for this brand; marks outside that set were not compared.",
+    "Absence of similar results is not evidence that the design or name is unique or registrable.",
+    "Automated similarity measures shape, composition, structure and color. Conceptual similarity (same idea drawn differently) needs human review.",
+    "This report is not legal advice and is not a trademark clearance search. Consult a trademark attorney before adoption.",
+    "No registry searches have been logged yet (markilo profile add-source --type registry ...)."
+  ]
+}

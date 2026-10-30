@@ -1,0 +1,8 @@
+{"grid":64,"idea":"A square selection frame opened at the base: its two sides and a stem dropped from the top edge become the three legs of an m, so the frame is the letter.",
+"params":{"w":100},
+"defs":{"frame":{"rect":{"c":[512,512],"w":700,"h":640,"r":[150,150,0,0]}}},
+"layers":[
+{"name":"body","fill":"primary","shape":{"subtract":[{"ref":"frame"},{"rect":{"c":[512,490],"w":500,"h":540,"r":[90,90,0,0]}},{"rect":{"c":[512,850],"w":700,"h":260}}]}},
+{"name":"stem","fill":"primary","shape":{"rect":{"c":[512,640],"w":"w","h":380}}},
+{"name":"handle","fill":"accent","shape":{"rect":{"c":[512,775],"w":"w","h":"w"}}}
+],"fit":0.08}

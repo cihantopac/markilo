@@ -1,0 +1,338 @@
+{
+  "spec": "a2.json",
+  "paper": "#f6f6f4",
+  "variants": [
+    {
+      "id": "v11",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.9,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.4,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Anthropic (company A mark)",
+        "visual": 0.413,
+        "risk": "low"
+      },
+      "score": 0.702,
+      "params": {
+        "c": 130,
+        "gap": 52,
+        "w": 130
+      },
+      "warnings": []
+    },
+    {
+      "id": "v03",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.9,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.411,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Anthropic (company A mark)",
+        "visual": 0.406,
+        "risk": "low"
+      },
+      "score": 0.7,
+      "params": {
+        "c": 80,
+        "gap": 52,
+        "w": 130
+      },
+      "warnings": []
+    },
+    {
+      "id": "v07",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.9,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.405,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Anthropic (company A mark)",
+        "visual": 0.416,
+        "risk": "low"
+      },
+      "score": 0.7,
+      "params": {
+        "c": 110,
+        "gap": 52,
+        "w": 130
+      },
+      "warnings": []
+    },
+    {
+      "id": "v04",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.93,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.446,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Anthropic (company A mark)",
+        "visual": 0.421,
+        "risk": "low"
+      },
+      "score": 0.699,
+      "params": {
+        "c": 80,
+        "gap": 52,
+        "w": 146
+      },
+      "warnings": []
+    },
+    {
+      "id": "v08",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.93,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.44,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Anthropic (company A mark)",
+        "visual": 0.443,
+        "risk": "low"
+      },
+      "score": 0.696,
+      "params": {
+        "c": 110,
+        "gap": 52,
+        "w": 146
+      },
+      "warnings": []
+    },
+    {
+      "id": "v09",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.89,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.406,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Anthropic (company A mark)",
+        "visual": 0.414,
+        "risk": "low"
+      },
+      "score": 0.695,
+      "params": {
+        "c": 130,
+        "gap": 40,
+        "w": 130
+      },
+      "warnings": []
+    },
+    {
+      "id": "v01",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.89,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.417,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Anthropic (company A mark)",
+        "visual": 0.407,
+        "risk": "low"
+      },
+      "score": 0.694,
+      "params": {
+        "c": 80,
+        "gap": 40,
+        "w": 130
+      },
+      "warnings": []
+    },
+    {
+      "id": "v05",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.89,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.411,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Anthropic (company A mark)",
+        "visual": 0.417,
+        "risk": "low"
+      },
+      "score": 0.693,
+      "params": {
+        "c": 110,
+        "gap": 40,
+        "w": 130
+      },
+      "warnings": []
+    },
+    {
+      "id": "v12",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 1,
+        "legibility16": 0.92,
+        "failing": [
+          "Thinnest detail at 16 px: Thin strokes/gaps are ~0.63 px wide at 16 px (≥ 1.2 px stays crisp)."
+        ]
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.435,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Anthropic (company A mark)",
+        "visual": 0.429,
+        "risk": "low"
+      },
+      "score": 0.476,
+      "params": {
+        "c": 130,
+        "gap": 52,
+        "w": 146
+      },
+      "warnings": []
+    },
+    {
+      "id": "v02",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 1,
+        "legibility16": 0.92,
+        "failing": [
+          "Thinnest detail at 16 px: Thin strokes/gaps are ~0.67 px wide at 16 px (≥ 1.2 px stays crisp)."
+        ]
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.453,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Anthropic (company A mark)",
+        "visual": 0.422,
+        "risk": "low"
+      },
+      "score": 0.473,
+      "params": {
+        "c": 80,
+        "gap": 40,
+        "w": 146
+      },
+      "warnings": []
+    },
+    {
+      "id": "v10",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 1,
+        "legibility16": 0.91,
+        "failing": [
+          "Thinnest detail at 16 px: Thin strokes/gaps are ~0.67 px wide at 16 px (≥ 1.2 px stays crisp)."
+        ]
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.442,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Anthropic (company A mark)",
+        "visual": 0.429,
+        "risk": "low"
+      },
+      "score": 0.47,
+      "params": {
+        "c": 130,
+        "gap": 40,
+        "w": 146
+      },
+      "warnings": []
+    },
+    {
+      "id": "v06",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 1,
+        "legibility16": 0.92,
+        "failing": [
+          "Thinnest detail at 16 px: Thin strokes/gaps are ~0.67 px wide at 16 px (≥ 1.2 px stays crisp)."
+        ]
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.447,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Anthropic (company A mark)",
+        "visual": 0.454,
+        "risk": "low"
+      },
+      "score": 0.466,
+      "params": {
+        "c": 110,
+        "gap": 40,
+        "w": 146
+      },
+      "warnings": []
+    }
+  ]
+}

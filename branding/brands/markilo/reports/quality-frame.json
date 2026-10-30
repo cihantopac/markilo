@@ -1,0 +1,168 @@
+{
+  "subject": "frame/symbol.svg",
+  "role": "symbol",
+  "measuredAt": "2026-10-30T03:13:46.557Z",
+  "checks": [
+    {
+      "id": "symbol:svg-integrity",
+      "label": "symbol: Clean vector master",
+      "status": "pass",
+      "value": "0 errors, 0 warnings",
+      "message": "Pure vector, self-contained, scalable."
+    },
+    {
+      "id": "symbol:fidelity-16",
+      "label": "symbol: Legibility at 16 px",
+      "status": "pass",
+      "value": 0.93,
+      "message": "93% of the shape survives at 16 px (≥ 85% reads clearly)."
+    },
+    {
+      "id": "symbol:fidelity-32",
+      "label": "symbol: Legibility at 32 px",
+      "status": "pass",
+      "value": 0.89,
+      "message": "89% of the shape survives at 32 px (≥ 85% reads clearly)."
+    },
+    {
+      "id": "symbol:thin-detail",
+      "label": "symbol: Thinnest detail at 16 px",
+      "status": "warn",
+      "value": 1,
+      "message": "Thin strokes/gaps are ~1 px wide at 16 px (≥ 1.2 px stays crisp)."
+    },
+    {
+      "id": "symbol:balance",
+      "label": "symbol: Optical balance",
+      "status": "pass",
+      "value": 0,
+      "message": "Visual centroid sits 4% from center, slightly high, which reads as optically centered."
+    },
+    {
+      "id": "symbol:artboard-fit",
+      "label": "symbol: Artboard fit",
+      "status": "pass",
+      "value": 0.88,
+      "message": "Mark spans 88% of the artboard (80–98% keeps icon exports consistent)."
+    },
+    {
+      "id": "symbol:genericity",
+      "label": "symbol: Distinct from stock primitives",
+      "status": "pass",
+      "value": 0.43,
+      "message": "Closest stock shape is a rounded square at 43% overlap."
+    },
+    {
+      "id": "symbol:complexity",
+      "label": "symbol: Construction complexity",
+      "status": "pass",
+      "value": 28,
+      "message": "4 paths, 28 path commands, compactness 8.16."
+    },
+    {
+      "id": "symbol:monochrome",
+      "label": "symbol: One-color reproduction",
+      "status": "pass",
+      "value": 0,
+      "message": "Shapes stay separable in a single color."
+    },
+    {
+      "id": "symbol:ground-contrast",
+      "label": "symbol: Visible on its paper (#f5f3ee)",
+      "status": "pass",
+      "value": "16.27:1",
+      "message": "Reads on its own background (strongest color ≥ 3:1)."
+    },
+    {
+      "id": "symbol:contrast-14161f",
+      "label": "symbol: Contrast of #14161f",
+      "status": "info",
+      "value": "18.04:1 light / 1.03:1 dark",
+      "message": "Works on light grounds; use a reversed variant on the other."
+    },
+    {
+      "id": "symbol:contrast-c07000",
+      "label": "symbol: Contrast of #c07000",
+      "status": "pass",
+      "value": "3.78:1 light / 4.92:1 dark",
+      "message": "Meets the 3:1 non-text contrast guideline (WCAG 1.4.11) on light and dark grounds."
+    },
+    {
+      "id": "symbol:palette-separation",
+      "label": "symbol: Palette separation",
+      "status": "pass",
+      "value": 49.27,
+      "message": "Closest pair of colors differs by ΔE₀₀ 49.27. Under 20, shapes separated only by these colors blur together for many viewers; vary lightness too."
+    },
+    {
+      "id": "symbol:lightness-contrast",
+      "label": "symbol: Lightness contrast inside the mark",
+      "status": "pass",
+      "value": 101,
+      "message": "Lightness difference between brand colors (matters for grayscale print and color-vision deficiencies)."
+    },
+    {
+      "id": "wordmark:svg-integrity",
+      "label": "wordmark: Clean vector master",
+      "status": "pass",
+      "value": "0 errors, 0 warnings",
+      "message": "Pure vector, self-contained, scalable."
+    },
+    {
+      "id": "wordmark:complexity",
+      "label": "wordmark: Construction complexity",
+      "status": "pass",
+      "value": 132,
+      "message": "2 paths, 132 path commands, compactness 22.14."
+    },
+    {
+      "id": "wordmark:monochrome",
+      "label": "wordmark: One-color reproduction",
+      "status": "pass",
+      "value": 0,
+      "message": "Shapes stay separable in a single color."
+    },
+    {
+      "id": "wordmark:ground-contrast",
+      "label": "wordmark: Visible on its paper (#f5f3ee)",
+      "status": "pass",
+      "value": "3.41:1",
+      "message": "Reads on its own background (every color ≥ 3:1)."
+    },
+    {
+      "id": "wordmark:contrast-14161f",
+      "label": "wordmark: Contrast of #14161f",
+      "status": "info",
+      "value": "18.04:1 light / 1.03:1 dark",
+      "message": "Works on light grounds; use a reversed variant on the other."
+    },
+    {
+      "id": "wordmark:contrast-c07000",
+      "label": "wordmark: Contrast of #c07000",
+      "status": "pass",
+      "value": "3.78:1 light / 4.92:1 dark",
+      "message": "Meets the 3:1 non-text contrast guideline (WCAG 1.4.11) on light and dark grounds."
+    },
+    {
+      "id": "wordmark:palette-separation",
+      "label": "wordmark: Palette separation",
+      "status": "pass",
+      "value": 49.27,
+      "message": "Closest pair of colors differs by ΔE₀₀ 49.27. Under 20, shapes separated only by these colors blur together for many viewers; vary lightness too."
+    },
+    {
+      "id": "wordmark:lightness-contrast",
+      "label": "wordmark: Lightness contrast inside the mark",
+      "status": "pass",
+      "value": 101,
+      "message": "Lightness difference between brand colors (matters for grayscale print and color-vision deficiencies)."
+    }
+  ],
+  "summary": {
+    "pass": 19,
+    "warn": 1,
+    "fail": 0,
+    "info": 2
+  },
+  "note": "Measured technical checks. Brand fit, memorability, cultural fit and timelessness require visual review and are recorded as judgment."
+}

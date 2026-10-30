@@ -1,0 +1,8 @@
+{"grid":64,"idea":"An m drawn by two crop corners at different heights: the right arch has dropped one step below the left, and the pale stem between them is the selected edge that carries both.",
+"params":{"w":110,"gap":36,"top":300,"step":130,"over":0},
+"vary":{"w":[104,120],"gap":[32],"step":[110,160],"over":[0,70]},
+"layers":[
+{"name":"left","fill":"primary","shape":{"path":{"d":"M{150+w/2} 850V{top+w/2}H{512-w/2-gap}","width":"w","cap":"butt","join":"miter"}}},
+{"name":"right","fill":"primary","shape":{"path":{"d":"M{874-w/2} 850V{top+step+w/2}H{512+w/2+gap}","width":"w","cap":"butt","join":"miter"}}},
+{"name":"stem","fill":"accent","shape":{"rect":{"x":"512-w/2","y":"top-over","w":"w","h":"850-top+over"}}}
+],"fit":0.06}

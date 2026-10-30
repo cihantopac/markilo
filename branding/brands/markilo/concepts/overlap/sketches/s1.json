@@ -1,0 +1,5 @@
+{"idea":"Two identical arches, one nudged sideways: where they overlap the second knocks the first out, so the gap is the proof they differ, and the pair reads as an m.",
+"params":{"w":110,"gap":30,"dx":150},
+"defs":{"A":{"path":{"d":"M330 800L330 520A150 150 0 0 1 630 520L630 800","width":"w","cap":"butt","join":"round"}},
+"B":{"path":{"d":"M330 800L330 520A150 150 0 0 1 630 520L630 800","width":"w","cap":"butt","join":"round"},"move":["dx",0]}},
+"layers":[{"name":"a","fill":"primary","shape":{"gap":{"shape":{"ref":"A"},"cut":{"ref":"B"},"width":"gap"}}},{"name":"b","fill":"accent","shape":{"ref":"B"}}],"fit":0.08}

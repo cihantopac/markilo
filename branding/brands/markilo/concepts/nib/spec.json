@@ -1,0 +1,11 @@
+{"idea":"An m cut once by a chisel: a single clean angled cut through upright stems, and the cut face is the accent.",
+"grid":64,
+"params":{"s":0.36,"h":34,"g":52,"yc":620},
+"vary":{"s":[0.2,0.3],"h":[56,72],"yc":[600,640]},
+"defs":{"m":{"glyph":{"text":"m","font":"manrope","weight":700,"height":620,"c":[512,512]}},
+"cutb":{"polygon":{"points":[[0,"yc+s*512-h-g"],[1024,"yc-s*512-h-g"],[1024,"yc-s*512+h+g"],[0,"yc+s*512+h+g"]]}},
+"face":{"polygon":{"points":[[0,"yc+s*512-h"],[1024,"yc-s*512-h"],[1024,"yc-s*512+h"],[0,"yc+s*512+h"]]}}},
+"layers":[
+{"name":"m","fill":"primary","shape":{"subtract":[{"ref":"m"},{"ref":"cutb"}]}},
+{"name":"face","fill":"accent","shape":{"intersect":[{"ref":"m"},{"ref":"face"}]}}],
+"fit":0.06}

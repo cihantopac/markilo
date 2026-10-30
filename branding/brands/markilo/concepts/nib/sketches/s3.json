@@ -1,0 +1,6 @@
+{"idea":"An m written with a broad nib: every stroke ends in the same slanted cut, and the last stem is still wet, the accent.",
+"grid":64,
+"defs":{"m":{"intersect":[{"union":[{"rect":{"x":240,"y":330,"w":120,"h":620}},{"rect":{"x":452,"y":430,"w":120,"h":520}},{"rect":{"x":664,"y":430,"w":120,"h":520}},{"arc":{"c":[406,436],"r":106,"from":-90,"to":90,"width":120,"cap":"butt"}},{"arc":{"c":[618,436],"r":106,"from":-90,"to":90,"width":120,"cap":"butt"}}]},{"polygon":{"points":[[150,0],[900,0],[900,700],[150,860]]}}]},
+"wet":{"polygon":{"points":[[640,436],[900,436],[900,1000],[640,1000]]}}},
+"layers":[{"name":"m","fill":"primary","shape":{"gap":{"shape":{"ref":"m"},"cut":{"ref":"wet"},"width":14}}},
+{"name":"wet","fill":"accent","shape":{"intersect":[{"ref":"m"},{"ref":"wet"}]}}],"fit":0.06}

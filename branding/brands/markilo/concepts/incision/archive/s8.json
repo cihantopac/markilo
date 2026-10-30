@@ -1,0 +1,93 @@
+{
+ "grid": 64,
+ "idea": "One cut through the middle stem splits the m into two n's: the letter is a pair of arches, and the second half is the one crimson edge.",
+ "params": {
+  "a": 12,
+  "cw": 120,
+  "ew": 30,
+  "eg": 0
+ },
+ "defs": {
+  "g": {
+   "glyph": {
+    "text": "m",
+    "font": "sora",
+    "weight": 800,
+    "height": 560,
+    "c": [
+     512,
+     540
+    ]
+   }
+  },
+  "cut": {
+   "rect": {
+    "c": [
+     617,
+     540
+    ],
+    "w": "cw",
+    "h": 1400
+   },
+   "rotate": 12
+  },
+  "edge": {
+   "rect": {
+    "c": [
+     617,
+     540
+    ],
+    "w": "ew",
+    "h": 1400
+   },
+   "rotate": 12,
+   "move": [
+    "cos(a)*(cw/2+ew/2+10)",
+    "sin(a)*(cw/2+ew/2+10)"
+   ]
+  }
+ },
+ "layers": [
+  {
+   "name": "m",
+   "fill": "primary",
+   "shape": {
+    "subtract": [
+     {
+      "ref": "g"
+     },
+     {
+      "rect": {
+       "c": [
+        617,
+        540
+       ],
+       "w": "cw+20+ew",
+       "h": 1400
+      },
+      "rotate": 12,
+      "move": [
+       "cos(a)*(ew/2+10)",
+       "sin(a)*(ew/2+10)"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "edge",
+   "fill": "accent",
+   "shape": {
+    "intersect": [
+     {
+      "ref": "g"
+     },
+     {
+      "ref": "edge"
+     }
+    ]
+   }
+  }
+ ],
+ "fit": 0.06
+}

@@ -1,0 +1,9 @@
+{"idea":"A solid block with two arched slots cut from below: the m is the empty space between legs, and a single amber tick sits in the slot like a gauge needle at rest.",
+"grid":64,
+"layers":[
+ {"name":"block","fill":"primary","shape":{"subtract":[
+   {"rect":{"x":172,"y":232,"w":680,"h":560,"r":[96,96,0,0]}},
+   {"rect":{"x":340,"y":456,"w":112,"h":400,"r":[56,56,0,0]}},
+   {"rect":{"x":572,"y":456,"w":112,"h":400,"r":[56,56,0,0]}}]}},
+ {"name":"needle","fill":"accent","shape":{"rect":{"x":384,"y":600,"w":24,"h":192}}}
+]}

@@ -2,26 +2,139 @@
   "schema": "markilo/brief@1",
   "brand": "markilo",
   "name": "Markilo",
-  "mode": "new",
-  "oneLiner": "Open-source AI brand identity studio for Claude Code",
+  "mode": "redesign",
+  "oneLiner": "Open-source brand identity studio that runs inside Claude Code: research, originality evidence, geometry-compiled SVG marks, verification and complete asset export.",
   "product": {
-    "type": "developer tool / Claude Code plugin",
-    "category": "design software",
-    "features": ["brand research", "originality analysis", "SVG logo design", "asset export"],
-    "platforms": ["macOS", "Windows", "Linux"]
+    "type": "developer tool (Claude Code plugin + local CLI)",
+    "category": "brand identity tooling",
+    "features": [
+      "10-stage workflow",
+      "competitor research",
+      "originality evidence",
+      "construction-spec geometry to SVG",
+      "measured verification",
+      "critic gate",
+      "asset export",
+      "offline gallery"
+    ],
+    "platforms": [
+      "Claude Code",
+      "CLI (Node)",
+      "GitHub",
+      "terminal"
+    ]
   },
   "audience": {
-    "primary": ["developers", "indie makers", "open-source maintainers"],
-    "secondary": ["designers", "small product teams"],
-    "markets": ["global"],
-    "languages": ["en"]
+    "primary": [
+      "developers",
+      "indie makers",
+      "founders",
+      "OSS maintainers"
+    ],
+    "secondary": [
+      "designers",
+      "small teams"
+    ],
+    "markets": [
+      "global"
+    ],
+    "languages": [
+      "en"
+    ]
   },
   "positioning": {
-    "values": ["craft", "honesty", "originality", "openness"],
-    "personality": ["precise", "creative", "trustworthy", "energetic"],
-    "tone": "confident, plain-spoken"
+    "values": [
+      "local-first",
+      "deterministic",
+      "honest about limits",
+      "no invented facts",
+      "evidence over claims"
+    ],
+    "differentiators": [
+      "evidence-backed originality",
+      "deterministic geometry",
+      "complete asset export"
+    ],
+    "personality": [
+      "precise",
+      "honest",
+      "crafted",
+      "calm"
+    ],
+    "tone": "Precise and honest with a touch of craft; not playful, not magic."
   },
+  "competitors": [
+    {
+      "name": "Looka",
+      "url": "https://looka.com"
+    },
+    {
+      "name": "Brandmark",
+      "url": "https://brandmark.io"
+    },
+    {
+      "name": "Designs.ai",
+      "url": "https://designs.ai"
+    },
+    {
+      "name": "Canva",
+      "url": "https://www.canva.com/create/logos/"
+    },
+    {
+      "name": "RealFaviconGenerator",
+      "url": "https://realfavicongenerator.net"
+    },
+    {
+      "name": "Claude Code",
+      "url": "https://www.anthropic.com/claude-code"
+    },
+    {
+      "name": "Cursor",
+      "url": "https://cursor.com"
+    },
+    {
+      "name": "GitHub Copilot",
+      "url": "https://github.com/features/copilot"
+    },
+    {
+      "name": "Windsurf",
+      "url": "https://windsurf.com"
+    },
+    {
+      "name": "Aider",
+      "url": "https://aider.chat"
+    }
+  ],
+  "niceClasses": [
+    9,
+    42,
+    41
+  ],
   "constraints": {
-    "avoid": ["generic AI sparkles", "pen-tool bezier clichés", "indigo gradient SaaS look"]
-  }
+    "mustKeep": [
+      "name Markilo",
+      "lowercase grotesk wordmark; one or two letters may carry the idea"
+    ],
+    "avoid": [
+      "sparkle / asterisk / radial burst",
+      "Claude-adjacent coral",
+      "hexagon / cube",
+      ">_ prompt",
+      "gradients",
+      "mascots",
+      "monospace wordmark",
+      "anything resembling an Anthropic product"
+    ],
+    "typography": [
+      "lowercase grotesk wordmark"
+    ]
+  },
+  "deliverables": [
+    "logos",
+    "web",
+    "social",
+    "tokens",
+    "guidelines"
+  ],
+  "notes": "Color: one warm accent used sparingly, clearly away from Claude coral (red-leaning vermilion or other warm hue), contrast must pass. Current identity (crop corners + #f45d2c, Space Grotesk 700) is evaluated as one candidate unchanged. 3-5 new directions; at most one may evolve the corner-bracket/crop-mark idea. Both light and dark grounds first-class (GitHub README light+dark, Claude Code UI, terminals). Square appmark = symbol only. Tagline: keep 'Brand identities, researched and verified' unless stronger. Trademark registry search NOT performed; owner decides risk at finalize."
 }

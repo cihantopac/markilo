@@ -1,0 +1,168 @@
+{
+  "spec": "a.json",
+  "paper": "#f5f3ee",
+  "variants": [
+    {
+      "id": "v02",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.94,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.397,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "RealFaviconGenerator",
+        "visual": 0.407,
+        "risk": "low"
+      },
+      "score": 0.722,
+      "params": {
+        "w": 100,
+        "gap": 40
+      },
+      "warnings": []
+    },
+    {
+      "id": "v04",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.92,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.438,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "RealFaviconGenerator",
+        "visual": 0.439,
+        "risk": "low"
+      },
+      "score": 0.693,
+      "params": {
+        "w": 112,
+        "gap": 40
+      },
+      "warnings": []
+    },
+    {
+      "id": "v06",
+      "quality": {
+        "pass": 12,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.9,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.476,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "RealFaviconGenerator",
+        "visual": 0.478,
+        "risk": "low"
+      },
+      "score": 0.663,
+      "params": {
+        "w": 124,
+        "gap": 40
+      },
+      "warnings": []
+    },
+    {
+      "id": "v01",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 1,
+        "legibility16": 0.93,
+        "failing": [
+          "Thinnest detail at 16 px: Thin strokes/gaps are ~0.5 px wide at 16 px (≥ 1.2 px stays crisp)."
+        ]
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.405,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "RealFaviconGenerator",
+        "visual": 0.439,
+        "risk": "low"
+      },
+      "score": 0.487,
+      "params": {
+        "w": 100,
+        "gap": 28
+      },
+      "warnings": []
+    },
+    {
+      "id": "v03",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 1,
+        "legibility16": 0.93,
+        "failing": [
+          "Thinnest detail at 16 px: Thin strokes/gaps are ~0.5 px wide at 16 px (≥ 1.2 px stays crisp)."
+        ]
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.446,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "RealFaviconGenerator",
+        "visual": 0.46,
+        "risk": "low"
+      },
+      "score": 0.47,
+      "params": {
+        "w": 112,
+        "gap": 28
+      },
+      "warnings": []
+    },
+    {
+      "id": "v05",
+      "quality": {
+        "pass": 12,
+        "warn": 0,
+        "fail": 1,
+        "legibility16": 0.92,
+        "failing": [
+          "Thinnest detail at 16 px: Thin strokes/gaps are ~0.63 px wide at 16 px (≥ 1.2 px stays crisp)."
+        ]
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.485,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "RealFaviconGenerator",
+        "visual": 0.487,
+        "risk": "low"
+      },
+      "score": 0.447,
+      "params": {
+        "w": 124,
+        "gap": 28
+      },
+      "warnings": []
+    }
+  ]
+}

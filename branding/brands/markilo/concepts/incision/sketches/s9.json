@@ -1,0 +1,13 @@
+{
+ "grid": 64,
+ "idea": "A V-shaped bite taken from the first shoulder: the letter loses a wedge of itself, like a sample cut from stock.",
+ "params": {},
+ "defs": {
+  "g": { "glyph": { "text": "m", "font": "sora", "weight": 800, "height": 430, "c": [512, 545] } },
+  "w": { "polygon": { "points": [[411, 450], [335, 320], [487, 320]] } }
+ },
+ "layers": [
+  { "name": "m", "fill": "primary", "shape": { "subtract": [ { "ref": "g" }, { "ref": "w" } ] } }
+ ],
+ "fit": 0.06
+}

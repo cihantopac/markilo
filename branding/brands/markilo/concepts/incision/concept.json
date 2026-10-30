@@ -1,0 +1,37 @@
+{
+  "schema": "markilo/concept@1",
+  "id": "incision",
+  "brand": "markilo",
+  "title": "Incision",
+  "direction": "Letter-led: a lowercase m scored by one precise diagonal cut, one half shifted",
+  "rationale": "Cut-and-shift on the initial: a clean incision as the maker's mark and the sign of exact work; wordmark repeats the cut in one letter.",
+  "semantics": [
+    "m",
+    "cut",
+    "precision",
+    "craft"
+  ],
+  "palette": {
+    "primary": "#14161f",
+    "accent": "#d7263d",
+    "ink": "#14161f",
+    "paper": "#f5f3ee"
+  },
+  "typography": {
+    "fontId": "sora",
+    "weight": 700,
+    "family": "Sora",
+    "license": "OFL-1.1"
+  },
+  "files": {
+    "symbol": "symbol.svg"
+  },
+  "status": "rejected",
+  "createdAt": "2026-10-30T02:56:45.693Z",
+  "updatedAt": "2026-10-30T03:06:21.611Z",
+  "sketchReview": {
+    "pick": null,
+    "notes": "Third pass, still none. s9-s11 read as an m with a nick or a stray triangle; the cut is a small detail that vanishes at 16 px and is the generic bitten/notched-letter device. s11 drifts toward r+n. Distinctiveness about 4, memorability about 5; no developed variant is likely to reach 7. Drop the direction; try a concept whose idea is structural, not a surface cut.",
+    "at": "2026-10-30T03:06:14.472Z"
+  }
+}

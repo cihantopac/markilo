@@ -1,0 +1,127 @@
+{
+  "concept": "overlap",
+  "paper": "#f6f6f4",
+  "sketches": [
+    {
+      "id": "s1",
+      "quality": {
+        "pass": 11,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.88,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "circle",
+        "similarity": 0.68,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandmark icon",
+        "visual": 0.498,
+        "risk": "low"
+      },
+      "score": 0.587,
+      "warnings": [],
+      "caption": "Two identical arches, one nudged sideways: where they overlap the second knocks the first out, so the gap is the proof they differ, and the pair reads as an m."
+    },
+    {
+      "id": "s2",
+      "quality": {
+        "pass": 10,
+        "warn": 1,
+        "fail": 1,
+        "legibility16": 0.79,
+        "failing": [
+          "Thinnest detail at 16 px: Thin strokes/gaps are ~0.38 px wide at 16 px (≥ 1.2 px stays crisp)."
+        ]
+      },
+      "genericity": {
+        "closest": "shield",
+        "similarity": 0.452,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Aider (GitHub org avatar)",
+        "visual": 0.356,
+        "risk": "low"
+      },
+      "score": 0.401,
+      "warnings": [],
+      "caption": "The letter m stamped twice and offset; the sliver where the two copies agree is the accent, everything else is the difference."
+    },
+    {
+      "id": "s3",
+      "quality": {
+        "pass": 11,
+        "warn": 1,
+        "fail": 0,
+        "legibility16": 0.89,
+        "failing": []
+      },
+      "genericity": {
+        "closest": "hexagon",
+        "similarity": 0.437,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Brandfetch",
+        "visual": 0.412,
+        "risk": "low"
+      },
+      "score": 0.686,
+      "warnings": [],
+      "caption": "One m cut by a hairline diagonal and the lower half slid a notch: a misregistration, proof the copy does not line up."
+    },
+    {
+      "id": "s4",
+      "quality": {
+        "pass": 11,
+        "warn": 0,
+        "fail": 1,
+        "legibility16": 0.86,
+        "failing": [
+          "Thinnest detail at 16 px: Thin strokes/gaps are ~0.5 px wide at 16 px (≥ 1.2 px stays crisp)."
+        ]
+      },
+      "genericity": {
+        "closest": "ring",
+        "similarity": 0.584,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Looka (favicon)",
+        "visual": 0.389,
+        "risk": "low"
+      },
+      "score": 0.415,
+      "warnings": [],
+      "caption": "Two outlined arch-pairs, one offset, drawn as contours: the lines that coincide become one heavy stroke, the lines that miss stay thin, a visible diff."
+    },
+    {
+      "id": "s5",
+      "quality": {
+        "pass": 10,
+        "warn": 1,
+        "fail": 1,
+        "legibility16": 0.95,
+        "failing": [
+          "Thinnest detail at 16 px: Thin strokes/gaps are ~0.25 px wide at 16 px (≥ 1.2 px stays crisp)."
+        ]
+      },
+      "genericity": {
+        "closest": "rounded square",
+        "similarity": 0.823,
+        "level": "distinct"
+      },
+      "closestReference": {
+        "name": "Gemini CLI icon",
+        "visual": 0.506,
+        "risk": "low"
+      },
+      "score": 0.324,
+      "warnings": [],
+      "caption": "A solid block with two offset arch-pair windows punched through; where the two windows agree, an accent core remains, so the m is read from the emptiness and the overlap."
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{"idea":"The letter m stamped twice and offset; the sliver where the two copies agree is the accent, everything else is the difference.",
+"params":{"dx":120,"gap":34},
+"defs":{"A":{"glyph":{"text":"m","font":"dm-sans","weight":700,"height":480,"c":[512,512]}},
+"B":{"glyph":{"text":"m","font":"dm-sans","weight":700,"height":480,"c":[512,512]},"move":["dx",0]}},
+"layers":[{"name":"diff","fill":"primary","shape":{"gap":{"shape":{"xor":[{"ref":"A"},{"ref":"B"}]},"cut":{"intersect":[{"ref":"A"},{"ref":"B"}]},"width":"gap"}}},{"name":"same","fill":"accent","shape":{"intersect":[{"ref":"A"},{"ref":"B"}]}}],"fit":0.08}

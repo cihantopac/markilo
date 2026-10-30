@@ -1,0 +1,9 @@
+{"idea":"An m drawn as one continuous round-capped line standing on a ruler: the long graduations sit under the legs, short ones between, so the letter is a reading taken against a scale.",
+"grid":64,
+"layers":[
+ {"name":"line","fill":"primary","shape":{"path":{"d":"M220 730L220 280M220 470A140 140 0 0 1 500 470L500 730M500 470A140 140 0 0 1 780 470L780 730","width":88,"cap":"butt","join":"miter"}}},
+ {"name":"ticks","fill":"accent","shape":{"union":[
+   {"rect":{"x":196,"y":790,"w":48,"h":140,"r":24}},{"rect":{"x":289,"y":790,"w":44,"h":80,"r":22}},{"rect":{"x":383,"y":790,"w":44,"h":80,"r":22}},
+   {"rect":{"x":476,"y":790,"w":48,"h":140,"r":24}},{"rect":{"x":569,"y":790,"w":44,"h":80,"r":22}},{"rect":{"x":663,"y":790,"w":44,"h":80,"r":22}},
+   {"rect":{"x":756,"y":790,"w":48,"h":140,"r":24}}]}}
+]}

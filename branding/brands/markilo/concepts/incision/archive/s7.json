@@ -1,0 +1,88 @@
+{
+ "grid": 64,
+ "idea": "A wide incision parts the m and the right half slides along the cut, a freshly separated piece that still belongs to its letter.",
+ "params": {
+  "a": 24,
+  "cw": 110,
+  "sh": 90
+ },
+ "defs": {
+  "g": {
+   "glyph": {
+    "text": "m",
+    "font": "sora",
+    "weight": 800,
+    "height": 540,
+    "c": [
+     512,
+     540
+    ]
+   }
+  },
+  "left": {
+   "rect": {
+    "c": [
+     407,
+     540
+    ],
+    "w": 1400,
+    "h": 1400
+   },
+   "rotate": 24,
+   "move": [
+    "-cos(a)*(700+cw/2)",
+    "-sin(a)*(700+cw/2)"
+   ]
+  },
+  "right": {
+   "rect": {
+    "c": [
+     407,
+     540
+    ],
+    "w": 1400,
+    "h": 1400
+   },
+   "rotate": 24,
+   "move": [
+    "cos(a)*(700+cw/2)",
+    "sin(a)*(700+cw/2)"
+   ]
+  }
+ },
+ "layers": [
+  {
+   "name": "left",
+   "fill": "primary",
+   "shape": {
+    "intersect": [
+     {
+      "ref": "g"
+     },
+     {
+      "ref": "left"
+     }
+    ]
+   }
+  },
+  {
+   "name": "right",
+   "fill": "accent",
+   "shape": {
+    "intersect": [
+     {
+      "ref": "g"
+     },
+     {
+      "ref": "right"
+     }
+    ],
+    "move": [
+     "-sin(a)*sh",
+     "cos(a)*sh"
+    ]
+   }
+  }
+ ],
+ "fit": 0.06
+}

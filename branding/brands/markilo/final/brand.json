@@ -2,7 +2,7 @@
   "schema": "markilo/kit@1",
   "brand": "markilo",
   "name": "Markilo",
-  "concept": "crop",
+  "concept": "overlap",
   "locked": false,
   "files": {
     "symbol": "symbol.svg",
@@ -12,17 +12,32 @@
     "lockupCompact": "lockup-compact.svg"
   },
   "palette": {
-    "primary": "#f45d2c",
-    "ink": "#14161f",
-    "paper": "#ffffff",
-    "dark": "#120c0a"
+    "primary": "#101218",
+    "accent": "#d12c12",
+    "ink": "#101218",
+    "paper": "#f6f6f4",
+    "dark": "#0b0d13"
   },
   "typography": {
-    "fontId": "space-grotesk",
+    "fontId": "dm-sans",
     "weight": 700,
-    "family": "Space Grotesk",
+    "family": "DM Sans",
     "license": "OFL-1.1"
   },
   "tagline": "Brand identities, researched and verified",
-  "approvedAt": "2026-10-29T23:55:33.109Z"
+  "notes": [
+    "Use the vermilion only for the mark's stem and small highlights; never as an error, warning or diff color."
+  ],
+  "approvedAt": "2026-10-30T03:32:02.367Z",
+  "originality": {
+    "verdict": "insufficient-evidence",
+    "confidence": "low",
+    "acceptedRisk": true,
+    "report": "../reports/originality-overlap.md",
+    "evidence": {
+      "visual": "37 reference mark(s): 32 direct competitor, 5 category/form-family",
+      "registry": "no registry searches logged for \"Markilo\"",
+      "registryCoverage": "none"
+    }
+  }
 }

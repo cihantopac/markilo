@@ -1,0 +1,72 @@
+{
+  "grid": 64,
+  "idea": "The middle leg of the m is an i: the crop bracket frames a square dot and a stem, so m contains the brand's own i-dot.",
+  "params": {
+    "w": 112,
+    "gap": 52,
+    "top": 260,
+    "foot": 840
+  },
+  "vary": {
+    "w": [
+      100,
+      112,
+      124
+    ],
+    "gap": [
+      28,
+      40
+    ]
+  },
+  "layers": [
+    {
+      "name": "left",
+      "fill": "primary",
+      "shape": {
+        "path": {
+          "d": "M{150+w/2} {foot}V{top+w/2}H{512-w/2-gap}",
+          "width": "w",
+          "cap": "butt",
+          "join": "miter"
+        }
+      }
+    },
+    {
+      "name": "right",
+      "fill": "primary",
+      "shape": {
+        "path": {
+          "d": "M{874-w/2} {foot}V{top+w/2}H{512+w/2+gap}",
+          "width": "w",
+          "cap": "butt",
+          "join": "miter"
+        }
+      }
+    },
+    {
+      "name": "dot",
+      "fill": "accent",
+      "shape": {
+        "rect": {
+          "x": "512-w/2",
+          "y": "top",
+          "w": "w",
+          "h": "w"
+        }
+      }
+    },
+    {
+      "name": "stem",
+      "fill": "accent",
+      "shape": {
+        "rect": {
+          "x": "512-w/2",
+          "y": "top+w+gap",
+          "w": "w",
+          "h": "foot-top-w-gap"
+        }
+      }
+    }
+  ],
+  "fit": 0.06
+}

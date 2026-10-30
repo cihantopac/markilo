@@ -1,0 +1,8 @@
+{"grid":64,"idea":"A single crop corner that has been dragged: an m whose stem stays pinned and whole while both arches are sliced off the frame and shifted in opposite directions.",
+"params":{"w":110,"gap":36,"top":300,"sh":70},
+"vary":{"w":[100,116],"gap":[28,40],"sh":[50,90]},
+"layers":[
+{"name":"left","fill":"primary","shape":{"path":{"d":"M{150+w/2} {850-sh}V{top+sh+w/2}H{512-w/2-gap}","width":"w","cap":"butt","join":"miter"}}},
+{"name":"right","fill":"primary","shape":{"path":{"d":"M{874-w/2} {850+sh}V{top-sh+w/2}H{512+w/2+gap}","width":"w","cap":"butt","join":"miter"}}},
+{"name":"stem","fill":"accent","shape":{"rect":{"x":"512-w/2","y":"top","w":"w","h":"850-top"}}}
+],"fit":0.06}

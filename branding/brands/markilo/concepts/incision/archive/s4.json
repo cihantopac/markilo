@@ -1,0 +1,63 @@
+{
+ "grid": 64,
+ "idea": "The m is opened along its shared middle stem: one vertical incision splits it, and the right half drops a notch, so the two arches no longer agree.",
+ "params": {},
+ "defs": {
+  "m": {
+   "glyph": {
+    "text": "m",
+    "font": "sora",
+    "weight": 700,
+    "height": 430,
+    "c": [
+     512,
+     545
+    ]
+   }
+  },
+  "c": {
+   "rect": {
+    "x": 512,
+    "y": 200,
+    "w": 600,
+    "h": 700
+   }
+  }
+ },
+ "layers": [
+  {
+   "name": "l",
+   "fill": "primary",
+   "shape": {
+    "gap": {
+     "shape": {
+      "ref": "m"
+     },
+     "cut": {
+      "ref": "c"
+     },
+     "width": 16
+    }
+   }
+  },
+  {
+   "name": "r",
+   "fill": "accent",
+   "shape": {
+    "intersect": [
+     {
+      "ref": "m"
+     },
+     {
+      "ref": "c"
+     }
+    ],
+    "move": [
+     0,
+     44
+    ]
+   }
+  }
+ ],
+ "fit": 0.06
+}

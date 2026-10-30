@@ -1,0 +1,8 @@
+{"idea":"A ruler segment: long-short-long-short-long graduations rise from a rail, and the three long ticks are the legs of an m joined by arched shoulders.",
+"grid":64,
+"layers":[
+ {"name":"m","fill":"primary","shape":{"path":{"d":"M232 720L232 440A140 140 0 0 1 512 440L512 720M512 440A140 140 0 0 1 792 440L792 720","width":96,"cap":"butt","join":"miter"}}},
+ {"name":"ticks","fill":"primary","shape":{"union":[{"rect":{"x":356,"y":640,"w":40,"h":80}},{"rect":{"x":628,"y":640,"w":40,"h":80}}]}},
+ {"name":"rail","fill":"primary","shape":{"rect":{"x":184,"y":760,"w":656,"h":48,"r":24}}},
+ {"name":"reading","fill":"accent","shape":{"rect":{"x":492,"y":600,"w":40,"h":120}}}
+]}

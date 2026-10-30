@@ -12,9 +12,9 @@
 
 <p align="center">
   <a href="https://github.com/cihantopac/markilo/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/cihantopac/markilo/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-f45d2c"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-0.3.0--beta.6-14161f">
-  <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-14161f">
+  <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-d12c12"></a>
+  <img alt="Version" src="https://img.shields.io/badge/version-0.3.0--beta.7-101218">
+  <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-101218">
 </p>
 
 ---
@@ -24,10 +24,13 @@ Markilo is not a "generate a logo" prompt. It is a Claude Code plugin plus a det
 balance, contrast, one-color reproduction), **compares** them against competitors and each other, and
 **exports** a complete, platform-correct asset kit — all locally, with no servers, paid APIs or accounts.
 
-![Markilo's own identity, designed and exported with Markilo](assets/kit-overview.png)
+![Markilo's own identity: every logo file, exported by Markilo](assets/kit-overview.png)
 
-<sub>Markilo's own identity was designed through the same workflow: three directions, measured, critiqued, one finalized
-and exported (`branding/`).</sub>
+<sub>Markilo's identity was made by running Markilo on itself, end to end: repository and market research (64 sources,
+37 competitor and category marks), five new directions plus the previous identity, an early sketch review, an
+independent critic gate that only one concept passed (`overlap`: two arches sharing a vermilion stem), then finalize
+and export. Every image in this README and the plugin icon is an unedited Markilo export (`branding/`). No trademark
+registry search has been done yet; the guidelines say so.</sub>
 
 ## Highlights
 

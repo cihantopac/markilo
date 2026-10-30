@@ -1,0 +1,92 @@
+{
+  "schema": "markilo/concept@1",
+  "id": "frame",
+  "brand": "markilo",
+  "title": "Frame",
+  "direction": "Evolve the crop-mark idea: a selection frame whose open corners form a lowercase m",
+  "rationale": "A crop frame says 'this is the part that counts'; opened at the right corners it reads as an m. Evolution of the existing equity, not a copy.",
+  "semantics": [
+    "selection",
+    "crop",
+    "m",
+    "precision"
+  ],
+  "palette": {
+    "primary": "#14161f",
+    "accent": "#c07000",
+    "ink": "#14161f",
+    "paper": "#f5f3ee"
+  },
+  "typography": {
+    "fontId": "space-grotesk",
+    "weight": 700,
+    "family": "Space Grotesk",
+    "license": "OFL-1.1"
+  },
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg"
+  },
+  "status": "rejected",
+  "createdAt": "2026-10-30T02:56:44.977Z",
+  "updatedAt": "2026-10-30T03:16:48.455Z",
+  "sketchReview": {
+    "pick": "s1",
+    "notes": "Keep: two corner brackets facing each other become the m arches, bracket idea carries the letter. Fix: red stem is a tiny tick, enlarge or drop it; the arch silhouette is tunnel/magnet-like, sharpen shoulders (crop-mark squareness vs full round) to own it; avoid s3 which reads as ITI.",
+    "at": "2026-10-30T02:59:31.292Z"
+  },
+  "judgment": {
+    "brand-fit": {
+      "score": 7,
+      "rationale": "Evolves the crop-mark heritage into something precise; calm, technical, fits the tone"
+    },
+    "semantic-relevance": {
+      "score": 6,
+      "rationale": "i-in-m is clever on paper but the idea needs explaining; frame-as-crop still ties to the product"
+    },
+    "distinctiveness": {
+      "score": 6,
+      "rationale": "Bracket pair plus stem is more ownable than the generic focus glyph, but still near crop/viewfinder UI icons"
+    },
+    "memorability": {
+      "score": 5,
+      "rationale": "Reads as ri/rit or an 'rh' first; no single gesture sticks, m recognition needs a hint"
+    },
+    "simplicity": {
+      "score": 8,
+      "rationale": "Three-part mark, all orthogonal"
+    },
+    "balance": {
+      "score": 7,
+      "rationale": "Symmetric and calm; top-heavy open bottom feels slightly unsupported"
+    },
+    "craft": {
+      "score": 6,
+      "rationale": "Clean but the 1 px stem at 16 px and amber dot gap are fragile; brackets are plain rectangles"
+    },
+    "typography": {
+      "score": 7,
+      "rationale": "Grotesk wordmark with amber square i-dot echoes the symbol sensibly"
+    },
+    "color": {
+      "score": 6,
+      "rationale": "Amber #c07000 is clearly away from coral but dull ochre-brown; delta 17.7 only moderate"
+    },
+    "cultural-fit": {
+      "score": 7,
+      "rationale": "Neutral and global"
+    },
+    "timelessness": {
+      "score": 6,
+      "rationale": "Geometric, but bracket-glyph feels like UI trend"
+    },
+    "premium-perception": {
+      "score": 6,
+      "rationale": "Tidy yet generic-tech"
+    },
+    "versatility": {
+      "score": 6,
+      "rationale": "Mono works; 16 px tiny and loses the m reading"
+    }
+  }
+}
