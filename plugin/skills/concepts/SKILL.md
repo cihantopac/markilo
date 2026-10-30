@@ -16,7 +16,9 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    research skill first or ask the user. Refuse concept work for locked brands.
 2. Write 3–5 directions (idea sentence, metaphor, form language, typeface from `markilo fonts`, palette, why it fits,
    risks, and what a stranger would see first). At most one may draw the product's own object or the name's literal
-   noun, and only with a named transformation ("The product's own object is a cliché too" in design-principles.md). Share them briefly; proceed with the ones the user prefers (or all, if they said "just go").
+   noun, and only with a named transformation ("The product's own object is a cliché too" in design-principles.md);
+   at most one may be built on the name's initial, and at least one must have no letter and no object. Name each
+   direction's form language from the brief's adjectives. Share them briefly; proceed with the ones the user prefers (or all, if they said "just go").
 3. Sketch first: for each direction, a `markilo:concept-designer` agent in `sketch` mode (brand slug, concept id,
    direction text, brief summary, palette, typeface), in parallel. Then one `markilo:design-critic` agent does a
    **sketch review** of every board and records `--sketch-pick <id|none>`. Directions with `none` get one more sketch

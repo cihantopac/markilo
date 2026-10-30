@@ -6,6 +6,31 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0-rc.7] - 2026-10-30
+
+### Changed
+
+- The name's initial with a cut (split, sliced, offset, stepped or nested in a copy) is treated as the cliché it is:
+  the sketch review strikes it, the critic caps distinctiveness at 5 when it is the first reading, directions may use
+  it at most once and at least one direction must have no letter and no product object. It was 11 of the 15 marks
+  the Opus judge rejected (the rc.5 validation and its calibration).
+- Form language follows the brief's character: the design principles map adjectives (warm and handmade, precise,
+  calm, bold, premium) to construction choices; the sketch review strikes UI geometry for a handmade brand, and the
+  critic caps brand fit when the form contradicts the brief or a plausible misreading would hurt the product (a
+  gravestone for a sleep app).
+- The construction guide's worked example is framed as structure, not as a model idea (it is a letter; the judge
+  rated it 5.8), and the craft checklist asks for offsets that are zero or at least a unit and matching widths for
+  matching parts.
+
+### Added
+
+- `Fits a square icon` check: a symbol twice as wide as it is tall fills at most half of a square app icon or favicon.
+
+### Fixed
+
+- Same-colour layers that touch are merged into one shape: as separate paths they left a hairline seam where they met,
+  which the judge called sloppy construction. `construct` says when it merges.
+
 ## [0.4.0-rc.6] - 2026-10-30
 
 ### Added

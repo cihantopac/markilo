@@ -33,8 +33,10 @@ Steps:
    `concepts/<id>/sketches/s1.json … s5.json` — each a different _move_ from `construction.md` (letter carries the
    metaphor, negative space, interlock, cut and shift, truncation, single gesture, modular system, fold), not nudged
    copies. Give every spec an `"idea"`: what the eye catches at 32 px, then what it means (construction.md →
-   Process). Before writing any JSON, list 6–8 candidate ideas in one line each and keep the 3–5 whose hook you can
-   see in your head at 32 px. Then run `markilo sketches --brand <slug> --concept <id>`: it builds every sketch in the
+   Process). Before writing any JSON, list 6–8 candidate ideas in one line each — from what the product does and the
+   audience's world first, the name's letters last — and keep the 3–5 whose hook you can see in your head at 32 px.
+   At most one sketch per board may be the name's initial with a cut (design-principles.md). Draw every sketch in the
+   direction's form language (design-principles.md → Form language follows the brief's character). Then run `markilo sketches --brand <slug> --concept <id>`: it builds every sketch in the
    concept palette, writes `sketches/board.png` (160, 32 and 16 px with each idea) and says which sketches are not
    `ready`, with a `fix` in construction units (hairline gaps, failing checks, a near-copy of a collected reference).
    **Look, then redraw — at least one full round:**

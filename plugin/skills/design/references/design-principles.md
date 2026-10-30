@@ -29,6 +29,28 @@ privacy; a check mark for tasks; a speech bubble for messaging. Draw it only whe
 a stranger notices; otherwise it reads as a UI icon next to the competitors. The same goes for the literal noun in
 the name (a tally for "Tally…", a fold for "…fold").
 
+**So is the name's initial with a cut.** Once objects are ruled out, the next default is the first letter split,
+sliced, offset, stepped or nested inside a copy of itself — an S with a seam, an L cut by a diagonal, two Ls, a T with
+a bent arm. Independent judges call it "a common monogram device" every time. A letter-led mark works only when the
+letter becomes something else at first sight (the reading is the idea, not "the letter T"), or when the letterform
+itself is drawn with a character no font has.
+
+## Form language follows the brief's character
+
+The same idea drawn with the wrong form language fails on brand fit. Decide the form language from the brief's
+adjectives before sketching, and keep it across the mark and the wordmark:
+
+| The brief says               | Construction choices                                                                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| warm, handmade, human, craft | organic curves (`line` with `smooth`), slightly irregular rhythm, soft but unequal radii, one hand-cut detail; avoid UI-icon geometry |
+| precise, technical, reliable | one grid and unit, constant weights, crisp corners or one radius family, exact alignments                                             |
+| calm, quiet, trustworthy     | few parts, generous negative space, low internal contrast, no sharp diagonals                                                         |
+| bold, energetic, young       | heavy weights, confident asymmetry, one strong diagonal or cut, saturated accent                                                      |
+| premium, editorial           | contrast between thick and thin, restraint, a serif or a refined grotesque in the wordmark                                            |
+
+A mark that reads as a tech or UI icon for a handmade brief, or as a playful sticker for an enterprise brief, is the
+wrong form language even when the idea is right.
+
 ## Directions must be genuinely different
 
 Three to five directions, each a different _idea_ and form language — e.g. a letterform-led monogram, a

@@ -104,8 +104,9 @@ Every shape also takes `round` (fillet all corners with this radius), `grow` (of
 
 ## A worked example
 
-Markilo's own symbol, as built (`branding/brands/markilo/concepts/overlap/construction.json`, shortened). It passed
-the critic gate and a blind judge; what makes it work is in the comments.
+How a spec is organised, shown on Markilo's own symbol (`branding/brands/markilo/concepts/overlap/construction.json`,
+shortened). Copy the structure — named units, one move, one accent on the idea, gaps ≥ 80 units — not the idea: it is
+a letter, and a strict independent judge rated it 5.8/10 (the knockout where the arches meet is lumpy).
 
 ```jsonc
 {
@@ -144,15 +145,16 @@ the critic gate and a blind judge; what makes it work is in the comments.
 }
 ```
 
-One move (overlap), one unit system, one accent on the idea, every gap ≥ 80 units. The first reading is a letter m,
-the second is the shared stem — the idea is the thing the eye catches second, not a caption.
+One move (overlap), one unit system, one accent on the idea, every gap ≥ 80 units. Its weakness is the idea's
+first reading — a letter m — which is why most directions should not start from the name's initial.
 
 ## Moves that make a mark ownable
 
 Each is a construction technique, not a shape to copy. Combine at most two.
 
 - **Letter carries the metaphor**: a `glyph` whose counter, terminal or stem becomes the object — `subtract` the
-  metaphor from the letter, or `union` a part of it in. The letter must still read at 16 px.
+  metaphor from the letter, or `union` a part of it in. Only when the object is the first reading; an initial with a
+  cut, slice or offset is the commonest weak mark (design-principles.md).
 - **Negative space with a second reading**: a solid form with a meaningful silhouette `subtract`ed, so the empty
   part is the idea. Keep the cut ≥ 80 units wide (see the craft checklist).
 - **Interlock / weave**: two strokes crossing with `gap` at one crossing and not the other (over-under). Use one
@@ -195,6 +197,10 @@ check `e`, `a`, `w`, `m` and other complex forms at 1200 px and at 64 px wide.
 
 - One unit `u` and a few multiples of it for all widths, radii and gaps; a single corner radius family.
 - Round forms overshoot flat ones by 1–3% (`scale: 1.02`); horizontals ~5–8% thinner than verticals.
+- Offsets and steps are either zero or at least one unit: a shift of a few units looks like misregistration, not
+  intent. Parts that should match (two legs, two arches) share one width; a heavier part needs a reason.
+- Same-colour parts that touch are merged into one shape by `construct` (it says so); to keep them apart, leave
+  ≥ 80 units.
 - **Every gap, cut and stroke ≥ 80 units on a 1024 artboard** (1/13 of it), measured after `fit`: that is 1.2 px at
   16 px, where verify passes; under ~45 units (0.7 px) it fails and the detail vanishes in a favicon. A gap that only
   works at 160 px is not part of the mark. Differently coloured parts that touch need a `gap`, or the one-colour

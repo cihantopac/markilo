@@ -616,6 +616,24 @@ export async function compileSpec(spec: ConstructionSpec, opts: CompileOptions =
     ctx.warnings.push(
       `The drawing spans ${Math.round(ink * 100)}% of the artboard (aim for 80–98%; try "fit": 0.04).`,
     );
+  // Same-colour layers that touch (or nearly: under 1 unit apart) become one shape. Drawn as separate paths they
+  // leave a hairline seam where they meet, which reads as a construction mistake. Closing (grow, union, shrink by
+  // half a unit) also fills sub-unit slivers between them; real gaps stay.
+  for (let i = 0; i < layers.length; i++)
+    for (let j = i + 1; j < layers.length; j++) {
+      const a = layers[i]!;
+      const b = layers[j]!;
+      if (a.fill !== b.fill) continue;
+      const near = booleanOp('intersect', [offsetPath(a.d, 0.5), offsetPath(b.d, 0.5)]);
+      if (!near || boundsOf(near).w < 1e-3) continue;
+      const merged = offsetPath(booleanOp('union', [offsetPath(a.d, 0.5), offsetPath(b.d, 0.5)]), -0.5);
+      layers[i] = { ...a, name: `${a.name}+${b.name}`, d: merged };
+      layers.splice(j, 1);
+      j = i;
+      ctx.warnings.push(
+        `${a.name} and ${b.name} have the same colour and touch, so they were merged into one shape. If they should read as separate parts, keep them ≥ 80 units apart.`,
+      );
+    }
   for (let i = 0; i < layers.length; i++)
     for (let j = i + 1; j < layers.length; j++) {
       if (layers[i]!.fill === layers[j]!.fill) continue;

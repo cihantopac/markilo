@@ -149,6 +149,19 @@ export async function assessQuality(
           ? 'Mark touches the artboard edge; leave a little room so antialiasing is not clipped.'
           : `Mark spans ${Math.round(extent * 100)}% of the artboard (80–98% keeps icon exports consistent).`,
     });
+    // A geometric fact for app icons and favicons, which are square: a mark twice as wide as it is tall fills at most
+    // half of their height.
+    const aspect = box?.w && box.h ? Math.max(box.w, box.h) / Math.min(box.w, box.h) : 1;
+    add({
+      id: 'square-fit',
+      label: 'Fits a square icon',
+      status: aspect >= 2 ? 'warn' : 'pass',
+      value: round(aspect),
+      message:
+        aspect >= 2
+          ? `The mark is ${round(aspect)}:1, so in a square app icon or favicon it fills only ${Math.round(100 / aspect)}% of the ${box!.w >= box!.h ? 'height' : 'width'}. Make a more compact arrangement or a small version for icons.`
+          : `The mark is ${round(aspect)}:1 and fills a square icon well.`,
+    });
     const g = await genericity(sample);
     add({
       id: 'genericity',

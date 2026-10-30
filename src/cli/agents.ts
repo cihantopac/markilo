@@ -60,7 +60,8 @@ Run: \`${m} <command>\` (JSON output; \`${m} help\` lists every command; details
 2. Research: \`${m} profile understanding --brand <slug>\` (stated vs inferred facts, unknowns); competitors with
    \`research competitors\` and \`reference add\`; \`reference dedupe\`. Playbook: ${ref('research-playbook.md')}.
 3. Brief: \`${m} brief update --brand <slug> --file …\`; ask only what you cannot infer, 2–5 questions at once.
-4. Explore: 3–5 genuinely different directions (idea, metaphor, form, type, color, risks); \`concept new\` for each.
+4. Explore: 3–5 genuinely different directions (idea, metaphor, form, type, color, risks); at most one built on the
+   name's initial, at least one with no letter and no product object; \`concept new\` for each.
 5. Sketch: 3–5 construction specs per direction in \`concepts/<id>/sketches/\`, each with an "idea";
    \`${m} sketches --brand <slug> --concept <id>\`. Build marks only with construction specs: ${ref('construction.md')}.
 6. Sketch review: as a separate, critical pass, open each \`sketches/board.png\` and keep at most one sketch per direction

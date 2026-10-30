@@ -49,6 +49,26 @@ describe('construction specs', () => {
     expect(c.warnings).toEqual([]); // the gap keeps the layers apart
     expect(c.stats.commands).toBeLessThan(60);
   });
+  it('merges same-colour layers that touch, so no hairline seam shows where they meet', async () => {
+    const touching: ConstructionSpec = {
+      layers: [
+        { name: 'top', fill: 'primary', shape: { rect: { x: 200, y: 200, w: 600, h: 300 } } },
+        { name: 'bottom', fill: 'primary', shape: { rect: { x: 200, y: 500.2, w: 600, h: 300 } } },
+      ],
+    };
+    const c = await compileSpec(touching);
+    expect(c.svg.match(/<path/g)).toHaveLength(1);
+    expect(c.warnings.join(' ')).toMatch(/top and bottom.*touch.*merged/);
+    const apart: ConstructionSpec = {
+      layers: [
+        { name: 'top', fill: 'primary', shape: { rect: { x: 200, y: 200, w: 600, h: 300 } } },
+        { name: 'bottom', fill: 'primary', shape: { rect: { x: 200, y: 600, w: 600, h: 300 } } },
+      ],
+    };
+    const d = await compileSpec(apart);
+    expect(d.svg.match(/<path/g)).toHaveLength(2);
+    expect(d.warnings.join(' ')).not.toMatch(/merged/);
+  });
   it('warns when differently colored layers overlap without a gap', async () => {
     const spec: ConstructionSpec = {
       layers: [

@@ -42,3 +42,16 @@ describe('marks on a brand fill', () => {
     expect(r.svg.match(/fill="(#[0-9a-f]{6})"/g)).toHaveLength(2);
   });
 });
+
+describe('square fit', () => {
+  const svg = (w: number, h: number) =>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><rect x="${512 - w / 2}" y="${512 - h / 2}" width="${w}" height="${h}" rx="40" fill="#224466"/></svg>`;
+  it('warns when a symbol is too wide to fill a square icon', async () => {
+    const wide = await assessQuality(svg(900, 380), 'wide', 'symbol', { paper: '#ffffff' });
+    const check = wide.checks.find((c) => c.id === 'square-fit');
+    expect(check?.status).toBe('warn');
+    expect(check?.message).toMatch(/fills only 4\d% of the height/);
+    const square = await assessQuality(svg(800, 700), 'square', 'symbol', { paper: '#ffffff' });
+    expect(square.checks.find((c) => c.id === 'square-fit')?.status).toBe('pass');
+  });
+});
