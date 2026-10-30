@@ -30,7 +30,7 @@ jobs:
       - name: Bundled dist matches sources
         run: npm run check:dist
       - name: Toolchain self-check
-        run: node dist/markilo.mjs doctor
+        run: node plugin/dist/markilo.mjs doctor
 
   plugin:
     name: plugin manifest
@@ -42,4 +42,6 @@ jobs:
           node-version: 22
       - run: npm install -g @anthropic-ai/claude-code
       - name: Validate plugin and marketplace
-        run: claude plugin validate . --strict
+        run: |
+          claude plugin validate . --strict
+          claude plugin validate plugin --strict
