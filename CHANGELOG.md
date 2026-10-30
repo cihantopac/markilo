@@ -6,6 +6,30 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0-beta.1] - 2026-10-30
+
+### Added
+
+- Evidence-based originality verdicts (`insufficient-evidence`, `no-conflicts-found`) with confidence levels and a list
+  of what would raise them; structured registry search records; finalize gates on originality and failing checks.
+- Multi-page site research, `research competitors` (logos/icons collected as references) and `research app`.
+- `fonts search` / `fonts add`: ~1,800 open-licensed families from Fontsource into the workspace.
+- `render … --compare`: side-by-side sketch comparison; designer agents explore 3–5 sketches before refining.
+- Dark-first brands: grounds follow the brand's paper color across gallery, exports, guidelines and checks
+  ("Visible on its paper").
+- Compact review gallery: decision cards with Keep / Refine / Drop, revision tags and a copyable request for Claude.
+- Critic quality gate and calibrated scoring in the design workflow.
+- Gallery switches to an approved-identity view after finalize; explored concepts are folded away for reference.
+- `logos/overview.png` shows every logo file on the background it is made for, with a `logos/README.md` guide
+  (white and black variants are transparent and look empty in file previews).
+- Name similarity compares word by word and ignores generic category words ("play", "app", "cloud"…).
+
+### Security
+
+- SSRF-safe HTTP client, symlink-safe file access, SVG sanitizer, XML/image/render limits, kit path containment,
+  broader secret patterns, untrusted web text handling.
+
+
 ## [0.2.0] - 2026-10-30
 
 ### Added
@@ -46,6 +70,7 @@ All notable changes to this project are documented here. The format follows
 - Self-contained HTML Brand Preview Gallery with mockups and a feedback export.
 - Locked identities that are reproduced byte-for-byte and never redesigned.
 
-[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v0.2.0...HEAD
+[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.1...HEAD
+[0.3.0-beta.1]: https://github.com/cihantopac/markilo/compare/markilo--v0.2.0...markilo--v0.3.0-beta.1
 [0.2.0]: https://github.com/cihantopac/markilo/compare/markilo--v0.1.0...markilo--v0.2.0
 [0.1.0]: https://github.com/cihantopac/markilo/releases/tag/markilo--v0.1.0

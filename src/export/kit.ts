@@ -92,6 +92,18 @@ export function finalizeConcept(
       'Rework the concept and verify it again.',
     );
   }
+  const qualityFile = join(ws.reportsDir(brand), `quality-${conceptId}.json`);
+  const quality = existsSync(qualityFile)
+    ? readJson<{ checks: { label: string; status: string; message: string }[] }>(qualityFile)
+    : undefined;
+  const fails = quality?.checks.filter((c) => c.status === 'fail') ?? [];
+  if (fails.length && !opts.acceptRisk) {
+    throw new MarkiloError(
+      'INVALID_INPUT',
+      `Concept ${conceptId} has failing technical checks: ${fails.map((f) => f.label).join('; ')}.`,
+      `${fails[0]!.message} Fix and verify again, or pass --accept-risk only if the user knowingly accepts it.`,
+    );
+  }
   if (orig.verdict !== 'no-conflicts-found' && !opts.acceptRisk) {
     throw new MarkiloError(
       'INVALID_INPUT',

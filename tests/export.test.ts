@@ -22,6 +22,13 @@ beforeAll(async () => {
   expect(v.status).toBe('verified');
   expect(v.originality.verdict).toBe('insufficient-evidence');
   expect(() => finalizeConcept(ws, 'nimbra', 'fold')).toThrow(/insufficient-evidence/);
+  // A concept whose artwork fails a technical check (e.g. invisible on its own paper) is not approved silently.
+  const c = ws.concept('nimbra', 'fold');
+  ws.saveConcept({ ...c, palette: { ...c.palette, paper: '#1b2140' } });
+  await verifyConcept(ws, 'nimbra', 'fold');
+  expect(() => finalizeConcept(ws, 'nimbra', 'fold')).toThrow(/failing technical checks/);
+  ws.saveConcept({ ...ws.concept('nimbra', 'fold'), palette: { ...c.palette } });
+  await verifyConcept(ws, 'nimbra', 'fold');
   finalizeConcept(ws, 'nimbra', 'fold', { tagline: 'Notes that fold into structure', acceptRisk: true });
   result = await exportBrand(ws, 'nimbra');
 }, 120_000);
@@ -70,6 +77,8 @@ describe('export kit', () => {
       height: 48,
     });
     expect(pngSize(readFileSync(out('social/og-image.png')))).toEqual({ width: 1200, height: 630 });
+    expect(pngSize(readFileSync(out('logos/overview.png'))).width).toBeGreaterThan(600);
+    expect(readFileSync(out('logos/README.md'), 'utf8')).toContain('*-white');
     expect(pngSize(readFileSync(out('windows/Assets/Square150x150Logo.scale-200.png')))).toEqual({
       width: 300,
       height: 300,

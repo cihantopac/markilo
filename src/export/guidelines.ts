@@ -3,6 +3,7 @@ import type { Palette } from '../design/palette.js';
 import { nestSvg, svgDocument } from '../svg/compose.js';
 import { escapeText } from '../svg/xml.js';
 import type { BrandKit } from './kit.js';
+import { groundsFor } from './variants.js';
 
 export interface GuidelinesInput {
   kit: BrandKit;
@@ -119,6 +120,7 @@ function figure(svg: string | undefined, bg: string, w = 360, h = 160): string {
 }
 
 export function guidelinesHtml(g: GuidelinesInput): string {
+  const gr = groundsFor(g.kit.palette.paper, g.kit.palette.dark);
   const { kit } = g;
   const primary = g.lockupH ?? g.wordmark ?? g.symbol;
   const swatches = colorRows(kit)
@@ -150,7 +152,7 @@ ul.dont li{margin:4px 0}.locked{padding:12px 16px;border-radius:10px;background:
 </style></head><body><main>
 <h1>${escapeText(kit.name)}</h1><p>Brand guidelines${kit.concept ? ` · concept <code>${escapeText(kit.concept)}</code>` : ''} · generated ${new Date().toISOString().slice(0, 10)}</p>
 ${kit.locked ? '<p class="locked">This identity is locked and reproduced exactly as provided.</p>' : ''}
-<h2>Logo</h2><div class="grid">${figure(primary, '#ffffff')}${kit.locked || !primary ? '' : figure(g.reversed(primary), kit.palette.dark)}${figure(g.lockupS, '#ffffff')}${figure(g.symbol, '#ffffff', 160, 160)}</div>
+<h2>Logo</h2><div class="grid">${figure(primary, gr.native)}${kit.locked || !primary ? '' : figure(g.reversed(primary), gr.opposite)}${figure(g.lockupS, gr.native)}${figure(g.symbol, gr.native, 160, 160)}</div>
 <h2>Clear space &amp; minimum size</h2><p>Keep clear space equal to the wordmark cap height on every side. Minimum: symbol 16 px / 5 mm, horizontal logo 96 px / 25 mm.</p>
 <h2>Color</h2><div class="swatches">${swatches}</div>${scales}
 <h2>Typography</h2><p>${kit.typography ? `${escapeText(kit.typography.family ?? kit.typography.fontId)} ${kit.typography.weight} — ${escapeText(kit.typography.license ?? '')}` : 'Outlined wordmark; no typeface required.'}</p>

@@ -16,7 +16,9 @@ For each concept the caller names (or all non-rejected concepts in `markilo conc
 2. Score each criterion 0–10 with a one-line reason: brand-fit, semantic-relevance, distinctiveness, memorability,
    simplicity, balance, craft, typography, color, cultural-fit, timelessness, premium-perception, versatility.
 3. Record: `markilo concept update --brand <slug> --concept <id> --judgment brand-fit=7:"…" --judgment …`
-4. Name the single most important improvement for each concept, and flag anything that looks like an existing mark
+4. Be calibrated: 5 = competent but forgettable, 7 = strong and ownable, 9 = category-defining. Generic geometry
+   (two blobs, circle + bar, a stacked monogram in a stock font) scores ≤ 4 on distinctiveness however clean it is.
+5. Name the single most important improvement for each concept, and flag anything that looks like an existing mark
    or a cliché even if the automated similarity was low (conceptual similarity is not measured automatically).
 
 Final answer: a ranked list with one paragraph per concept and your recommendation. Mark everything as judgment.

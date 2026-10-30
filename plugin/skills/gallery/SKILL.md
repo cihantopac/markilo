@@ -16,7 +16,8 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    that works offline.
 2. Give the user the path (and the `file://` URL from the output). If a browser tool is available, you may open it to
    check the layout.
-3. Explain how to give feedback: write notes per concept, pick Shortlist/Reject/Approve, press
-   "Copy feedback for Claude" and paste it into the chat.
+3. Explain the review flow: each concept card has Keep / Refine / Drop, revision tags (bolder, simpler, more
+   distinctive, different color, different typeface, …) and a short note; "Copy request for Claude" produces lines
+   such as `/markilo:refine <brand> <concept>: bolder; different typeface` and a Keep/Drop summary to paste back.
 4. When feedback arrives, log it (`markilo answers`), update statuses (`markilo concept update --status`), and continue
    with the refine skill.

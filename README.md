@@ -7,13 +7,13 @@
 
 <p align="center">
   <b>The open-source brand identity studio for Claude Code.</b><br>
-  Research a brand, design original SVG identities, prove they are original, and export every asset you need.
+  Research a brand, design original SVG identities, check them against the marks and names you collected, and export every asset you need.
 </p>
 
 <p align="center">
   <a href="https://github.com/cihantopac/markilo/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/cihantopac/markilo/actions/workflows/ci.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-f45d2c"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-0.2.0-14161f">
+  <img alt="Version" src="https://img.shields.io/badge/version-0.3.0--beta.1-14161f">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-14161f">
 </p>
 
@@ -37,7 +37,9 @@ and exported (`branding/`).</sub>
 - **Originality engine.** Silhouette overlap under rotation and mirroring, perceptual hashes (aHash/dHash/DCT pHash),
   structural descriptors, palette distance (CIEDE2000), stock-primitive detection, concept-to-concept diversity, name
   confusion (spelling, sound, stems) and trademark pre-screening plans for WIPO, TMview, USPTO, TÜRKPATENT and UKIPO —
-  written up as an Originality & Similarity Report with side-by-side overlays.
+  written up as an Originality & Similarity Report with side-by-side overlays. Verdicts say how much evidence they rest
+  on: with too few references or no logged registry searches the answer is `insufficient-evidence`, never "clear".
+  It finds conflicts among what was collected; it cannot prove a mark is unique or registrable.
 - **Real design output.** Hand-built SVG symbols, wordmarks outlined from OFL fonts with real kerning (Turkish and other
   Latin-extended letters included), lockups aligned to cap height, OKLCH tonal palettes with WCAG pairs.
 - **Looks before it talks.** Every concept is rendered to a review sheet (16–256 px, light, dark, black, white) that

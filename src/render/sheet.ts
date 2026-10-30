@@ -1,5 +1,6 @@
 import { loadBundledFace } from '../design/fonts.js';
 import { textPathMarkup } from '../design/wordmark.js';
+import { adaptToGround, groundsFor } from '../export/variants.js';
 import { fmt, nestSvg, svgDocument } from '../svg/compose.js';
 import { monochrome } from '../svg/variants.js';
 import { renderPng } from './resvg.js';
@@ -67,6 +68,29 @@ const isDark = (hex: string) => {
 
 export async function renderReviewSheet(svg: string, title?: string): Promise<Buffer> {
   const sheet = reviewSheetSvg(svg, title ? { title } : {});
+  const width = Number(/width="(\d+)"/.exec(sheet)![1]);
+  return renderPng(sheet, { width });
+}
+
+/**
+ * Side-by-side comparison of several sketches: each sketch on its paper and on the opposite ground, at
+ * 16–256 px. Used to choose between alternatives before refining one.
+ */
+export async function renderCompareSheet(
+  items: { label: string; svg: string }[],
+  paper = '#ffffff',
+): Promise<Buffer> {
+  const g = groundsFor(paper);
+  const rows: SheetRow[] = items.flatMap((it, i) => [
+    { label: `${String.fromCharCode(65 + i)} · ${it.label}`, background: g.native, svg: it.svg },
+    {
+      label: `${String.fromCharCode(65 + i)} · on ${g.darkFirst ? 'light' : 'dark'}`,
+      background: g.opposite,
+      svg: adaptToGround(it.svg, g.opposite),
+    },
+  ]);
+  const sizes = [16, 32, 64, 128, 256];
+  const sheet = sheetSvg(rows, sizes, 'Sketch comparison');
   const width = Number(/width="(\d+)"/.exec(sheet)![1]);
   return renderPng(sheet, { width });
 }

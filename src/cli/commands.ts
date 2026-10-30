@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
-import { basename, dirname, extname, join, resolve } from 'node:path';
+import { basename, extname, join, resolve } from 'node:path';
 import { loadMark } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
 import { compareMarks, genericity } from '../analyze/similarity.js';
@@ -18,6 +18,7 @@ import type {
 } from '../core/types.js';
 import { validateBrief } from '../core/validate.js';
 import { Workspace } from '../core/workspace.js';
+import { addFont, searchFonts } from '../design/font-catalog.js';
 import { fontInfo, listFonts, loadBundledFace, loadFontFile } from '../design/fonts.js';
 import { composeLockup } from '../design/lockup.js';
 import { generatePalette } from '../design/palette.js';
@@ -28,8 +29,8 @@ import { buildGallery } from '../gallery/gallery.js';
 import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarity.js';
 import { suggestNiceClasses, trademarkSearchPlan } from '../name/trademark.js';
 import { renderPng } from '../render/resvg.js';
-import { renderReviewSheet } from '../render/sheet.js';
-import { buildOriginalityReport, readReferences, referenceIndexPath } from '../report/originality.js';
+import { renderCompareSheet, renderReviewSheet } from '../render/sheet.js';
+import { buildOriginalityReport, readReferences } from '../report/originality.js';
 import { verifyConcept } from '../report/quality.js';
 import { type AppListing, downloadIcon, lookupAndroidApp, searchIosApps } from '../research/appstore.js';
 import {
@@ -1183,14 +1184,30 @@ export const COMMANDS: CommandSpec[] = [
     name: 'render',
     summary:
       'Render an SVG to PNG, or a review contact sheet (sizes 16–256 on light/dark/mono) with --sheet.',
-    usage: 'render <in.svg> -o <out.png> [--width <px>] [--bg <#hex>] [--sheet]',
+    usage:
+      'render <in.svg> -o <out.png> [--width <px>] [--bg <#hex>] [--sheet] | render <a.svg> <b.svg>… --compare [--paper <#hex>] -o <out.png>',
     options: {
       out: { type: 'string', short: 'o', description: 'Output PNG' },
       width: { type: 'string', description: 'Width in px (default 512)' },
       bg: { type: 'string', description: 'Background color' },
       sheet: { type: 'boolean', description: 'Render a review contact sheet' },
+      compare: {
+        type: 'boolean',
+        description: 'Compare several sketches side by side (16–256 px, both grounds)',
+      },
+      paper: { type: 'string', description: 'Paper color for --compare (default #ffffff)' },
     },
     async run(c) {
+      if (c.bool('compare')) {
+        if (c.positionals.length < 2 || c.positionals.length > 8)
+          throw new MarkiloError('USAGE', '--compare takes 2 to 8 SVG files.');
+        const png = await renderCompareSheet(
+          c.positionals.map((p) => ({ label: basename(p), svg: readText(file(c, p)) })),
+          c.str('paper') ?? '#ffffff',
+        );
+        writeGenerated(file(c, c.req('out')), png);
+        return { out: c.req('out'), sketches: c.positionals.length, bytes: png.length };
+      }
       const svg = readText(file(c, pos(c, 0, 'in.svg')));
       const png = c.bool('sheet')
         ? await renderReviewSheet(svg, basename(pos(c, 0, 'in.svg')))
@@ -1303,17 +1320,74 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'fonts',
     summary:
-      'List bundled fonts (all SIL OFL 1.1: free for commercial use; outlined logos carry no font obligations).',
+      'List available fonts: bundled SIL OFL families plus any added to the workspace with "fonts add" (outlined logos carry no font obligations).',
     usage: 'fonts',
     async run() {
-      return listFonts().map(({ id, family, category, role, weights, license }) => ({
+      return listFonts().map(({ id, family, category, role, weights, license, origin }) => ({
         id,
         family,
         category,
         role,
         weights,
         license,
+        origin,
       }));
+    },
+  },
+  {
+    name: 'fonts search',
+    summary:
+      'Search ~1,800 open-licensed families (Google Fonts and others, via Fontsource). Requires --allow-network.',
+    usage:
+      'fonts search [<text>] --allow-network [--category serif|sans-serif|display|handwriting|monospace] [--subset latin-ext]',
+    options: {
+      'allow-network': { type: 'boolean', description: 'Permit network access' },
+      category: { type: 'string', description: 'Font category' },
+      subset: { type: 'string', description: 'Required script subset (e.g. latin-ext for Turkish)' },
+      limit: { type: 'string', description: 'Maximum results (default 25)' },
+    },
+    async run(c) {
+      const res = await searchFonts(c.positionals[0] ?? '', {
+        allowNetwork: c.bool('allow-network'),
+        ...(c.str('category') ? { category: c.str('category')! } : {}),
+        ...(c.str('subset') ? { subset: c.str('subset')! } : {}),
+        limit: c.num('limit', 25)!,
+      });
+      return res.map(({ id, family, category, weights, license, subsets }) => ({
+        id,
+        family,
+        category,
+        weights,
+        license,
+        latinExt: subsets.includes('latin-ext'),
+      }));
+    },
+  },
+  {
+    name: 'fonts add',
+    summary:
+      'Download an open-licensed family into the workspace (brand/fonts) so wordmarks can use it. Requires --allow-network.',
+    usage: 'fonts add <id or family> --allow-network [--weights 400,600,700] [--subsets cyrillic]',
+    options: {
+      'allow-network': { type: 'boolean', description: 'Permit network access' },
+      weights: { type: 'string', description: 'Weights to download (default 400,500,600,700)' },
+      subsets: { type: 'string', description: 'Extra subsets beyond latin and latin-ext' },
+    },
+    async run(c) {
+      const w = ws(c);
+      const info = await addFont(join(w.root, 'fonts'), pos(c, 0, 'id or family'), {
+        allowNetwork: c.bool('allow-network'),
+        weights: c.list('weights').map(Number),
+        subsets: c.list('subsets'),
+      });
+      return {
+        added: info.id,
+        family: info.family,
+        weights: info.weights,
+        license: info.license,
+        licenseFile: info.licenseFile,
+        use: `markilo wordmark --font ${info.id} --weight ${info.weights[0]} …`,
+      };
     },
   },
   {

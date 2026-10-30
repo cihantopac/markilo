@@ -28,12 +28,37 @@ Risk: **high ≥ 0.78**, **review ≥ 0.62**. Calibration fixtures live in `test
 Extra comparators (for example an embedding model) can be registered with `registerComparator()` in
 `src/analyze/similarity.ts` and are weighted into the shape score.
 
+## Evidence and verdicts
+
+A verdict is only as good as the research behind it, so every report measures that research first
+(`src/report/evidence.ts`, `EVIDENCE_CRITERIA`):
+
+| Dimension | Minimal                              | Adequate                                                                                  |
+| --------- | ------------------------------------ | ----------------------------------------------------------------------------------------- |
+| Visual    | 3 reference marks, at least 1 direct | 8 references: at least 3 direct competitors and 2 category leaders or similar-form marks  |
+| Registry  | 1 logged search for the name         | 2 registries, one international (WIPO Global Brand Database or TMview), suggested classes |
+| Names     | 1 competitor name compared           | 3 competitor names compared                                                               |
+
+Registry searches count only when logged with `markilo profile add-source --type registry --registry <id> --query …`.
+Confidence is **high** when all three are adequate, **medium** when none is missing, otherwise **low**.
+
+| Verdict                 | When                                                                                                           |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `redesign`              | A reference reaches high visual similarity, or the mark is a generic stock shape                               |
+| `needs-review`          | Review-level visual similarity, a review/high name risk, a logged registry conflict, or a near-primitive shape |
+| `insufficient-evidence` | No conflict found, but visual or registry coverage is below minimal                                            |
+| `no-conflicts-found`    | No conflict among what was collected, with at least minimal coverage                                           |
+
+`no-conflicts-found` means exactly that: nothing conflicting was found in the evidence listed in the report.
+`markilo finalize` refuses `redesign`, and accepts the other non-clear verdicts only with `--accept-risk`.
+
 ## Report
 
-`reports/originality-<concept>.md|json`: verdict (`clear-to-continue`, `needs-review`, `redesign`), research scope with
-sources and retrieval dates, per-reference signal breakdown, side-by-side overlay images for flagged pairs,
-genericity, concept diversity, name comparison with pronunciation notes, Nice class suggestions and official registry
-entry points, and limitations.
+`reports/originality-<concept>.md|json` (schema `markilo/originality@2`): verdict and confidence, the evidence table
+with what is missing for the next level, research scope with sources and retrieval dates, per-reference signal
+breakdown, side-by-side overlay images for flagged pairs, genericity, concept diversity, name comparison with
+pronunciation notes and logged registry conflicts, Nice class suggestions and official registry entry points, and
+limitations.
 
 ## Limitations
 

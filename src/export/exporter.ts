@@ -9,6 +9,7 @@ import { generatePalette } from '../design/palette.js';
 import { textPathMarkup } from '../design/wordmark.js';
 import { pngSize } from '../render/png.js';
 import { renderPng } from '../render/resvg.js';
+import { label } from '../render/sheet.js';
 import { aspectOf, fmt, nestSvg, svgDocument } from '../svg/compose.js';
 import { optimizeSvg } from '../svg/optimize.js';
 import { escapeAttr, localName, parseXml, serializeXml, walk } from '../svg/xml.js';
@@ -17,7 +18,14 @@ import { placeMark, squircle } from './geometry.js';
 import { guidelinesHtml, guidelinesMarkdown } from './guidelines.js';
 import { type BrandKit, loadKit } from './kit.js';
 import { SPECS } from './specs.js';
-import { monochrome, onFillVariant, reversedVariant } from './variants.js';
+import {
+  adaptToGround,
+  groundsFor,
+  isDarkGround,
+  monochrome,
+  onFillVariant,
+  reversedVariant,
+} from './variants.js';
 
 export const EXPORT_GROUPS = [
   'logos',
@@ -114,8 +122,11 @@ function fitArt(
   return nestSvg(art, { x: cx - aw / 2, y: cy - ah / 2, width: aw, height: ah });
 }
 
+const grounds = (kit: BrandKit) => groundsFor(kit.palette.paper, kit.palette.dark);
+
 // ---------------------------------------------------------------- logos
 async function exportLogos(ctx: Ctx) {
+  const overview: { name: string; variants: { v: string; svg: string }[] }[] = [];
   const { kit } = ctx;
   const arts: [string, string | undefined, string][] = [
     ['primary', ctx.lockupH ?? ctx.wordmark, 'Primary logo (horizontal lockup)'],
@@ -130,16 +141,21 @@ async function exportLogos(ctx: Ctx) {
     const variants: [string, string, string][] = kit.locked
       ? [['color', art, 'as provided (locked identity)']]
       : [
-          ['color', art, 'full color, for light backgrounds'],
+          [
+            'color',
+            art,
+            `full color, for ${grounds(kit).darkFirst ? 'dark' : 'light'} backgrounds like ${grounds(kit).native}`,
+          ],
           [
             'reversed',
-            reversedVariant(art, kit.palette.dark, kit.palette.paper),
-            `for dark backgrounds (${kit.palette.dark})`,
+            adaptToGround(art, grounds(kit).opposite, { dark: kit.palette.ink, light: '#ffffff' }),
+            `for ${grounds(kit).darkFirst ? 'light' : 'dark'} backgrounds (${grounds(kit).opposite})`,
           ],
           ['black', monochrome(art, '#000000'), 'one-color black (print, fax, engraving)'],
           ['white', monochrome(art, '#ffffff'), 'one-color white (knockout on photos and dark fills)'],
           ['ink', monochrome(art, kit.palette.ink), `one-color brand ink ${kit.palette.ink}`],
         ];
+    overview.push({ name, variants: variants.map(([v, svg]) => ({ v, svg })) });
     for (const [v, svg, note] of variants) {
       const clean = kit.locked ? svg : optimizeSvg(svg);
       await emit(ctx, `logos/${name}/${name}-${v}.svg`, clean, {
@@ -154,6 +170,71 @@ async function exportLogos(ctx: Ctx) {
         derivedFrom: from,
       });
     }
+  }
+  // A contact sheet of every variant on the ground it is made for: transparent white/black files look empty in
+  // file browsers, so this is the place to see what each file is.
+  if (overview.length) {
+    const g = grounds(kit);
+    const groundFor = (v: string): string =>
+      v === 'color'
+        ? g.native
+        : v === 'reversed'
+          ? g.opposite
+          : v === 'white'
+            ? '#111318'
+            : v === 'black'
+              ? '#ffffff'
+              : contrastRatio(kit.palette.ink, g.native) >= 3
+                ? g.native
+                : g.opposite;
+    const cols = Math.max(...overview.map((o) => o.variants.length));
+    const cw = 300;
+    const ch = 150;
+    const head = 36;
+    const W = 24 + cols * (cw + 12);
+    const H = head + overview.length * (ch + 34) + 12;
+    let body = label(
+      `${kit.name} — logo files (each shown on the background it is made for)`,
+      24,
+      24,
+      14,
+      '#30343c',
+    );
+    overview.forEach((o, r) => {
+      const y = head + r * (ch + 34);
+      o.variants.forEach(({ v, svg }, c) => {
+        const x = 24 + c * (cw + 12);
+        const bg = groundFor(v);
+        body += `<rect x="${x}" y="${y}" width="${cw}" height="${ch}" rx="10" fill="${bg}" stroke="#d9dce3"/>`;
+        body += fitArt(svg, cw, ch, cw * 0.8, ch * 0.55, x + cw / 2, y + ch / 2);
+        body += label(`${o.name}-${v}.svg`, x + 2, y + ch + 18, 11, '#5b6170');
+      });
+    });
+    const sheet = svgDocument(W, H, body, { background: '#f4f5f7' });
+    await emit(ctx, 'logos/overview.png', await png(sheet, W, H), {
+      group: 'logos',
+      purpose: 'Overview of every logo file on its intended background',
+      derivedFrom: 'brand.json',
+    });
+    await emit(
+      ctx,
+      'logos/README.md',
+      [
+        `# ${kit.name} logo files`,
+        '',
+        'Open `overview.png` to see every file on the background it is made for.',
+        '',
+        `- \`*-color\`: full color for ${g.darkFirst ? 'dark' : 'light'} backgrounds (${g.native}).`,
+        `- \`*-reversed\`: for ${g.darkFirst ? 'light' : 'dark'} backgrounds (${g.opposite}).`,
+        '- `*-black`: one color, for light backgrounds, print, engraving.',
+        '- `*-white`: one color, for dark backgrounds and photos. It looks empty in file previews because it is white on transparent.',
+        `- \`*-ink\`: one color in the brand ink (${kit.palette.ink}).`,
+        '',
+        'Folders: `primary` (horizontal lockup, default), `secondary` (stacked), `compact`, `symbol`, `wordmark`, `appmark`.',
+        '',
+      ].join('\n'),
+      { group: 'logos', purpose: 'Which logo file to use where', derivedFrom: 'brand.json' },
+    );
   }
   if (ctx.symbol && !kit.locked) {
     const app = await appmarkSvg(ctx, 1024, 'rounded');
@@ -643,14 +724,16 @@ async function socialCard(
   opts: { tagline?: boolean; dark?: boolean; artShare?: number } = {},
 ): Promise<string> {
   const { kit } = ctx;
-  const bg = opts.dark ? kit.palette.dark : kit.palette.paper;
+  // `dark` means "the alternate ground": dark for light-first brands, light for dark-first brands.
+  const g = grounds(kit);
+  const bg = opts.dark ? g.opposite : g.native;
   const art0 = ctx.lockupH ?? ctx.wordmark ?? ctx.symbol!;
-  const art = opts.dark && !kit.locked ? reversedVariant(art0, kit.palette.dark, kit.palette.paper) : art0;
+  const art = kit.locked ? art0 : adaptToGround(art0, bg, { dark: kit.palette.ink, light: '#ffffff' });
   let body = '';
   // Supergraphic: an oversized, cropped tint of the symbol that ties the card to the identity.
   if (ctx.symbol && !kit.locked) {
     const tint = monochrome(ctx.symbol, kit.palette.primary);
-    body += `<g opacity="${opts.dark ? 0.16 : 0.08}">${await placeMark(tint, { x: w - h * 0.95, y: -h * 0.2, width: h * 1.4, height: h * 1.4 }, { mode: 'box', fraction: 1 })}</g>`;
+    body += `<g opacity="${isDarkGround(bg) ? 0.16 : 0.08}">${await placeMark(tint, { x: w - h * 0.95, y: -h * 0.2, width: h * 1.4, height: h * 1.4 }, { mode: 'box', fraction: 1 })}</g>`;
   }
   const hasTag = opts.tagline && kit.tagline;
   const artH = h * (opts.artShare ?? 0.26);
@@ -661,7 +744,8 @@ async function socialCard(
       : loadBundledFace('inter', 500);
     const size = Math.round(h * 0.055);
     const probe = textPathMarkup(face, kit.tagline!, 0, 0, size, '#000');
-    const color = opts.dark ? '#d9dce3' : kit.palette.ink;
+    const color =
+      contrastRatio(kit.palette.ink, bg) >= 4.5 ? kit.palette.ink : isDarkGround(bg) ? '#d9dce3' : '#2a2d35';
     body += textPathMarkup(
       face,
       kit.tagline!,
@@ -682,11 +766,11 @@ async function exportSocial(ctx: Ctx) {
   const cards: [string, number, number, Parameters<typeof socialCard>[3], string][] = [
     ['og-image', S.og.width, S.og.height, { tagline: true }, 'Open Graph / link preview image'],
     [
-      'og-image-dark',
+      grounds(ctx.kit).darkFirst ? 'og-image-light' : 'og-image-dark',
       S.og.width,
       S.og.height,
       { tagline: true, dark: true },
-      'Open Graph image, dark variant',
+      `Open Graph image on the alternate (${grounds(ctx.kit).darkFirst ? 'light' : 'dark'}) ground`,
     ],
     [
       'github-social-preview',
@@ -899,7 +983,9 @@ async function exportGuidelines(ctx: Ctx) {
     lockupH: ctx.lockupH,
     lockupS: ctx.lockupS,
     reversed: (s: string) =>
-      ctx.kit.locked ? s : reversedVariant(s, ctx.kit.palette.dark, ctx.kit.palette.paper),
+      ctx.kit.locked
+        ? s
+        : adaptToGround(s, grounds(ctx.kit).opposite, { dark: ctx.kit.palette.ink, light: '#ffffff' }),
   };
   await emit(ctx, 'guidelines/brand-guidelines.md', guidelinesMarkdown(input), {
     group: 'guidelines',

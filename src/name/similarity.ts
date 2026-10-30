@@ -89,6 +89,86 @@ export function longestCommonSubstring(a: string, b: string): string {
   return best;
 }
 
+/** Common words that are descriptive in many categories and cannot carry confusion on their own. */
+export const GENERIC_WORDS = new Set([
+  'app',
+  'apps',
+  'play',
+  'player',
+  'pay',
+  'cloud',
+  'labs',
+  'lab',
+  'tech',
+  'soft',
+  'data',
+  'mail',
+  'site',
+  'sites',
+  'web',
+  'online',
+  'digital',
+  'studio',
+  'hub',
+  'box',
+  'shop',
+  'store',
+  'smart',
+  'pro',
+  'plus',
+  'max',
+  'tv',
+  'iptv',
+  'media',
+  'stream',
+  'music',
+  'video',
+  'link',
+  'net',
+  'group',
+  'global',
+  'solutions',
+  'systems',
+  'software',
+  'platform',
+  'service',
+  'services',
+  'one',
+  'go',
+  'my',
+  'get',
+  'the',
+  'and',
+  'for',
+  'inc',
+  'ltd',
+  'llc',
+  'co',
+]);
+
+function tokens(name: string): string[] {
+  return foldAscii(name)
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+}
+
+/** Longest substring shared between any word of `a` and any word of `b`, ignoring generic words. */
+export function sharedStem(a: string, b: string): string {
+  let best = '';
+  for (const x of tokens(a))
+    for (const y of tokens(b)) {
+      const s = longestCommonSubstring(x, y);
+      if (
+        s.length > best.length &&
+        !GENERIC_WORDS.has(s) &&
+        ![...GENERIC_WORDS].some((g) => g.length >= s.length && g.includes(s))
+      )
+        best = s;
+    }
+  return best;
+}
+
 export interface NameComparison {
   candidate: string;
   other: string;
@@ -105,7 +185,9 @@ export function compareNames(candidate: string, other: string, sameCategory = tr
   const jw = jaroWinkler(a, b);
   const sound = editSimilarity(phoneticKey(candidate), phoneticKey(other));
   const skeleton = editSimilarity(consonantSkeleton(candidate), consonantSkeleton(other));
-  const stem = longestCommonSubstring(a, b);
+  // Shared stems are found word by word ("Google Play" never yields "eplay"), and generic category words
+  // ("play", "app", "cloud"…) do not count: everyone in a category uses them.
+  const stem = sharedStem(candidate, other);
   const stemShare = stem.length / Math.max(1, Math.min(a.length, b.length));
   let score = Math.max(0.5 * spelling + 0.5 * jw, sound * 0.95, 0.6 * skeleton + 0.4 * jw);
   if (stem.length >= 4 && stemShare >= 0.6) score = Math.max(score, 0.75 + 0.2 * stemShare - 0.15);

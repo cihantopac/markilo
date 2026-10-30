@@ -15,6 +15,8 @@ export interface FontFamilyInfo {
   source: string;
   weights: number[];
   files: Record<string, string[]>;
+  /** Where the font came from: the plugin bundle or a workspace's fonts/ folder (added with `markilo fonts add`). */
+  origin?: 'bundled' | 'workspace';
 }
 
 interface Registry {
@@ -22,6 +24,31 @@ interface Registry {
 }
 
 let registryCache: { dir: string; registry: Registry } | undefined;
+const extraRegistries: { dir: string; registry: Registry }[] = [];
+
+/** Makes fonts added to a workspace (brand/fonts/fonts.json) available to wordmarks and exports. */
+export function registerFontDir(dir: string): void {
+  const file = join(dir, 'fonts.json');
+  if (!existsSync(file) || extraRegistries.some((r) => r.dir === dir)) return;
+  try {
+    extraRegistries.push({ dir, registry: JSON.parse(readFileSync(file, 'utf8')) as Registry });
+  } catch {
+    // A broken workspace registry should not break bundled fonts.
+  }
+}
+
+function allFamilies(): { dir: string; info: FontFamilyInfo }[] {
+  const bundled = registry();
+  return [
+    ...bundled.registry.families.map((info) => ({
+      dir: bundled.dir,
+      info: { ...info, origin: 'bundled' as const },
+    })),
+    ...extraRegistries.flatMap((r) =>
+      r.registry.families.map((info) => ({ dir: r.dir, info: { ...info, origin: 'workspace' as const } })),
+    ),
+  ];
+}
 
 /** Locates the bundled fonts/ directory from either src/ (dev) or dist/ (bundled plugin). */
 export function fontsDir(): string {
@@ -43,10 +70,10 @@ function registry(): { dir: string; registry: Registry } {
   return registryCache;
 }
 
-export const listFonts = (): FontFamilyInfo[] => registry().registry.families;
+export const listFonts = (): FontFamilyInfo[] => allFamilies().map((f) => f.info);
 
 export function fontInfo(id: string): FontFamilyInfo {
-  const f = listFonts().find((x) => x.id === id);
+  const f = allFamilies().find((x) => x.info.id === id)?.info;
   if (!f) {
     throw new MarkiloError(
       'NOT_FOUND',
@@ -73,6 +100,7 @@ export function loadBundledFace(id: string, weight: number): FontFace {
   const hit = faceCache.get(key);
   if (hit) return hit;
   const info = fontInfo(id);
+  const dir = allFamilies().find((x) => x.info.id === id)!.dir;
   const files = info.files[String(weight)];
   if (!files) {
     throw new MarkiloError(
@@ -80,7 +108,6 @@ export function loadBundledFace(id: string, weight: number): FontFace {
       `${info.family} has no weight ${weight}. Available: ${info.weights.join(', ')}.`,
     );
   }
-  const { dir } = registry();
   const face: FontFace = {
     label: `${info.family} ${weight}`,
     family: info.family,

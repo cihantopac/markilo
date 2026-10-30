@@ -62,9 +62,11 @@ export async function assessQuality(
   svg: string,
   subject: string,
   role: QualityReport['role'] = 'symbol',
+  opts: { paper?: string } = {},
 ): Promise<QualityReport> {
   const checks: QualityCheck[] = [];
   const add = (c: QualityCheck) => checks.push(c);
+  const paper = opts.paper ?? LIGHT;
 
   const lint = lintSvg(svg, { master: true });
   const errors = lint.issues.filter((i) => i.severity === 'error');
@@ -175,6 +177,24 @@ export async function assessQuality(
         : 'Shapes stay separable in a single color.',
   });
 
+  // Visible on the background the brand is designed for (its paper color, light or dark).
+  if (lint.stats.colors.length) {
+    const ratios = lint.stats.colors.map((c) => ({ c, r: contrastRatio(c, paper) }));
+    const best = Math.max(...ratios.map((x) => x.r));
+    const worst = ratios.reduce((a, b) => (b.r < a.r ? b : a));
+    const textLike = role !== 'symbol';
+    const value = textLike ? worst.r : best;
+    add({
+      id: 'ground-contrast',
+      label: `Visible on its paper (${paper})`,
+      status: value >= 3 ? 'pass' : value >= 1.6 ? 'warn' : 'fail',
+      value: `${round(value)}:1`,
+      message:
+        value >= 3
+          ? `Reads on its own background (${textLike ? 'every color' : 'strongest color'} ≥ 3:1).`
+          : `${textLike ? `${worst.c} in the ${role}` : 'The mark'} nearly disappears on ${paper} (${round(value)}:1). Exports adapt it for other grounds, but the design itself should read on its paper.`,
+    });
+  }
   const colors = lint.stats.colors.filter((c) => c !== '#ffffff' || lint.stats.colors.length === 1);
   for (const c of colors.slice(0, 4)) {
     const onLight = contrastRatio(c, LIGHT);

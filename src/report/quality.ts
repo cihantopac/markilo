@@ -39,7 +39,9 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
   ] as const) {
     if (!rel) continue;
     const svg = readText(ws.conceptFile(brand, id, rel));
-    reports.push(await assessQuality(svg, `${id}/${rel}`, role));
+    reports.push(
+      await assessQuality(svg, `${id}/${rel}`, role, { paper: concept.palette.paper ?? '#ffffff' }),
+    );
     if (role === 'symbol') {
       const sheet = join(dir, 'review', 'symbol-sheet.png');
       writeGenerated(sheet, await renderReviewSheet(svg, `${concept.title} — symbol`));

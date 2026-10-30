@@ -1,4 +1,7 @@
+import { join } from 'node:path';
 import { exitCodeFor, MarkiloError } from '../core/errors.js';
+import { Workspace } from '../core/workspace.js';
+import { registerFontDir } from '../design/fonts.js';
 import { commandHelp, parseCommand } from './args.js';
 import { COMMANDS, findCommand, VERSION } from './commands.js';
 
@@ -8,7 +11,10 @@ const GROUPS: [string, string[]][] = [
     'Research',
     [
       'research repo',
+      'research monorepo',
       'research site',
+      'research competitors',
+      'research app',
       'profile show',
       'profile add-source',
       'profile add-finding',
@@ -18,7 +24,20 @@ const GROUPS: [string, string[]][] = [
       'reference list',
     ],
   ],
-  ['Design', ['concept new', 'concept list', 'concept update', 'wordmark', 'lockup', 'palette', 'fonts']],
+  [
+    'Design',
+    [
+      'concept new',
+      'concept list',
+      'concept update',
+      'wordmark',
+      'lockup',
+      'palette',
+      'fonts',
+      'fonts search',
+      'fonts add',
+    ],
+  ],
   [
     'Verify',
     [
@@ -80,6 +99,12 @@ async function main(argv: string[]): Promise<number> {
     return 0;
   }
   const ctx = parseCommand(found.spec, found.rest, process.cwd());
+  // Fonts added to the workspace (markilo fonts add) are available to every command.
+  try {
+    registerFontDir(join(Workspace.locate(process.cwd(), ctx.str('workspace')).root, 'fonts'));
+  } catch {
+    // No workspace: bundled fonts only.
+  }
   const result = await found.spec.run(ctx);
   // Compact JSON when another program (such as Claude) reads the output: indentation costs tokens.
   const pretty = process.stdout.isTTY || process.env.MARKILO_PRETTY === '1';
