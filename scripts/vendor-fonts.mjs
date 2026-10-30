@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const out = join(root, 'fonts');
+const out = join(root, 'plugin', 'fonts');
 
 const FAMILIES = [
   {
@@ -70,4 +70,4 @@ for (const fam of FAMILIES) {
   });
 }
 writeFileSync(join(out, 'fonts.json'), `${JSON.stringify(registry, null, 2)}\n`);
-console.log(`Vendored ${registry.families.length} font families into fonts/`);
+console.log(`Vendored ${registry.families.length} font families into plugin/fonts/`);

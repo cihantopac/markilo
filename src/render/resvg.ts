@@ -11,7 +11,7 @@ let ready: Promise<void> | undefined;
 
 function wasmPath(): string {
   const here = dirname(fileURLToPath(import.meta.url));
-  const candidates = [join(here, 'resvg.wasm'), join(here, '..', 'dist', 'resvg.wasm')];
+  const candidates = [join(here, 'resvg.wasm')];
   try {
     candidates.push(createRequire(import.meta.url).resolve('@resvg/resvg-wasm/index_bg.wasm'));
   } catch {

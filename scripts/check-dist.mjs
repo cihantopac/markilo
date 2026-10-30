@@ -23,7 +23,7 @@ try {
     stdio: 'ignore',
   });
   const fresh = digest(tmp);
-  const committed = digest(join(root, 'dist'));
+  const committed = digest(join(root, 'plugin', 'dist'));
   const stale = Object.keys({ ...fresh, ...committed }).filter((f) => fresh[f] !== committed[f]);
   if (stale.length) {
     console.error(`dist/ is out of date (${stale.join(', ')}). Run "npm run build" and commit the result.`);

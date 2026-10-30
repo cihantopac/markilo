@@ -4,4 +4,4 @@
 *.png binary
 *.ico binary
 *.icns binary
-dist/** linguist-generated=true
+plugin/dist/** linguist-generated=true

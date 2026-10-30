@@ -29,6 +29,7 @@ export function fontsDir(): string {
   let dir = dirname(fileURLToPath(import.meta.url));
   for (let i = 0; i < 5; i++) {
     if (existsSync(join(dir, 'fonts', 'fonts.json'))) return join(dir, 'fonts');
+    if (existsSync(join(dir, 'plugin', 'fonts', 'fonts.json'))) return join(dir, 'plugin', 'fonts');
     dir = dirname(dir);
   }
   throw new MarkiloError('INTERNAL', 'Bundled fonts/fonts.json not found.');

@@ -4,7 +4,7 @@ Behavioral evals for `claude plugin eval` (Claude Code ≥ 2.1.269). Each case r
 account; budget accordingly.
 
 ```bash
-claude plugin eval . --runs 1 --max-cost-usd 5 --allow-tools "Bash(node *)" Write Edit --no-publish
+claude plugin eval plugin --runs 1 --max-cost-usd 5 --allow-tools "Bash(node *)" Write Edit --no-publish
 ```
 
 | Case                | Checks                                                               |

@@ -2,7 +2,7 @@
 
 Markilo has two halves that are deliberately kept apart:
 
-1. **A deterministic toolchain** (`src/`, bundled into `dist/markilo.mjs`). It parses, lints, optimizes,
+1. **A deterministic toolchain** (`src/`, bundled into `plugin/dist/markilo.mjs`). It parses, lints, optimizes,
    renders, measures, compares and exports SVG. It never "decides" what a brand should look like; it gives
    facts: pixels, hashes, contrast ratios, similarity scores, file inventories.
 2. **A Claude Code plugin** (`skills/`, `agents/`). Skills hold the creative and strategic process
@@ -39,7 +39,7 @@ anything presented as judgment is labeled as judgment.
 | Constraint                       | How it is met                                                                                                                                     |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | No servers, no paid APIs         | Pure CLI. Rendering uses `@resvg/resvg-wasm` (no native build).                                                                                   |
-| Works right after plugin install | `dist/` is a committed single-file bundle + `resvg.wasm`; CI checks it is fresh.                                                                  |
+| Works right after plugin install | `plugin/dist/` is a committed single-file bundle + `resvg.wasm`; CI checks it is fresh.                                                           |
 | Windows, macOS, Linux            | Node ≥ 20 only. No shell-outs, no platform binaries, `path` APIs everywhere.                                                                      |
 | Low token use                    | Commands print compact JSON summaries; large data goes to files the agent can open on demand.                                                     |
 | No hidden network access         | Only `research site` fetches, and only with `--allow-network`. It honours `robots.txt`.                                                           |

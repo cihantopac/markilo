@@ -4,7 +4,7 @@
   "description": "AI-powered brand identity studio for Claude Code: research, originality analysis, SVG identity design, verification and complete asset export.",
   "license": "Apache-2.0",
   "type": "module",
-  "author": "Cihan Topaç (https://github.com/cihantopac)",
+  "author": "Cihan Topa\u00e7 (https://github.com/cihantopac)",
   "homepage": "https://github.com/cihantopac/markilo#readme",
   "repository": {
     "type": "git",
@@ -28,13 +28,13 @@
     "node": ">=20.10"
   },
   "bin": {
-    "markilo": "dist/markilo.mjs"
+    "markilo": "plugin/dist/markilo.mjs"
   },
   "files": [
-    "dist",
-    "fonts",
+    "plugin",
     "LICENSE",
     "NOTICE",
+    "THIRD_PARTY_NOTICES.md",
     "README.md"
   ],
   "scripts": {
@@ -46,7 +46,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "check:dist": "node scripts/check-dist.mjs",
-    "validate:plugin": "claude plugin validate . --strict",
+    "validate:plugin": "claude plugin validate . --strict && claude plugin validate plugin --strict",
     "ci": "npm run lint && npm run typecheck && npm test && npm run build && npm run check:dist"
   },
   "devDependencies": {

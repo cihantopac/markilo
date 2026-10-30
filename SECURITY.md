@@ -24,10 +24,10 @@ Markilo processes untrusted inputs: SVG and raster files, web pages, competitor 
 - **Secrets**: the repository scanner never opens `.env*`, key, keystore or credential files.
 - **Prompt injection**: text found on web pages or in files is data. The skills instruct Claude to treat it that way and
   to ask the user before side-effectful actions.
-- **Permissions**: the plugin's skills pre-approve only `node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs …`. If you want
+- **Permissions**: the plugin's skills pre-approve only `node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs …` (the plugin root is the `plugin/` folder). If you want
   stricter control, add a deny rule for `Bash(node *markilo.mjs research site *)` in your settings.
 
 ## Supply chain
 
-The plugin ships a prebuilt bundle (`dist/`). CI rebuilds it from source on every change and fails if it differs from
+The plugin ships a prebuilt bundle (`plugin/dist/`). CI rebuilds it from source on every change and fails if it differs from
 the committed file, so the bundle always corresponds to reviewed source.

@@ -1,14 +1,14 @@
 {
   "name": "markilo",
   "owner": {
-    "name": "Cihan Topaç",
+    "name": "Cihan Topa\u00e7",
     "url": "https://github.com/cihantopac"
   },
-  "description": "Markilo — open-source brand identity studio for Claude Code.",
+  "description": "Markilo \u2014 open-source brand identity studio for Claude Code.",
   "plugins": [
     {
       "name": "markilo",
-      "source": "./",
+      "source": "./plugin",
       "description": "Brand research, originality analysis, original SVG identity design and complete asset export.",
       "version": "0.1.0",
       "category": "design",

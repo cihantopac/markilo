@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { tmp } from './helpers.js';
 
-const bin = join(__dirname, '..', 'dist', 'markilo.mjs');
+const bin = join(__dirname, '..', 'plugin', 'dist', 'markilo.mjs');
 const run = (args: string[], cwd: string) =>
   spawnSync(process.execPath, [bin, ...args], { cwd, encoding: 'utf8' });
 

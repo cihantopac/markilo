@@ -35,4 +35,4 @@ rebuild `dist/`, regenerate `THIRD_PARTY_NOTICES.md` (`node scripts/notices.mjs`
 ## Branding
 
 Markilo's own identity is in `branding/`. After changing it, run
-`node dist/markilo.mjs export -w branding --brand markilo --clean` and `node scripts/readme-assets.mjs`.
+`node plugin/dist/markilo.mjs export -w branding --brand markilo --clean` and `node scripts/readme-assets.mjs`.

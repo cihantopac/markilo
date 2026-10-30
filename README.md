@@ -78,7 +78,7 @@ Plugin commands are namespaced (`/markilo:design`). If you also want to type jus
 personal skill that forwards to the plugin. It never touches existing files:
 
 ```bash
-node ~/.claude/plugins/marketplaces/markilo/dist/markilo.mjs shortcut install --yes
+node ~/.claude/plugins/marketplaces/markilo/plugin/dist/markilo.mjs shortcut install --yes
 ```
 
 (`shortcut status` and `shortcut uninstall --yes` are available too.)
@@ -150,7 +150,7 @@ See [docs/OUTPUTS.md](docs/OUTPUTS.md).
 Claude Code  ──  skills/ (process: research, strategy, design, critique)  ──  agents/ (researcher, designer, critic)
                        │  node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs …
                        ▼
-Toolchain (src/ → dist/): XML/SVG lint & optimize · resvg-wasm rendering · shape features & perceptual hashes ·
+Toolchain (src/ → plugin/dist/): XML/SVG lint & optimize · resvg-wasm rendering · shape features & perceptual hashes ·
 similarity & genericity · quality scorecard · fontkit wordmarks · lockups · OKLCH palettes · research scanners ·
 originality & quality reports · exporters (ICO/ICNS encoders) · gallery · guidelines
 ```
@@ -163,11 +163,11 @@ Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/ORIGINALITY.md](docs
 The same CLI runs without Claude Code — useful in CI or scripts:
 
 ```bash
-node dist/markilo.mjs help
+node plugin/dist/markilo.mjs help
 ```
 
 ```bash
-node dist/markilo.mjs compare my-logo.svg competitor.png
+node plugin/dist/markilo.mjs compare my-logo.svg competitor.png
 ```
 
 Examples: `wordmark --text "Acme" --font sora --weight 600 -o acme.svg`, `score logo.svg`, `palette "#f45d2c"`,
@@ -207,7 +207,7 @@ npm run ci
 ```
 
 `npm run ci` runs Biome, TypeScript, Vitest (unit, integration and bundled-CLI tests), the build and a check that the
-committed `dist/` matches the sources. Plugin evals live in [`evals/`](evals) (`claude plugin eval .`). See
+committed `plugin/dist/` matches the sources. Plugin evals live in [`plugin/evals/`](plugin/evals) (`claude plugin eval plugin`). See
 [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/MAINTAINING.md](docs/MAINTAINING.md).
 
 ## License

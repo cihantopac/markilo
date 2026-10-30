@@ -21,15 +21,16 @@ Inside the session run `/reload-plugins` after editing skills or agents.
 
 ## Layout
 
-| Path                 | What lives there                                                                                        |
-| -------------------- | ------------------------------------------------------------------------------------------------------- |
-| `src/`               | TypeScript toolchain (bundled to `dist/markilo.mjs`)                                                    |
-| `skills/`, `agents/` | Claude Code skills and subagents (process and judgment)                                                 |
-| `fonts/`             | Vendored OFL fonts (`npm run fonts` regenerates)                                                        |
-| `tests/`             | Vitest unit, integration and bundled-CLI tests; `tests/fixtures/` holds synthetic marks and a fake repo |
-| `evals/`             | `claude plugin eval` behavioral cases                                                                   |
-| `branding/`          | Markilo's own identity workspace (made with Markilo)                                                    |
-| `docs/`              | Architecture, outputs, originality method, privacy, maintenance                                         |
+| Path                               | What lives there                                                                                                                                             |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/`                             | TypeScript toolchain (bundled to `plugin/dist/markilo.mjs`)                                                                                                  |
+| `plugin/`                          | The installable plugin: `.claude-plugin/plugin.json`, `skills/`, `agents/`, `dist/`, `fonts/`, `evals/` (kept free of `package.json` so installs stay small) |
+| `plugin/skills/`, `plugin/agents/` | Claude Code skills and subagents (process and judgment)                                                                                                      |
+| `fonts/`                           | Vendored OFL fonts (`npm run fonts` regenerates)                                                                                                             |
+| `tests/`                           | Vitest unit, integration and bundled-CLI tests; `tests/fixtures/` holds synthetic marks and a fake repo                                                      |
+| `evals/`                           | `claude plugin eval` behavioral cases                                                                                                                        |
+| `branding/`                        | Markilo's own identity workspace (made with Markilo)                                                                                                         |
+| `docs/`                            | Architecture, outputs, originality method, privacy, maintenance                                                                                              |
 
 ## Principles for changes
 
@@ -41,13 +42,13 @@ Inside the session run `/reload-plugins` after editing skills or agents.
 4. **Safe by default.** No network without an explicit flag, no writes outside the workspace without an explicit
    `--apply`, never overwrite without `--force`.
 5. **Synthetic data only.** Fixtures, tests and examples use invented brands. Never commit real client material.
-6. **Keep `dist/` in sync.** CI fails if `dist/` differs from a fresh build. Run `npm run build` and commit the result.
+6. **Keep `plugin/dist/` in sync.** CI fails if `plugin/dist/` differs from a fresh build. Run `npm run build` and commit the result.
 
 ## Tests
 
 - `npm test` runs everything (~5 s). Similarity and quality thresholds are calibrated on `tests/fixtures/marks/`; if you
   change a metric, add fixtures that show why.
-- Skill behavior changes should come with an eval case in `evals/` (see `evals/README.md`).
+- Skill behavior changes should come with an eval case in `plugin/evals/` (see `plugin/evals/README.md`).
 
 ## Commits and pull requests
 

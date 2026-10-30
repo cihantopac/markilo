@@ -26,7 +26,7 @@ const inlineJsonRequires = {
 };
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const outdir = process.argv[2] ? join(process.cwd(), process.argv[2]) : join(root, 'dist');
+const outdir = process.argv[2] ? join(process.cwd(), process.argv[2]) : join(root, 'plugin', 'dist');
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 
 rmSync(outdir, { recursive: true, force: true });

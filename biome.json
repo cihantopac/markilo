@@ -3,11 +3,11 @@
   "files": {
     "includes": [
       "**",
-      "!dist",
-      "!fonts",
+      "!plugin/dist",
+      "!plugin/fonts",
       "!node_modules",
       "!**/*.svg",
-      "!evals/results",
+      "!plugin/evals/results",
       "!tests/.tmp",
       "!examples/**/output",
       "!branding/**/*.html",

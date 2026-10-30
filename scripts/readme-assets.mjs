@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Rebuilds the README / repository images from Markilo's own exported identity (branding/).
-// Run after: node dist/markilo.mjs export -w branding --brand markilo
+// Run after: node plugin/dist/markilo.mjs export -w branding --brand markilo
 import { execFileSync } from 'node:child_process';
 import { copyFileSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -14,7 +14,7 @@ copyFileSync(join(E, 'logos/primary/primary-color.svg'), join(A, 'logo-light.svg
 copyFileSync(join(E, 'logos/primary/primary-reversed.svg'), join(A, 'logo-dark.svg'));
 copyFileSync(join(E, 'logos/symbol/symbol-color.svg'), join(A, 'symbol.svg'));
 copyFileSync(join(E, 'social/github-social-preview.png'), join(A, 'social-preview.png'));
-copyFileSync(join(E, 'logos/appmark/appmark.png'), join(root, '.claude-plugin/icon.png'));
+copyFileSync(join(E, 'logos/appmark/appmark.png'), join(root, 'plugin/.claude-plugin/icon.png'));
 
 let n = 0;
 function place(file, x, y, w, h) {
@@ -65,7 +65,15 @@ writeFileSync(
 );
 execFileSync(
   process.execPath,
-  [join(root, 'dist/markilo.mjs'), 'render', tmp, '-o', join(A, 'kit-overview.png'), '--width', '1600'],
+  [
+    join(root, 'plugin/dist/markilo.mjs'),
+    'render',
+    tmp,
+    '-o',
+    join(A, 'kit-overview.png'),
+    '--width',
+    '1600',
+  ],
   { stdio: 'ignore' },
 );
 rmSync(tmp);
