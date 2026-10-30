@@ -6,12 +6,13 @@ command for its options. `--workspace <dir>` selects a workspace (default: `./br
 
 ## Workspace
 
-| Command                                                                                       | Purpose                                                          |
-| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `init [--name N] [--family F]`                                                                | Create `./brand`. `--family` enables a shared family system.     |
-| `brand add "<Name>" [--role master\|product\|sub-brand\|endorsed] [--parent slug] [--locked]` | Register a brand. `--locked` = preserve exactly, never redesign. |
-| `brand list`                                                                                  | Brands, concept states, approval/export state.                   |
-| `brief show --brand s` / `brief update --brand s --file patch.json`                           | Read/merge the strategy brief (validated).                       |
+| Command                                                                                       | Purpose                                                                                    |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `status`                                                                                      | Workspace (or `found: false`, exit 0), each brand's stage and the next step. Run it first. |
+| `init [--name N] [--family F]`                                                                | Create `./brand`. `--family` enables a shared family system.                               |
+| `brand add "<Name>" [--role master\|product\|sub-brand\|endorsed] [--parent slug] [--locked]` | Register a brand. `--locked` = preserve exactly, never redesign.                           |
+| `brand list`                                                                                  | Brands, concept states, approval/export state.                                             |
+| `brief show --brand s` / `brief update --brand s --file patch.json`                           | Read/merge the strategy brief (validated).                                                 |
 
 Brief fields: `oneLiner`, `mode` (new/refresh/redesign/evaluate), `product{type,category,features[],platforms[]}`,
 `audience{primary[],secondary[],markets[],languages[]}`, `positioning{values[],personality[],tone,differentiators[]}`,

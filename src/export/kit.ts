@@ -241,6 +241,11 @@ export async function finalizeConcept(
   };
   writeJson(kitPath(ws, brand), kit);
   ws.saveConcept({ ...concept, status: 'approved' });
+  ws.logDecision(
+    brand,
+    'Approved',
+    `${conceptId} (${concept.title}). Gate ${gate.status}${gate.average !== undefined ? ` (average ${gate.average})` : ''}${kit.gate?.userChoice ? `; chosen by the user anyway: ${kit.gate.userChoice}` : ''}. Originality ${orig.verdict} (${orig.confidence ?? 'unknown'} confidence)${orig.verdict !== 'no-conflicts-found' ? ', risk accepted' : ''}.`,
+  );
   return kit;
 }
 
@@ -297,5 +302,10 @@ export function lockIdentity(
   const b = m.brands.find((x) => x.slug === brand)!;
   b.locked = true;
   ws.saveManifest(m);
+  ws.logDecision(
+    brand,
+    'Locked',
+    `Existing identity registered as locked (${Object.keys(files).join(', ')}); it is reproduced exactly and never redesigned.`,
+  );
   return kit;
 }

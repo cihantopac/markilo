@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { appendFileSync, existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { MarkiloError } from './errors.js';
 import { isDir, nowIso, readJson, writeFileSafe, writeJson } from './fsx.js';
@@ -178,6 +178,20 @@ export class Workspace {
     });
     writeFileSafe(this.decisionsPath(slug), `# ${input.name} — design decisions\n\n`, { force: false });
     return brand;
+  }
+
+  /**
+   * Appends one dated line to the brand's decisions.md. The toolchain records what was decided (sketch picks,
+   * critiques and the gate, rejections, deliverables, approvals) so the log does not depend on an agent remembering.
+   */
+  logDecision(slug: string, step: string, text: string): void {
+    const p = this.decisionsPath(slug);
+    const head = existsSync(p) ? '' : `# ${this.brand(slug).name} — design decisions\n\n`;
+    const line = text.replace(/\s+/g, ' ').trim();
+    appendFileSync(
+      p,
+      `${head}- ${nowIso().slice(0, 16).replace('T', ' ')} · **${step}** · ${line.length > 600 ? `${line.slice(0, 599)}…` : line}\n`,
+    );
   }
 
   // ----- paths -----

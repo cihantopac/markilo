@@ -6,6 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `markilo status`: where the work stands — the workspace (or `found: false`, exit 0), each brand's stage and the
+  next step. The skills start with it instead of probing for a workspace and getting an error.
+- Decisions are logged by the toolchain: sketch picks, critiques with the gate result, rejections, deliverables,
+  approvals and locks are appended to `decisions.md` with a timestamp. In the benchmark the file stayed empty.
+- The gate reports a `nearMiss` (only the average is short, every required criterion ≥ 6 and the critic said yes); it
+  gets one targeted round on its lowest criteria before rejection. The bar does not move.
+
+### Fixed
+
+- Context sheets show light reference marks (white logos made for dark app tiles) on a dark tile instead of letting
+  them vanish on white.
+
 ## [0.4.0-rc.4] - 2026-10-30
 
 ### Fixed

@@ -52,7 +52,8 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
 Work through these stages. Tell the user which stage you are in. If they asked for one stage only
 (for example "just export"), do that stage, using what is already in the workspace.
 
-1. **Discover** — `markilo brand list` (or `markilo init` + `markilo brand add`). For a repository, first run
+1. **Discover** — `markilo status` (where the work stands and the next step; `found: false` means `markilo init` +
+   `markilo brand add`). For a repository, first run
    `markilo research monorepo <path>`: if it lists several sites/apps, treat the work as a family (see
    `references/workflow.md` → Monorepos) and confirm the brand list and any locked members with the user before
    `--register`. For a single project: `markilo research repo <path> --brand <slug>`. For a URL: ask, then
@@ -87,7 +88,9 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    **Quality gate:** a concept goes to the user only if the critic scores brand-fit, distinctiveness and memorability
    each ≥ 6, the average ≥ 6.5, and answers yes to "would a senior designer present this as is?" — read the result
    from `markilo concept list --brand <slug>` (`gate: passed|failed`); `finalize` refuses a failed concept unless the
-   user chose it anyway (`--user-choice "<their reason>"`). Otherwise send it
+   user chose it anyway (`--user-choice "<their reason>"`). A `nearMiss` (only the average is short, every required
+   criterion ≥ 6 and the critic said yes) gets one targeted round on its lowest-scored criteria before anything else,
+   then a fresh critique; the bar does not move. Otherwise send it
    back to a concept-designer with the critique (up to 2 rounds), asking for a different move, not a polish. A concept
    that still misses is set to `rejected` (`markilo concept update --status rejected`) so the gallery hides it.
    If fewer than two concepts pass, say so plainly, show what passed, and propose new directions — do not fill the

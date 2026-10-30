@@ -23,6 +23,17 @@ describe('cli (bundled)', () => {
     expect(u.status).toBe(64);
     expect(JSON.parse(u.stderr).error.code).toBe('USAGE');
   });
+  it('reports the workspace status without failing when there is none', () => {
+    const cwd = tmp();
+    const none = run(['status'], cwd);
+    expect(none.status, none.stderr).toBe(0);
+    expect(JSON.parse(none.stdout)).toMatchObject({ found: false });
+    run(['init', '--name', 'Demo'], cwd);
+    run(['brand', 'add', 'Status Test'], cwd);
+    const some = JSON.parse(run(['status'], cwd).stdout);
+    expect(some).toMatchObject({ found: true, brands: [{ slug: 'status-test', stage: 'research' }] });
+    expect(some.next).toMatch(/research repo/);
+  });
   it('runs a workspace flow from any directory', () => {
     const cwd = tmp();
     expect(run(['init', '--name', 'Demo'], cwd).status).toBe(0);

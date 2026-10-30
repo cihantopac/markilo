@@ -16,7 +16,7 @@ import {
 } from '../construct/vary.js';
 import { MarkiloError } from '../core/errors.js';
 import { isDir, nowIso, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
-import { isSlug, slugify } from '../core/paths.js';
+import { isSlug, portableRelative, slugify } from '../core/paths.js';
 import type {
   BrandRole,
   Brief,
@@ -158,6 +158,67 @@ export const COMMANDS: CommandSpec[] = [
         locked: c.bool('locked'),
       });
       return { brand: b, files: { brief: w.briefPath(b.slug), profile: w.profilePath(b.slug) } };
+    },
+  },
+  {
+    name: 'status',
+    summary:
+      'Where the work stands: the workspace (if any), each brand and its stage, and the next step. Exits 0 when there is no workspace yet.',
+    usage: 'status',
+    async run(c) {
+      let w: Workspace;
+      try {
+        w = ws(c);
+      } catch (err) {
+        if (err instanceof MarkiloError && err.code === 'NO_WORKSPACE')
+          return { found: false, next: 'markilo init, then markilo brand add "<Name>"' };
+        throw err;
+      }
+      const brands = w.manifest.brands.map((b) => {
+        const concepts = w.concepts(b.slug);
+        const gates = concepts.map((x) => gateOf(x).status);
+        const approved = existsSync(join(w.finalDir(b.slug), 'brand.json'));
+        const exported = existsSync(join(w.exportsDir(b.slug), 'asset-manifest.json'));
+        const sources = w.profile(b.slug).sources.length;
+        const stage = b.locked
+          ? 'locked'
+          : exported
+            ? 'delivered'
+            : approved
+              ? 'export'
+              : gates.includes('passed')
+                ? 'review'
+                : concepts.length
+                  ? 'design'
+                  : sources
+                    ? 'brief and directions'
+                    : 'research';
+        return {
+          slug: b.slug,
+          name: b.name,
+          role: b.role,
+          stage,
+          concepts: concepts.length,
+          passedGate: gates.filter((g) => g === 'passed').length,
+          approved,
+          exported,
+        };
+      });
+      const first = brands.find((b) => b.stage !== 'delivered' && b.stage !== 'locked');
+      const NEXT: Record<string, string> = {
+        research: `markilo research repo <path> --brand ${first?.slug}`,
+        'brief and directions': `markilo brief update --brand ${first?.slug} --file brief.json`,
+        design: `markilo concept list --brand ${first?.slug}`,
+        review: 'markilo gallery --serve',
+        export: `markilo export --brand ${first?.slug}`,
+      };
+      return {
+        found: true,
+        workspace: portableRelative(c.cwd, w.root) || '.',
+        family: w.manifest.family?.name ?? null,
+        brands,
+        next: first ? NEXT[first.stage] : 'Everything is delivered.',
+      };
     },
   },
   {
@@ -994,6 +1055,7 @@ export const COMMANDS: CommandSpec[] = [
           palette: x.palette,
           gate: gateOf(x).status,
           ...(gateOf(x).average !== undefined ? { criticAverage: gateOf(x).average } : {}),
+          ...(gateOf(x).nearMiss ? { nearMiss: true } : {}),
         }));
     },
   },
@@ -1127,7 +1189,26 @@ export const COMMANDS: CommandSpec[] = [
         };
       }
       w.saveConcept(next);
-      return { ...next, gate: gateOf(next) };
+      const gate = gateOf(next);
+      if (c.str('sketch-pick'))
+        w.logDecision(
+          slug,
+          'Sketch review',
+          `${cur.id}: ${next.sketchReview?.pick ? `develop ${next.sketchReview.pick}` : 'no sketch picked'}${next.sketchReview?.notes ? ` — ${next.sketchReview.notes}` : ''}`,
+        );
+      if (c.str('present') || c.list('judgment').length) {
+        const answer = next.critique
+          ? `${next.critique.present ? 'would present as is' : 'would not present as is'} — ${next.critique.reason}. `
+          : '';
+        w.logDecision(
+          slug,
+          'Critique',
+          `${cur.id}: ${answer}Gate ${gate.status}${gate.average !== undefined ? ` (average ${gate.average})` : ''}${gate.reasons.length ? `: ${gate.reasons.join('; ')}` : ''}.`,
+        );
+      }
+      if (st && st !== cur.status && (st === 'rejected' || st === 'shortlisted'))
+        w.logDecision(slug, st === 'rejected' ? 'Rejected' : 'Shortlisted', `${cur.id} (${cur.title}).`);
+      return { ...next, gate };
     },
   },
   {
@@ -1330,6 +1411,7 @@ export const COMMANDS: CommandSpec[] = [
         chosen = [...new Set([...chosen, ...c.list('add')])].filter((g) => !c.list('remove').includes(g));
         brief.deliverables = EXPORT_GROUPS.filter((g) => chosen.includes(g));
         writeJson(w.briefPath(slug), brief);
+        w.logDecision(slug, 'Deliverables', brief.deliverables.join(', '));
       }
       const current = resolveDeliverables(brief);
       const suggestion = suggestDeliverables(brief);

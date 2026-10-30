@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { Concept } from '../src/core/types.js';
@@ -33,6 +34,13 @@ describe('quality gate', () => {
       'average 6 < 6.5',
     ]);
     expect(gateOf({} as Concept).status).toBe('not-reviewed');
+    // A near miss: only the average is short and the critic would present it — one targeted round, same bar.
+    const near = gateOf(scored({ 'brand-fit': 7, distinctiveness: 6, memorability: 6, craft: 6 }, true));
+    expect(near).toMatchObject({ status: 'failed', nearMiss: true });
+    expect(gateOf(scored({ ...strong, distinctiveness: 5 }, true)).nearMiss).toBeUndefined();
+    expect(
+      gateOf(scored({ 'brand-fit': 7, distinctiveness: 6, memorability: 6, craft: 6 }, false)).nearMiss,
+    ).toBeUndefined();
   });
 
   it('reads criteria under the spellings critics use', () => {
@@ -115,6 +123,10 @@ describe('cli: critique and research', () => {
     expect(out.judgment?.presentable).toBeUndefined();
     expect(out.gate.status).toBe('failed');
     expect(JSON.parse(run(['concept', 'list', '--brand', 'gate-test'], cwd).stdout)[0].gate).toBe('failed');
+    // Decisions are logged by the toolchain, not left to the agent.
+    const log = readFileSync(join(cwd, 'brand', 'brands', 'gate-test', 'decisions.md'), 'utf8');
+    expect(log).toMatch(/\*\*Critique\*\* · a: would not present as is — Reads as a bar chart/);
+    expect(log.match(/^- \d{4}-\d{2}-\d{2} \d{2}:\d{2} · /gm)?.length).toBeGreaterThanOrEqual(2);
     const named = run(
       [
         'concept',

@@ -74,6 +74,11 @@ export interface GateResult {
   /** Average of every recorded judgment score. */
   average?: number;
   reasons: string[];
+  /**
+   * Missed only on the average, with every required criterion ≥ the minimum and a yes from the critic: worth one
+   * targeted refinement round on its lowest criteria. The bar itself does not move.
+   */
+  nearMiss?: true;
 }
 
 export function gateOf(c: Pick<Concept, 'judgment' | 'critique'>): GateResult {
@@ -96,9 +101,11 @@ export function gateOf(c: Pick<Concept, 'judgment' | 'critique'>): GateResult {
   if (!c.critique) reasons.push('no answer yet to "would a senior designer present it as is?"');
   else if (!c.critique.present)
     reasons.push(`a senior designer would not present it as is: ${c.critique.reason}`);
+  const nearMiss = reasons.length === 1 && reasons[0]!.startsWith('average') && c.critique?.present === true;
   return {
     status: reasons.length ? 'failed' : 'passed',
     ...(average !== undefined ? { average } : {}),
     reasons,
+    ...(nearMiss ? { nearMiss: true as const } : {}),
   };
 }

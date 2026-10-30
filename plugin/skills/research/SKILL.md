@@ -12,7 +12,7 @@ Request: $ARGUMENTS
 
 Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts. Read `${CLAUDE_PLUGIN_ROOT}/skills/design/references/research-playbook.md` and `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` first.
 
-1. Find or create the workspace: `markilo brand list` — else `markilo init` and `markilo brand add "<Name>"`.
+1. Find or create the workspace: `markilo status` — with `found: false`, `markilo init` and `markilo brand add "<Name>"`.
 2. Check what is already known: `markilo profile show --brand <slug>` and `markilo answers --brand <slug>`.
    Do not repeat finished research; extend it.
 3. Local sources: for repositories run `markilo research monorepo <path>` first. Several sites/apps → confirm the list and

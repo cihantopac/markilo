@@ -1,17 +1,18 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
+import { loadMark } from '../analyze/mark.js';
 import { assessQuality, type QualityReport } from '../analyze/quality.js';
 import { MarkiloError } from '../core/errors.js';
 import { readText, writeGenerated, writeJson } from '../core/fsx.js';
 import type { Workspace } from '../core/workspace.js';
 import { composeLockup } from '../design/lockup.js';
 import { inkMetrics } from '../export/geometry.js';
-import { type ContextPeer, renderContextSheet } from '../render/context.js';
+import { type ContextPeer, groundFor, renderContextSheet } from '../render/context.js';
 import { renderReviewSheet } from '../render/sheet.js';
 import { buildOriginalityReport, readReferences } from './originality.js';
 
 /** Collected reference marks, direct competitors first, one per brand, for the context sheet. */
-function contextPeers(ws: Workspace, brand: string): ContextPeer[] {
+async function contextPeers(ws: Workspace, brand: string): Promise<ContextPeer[]> {
   const seen = new Set<string>();
   const refs = [...readReferences(ws, brand).references].sort(
     (a, b) => Number((b.category ?? 'direct') === 'direct') - Number((a.category ?? 'direct') === 'direct'),
@@ -24,11 +25,18 @@ function contextPeers(ws: Workspace, brand: string): ContextPeer[] {
     if (!existsSync(file)) continue;
     seen.add(key);
     const ext = extname(file).toLowerCase();
-    if (ext === '.svg') out.push({ name: r.name, svg: readFileSync(file, 'utf8') });
+    const ground = groundFor(
+      await loadMark(file).then(
+        (m) => m.colors,
+        () => [],
+      ),
+    );
+    if (ext === '.svg') out.push({ name: r.name, svg: readFileSync(file, 'utf8'), ground });
     else
       out.push({
         name: r.name,
         raster: { bytes: readFileSync(file), mime: ext === '.png' ? 'image/png' : 'image/jpeg' },
+        ground,
       });
     if (out.length >= 7) break;
   }
@@ -124,7 +132,7 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
         ...(lockup ? { lockup } : {}),
         paper: concept.palette.paper ?? '#ffffff',
         primary: concept.palette.primary,
-        peers: contextPeers(ws, brand),
+        peers: await contextPeers(ws, brand),
       }),
     );
   }

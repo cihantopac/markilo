@@ -12,7 +12,7 @@ Request: $ARGUMENTS
 
 Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts.
 
-1. `markilo brand list`. If the brand has no approved kit: for a designed concept run `markilo finalize`; for an existing
+1. `markilo status`. If the brand has no approved kit: for a designed concept run `markilo finalize`; for an existing
    identity the user wants to keep as-is, use `markilo lock --brand <slug> --symbol … --primary …` (exact copy).
 2. **Choose the package once.** Run `markilo deliverables --brand <slug>`. If `source` is `brief`, the user already
    chose; go on. If it is `suggested`, tell the user in one short message what you will prepare, in plain words, and

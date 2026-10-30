@@ -6,7 +6,7 @@ import { commandHelp, parseCommand } from './args.js';
 import { COMMANDS, findCommand, VERSION } from './commands.js';
 
 const GROUPS: [string, string[]][] = [
-  ['Workspace', ['init', 'brand add', 'brand list', 'brief show', 'brief update']],
+  ['Workspace', ['status', 'init', 'brand add', 'brand list', 'brief show', 'brief update']],
   [
     'Research',
     [

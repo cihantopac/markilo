@@ -1,3 +1,4 @@
+import { contrastRatio } from '../analyze/color.js';
 import { inkMetrics, placeMark } from '../export/geometry.js';
 import { onFillVariant } from '../export/variants.js';
 import { nestSvg, svgDocument } from '../svg/compose.js';
@@ -22,6 +23,8 @@ export interface ContextPeer {
   name: string;
   svg?: string;
   raster?: { bytes: Uint8Array; mime: string };
+  /** The tile it is shown on: light marks (white logos for dark app tiles) go on a dark tile. */
+  ground?: 'light' | 'dark';
 }
 
 export interface ContextSheetInput {
@@ -35,6 +38,12 @@ export interface ContextSheetInput {
 }
 
 const W = 960;
+const DARK_TILE = '#1b1f27';
+
+/** A mark whose colors all nearly vanish on white is shown on a dark tile, as its owner would show it. */
+export function groundFor(colors: string[]): 'light' | 'dark' {
+  return colors.length && colors.every((c) => contrastRatio(c, '#ffffff') < 1.6) ? 'dark' : 'light';
+}
 const PAD = 24;
 const NEUTRAL = '#d9dce3';
 
@@ -120,7 +129,7 @@ export async function contextSheetSvg(input: ContextSheetInput): Promise<{ svg: 
       body += label(input.name.slice(0, 14), x, ty + 76, 11, '#ffffff');
     } else if (t) {
       // A slot with no collected peer stays empty: a blank white tile would read as a white app icon.
-      body += `<rect x="${x}" y="${ty}" width="60" height="60" rx="14" fill="#ffffff"/>`;
+      body += `<rect x="${x}" y="${ty}" width="60" height="60" rx="14" fill="${t.ground === 'dark' ? DARK_TILE : '#ffffff'}"/>`;
       body += await peerMark(t, { x: x + 6, y: ty + 6, width: 48, height: 48 });
       if (t.name) body += label(t.name.slice(0, 14), x, ty + 76, 11, '#dfe4ee');
     }
@@ -152,7 +161,7 @@ export async function contextSheetSvg(input: ContextSheetInput): Promise<{ svg: 
         { mode: 'circle', radius: 0.36 },
       );
     } else {
-      body += `<circle cx="${cx + 20}" cy="${y + 20}" r="20" fill="#ffffff" stroke="#d9dce3"/>`;
+      body += `<circle cx="${cx + 20}" cy="${y + 20}" r="20" fill="${a.ground === 'dark' ? DARK_TILE : '#ffffff'}" stroke="#d9dce3"/>`;
       body += await peerMark(a, { x: cx + 7, y: y + 7, width: 26, height: 26 });
     }
   }
