@@ -64,8 +64,9 @@ Run: \`${m} <command>\` (JSON output; \`${m} help\` lists every command; details
    name's initial, at least one with no letter and no product object; \`concept new\` for each.
 5. Sketch: 3–5 construction specs per direction in \`concepts/<id>/sketches/\`, each with an "idea";
    \`${m} sketches --brand <slug> --concept <id>\`. Build marks only with construction specs: ${ref('construction.md')}.
-6. Sketch review: as a separate, critical pass, open each \`sketches/board.png\` and keep at most one sketch per direction
-   that can reach 7/10 for distinctiveness and memorability (\`concept update --sketch-pick sN|none\`).
+6. Sketch review: as a separate, critical pass, open each \`sketches/board.png\`, strike sketches that read as a UI
+   icon, a known logo, a cliché, the product's own object or the name's initial with a cut, and develop the strongest
+   one left per direction (\`concept update --sketch-pick sN|none\`; none only when every sketch is struck).
 7. Develop: tune with \`construct … --vary\`, commit with \`construct … --brand --concept --set …\`, wordmark
    (\`wordmark\` or a constructed one), \`verify\`. Principles: ${ref('design-principles.md')}; SVG rules: ${ref('svg-authoring.md')}.
 8. Critique (a separate pass, as an independent critic). Cold first: read the brief and look only at

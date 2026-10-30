@@ -6,6 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0-rc.9] - 2026-10-30
+
+### Changed
+
+- The sketch review strikes clear failures (UI icons, known logos, clichés, the product's own object drawn plainly,
+  the name's initial with a cut, a form language that contradicts the brief, sketches that are not ready) and sends
+  the strongest sketch left to development; `none` only when every sketch is struck. It no longer bets on the
+  finished score: the calibrated gate judges that after development. With the bet, an Opus critic stopped 24 of 27
+  directions before development in rc.8.
+
+### Fixed
+
+- A concept id that is not a slug (`splitS`) gets a suggestion (`--id split-s`).
+
 ### Added
 
 - Benchmark results for rc.8 (`bench/results/0.4.0-rc.8/`, nine runs with the calibrated critic): no run passed; the

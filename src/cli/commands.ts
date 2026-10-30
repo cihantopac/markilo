@@ -992,7 +992,12 @@ export const COMMANDS: CommandSpec[] = [
       const slug = c.req('brand');
       w.assertNotLocked(slug);
       const id = c.req('id');
-      if (!isSlug(id)) throw new MarkiloError('INVALID_INPUT', '--id must be a slug (a-z, 0-9, -).');
+      if (!isSlug(id))
+        throw new MarkiloError(
+          'INVALID_INPUT',
+          '--id must be a slug (a-z, 0-9, -).',
+          `Try --id ${slugify(id.replace(/([a-z0-9])([A-Z])/g, '$1-$2'))}.`,
+        );
       const dir = w.conceptDir(slug, id);
       if (existsSync(join(dir, 'concept.json')))
         throw new MarkiloError('EXISTS', `Concept ${id} already exists.`);

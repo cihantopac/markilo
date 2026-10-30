@@ -24,10 +24,11 @@ not finish, in this order:
    product's own object drawn plainly (a page or folded corner for documents and invoices, bars or tally marks for
    finance, a moon or stars for sleep, a padlock for privacy — see "The product's own object is a cliché too" in
    `skills/design/references/design-principles.md`), and every sketch that does not survive 16 px.
-3. **Pick** one of the rest only if you would bet it reaches distinctiveness and memorability ≥ 7 once finished.
-   A risk you have to name ("may read as a barcode", "risk of a door") is the reading you struck in step 2: that
-   sketch is not a pick. The best of a weak board is still weak; picking none costs one cheap sketch pass, a weak pick
-   costs a full development round that the gate will reject.
+3. **Pick** the strongest sketch that survived step 2: the one whose first reading is closest to its idea and that
+   has the most room to become ownable. Pick `none` only when step 2 struck every sketch. Do not predict the finished
+   mark — the gate does that, cold, after development. In Markilo's benchmark a sketch review that also had to bet on
+   the finished score stopped nine directions in ten, while the marks that did get through were judged as well as
+   any. Your notes are what the developer works from: name the risks you see and what must change.
 4. Record it: `markilo concept update --brand <slug> --concept <id> --sketch-pick <sN|none> --sketch-notes
    "Reads as: <s1 …; s2 …>. <what to keep and fix, or for none the different move to try>"`.
 

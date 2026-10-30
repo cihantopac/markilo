@@ -215,6 +215,28 @@ describe('cli: critique and research', () => {
     );
     expect(lost.status).toBe(64);
     expect(JSON.parse(lost.stderr).error.hint).toMatch(/Quote colours/);
+    const camel = run(
+      [
+        'concept',
+        'new',
+        '--brand',
+        'show-test',
+        '--id',
+        'splitS',
+        '--title',
+        'A',
+        '--direction',
+        'd',
+        '--rationale',
+        'r',
+        '--semantics',
+        'x',
+        '--primary',
+        '#1d4e89',
+      ],
+      cwd,
+    );
+    expect(JSON.parse(camel.stderr).error.hint).toMatch(/--id split-s/);
     run(
       [
         'concept',
