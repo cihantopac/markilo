@@ -1,6 +1,6 @@
 {
   "name": "markilo",
-  "version": "0.3.0-beta.5",
+  "version": "0.3.0-beta.6",
   "description": "AI-powered brand identity studio for Claude Code: research, originality analysis, SVG identity design, verification and complete asset export.",
   "license": "Apache-2.0",
   "type": "module",

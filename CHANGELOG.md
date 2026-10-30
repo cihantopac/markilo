@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0-beta.6] - 2026-10-30
+
+### Fixed
+
+- Privacy: research profiles no longer store absolute local paths (they leaked the user name and folder layout when a
+  workspace was committed); paths are kept relative to the project, and `profile tidy` rewrites older profiles.
+
 ## [0.3.0-beta.5] - 2026-10-30
 
 ### Fixed
@@ -137,7 +144,8 @@ All notable changes to this project are documented here. The format follows
 - Self-contained HTML Brand Preview Gallery with mockups and a feedback export.
 - Locked identities that are reproduced byte-for-byte and never redesigned.
 
-[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.5...HEAD
+[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.6...HEAD
+[0.3.0-beta.6]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.5...markilo--v0.3.0-beta.6
 [0.3.0-beta.5]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.4...markilo--v0.3.0-beta.5
 [0.3.0-beta.4]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.3...markilo--v0.3.0-beta.4
 [0.3.0-beta.3]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.2...markilo--v0.3.0-beta.3

@@ -1,5 +1,6 @@
 import { MarkiloError } from '../core/errors.js';
 import { nowIso } from '../core/fsx.js';
+import { portableRef } from '../core/paths.js';
 import type {
   BrandProfile,
   Confidence,
@@ -34,10 +35,13 @@ const nextId = (prefix: string, existing: { id: string }[]) => {
   return `${prefix}${n}`;
 };
 
+export { portableRef };
+
 export function addSource(
   p: BrandProfile,
-  s: Omit<Source, 'id' | 'retrievedAt'> & { retrievedAt?: string },
+  s0: Omit<Source, 'id' | 'retrievedAt'> & { retrievedAt?: string },
 ): Source {
+  const s = { ...s0, ref: portableRef(s0.ref) };
   const dup = p.sources.find(
     (x) =>
       x.type === s.type &&

@@ -99,3 +99,13 @@ describe('reference marks', () => {
     ).rejects.toThrow(/BMP/);
   });
 });
+
+describe('source references', () => {
+  it('never stores absolute local paths', async () => {
+    const { portableRef } = await import('../src/research/profile.js');
+    expect(portableRef('/home/ana/project/src/a.ts', '/home/ana/project')).toBe('src/a.ts');
+    expect(portableRef('/home/ana/project', '/home/ana/project')).toBe('.');
+    expect(portableRef('/home/ana/other/logo.svg', '/home/ana/project')).toBe('…/logo.svg');
+    expect(portableRef('https://example.com/a', '/home/ana/project')).toBe('https://example.com/a');
+  });
+});

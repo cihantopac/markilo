@@ -2,7 +2,7 @@ import { existsSync, readdirSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { MarkiloError } from './errors.js';
 import { isDir, nowIso, readJson, writeFileSafe, writeJson } from './fsx.js';
-import { isSlug, resolveInsideReal, slugify } from './paths.js';
+import { isSlug, portableRef, resolveInsideReal, slugify } from './paths.js';
 import type {
   AnswerLog,
   BrandProfile,
@@ -199,8 +199,11 @@ export class Workspace {
     return b;
   }
   profile = (slug: string) => readJson<BrandProfile>(this.profilePath(slug));
+  /** Saves the profile with local paths made relative to the project folder that holds the workspace. */
   saveProfile(slug: string, p: BrandProfile): void {
-    writeJson(this.profilePath(slug), { ...p, updatedAt: nowIso() });
+    const base = dirname(this.root);
+    const sources = p.sources.map((s) => ({ ...s, ref: portableRef(s.ref, base) }));
+    writeJson(this.profilePath(slug), { ...p, sources, updatedAt: nowIso() });
   }
   answers = (slug: string) => readJson<AnswerLog>(this.answersPath(slug));
 

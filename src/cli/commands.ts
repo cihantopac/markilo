@@ -556,6 +556,22 @@ export const COMMANDS: CommandSpec[] = [
     },
   },
   {
+    name: 'profile tidy',
+    summary:
+      'Rewrite the profile with local file paths relative to the project (no absolute paths), e.g. before committing a workspace.',
+    usage: 'profile tidy --brand <slug>',
+    options: { ...brandOpt },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      const p = w.profile(slug);
+      const before = p.sources.map((s) => s.ref);
+      w.saveProfile(slug, p);
+      const after = w.profile(slug).sources.map((s) => s.ref);
+      return { sources: after.length, rewritten: after.filter((r, i) => r !== before[i]).length };
+    },
+  },
+  {
     name: 'profile show',
     summary: 'Show the Brand Intelligence Profile (summary by default, --full for everything).',
     usage: 'profile show --brand <slug> [--full] [--topic <topic>]',

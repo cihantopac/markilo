@@ -1,5 +1,5 @@
 import { existsSync, realpathSync } from 'node:fs';
-import { dirname, isAbsolute, normalize, relative, resolve, sep } from 'node:path';
+import { basename, dirname, isAbsolute, normalize, relative, resolve, sep } from 'node:path';
 import { MarkiloError } from './errors.js';
 
 /** Lowercase ASCII slug; folds Turkish and other Latin diacritics so "Şirket Ürün" → "sirket-urun". */
@@ -86,4 +86,17 @@ export function resolveInsideReal(root: string, target: string): string {
 /** Forward-slash relative path for manifests and reports, identical on every OS. */
 export function portableRelative(from: string, to: string): string {
   return relative(from, to).split(sep).join('/');
+}
+
+/**
+ * Local file paths are stored relative to the project folder (the current directory), never as absolute paths:
+ * profiles are often committed, and an absolute path leaks the user's name and folder layout. Paths outside the
+ * project keep only their file name.
+ */
+export function portableRef(ref: string, base = process.cwd()): string {
+  if (!isAbsolute(ref) || /^[a-z][a-z0-9+.-]*:\/\//i.test(ref)) return ref;
+  const rel = relative(base, ref);
+  if (!rel) return '.';
+  if (rel.startsWith('..') || isAbsolute(rel)) return `…/${basename(ref)}`;
+  return rel.split(sep).join('/');
 }
