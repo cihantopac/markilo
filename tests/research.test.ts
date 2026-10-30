@@ -59,3 +59,43 @@ describe('site research', () => {
     expect(robotsAllows('User-agent: MarkiloBot\nDisallow: /', '/')).toBe(false);
   });
 });
+
+describe('reference marks', () => {
+  const ico = (png: Uint8Array) => {
+    const head = new Uint8Array(22);
+    const v = new DataView(head.buffer);
+    v.setUint16(2, 1, true); // type: icon
+    v.setUint16(4, 1, true); // one image
+    v.setUint32(6 + 8, png.length, true);
+    v.setUint32(6 + 12, 22, true);
+    return new Uint8Array([...head, ...png]);
+  };
+  it('accepts PNG-in-ICO favicons and removes references by id', async () => {
+    const { renderPng } = await import('../src/render/resvg.js');
+    const { addReference, removeReferences } = await import('../src/research/competitors.js');
+    const { readReferences } = await import('../src/report/originality.js');
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Ico Co' });
+    const png = await renderPng(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M8 8h48v48H8z" fill="#123456"/></svg>',
+      { width: 64 },
+    );
+    const r = await addReference(ws, 'ico-co', {
+      name: 'Rival',
+      source: 'test',
+      bytes: ico(png),
+      ext: '.ico',
+    });
+    expect(readReferences(ws, 'ico-co').references[0]!.file).toMatch(/\.png$/);
+    expect(removeReferences(ws, 'ico-co', [r.id, 'nope'])).toEqual({ removed: [r.id], missing: ['nope'] });
+    expect(readReferences(ws, 'ico-co').references).toHaveLength(0);
+    await expect(
+      addReference(ws, 'ico-co', {
+        name: 'Bmp',
+        source: 'test',
+        bytes: ico(new Uint8Array(40)),
+        ext: '.ico',
+      }),
+    ).rejects.toThrow(/BMP/);
+  });
+});

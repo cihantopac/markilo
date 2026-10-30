@@ -71,9 +71,15 @@ export function onFillVariant(
   fill: string,
   candidates: string[] = ['#ffffff', '#0b0d12'],
 ): { svg: string; color: string | null } {
-  const colors = lintSvg(svg).stats.colors;
-  const ok = colors.length > 0 && colors.every((c) => contrastRatio(c, fill) >= 3);
-  if (ok) return { svg, color: null };
+  const readable = (art: string) => {
+    const colors = lintSvg(art).stats.colors;
+    return colors.length > 0 && colors.every((c) => contrastRatio(c, fill) >= 3);
+  };
+  if (readable(svg)) return { svg, color: null };
+  // Keep the brand's colors where possible (a dark ink flips light, an accent is lifted), the way the reversed
+  // logo does; only fall back to one color when that still cannot reach 3:1 on the fill.
+  const adapted = adaptToGround(svg, fill, { dark: '#0b0d12', light: '#ffffff' });
+  if (readable(adapted)) return { svg: adapted, color: null };
   const best = [...candidates].sort((a, b) => contrastRatio(b, fill) - contrastRatio(a, fill))[0]!;
   return { svg: monochrome(svg, best), color: best };
 }

@@ -47,6 +47,7 @@ import {
   addReference,
   competitorsFromBrief,
   type ReferenceCategory,
+  removeReferences,
   researchCompetitor,
 } from '../research/competitors.js';
 import { scanMonorepo } from '../research/monorepo.js';
@@ -729,7 +730,7 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'reference add',
     summary:
-      'Add a competitor or category reference mark (SVG/PNG/JPEG) for similarity analysis. Stored git-ignored.',
+      'Add a competitor or category reference mark (SVG/PNG/JPEG/ICO) for similarity analysis. Stored git-ignored.',
     usage:
       'reference add --brand <slug> --file <path> --name <brand name> --source <url or note> [--category <text>] [--retrieved <ISO date>]',
     options: {
@@ -747,8 +748,8 @@ export const COMMANDS: CommandSpec[] = [
       const src = file(c, c.req('file'));
       if (!existsSync(src)) throw new MarkiloError('NOT_FOUND', `File not found: ${src}`);
       const ext = extname(src).toLowerCase().replace('.jpeg', '.jpg');
-      if (!['.svg', '.png', '.jpg'].includes(ext))
-        throw new MarkiloError('INVALID_INPUT', 'References must be SVG, PNG or JPEG.');
+      if (!['.svg', '.png', '.jpg', '.ico'].includes(ext))
+        throw new MarkiloError('INVALID_INPUT', 'References must be SVG, PNG, JPEG or ICO.');
       const r = await addReference(w, slug, {
         name: c.req('name'),
         source: c.req('source'),
@@ -760,6 +761,20 @@ export const COMMANDS: CommandSpec[] = [
       });
       const total = readReferences(w, slug).references.length;
       return { added: r.id, duplicate: r.duplicate, total };
+    },
+  },
+  {
+    name: 'reference remove',
+    summary: 'Remove reference marks (a wrong logo, a duplicate, a broken download) by id.',
+    usage: 'reference remove --brand <slug> --id <id>[,<id>…]',
+    options: { ...brandOpt, id: { type: 'string', description: 'Reference id(s) from "reference list"' } },
+    async run(c) {
+      const w = ws(c);
+      const ids = c.list('id');
+      if (!ids.length)
+        throw new MarkiloError('USAGE', 'Give --id <id>[,<id>…] (see "markilo reference list").');
+      const r = removeReferences(w, c.req('brand'), ids);
+      return { ...r, total: readReferences(w, c.req('brand')).references.length };
     },
   },
   {
@@ -1295,7 +1310,11 @@ export const COMMANDS: CommandSpec[] = [
           'Write 3–5 construction specs there (s1.json …), each with an "idea" sentence.',
         );
       if (files.length > 8)
-        throw new MarkiloError('USAGE', 'A board holds at most 8 sketches; keep the strongest.');
+        throw new MarkiloError(
+          'USAGE',
+          'A board holds at most 8 sketches; keep the strongest.',
+          'Move earlier rounds into sketches/archive/ (subfolders are ignored).',
+        );
       const palette: Record<string, string> = {};
       for (const [k, v] of Object.entries(concept.palette)) if (v) palette[k] = v;
       const paper = concept.palette.paper ?? '#ffffff';
@@ -1506,10 +1525,13 @@ export const COMMANDS: CommandSpec[] = [
   },
   {
     name: 'lockup',
-    summary: 'Compose a symbol and a wordmark into a horizontal or stacked lockup aligned to cap height.',
+    summary:
+      "Compose a symbol and a wordmark into a horizontal or stacked lockup aligned to cap height. With --brand/--concept the concept's files are used and the result is written into the concept.",
     usage:
-      'lockup --symbol <svg> --wordmark <svg> --layout horizontal|stacked -o <out.svg> [--scale <n>] [--gap <n>]',
+      'lockup (--symbol <svg> --wordmark <svg> -o <out.svg> | --brand <slug> --concept <id>) --layout horizontal|stacked [--scale <n>] [--gap <n>]',
     options: {
+      ...brandOpt,
+      concept: { type: 'string', description: 'Concept id (uses its symbol and wordmark)' },
       symbol: { type: 'string', description: 'Symbol SVG' },
       wordmark: { type: 'string', description: 'Wordmark SVG' },
       layout: { type: 'string', description: 'horizontal | stacked' },
@@ -1520,14 +1542,35 @@ export const COMMANDS: CommandSpec[] = [
     },
     async run(c) {
       const layout = (c.str('layout') ?? 'horizontal') as 'horizontal' | 'stacked';
-      const l = composeLockup(readText(file(c, c.req('symbol'))), readText(file(c, c.req('wordmark'))), {
+      const id = c.str('concept');
+      let symbolPath = c.str('symbol') ? file(c, c.str('symbol')!) : undefined;
+      let wordmarkPath = c.str('wordmark') ? file(c, c.str('wordmark')!) : undefined;
+      let out = c.str('out') ? file(c, c.str('out')!) : undefined;
+      let force = c.bool('force');
+      if (id) {
+        const w = ws(c);
+        const brand = c.req('brand');
+        const concept = w.concept(brand, id);
+        if (!concept.files.symbol || !concept.files.wordmark)
+          throw new MarkiloError('USAGE', `Concept ${id} needs both a symbol and a wordmark for a lockup.`);
+        symbolPath ??= w.conceptFile(brand, id, concept.files.symbol);
+        wordmarkPath ??= w.conceptFile(brand, id, concept.files.wordmark);
+        if (!out) {
+          // A concept's own preview lockup is regenerated freely; finalize builds the official ones.
+          out = w.conceptFile(brand, id, `lockup-${layout}.svg`);
+          force = true;
+        }
+      }
+      if (!symbolPath || !wordmarkPath || !out)
+        throw new MarkiloError('USAGE', 'Give --symbol, --wordmark and -o, or --brand and --concept.');
+      const l = composeLockup(readText(symbolPath), readText(wordmarkPath), {
         layout,
         ...(c.num('scale') ? { symbolScale: c.num('scale')! } : {}),
         ...(c.num('gap') ? { gap: c.num('gap')! } : {}),
       });
-      writeFileSafe(file(c, c.req('out')), l.svg, { force: c.bool('force') });
+      writeFileSafe(out, l.svg, { force });
       return {
-        out: c.req('out'),
+        out,
         width: Math.round(l.width),
         height: Math.round(l.height),
         clearSpace: l.clearSpace,

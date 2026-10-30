@@ -97,10 +97,7 @@ export function guidelinesMarkdown(g: GuidelinesInput): string {
     L.push(
       `Approved with originality verdict **${kit.originality.verdict}** (confidence ${kit.originality.confidence})${kit.originality.acceptedRisk ? ', with the remaining risk explicitly accepted' : ''}. See \`${kit.originality.report}\`.`,
     );
-    L.push(
-      '',
-      "Markilo's checks are not a trademark clearance. Have a trademark attorney search before registering or launching widely.",
-    );
+    for (const line of evidenceLines(kit)) L.push('', line);
   }
   L.push('', '## Do not', '', ...DONTS.map((d) => `- ${d}`), '');
   L.push(
@@ -117,6 +114,22 @@ function figure(svg: string | undefined, bg: string, w = 360, h = 160): string {
   return svgDocument(w, h, nestSvg(svg, { x: w * 0.12, y: h * 0.18, width: w * 0.76, height: h * 0.64 }), {
     background: bg,
   });
+}
+
+/** Plain statements of what the originality verdict rests on; the registry sentence is never softened. */
+function evidenceLines(kit: BrandKit): string[] {
+  const e = kit.originality?.evidence;
+  const out: string[] = [];
+  if (e) out.push(`Compared against: ${e.visual}.`);
+  if (!e || e.registryCoverage === 'none')
+    out.push(
+      'No trademark registry search was done (WIPO Global Brand Database, TMview, national registers). Search them, or have a trademark attorney do it, before registering or launching widely.',
+    );
+  else
+    out.push(
+      `Registry searches logged: ${e.registry}. Markilo's checks are still not a trademark clearance; have a trademark attorney confirm before registering.`,
+    );
+  return out;
 }
 
 export function guidelinesHtml(g: GuidelinesInput): string {
@@ -156,6 +169,15 @@ ${kit.locked ? '<p class="locked">This identity is locked and reproduced exactly
 <h2>Clear space &amp; minimum size</h2><p>Keep clear space equal to the wordmark cap height on every side. Minimum: symbol 16 px / 5 mm, horizontal logo 96 px / 25 mm.</p>
 <h2>Color</h2><div class="swatches">${swatches}</div>${scales}
 <h2>Typography</h2><p>${kit.typography ? `${escapeText(kit.typography.family ?? kit.typography.fontId)} ${kit.typography.weight} — ${escapeText(kit.typography.license ?? '')}` : 'Outlined wordmark; no typeface required.'}</p>
+${
+  kit.originality
+    ? `<h2>Originality check</h2><p>Approved with originality verdict <b>${escapeText(kit.originality.verdict)}</b> (confidence ${escapeText(kit.originality.confidence)})${kit.originality.acceptedRisk ? ', with the remaining risk explicitly accepted' : ''}.</p>${evidenceLines(
+        kit,
+      )
+        .map((l) => `<p>${escapeText(l)}</p>`)
+        .join('')}`
+    : ''
+}
 <h2>Do not</h2><ul class="dont">${DONTS.map((d) => `<li>${escapeText(d)}</li>`).join('')}</ul>
 </main></body></html>
 `;

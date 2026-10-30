@@ -44,6 +44,15 @@ describe('workspace', () => {
     expect(ws.brief('keep').mode).toBe('evaluate');
     expect(() => ws.assertNotLocked('keep')).toThrow(/locked/);
   });
+  it('finds a relative --workspace from a folder inside it', () => {
+    const dir = tmp();
+    const ws = Workspace.init(join(dir, 'branding-next'), 'T');
+    ws.addBrand({ name: 'Deep' });
+    const inside = join(ws.root, 'brands', 'deep');
+    expect(Workspace.locate(inside, 'branding-next').root).toBe(ws.root);
+    expect(Workspace.locate(dir, 'branding-next').root).toBe(ws.root);
+    expect(() => Workspace.locate(dir, 'elsewhere')).toThrow(/No markilo.json/);
+  });
   it('reports a helpful error when there is no workspace', () => {
     expect(() => Workspace.locate(tmp())).toThrow(/No Markilo workspace/);
   });

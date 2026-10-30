@@ -1,5 +1,5 @@
 import { existsSync, readdirSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { MarkiloError } from './errors.js';
 import { isDir, nowIso, readJson, writeFileSafe, writeJson } from './fsx.js';
 import { isSlug, resolveInsideReal, slugify } from './paths.js';
@@ -34,10 +34,16 @@ export class Workspace {
   static locate(cwd: string, explicit?: string): Workspace {
     if (explicit) {
       const root = resolve(cwd, explicit);
-      if (!existsSync(join(root, MANIFEST))) {
-        throw new MarkiloError('NO_WORKSPACE', `No ${MANIFEST} in ${root}.`, 'Run "markilo init" first.');
+      if (existsSync(join(root, MANIFEST))) return new Workspace(root);
+      // A relative --workspace also matches from a parent folder, so commands run from inside the workspace
+      // (an agent that changed directory into a concept folder) still find it.
+      if (!isAbsolute(explicit)) {
+        for (let dir = dirname(resolve(cwd)); ; dir = dirname(dir)) {
+          if (existsSync(join(dir, explicit, MANIFEST))) return new Workspace(join(dir, explicit));
+          if (dirname(dir) === dir) break;
+        }
       }
-      return new Workspace(root);
+      throw new MarkiloError('NO_WORKSPACE', `No ${MANIFEST} in ${root}.`, 'Run "markilo init" first.');
     }
     let dir = resolve(cwd);
     for (;;) {

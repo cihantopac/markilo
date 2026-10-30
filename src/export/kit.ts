@@ -29,7 +29,14 @@ export interface BrandKit {
   tagline?: string;
   approvedAt: string;
   /** Originality status at approval time, so exports and guidelines can say what was (not) checked. */
-  originality?: { verdict: string; confidence: string; acceptedRisk: boolean; report: string };
+  originality?: {
+    verdict: string;
+    confidence: string;
+    acceptedRisk: boolean;
+    report: string;
+    /** What the verdict rests on, so guidelines can state it plainly (e.g. that no registry search was done). */
+    evidence?: { visual: string; registry: string; registryCoverage: string };
+  };
 }
 
 export const kitPath = (ws: Workspace, brand: string) => join(ws.finalDir(brand), 'brand.json');
@@ -84,7 +91,11 @@ export function finalizeConcept(
       `Run "markilo verify --brand ${brand} --concept ${conceptId}" first.`,
     );
   }
-  const orig = readJson<{ verdict: string; confidence?: string }>(reportFile);
+  const orig = readJson<{
+    verdict: string;
+    confidence?: string;
+    evidence?: { visual: { have: string }; registry: { have: string; coverage: string } };
+  }>(reportFile);
   if (orig.verdict === 'redesign') {
     throw new MarkiloError(
       'INVALID_INPUT',
@@ -187,6 +198,15 @@ export function finalizeConcept(
       confidence: orig.confidence ?? 'unknown',
       acceptedRisk: orig.verdict !== 'no-conflicts-found',
       report: `../reports/originality-${conceptId}.md`,
+      ...(orig.evidence
+        ? {
+            evidence: {
+              visual: orig.evidence.visual.have,
+              registry: orig.evidence.registry.have,
+              registryCoverage: orig.evidence.registry.coverage,
+            },
+          }
+        : {}),
     },
   };
   writeJson(kitPath(ws, brand), kit);

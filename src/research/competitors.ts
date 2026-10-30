@@ -1,8 +1,9 @@
+import { rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { sampleFromRaster, sampleFromSvg } from '../analyze/mark.js';
 import { MarkiloError } from '../core/errors.js';
 import { nowIso, sha256, writeFileSafe, writeJson } from '../core/fsx.js';
-import { slugify } from '../core/paths.js';
+import { resolveInsideReal, slugify } from '../core/paths.js';
 import type { Workspace } from '../core/workspace.js';
 import { readReferences, referenceIndexPath } from '../report/originality.js';
 import { sanitizeSvg } from '../svg/sanitize.js';
@@ -15,10 +16,38 @@ export interface NewReference {
   name: string;
   source: string;
   bytes: Uint8Array;
-  ext: '.svg' | '.png' | '.jpg';
+  ext: '.svg' | '.png' | '.jpg' | '.ico';
   category?: ReferenceCategory;
   retrievedAt?: string;
   notes?: string;
+}
+
+/**
+ * The largest PNG image inside an .ico file (favicons are usually PNG-in-ICO). ICO files that only hold BMP images
+ * are refused with a hint, rather than decoded half-right.
+ */
+export function pngFromIco(bytes: Uint8Array): Uint8Array {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  if (bytes.length < 6 || view.getUint16(0, true) !== 0 || view.getUint16(2, true) !== 1)
+    throw new MarkiloError('INVALID_INPUT', 'Not an .ico file.');
+  const count = view.getUint16(4, true);
+  let best: Uint8Array | undefined;
+  for (let i = 0; i < count && 6 + i * 16 + 16 <= bytes.length; i++) {
+    const e = 6 + i * 16;
+    const size = view.getUint32(e + 8, true);
+    const offset = view.getUint32(e + 12, true);
+    if (offset + size > bytes.length || size < 8) continue;
+    const data = bytes.subarray(offset, offset + size);
+    const png = data[0] === 0x89 && data[1] === 0x50 && data[2] === 0x4e && data[3] === 0x47;
+    if (png && (!best || data.length > best.length)) best = data;
+  }
+  if (!best)
+    throw new MarkiloError(
+      'INVALID_INPUT',
+      'This .ico only contains BMP images.',
+      "Use the site's PNG or SVG icon instead (apple-touch-icon, icon.svg).",
+    );
+  return best;
 }
 
 /** Validates (decodes/renders) and stores a reference mark; identical files are not stored twice. */
@@ -28,7 +57,12 @@ export async function addReference(
   ref: NewReference,
 ): Promise<{ id: string; duplicate: boolean }> {
   let bytes = ref.bytes;
-  if (ref.ext === '.svg') {
+  let ext = ref.ext;
+  if (ext === '.ico') {
+    bytes = pngFromIco(bytes);
+    ext = '.png';
+  }
+  if (ext === '.svg') {
     const clean = sanitizeSvg(new TextDecoder().decode(bytes));
     await sampleFromSvg(clean, { id: 'probe' });
     bytes = new TextEncoder().encode(clean);
@@ -41,10 +75,10 @@ export async function addReference(
   if (dup) return { id: dup.id, duplicate: true };
   let id = slugify(`${ref.name}-${idx.references.length + 1}`);
   while (idx.references.some((r) => r.id === id)) id = `${id}-x`;
-  writeFileSafe(join(ws.referencesDir(brand), `${id}${ref.ext}`), bytes, { force: true });
+  writeFileSafe(join(ws.referencesDir(brand), `${id}${ext}`), bytes, { force: true });
   idx.references.push({
     id,
-    file: `${id}${ref.ext}`,
+    file: `${id}${ext}`,
     name: ref.name,
     source: ref.source,
     retrievedAt: ref.retrievedAt ?? nowIso(),
@@ -55,10 +89,29 @@ export async function addReference(
   return { id, duplicate: false };
 }
 
+/** Removes reference marks (wrong logo, a duplicate, a broken download) from the index and the folder. */
+export function removeReferences(
+  ws: Workspace,
+  brand: string,
+  ids: string[],
+): { removed: string[]; missing: string[] } {
+  const idx = readReferences(ws, brand);
+  const removed: string[] = [];
+  const keep = idx.references.filter((r) => {
+    if (!ids.includes(r.id)) return true;
+    removed.push(r.id);
+    rmSync(resolveInsideReal(ws.referencesDir(brand), r.file), { force: true });
+    return false;
+  });
+  writeJson(referenceIndexPath(ws, brand), { ...idx, references: keep });
+  return { removed, missing: ids.filter((i) => !removed.includes(i)) };
+}
+
 const extOf = (contentType: string, url: string): NewReference['ext'] | undefined => {
   if (/svg/i.test(contentType) || /\.svg(\?|$)/i.test(url)) return '.svg';
   if (/png/i.test(contentType) || /\.png(\?|$)/i.test(url)) return '.png';
   if (/jpe?g/i.test(contentType) || /\.jpe?g(\?|$)/i.test(url)) return '.jpg';
+  if (/icon/i.test(contentType) || /\.ico(\?|$)/i.test(url)) return '.ico';
   return undefined;
 };
 

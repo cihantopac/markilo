@@ -29,3 +29,16 @@ describe('dark-first brands', () => {
     expect(onDark.checks.find((c) => c.id === 'ground-contrast')?.status).toBe('pass');
   });
 });
+
+describe('marks on a brand fill', () => {
+  it('keeps the accent when the fill is the dark primary (appmarks)', async () => {
+    const { onFillVariant } = await import('../src/export/variants.js');
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path fill="#101218" d="M0 0h4v10H0z"/><path fill="#d12c12" d="M6 0h4v10H6z"/></svg>';
+    const r = onFillVariant(svg, '#101218');
+    expect(r.color).toBeNull();
+    expect(r.svg).toMatch(/fill="#ffffff"/);
+    expect(r.svg).not.toMatch(/fill="#101218"/);
+    expect(r.svg.match(/fill="(#[0-9a-f]{6})"/g)).toHaveLength(2);
+  });
+});

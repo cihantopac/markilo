@@ -6,6 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0-beta.3] - 2026-10-30
+
+### Fixed
+
+- App marks on a dark brand fill keep the brand's colors (adapted to the fill) instead of dropping to one color.
+- Guidelines state what the originality verdict rests on and say plainly when no trademark registry search was done
+  (Markdown and HTML).
+- A relative `--workspace` is also found from folders inside the workspace.
+
+### Added
+
+- `reference remove`; PNG-in-ICO favicons are accepted as reference marks.
+- `lockup --brand --concept` composes a concept's own symbol and wordmark.
+
 ## [0.3.0-beta.2] - 2026-10-30
 
 ### Fixed
@@ -102,7 +116,8 @@ All notable changes to this project are documented here. The format follows
 - Self-contained HTML Brand Preview Gallery with mockups and a feedback export.
 - Locked identities that are reproduced byte-for-byte and never redesigned.
 
-[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.2...HEAD
+[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.3...HEAD
+[0.3.0-beta.3]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.2...markilo--v0.3.0-beta.3
 [0.3.0-beta.2]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.1...markilo--v0.3.0-beta.2
 [0.3.0-beta.1]: https://github.com/cihantopac/markilo/compare/markilo--v0.2.0...markilo--v0.3.0-beta.1
 [0.2.0]: https://github.com/cihantopac/markilo/compare/markilo--v0.1.0...markilo--v0.2.0

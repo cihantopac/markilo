@@ -79,6 +79,9 @@ describe('export kit', () => {
     expect(pngSize(readFileSync(out('social/og-image.png')))).toEqual({ width: 1200, height: 630 });
     expect(pngSize(readFileSync(out('logos/overview.png'))).width).toBeGreaterThan(600);
     expect(readFileSync(out('logos/README.md'), 'utf8')).toContain('*-white');
+    // No registry search was logged in this workspace, so the guidelines must say so in both formats.
+    for (const f of ['guidelines/index.html', 'guidelines/brand-guidelines.md'])
+      expect(readFileSync(out(f), 'utf8')).toContain('No trademark registry search was done');
     expect(pngSize(readFileSync(out('windows/Assets/Square150x150Logo.scale-200.png')))).toEqual({
       width: 300,
       height: 300,
