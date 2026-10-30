@@ -117,15 +117,24 @@ export async function assessQuality(
       value: round(thin16),
       message: `Thin strokes/gaps are ~${round(thin16)} px wide at 16 px (≥ 1.2 px stays crisp).`,
     });
-    const off = Math.hypot(f.centroidOffset.x, f.centroidOffset.y);
+    // The optical centre sits a little above the geometric one, so up to 5% upward is not counted as imbalance.
+    const { x: ox, y: oy } = f.centroidOffset;
+    const off = Math.hypot(ox, oy < 0 ? Math.min(0, oy + 0.05) : oy);
+    const dist = Math.round(Math.hypot(ox, oy) * 100);
     add({
       id: 'balance',
       label: 'Optical balance',
       status: status(off, 0.04, 0.09, false),
       value: round(off),
-      message: `Visual centroid sits ${Math.round(off * 100)}% of the artboard from center${
-        f.centroidOffset.y < -0.01 ? ' (slightly high, which reads as optically centered)' : ''
-      }.`,
+      message:
+        off <= 0.04
+          ? `Visual centroid sits ${dist}% from center${oy < -0.01 ? ', slightly high, which reads as optically centered' : ''}.`
+          : `Visual centroid sits ${dist}% from center (${[
+              Math.abs(ox) > 0.02 ? (ox > 0 ? 'right' : 'left') : '',
+              oy > 0.02 ? 'low' : oy < -0.05 ? 'too high' : '',
+            ]
+              .filter(Boolean)
+              .join(', ')}); shift or rebalance the heavier part.`,
     });
     const box = maskBBox(sample.mask, 0.5);
     const extent = box ? Math.max(box.w, box.h) / 256 : 0;

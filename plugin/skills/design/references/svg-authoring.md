@@ -1,6 +1,8 @@
 # SVG authoring rules for Markilo masters
 
-`markilo svg lint --master` and `markilo verify` enforce these. Write SVG by hand, as clean geometry.
+`markilo svg lint --master` and `markilo verify` enforce these. Build symbols with `markilo construct`
+(see `construction.md`): it produces masters that already follow these rules. Write SVG by hand only for parts no
+construction shape can express.
 
 ## Required
 

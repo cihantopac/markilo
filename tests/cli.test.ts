@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { tmp } from './helpers.js';
@@ -36,6 +36,30 @@ describe('cli (bundled)', () => {
     expect(run(['wordmark', '--text', 'x', '--font', 'inter', '-o', 'wm.svg'], cwd).status).toBe(1);
     const net = run(['research', 'site', 'https://example.com', '--brand', 'ornek-marka'], cwd);
     expect(JSON.parse(net.stderr).error.code).toBe('NETWORK_DISABLED');
+  });
+  it('builds a mark from a construction spec with the bundled PathKit', () => {
+    const cwd = tmp();
+    writeFileSync(
+      join(cwd, 'spec.json'),
+      JSON.stringify({
+        params: { w: 120 },
+        vary: { w: [100, 140] },
+        layers: [
+          {
+            fill: '#123456',
+            shape: { arc: { c: [512, 512], r: 380, from: 40, to: 320, width: 'w', cap: 'round' } },
+          },
+        ],
+      }),
+    );
+    const r = run(['construct', 'spec.json', '-o', 'mark.svg', '--guides', 'c.png'], cwd);
+    expect(r.status, r.stderr).toBe(0);
+    expect(readFileSync(join(cwd, 'mark.svg'), 'utf8')).toMatch(/<path[^>]+fill="#123456"/);
+    expect(existsSync(join(cwd, 'c.png'))).toBe(true);
+    const v = run(['construct', 'spec.json', '--vary', '--out-dir', 'v'], cwd);
+    expect(v.status, v.stderr).toBe(0);
+    expect(JSON.parse(v.stdout).built).toBe(2);
+    expect(existsSync(join(cwd, 'v', 'variants.png'))).toBe(true);
   });
   it('shortcut install is a dry run without --yes and refuses foreign files', () => {
     const dir = tmp();

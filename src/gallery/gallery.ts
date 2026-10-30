@@ -118,10 +118,6 @@ async function mockups(s: Subject): Promise<string> {
   return parts.join('');
 }
 
-function badge(text: string, kind: string): string {
-  return `<span class="badge ${kind}">${escapeText(text)}</span>`;
-}
-
 const REVISION_CHIPS = [
   'bolder',
   'simpler',

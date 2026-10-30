@@ -24,8 +24,9 @@ export function reviewSheetSvg(
   const light = opts.light ?? '#ffffff';
   const dark = opts.dark ?? '#111318';
   const rows: SheetRow[] = [
-    { label: 'Color on light', background: light, svg },
-    { label: 'Color on dark', background: dark, svg },
+    // Colors are adapted per ground the way exports adapt them (reversed variants), so the sheet shows what ships.
+    { label: 'Color on light', background: light, svg: adaptToGround(svg, light) },
+    { label: 'Color on dark (adapted)', background: dark, svg: adaptToGround(svg, dark) },
     { label: 'Black', background: light, svg: monochrome(svg, '#000000') },
     { label: 'White (reversed)', background: dark, svg: monochrome(svg, '#ffffff') },
   ];

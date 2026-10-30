@@ -3,6 +3,8 @@ import { basename, extname, join, resolve } from 'node:path';
 import { loadMark } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
 import { compareMarks, genericity } from '../analyze/similarity.js';
+import { type ConstructionSpec, compileSpec, constructionSvg } from '../construct/compile.js';
+import { type Reference, renderVariantSheet, runVariants } from '../construct/vary.js';
 import { MarkiloError } from '../core/errors.js';
 import { isDir, nowIso, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
 import { isSlug, slugify } from '../core/paths.js';
@@ -23,6 +25,7 @@ import { fontInfo, listFonts, loadBundledFace, loadFontFile } from '../design/fo
 import { composeLockup } from '../design/lockup.js';
 import { generatePalette } from '../design/palette.js';
 import { wordmarkSvg } from '../design/wordmark.js';
+import { GROUP_INFO, resolveDeliverables, suggestDeliverables } from '../export/deliverables.js';
 import { EXPORT_GROUPS, type ExportGroup, exportBrand } from '../export/exporter.js';
 import { finalizeConcept, lockIdentity } from '../export/kit.js';
 import { buildGallery } from '../gallery/gallery.js';
@@ -66,6 +69,9 @@ const pos = (c: RunContext, i: number, label: string): string => {
   return v;
 };
 const file = (c: RunContext, p: string) => resolve(c.cwd, p);
+/** construction.json / construction-wordmark.json, so a wordmark recipe never replaces the symbol's. */
+const recipeName = (role: string | undefined, ext: string) =>
+  `construction${role && role !== 'symbol' ? `-${role}` : ''}.${ext}`;
 
 export const COMMANDS: CommandSpec[] = [
   // ------------------------------------------------------------ workspace
@@ -840,7 +846,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--wordmark <file>] [--symbol <file>] [--judgment <criterion>=<0-10>:<rationale>]...',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]...',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -853,6 +859,7 @@ export const COMMANDS: CommandSpec[] = [
       primary: { type: 'string', description: 'Primary color' },
       font: { type: 'string', description: 'Font id' },
       weight: { type: 'string', description: 'Font weight' },
+      construction: { type: 'string', description: 'Grid / geometry notes' },
     },
     async run(c) {
       const w = ws(c);
@@ -878,6 +885,7 @@ export const COMMANDS: CommandSpec[] = [
         next.files[key] = v;
       }
       if (c.str('primary')) next.palette.primary = c.str('primary')!;
+      if (c.str('construction')) next.construction = c.str('construction')!;
       if (c.str('font'))
         next.typography = {
           fontId: c.str('font')!,
@@ -1018,28 +1026,82 @@ export const COMMANDS: CommandSpec[] = [
   },
   {
     name: 'export',
-    summary: `Generate the complete asset kit from the approved identity. Groups: ${EXPORT_GROUPS.join(', ')}.`,
-    usage: 'export --brand <slug> [--only web,ios,...] [--clean]',
+    summary: `Generate the asset kit from the approved identity: the groups chosen in the brief (markilo deliverables), or --only / --all. Groups: ${EXPORT_GROUPS.join(', ')}.`,
+    usage: 'export --brand <slug> [--only web,ios,...] [--all] [--clean]',
     options: {
       ...brandOpt,
       only: { type: 'string', description: 'Comma-separated groups' },
+      all: { type: 'boolean', description: 'Every group, whatever the brief says' },
       clean: { type: 'boolean', description: 'Delete previous exports first' },
     },
     async run(c) {
       const w = ws(c);
-      const r = await exportBrand(w, c.req('brand'), {
-        groups: c.list('only') as ExportGroup[],
-        clean: c.bool('clean'),
-      });
+      const slug = c.req('brand');
+      let groups = c.list('only') as ExportGroup[];
+      let selection = groups.length ? 'only' : 'all';
+      if (!groups.length && !c.bool('all')) {
+        try {
+          const r = resolveDeliverables(w.brief(slug));
+          groups = r.groups;
+          selection = r.source;
+        } catch {
+          // No readable brief (e.g. a locked brand added without one): export everything.
+        }
+      }
+      const r = await exportBrand(w, slug, { groups, clean: c.bool('clean') });
       const byGroup: Record<string, number> = {};
       for (const a of r.assets) byGroup[a.group] = (byGroup[a.group] ?? 0) + 1;
+      const made = groups.length ? groups : [...EXPORT_GROUPS];
       return {
         outDir: r.outDir,
         files: r.assets.length,
+        selection,
         byGroup,
+        notIncluded: EXPORT_GROUPS.filter((g) => !made.includes(g)),
         skipped: r.skipped,
         warnings: r.warnings,
         manifest: join(r.outDir, 'asset-manifest.json'),
+      };
+    },
+  },
+  {
+    name: 'deliverables',
+    summary:
+      'Show or set which asset groups this brand needs. Without --set, suggests groups from the product type and platforms in the brief.',
+    usage: 'deliverables --brand <slug> [--set logos,web,social,...] [--add ios,android] [--remove social]',
+    options: {
+      ...brandOpt,
+      set: { type: 'string', description: 'Replace the choice with these groups' },
+      add: { type: 'string', description: 'Add groups to the current choice' },
+      remove: { type: 'string', description: 'Remove groups from the current choice' },
+    },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      const brief = w.brief(slug);
+      const changes = [...c.list('set'), ...c.list('add'), ...c.list('remove')];
+      const bad = changes.filter((g) => !(EXPORT_GROUPS as readonly string[]).includes(g));
+      if (bad.length)
+        throw new MarkiloError(
+          'USAGE',
+          `Unknown group(s) ${bad.join(', ')}. Use: ${EXPORT_GROUPS.join(', ')}.`,
+        );
+      if (changes.length) {
+        let chosen = c.list('set').length ? c.list('set') : resolveDeliverables(brief).groups.slice();
+        chosen = [...new Set([...chosen, ...c.list('add')])].filter((g) => !c.list('remove').includes(g));
+        brief.deliverables = EXPORT_GROUPS.filter((g) => chosen.includes(g));
+        writeJson(w.briefPath(slug), brief);
+      }
+      const current = resolveDeliverables(brief);
+      const suggestion = suggestDeliverables(brief);
+      return {
+        groups: current.groups.map((g) => ({ group: g, contains: GROUP_INFO[g] })),
+        source: current.source,
+        ...(current.source === 'suggested' ? { why: suggestion.reasons } : {}),
+        available: EXPORT_GROUPS.filter((g) => !current.groups.includes(g)).map((g) => ({
+          group: g,
+          contains: GROUP_INFO[g],
+        })),
       };
     },
   },
@@ -1148,6 +1210,173 @@ export const COMMANDS: CommandSpec[] = [
       });
       writeFileSafe(file(c, c.req('out')), svg, { force: c.bool('force') });
       return { out: c.req('out'), font: face.label, license: face.license, bytes: svg.length };
+    },
+  },
+  {
+    name: 'construct',
+    summary:
+      'Build a mark from a construction spec (primitives, booleans, gaps, offsets, repeats, glyphs) into clean SVG; --vary explores and scores parameter variants.',
+    usage:
+      'construct <spec.json> (-o <out.svg> | --brand <slug> --concept <id>) [--set k=v,…] [--guides <png>] [--vary [--max 24] [--sheet <png>] [--out-dir <dir>]] [--force]',
+    options: {
+      ...brandOpt,
+      concept: {
+        type: 'string',
+        description: 'Concept id: palette from the concept, output to its symbol.svg',
+      },
+      out: { type: 'string', short: 'o', description: 'Output SVG' },
+      set: { type: 'string', description: 'Parameter overrides, e.g. gap=40,angle=15' },
+      guides: { type: 'string', description: 'Write a construction drawing PNG (grid + primitives)' },
+      vary: {
+        type: 'boolean',
+        description: 'Build every combination in the spec\'s "vary" block and rank them',
+      },
+      max: { type: 'string', description: 'Most variants to build (default 24)' },
+      sheet: { type: 'string', description: 'Variant contact sheet PNG' },
+      'out-dir': { type: 'string', description: 'Folder for variant SVGs' },
+      paper: {
+        type: 'string',
+        description: 'Background the mark lives on (default: concept paper or #ffffff)',
+      },
+      role: { type: 'string', description: 'symbol | wordmark | lockup (default from spec)' },
+      force: { type: 'boolean', description: 'Overwrite output' },
+    },
+    async run(c) {
+      const specPath = file(c, pos(c, 0, 'spec.json'));
+      const raw = readText(specPath);
+      if (raw.length > 1_000_000) throw new MarkiloError('INVALID_INPUT', 'Spec is larger than 1 MB.');
+      let spec: ConstructionSpec;
+      try {
+        spec = JSON.parse(raw) as ConstructionSpec;
+      } catch (err) {
+        throw new MarkiloError(
+          'INVALID_INPUT',
+          `${basename(specPath)} is not valid JSON: ${(err as Error).message}`,
+        );
+      }
+      if (c.str('role')) spec.role = c.str('role') as ConstructionSpec['role'];
+      const overrides: Record<string, number> = {};
+      for (const kv of c.list('set')) {
+        const [k, v] = kv.split('=');
+        const n = Number(v);
+        if (!k || v === undefined || !Number.isFinite(n))
+          throw new MarkiloError('USAGE', `--set expects name=number pairs, got "${kv}".`);
+        overrides[k.trim()] = n;
+      }
+      const brand = c.str('brand');
+      const conceptId = c.str('concept');
+      if (conceptId && !brand) throw new MarkiloError('USAGE', '--concept needs --brand.');
+      const w = brand ? ws(c) : undefined;
+      const concept = w && brand && conceptId ? w.concept(brand, conceptId) : undefined;
+      const palette: Record<string, string> = {};
+      if (concept) for (const [k, v] of Object.entries(concept.palette)) if (v) palette[k] = v;
+      const paper = c.str('paper') ?? concept?.palette.paper ?? '#ffffff';
+      const title = concept ? `${w!.brand(brand!).name} — ${spec.role ?? 'symbol'}` : spec.title;
+
+      if (c.bool('vary')) {
+        const references: Reference[] = [];
+        if (w && brand) {
+          for (const r of readReferences(w, brand).references.slice(0, 60)) {
+            try {
+              references.push({
+                name: r.name,
+                sample: await loadMark(join(w.referencesDir(brand), r.file), { id: r.id, label: r.name }),
+              });
+            } catch {
+              // Unreadable references are reported by the originality check.
+            }
+          }
+        }
+        const variants = await runVariants(
+          { ...spec, params: { ...spec.params, ...overrides } },
+          {
+            palette,
+            paper,
+            max: c.num('max', 24)!,
+            references,
+            ...(title ? { title } : {}),
+          },
+        );
+        const dir = c.str('out-dir')
+          ? file(c, c.str('out-dir')!)
+          : concept
+            ? join(w!.conceptDir(brand!, conceptId!), 'sketches', 'variants')
+            : undefined;
+        if (!dir) throw new MarkiloError('USAGE', '--vary needs --out-dir, or --brand and --concept.');
+        for (const v of variants) if (v.svg) writeGenerated(join(dir, `${v.id}.svg`), v.svg);
+        const sheet = c.str('sheet') ? file(c, c.str('sheet')!) : join(dir, 'variants.png');
+        writeGenerated(sheet, await renderVariantSheet(variants, paper));
+        const summary = variants.map(({ svg: _svg, ...v }) => v);
+        writeJson(join(dir, 'variants.json'), { spec: basename(specPath), paper, variants: summary });
+        const best = variants[0]!;
+        return {
+          sheet,
+          folder: dir,
+          built: variants.length,
+          references: references.length,
+          best: {
+            id: best.id,
+            score: best.score,
+            params: best.params,
+            apply: `construct ${pos(c, 0, 'spec.json')} --set ${Object.entries(best.params)
+              .map(([k, v]) => `${k}=${v}`)
+              .join(',')}${concept ? ` --brand ${brand} --concept ${conceptId} --force` : ' -o <out.svg>'}`,
+          },
+          ranking: summary.slice(0, 8).map((v) => ({
+            id: v.id,
+            score: v.score,
+            legibility16: v.quality.legibility16,
+            stockShape: v.genericity.similarity,
+            ...(v.closestReference ? { closestReference: v.closestReference } : {}),
+            failing: v.quality.failing,
+            params: v.params,
+          })),
+        };
+      }
+
+      const compiled = await compileSpec(spec, {
+        palette,
+        params: overrides,
+        ...(title ? { title } : {}),
+      });
+      let out: string;
+      if (c.str('out')) out = file(c, c.str('out')!);
+      else if (concept)
+        out = w!.conceptFile(brand!, conceptId!, spec.role === 'wordmark' ? 'wordmark.svg' : 'symbol.svg');
+      else throw new MarkiloError('USAGE', 'Give -o <out.svg>, or --brand and --concept.');
+      writeFileSafe(out, compiled.svg, { force: c.bool('force') || (!!concept && !c.str('out')) });
+      if (concept && !c.str('out')) {
+        // Keep the recipe next to the mark: it documents the construction and feeds guidelines.
+        writeJson(w!.conceptFile(brand!, conceptId!, recipeName(spec.role, 'json')), {
+          ...spec,
+          params: { ...spec.params, ...overrides },
+        });
+        const key = spec.role === 'wordmark' ? 'wordmark' : 'symbol';
+        if (concept.files[key] !== basename(out))
+          w!.saveConcept({ ...concept, files: { ...concept.files, [key]: basename(out) } });
+      }
+      const guides = c.str('guides')
+        ? file(c, c.str('guides')!)
+        : concept && !c.str('out')
+          ? join(w!.conceptDir(brand!, conceptId!), 'review', recipeName(spec.role, 'png'))
+          : undefined;
+      if (guides)
+        writeGenerated(
+          guides,
+          await renderPng(constructionSvg(compiled, spec.grid, paper), {
+            width: Math.min(1024, compiled.width),
+          }),
+        );
+      return {
+        out,
+        ...(guides ? { guides } : {}),
+        size: [compiled.width, compiled.height],
+        layers: compiled.layers.map((l) => ({ name: l.name, fill: l.fill })),
+        params: compiled.params,
+        stats: compiled.stats,
+        ...(compiled.glyphs.length ? { glyphs: compiled.glyphs } : {}),
+        warnings: compiled.warnings,
+      };
     },
   },
   {

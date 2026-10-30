@@ -41,6 +41,8 @@ Topics: product, audience, market, competitor, visual-identity, typography, colo
 | Command                                                                                                                                                          | Purpose                                                                                                                                |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | `concept new --brand s --id ID --title T --direction D --rationale R --semantics a,b --primary #hex [--secondary --accent --ink --paper] [--font id --weight n]` | Create `concepts/ID/`; then write `symbol.svg` there.                                                                                  |
+| `construct spec.json -o out.svg [--guides c.png] [--set k=v,…]`                                                                                                  | Build a mark from a construction spec (see construction.md).                                                                           |
+| `construct spec.json --brand s --concept ID [--vary [--max 24]] [--set k=v,…]`                                                                                   | Into the concept: `symbol.svg`, `construction.json`, `review/construction.png`; `--vary` ranks variants in `sketches/variants/`.       |
 | `wordmark --text T --font id --weight n -o out.svg [--tracking=-10] [--case lower] [--color #hex] [--locale tr]`                                                 | Outlined wordmark with real kerning. Negative tracking needs `=`.                                                                      |
 | `lockup --symbol a.svg --wordmark b.svg --layout horizontal\|stacked -o out.svg`                                                                                 | Cap-height aligned lockup.                                                                                                             |
 | `concept update --brand s --concept ID [--wordmark wordmark.svg] [--status shortlisted\|rejected] [--judgment memorability=8:"reason"]`                          | Update files/status/judgment.                                                                                                          |
@@ -61,15 +63,16 @@ Topics: product, audience, market, competitor, visual-identity, typography, colo
 
 ## Deliver
 
-| Command                                                                                                      | Purpose                                                                               |
-| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
-| `finalize --brand s --concept ID [--tagline T] [--accept-risk] [--force]`                                    | Freeze masters, build lockups (horizontal/stacked/compact), write `final/brand.json`. |
-| `lock --brand s --primary #hex [--symbol f] [--wordmark f] [--lockup f]`                                     | Register an existing identity to preserve byte-for-byte.                              |
-| `export --brand s [--only logos,web,ios,macos,android,windows,social,marketing,tokens,guidelines] [--clean]` | Full asset kit + `asset-manifest.json`.                                               |
-| `gallery [--brand s]`                                                                                        | `brand/gallery/index.html`.                                                           |
-| `install-assets --brand s --group web --into public [--project <dir>] [--apply] [--force]`                   | Dry run unless `--apply`. Never overwrites without `--force`.                         |
-| `shortcut install\|uninstall\|status [--yes]`                                                                | Optional personal `/markilo` skill.                                                   |
-| `doctor`                                                                                                     | Environment check.                                                                    |
+| Command                                                                                                              | Purpose                                                                               |
+| -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `finalize --brand s --concept ID [--tagline T] [--accept-risk] [--force]`                                            | Freeze masters, build lockups (horizontal/stacked/compact), write `final/brand.json`. |
+| `lock --brand s --primary #hex [--symbol f] [--wordmark f] [--lockup f]`                                             | Register an existing identity to preserve byte-for-byte.                              |
+| `deliverables --brand s [--set g,…] [--add g,…] [--remove g,…]`                                                      | Which groups this brand needs; suggests from product type and platforms.              |
+| `export --brand s [--only logos,web,ios,macos,android,windows,social,marketing,tokens,guidelines] [--all] [--clean]` | Chosen groups (deliverables) + `asset-manifest.json`.                                 |
+| `gallery [--brand s]`                                                                                                | `brand/gallery/index.html`.                                                           |
+| `install-assets --brand s --group web --into public [--project <dir>] [--apply] [--force]`                           | Dry run unless `--apply`. Never overwrites without `--force`.                         |
+| `shortcut install\|uninstall\|status [--yes]`                                                                        | Optional personal `/markilo` skill.                                                   |
+| `doctor`                                                                                                             | Environment check.                                                                    |
 
 Error codes: USAGE, NOT_FOUND, EXISTS, UNSAFE_PATH, INVALID_INPUT, INVALID_SVG, NETWORK_DISABLED, NETWORK,
 ROBOTS_DISALLOWED, LOCKED, NO_WORKSPACE, INTERNAL.

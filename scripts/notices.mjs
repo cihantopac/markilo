@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const BUNDLED = ['@resvg/resvg-wasm', 'svgo', 'fontkit', 'pngjs', 'jpeg-js'];
+const BUNDLED = ['@resvg/resvg-wasm', 'pathkit-wasm', 'svgo', 'fontkit', 'pngjs', 'jpeg-js'];
 const seen = new Map();
 function walk(name) {
   if (seen.has(name)) return;
@@ -37,7 +37,7 @@ const lines = [
   '| --- | --- | --- |',
   ...fonts.map((f) => `| ${f.family} | SIL OFL 1.1 (\`plugin/fonts/${f.licenseFile}\`) | ${f.source} |`),
   '',
-  '## Bundled into `plugin/dist/markilo.mjs` and `plugin/dist/resvg.wasm`',
+  '## Bundled into `plugin/dist/markilo.mjs`, `plugin/dist/resvg.wasm` and `plugin/dist/pathkit.wasm`',
   '',
   '| Package | Version | License | Repository |',
   '| --- | --- | --- | --- |',

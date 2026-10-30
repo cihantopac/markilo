@@ -27,6 +27,9 @@ anything presented as judgment is labeled as judgment.
 │          │ links    │ recolor   │ resize    │ similarity│ lockup     │
 │          │          │ compose   │ sheets    │ color/a11y│ palette    │
 ├──────────┴──────────┴───────────┴───────────┴───────────┴────────────┤
+│ construct: specs → primitives, booleans, gaps, offsets, repeats,     │
+│ glyphs (geom: Skia PathKit wasm + curve refitting) · scored variants │
+├──────────────────────────────────────────────────────────────────────┤
 │ originality report · quality report · export (web, iOS, Android,     │
 │ macOS, Windows, social, marketing) · ICO/ICNS · gallery · guidelines │
 ├──────────────────────────────────────────────────────────────────────┤
@@ -38,8 +41,8 @@ anything presented as judgment is labeled as judgment.
 
 | Constraint                       | How it is met                                                                                                                                     |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| No servers, no paid APIs         | Pure CLI. Rendering uses `@resvg/resvg-wasm` (no native build).                                                                                   |
-| Works right after plugin install | `plugin/dist/` is a committed single-file bundle + `resvg.wasm`; CI checks it is fresh.                                                           |
+| No servers, no paid APIs         | Pure CLI. Rendering uses `@resvg/resvg-wasm`, path geometry uses Skia's `pathkit-wasm` (no native builds).                                        |
+| Works right after plugin install | `plugin/dist/` is a committed single-file bundle + `resvg.wasm` + `pathkit.wasm`; CI checks it is fresh.                                          |
 | Windows, macOS, Linux            | Node ≥ 20 only. No shell-outs, no platform binaries, `path` APIs everywhere.                                                                      |
 | Low token use                    | Commands print compact JSON summaries; large data goes to files the agent can open on demand.                                                     |
 | No hidden network access         | Only `research site` fetches, and only with `--allow-network`. It honours `robots.txt`.                                                           |
@@ -138,3 +141,15 @@ safe circle (maskable and adaptive icons), so marks with different artboard padd
 - New comparator: implement `Comparator` and register it in `src/analyze/similarity.ts`.
 - New font: add it to `scripts/vendor-fonts.mjs` (OFL or equivalent only) and run `npm run fonts`.
 - New skill: add `skills/<name>/SKILL.md`; keep instructions declarative and call the CLI for facts.
+
+## Construction kit
+
+Language models are good at describing how a mark is built and poor at typing exact Bézier coordinates. `markilo
+construct` (`src/construct/`) takes a JSON construction spec — primitives, booleans, gaps, offsets, fillets,
+repeats, mirrors and real font glyphs, with every measurement a named parameter — and compiles it to filled SVG
+paths. `src/geom/` wraps Skia PathKit for path booleans, stroke outlining and simplification; `refit.ts` turns the
+dense quadratic runs Skia emits for round joins into a few cubics (Schneider fitting, tolerance 0.05 % of the
+drawing), so outputs stay as small as hand-drawn ones. Primitives are emitted as cubics, so booleans keep exact
+curves. `--vary` builds every combination of chosen parameter values and ranks them by measured 16 px legibility,
+distance from stock primitives and from collected references (`vary.ts`). The recipe is saved next to the mark as
+`construction.json` with a construction drawing, so a refinement edits the idea, not the coordinates.

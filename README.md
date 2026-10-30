@@ -40,13 +40,16 @@ and exported (`branding/`).</sub>
   written up as an Originality & Similarity Report with side-by-side overlays. Verdicts say how much evidence they rest
   on: with too few references or no logged registry searches the answer is `insufficient-evidence`, never "clear".
   It finds conflicts among what was collected; it cannot prove a mark is unique or registrable.
-- **Real design output.** Hand-built SVG symbols, wordmarks outlined from OFL fonts with real kerning (Turkish and other
-  Latin-extended letters included), lockups aligned to cap height, OKLCH tonal palettes with WCAG pairs.
+- **Real design output.** Symbols built from construction specs — primitives, booleans, gaps, offsets, fillets,
+  repeats and real letterforms, compiled with Skia's path engine into clean SVG — and tuned by measured variants.
+  Wordmarks outlined from OFL fonts with real kerning (Turkish and other Latin-extended letters included), lockups
+  aligned to cap height, OKLCH tonal palettes with WCAG pairs.
 - **Looks before it talks.** Every concept is rendered to a review sheet (16–256 px, light, dark, black, white) that
   Claude inspects, and scored by a quality scorecard before you see it.
 - **Complete asset kit.** Logo variants, favicons, PWA + maskable icons, iOS (incl. dark/tinted and Icon Composer
   layers), macOS `.icns`, Android adaptive + themed icons, Windows ICO + MSIX assets, Open Graph and social images,
-  marketing templates, design tokens and brand guidelines — ~200 files with a manifest of sizes and hashes.
+  marketing templates, design tokens and brand guidelines, with a manifest of sizes and hashes. You get what the
+  product needs: a web app gets web, social, tokens and guidelines; app and desktop icon sets are one question away.
 - **Brand Preview Gallery.** One offline HTML file comparing concepts on realistic surfaces (browser tab, home screen,
   Dock, store listing, link preview, business card) with feedback you can paste back to Claude.
 - **Monorepo-aware.** Finds the sites, apps and packages of a monorepo, registers the user-facing ones as brands of a

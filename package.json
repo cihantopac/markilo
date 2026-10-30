@@ -4,7 +4,7 @@
   "description": "AI-powered brand identity studio for Claude Code: research, originality analysis, SVG identity design, verification and complete asset export.",
   "license": "Apache-2.0",
   "type": "module",
-  "author": "Cihan Topa\u00e7 (https://github.com/cihantopac)",
+  "author": "Cihan Topaç (https://github.com/cihantopac)",
   "homepage": "https://github.com/cihantopac/markilo#readme",
   "repository": {
     "type": "git",
@@ -71,5 +71,8 @@
     "svgo": "4.1.0",
     "typescript": "7.0.2",
     "vitest": "5.0.5"
+  },
+  "dependencies": {
+    "pathkit-wasm": "1.0.0"
   }
 }

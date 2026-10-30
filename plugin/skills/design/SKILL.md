@@ -68,14 +68,17 @@ Work through these stages. Tell the user which stage you are in. If they asked f
 4. **Explore** — propose 3–5 genuinely different creative directions (idea, metaphor, form language,
    type, color, why it fits, risks). Different ideas, not variations of one idea. Let the user steer.
 5. **Design** — for each chosen direction, delegate to the `markilo:concept-designer` agent (run them
-   in parallel when there are several). Each produces `symbol.svg` and an outlined wordmark.
+   in parallel when there are several). Each builds its marks from construction specs (`markilo construct`), explores
+   3–5 sketches and measured variants, and produces `symbol.svg`, `construction.json` and an outlined wordmark.
 6. **Verify** — `markilo verify --brand <slug> --concept <id>` for every concept, then
    `markilo diversity --brand <slug>`. Fix failures. Ask the `markilo:design-critic` agent for an
    independent visual critique. Record judgment with `markilo concept update … --judgment`.
    **Quality gate:** a concept goes to the user only if the critic scores brand-fit, distinctiveness and memorability
-   each ≥ 6 and the average ≥ 6.5. Otherwise send it back to a concept-designer with the critique (up to 2 rounds).
-   If it still misses, drop it or present it clearly labeled as weak — never present weak work as finished. Three
-   strong concepts beat four mediocre ones.
+   each ≥ 6, the average ≥ 6.5, and answers yes to "would a senior designer present this as is?". Otherwise send it
+   back to a concept-designer with the critique (up to 2 rounds), asking for a different move, not a polish. A concept
+   that still misses is set to `rejected` (`markilo concept update --status rejected`) so the gallery hides it.
+   If fewer than two concepts pass, say so plainly, show what passed, and propose new directions — do not fill the
+   gallery with weak work. Two strong concepts beat four mediocre ones.
 7. **Review** — `markilo gallery`, give the user the file path, summarize each concept in two lines with
    its measured strengths and risks, and ask for their pick and feedback. The gallery has a
    "Copy feedback for Claude" button.
@@ -84,7 +87,8 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    Finalize only succeeds when the originality verdict is `no-conflicts-found`. If it is `insufficient-evidence` or
    `needs-review`, show the user what is missing or flagged and either collect the evidence or ask whether they accept
    the risk; only with their explicit yes add `--accept-risk`. Never present `insufficient-evidence` as "original".
-9. **Export** — `markilo export --brand <slug>`, then `markilo gallery` again.
+9. **Export** — settle the package with one question (`markilo deliverables`, see the export skill: suggest what
+   the product needs, offer the rest), then `markilo export --brand <slug>` and `markilo gallery` again.
 10. **Deliver** — summarize: where the files are, the guidelines (`exports/guidelines/index.html`),
     quality and originality results, limitations (trademark clearance needs a lawyer), and offer
     `markilo install-assets` (dry run first).
@@ -93,6 +97,7 @@ Work through these stages. Tell the user which stage you are in. If they asked f
 
 - `${CLAUDE_PLUGIN_ROOT}/skills/design/references/workflow.md` — stage gates, refresh vs redesign, families
 - `${CLAUDE_PLUGIN_ROOT}/skills/design/references/design-principles.md` — how to design marks that last
+- `${CLAUDE_PLUGIN_ROOT}/skills/design/references/construction.md` — building marks from construction specs
 - `${CLAUDE_PLUGIN_ROOT}/skills/design/references/svg-authoring.md` — exact SVG rules for masters
 - `${CLAUDE_PLUGIN_ROOT}/skills/design/references/research-playbook.md` — sources, evidence, privacy
 - `${CLAUDE_PLUGIN_ROOT}/skills/design/references/originality.md` — similarity policy and reports

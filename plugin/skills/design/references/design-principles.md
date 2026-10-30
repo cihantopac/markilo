@@ -35,7 +35,8 @@ directions at the explore stage.
   Under ~40 path commands for a symbol is a healthy target; complexity needs a reason.
 - **Silhouette first**: the mark must work as a solid black shape. Color is added after the form works.
 - **Construction**: build on a grid (e.g. 24 or 48 units) with a consistent set of radii and stroke
-  weights. Repeat measurements. Note the construction in `concept.json` (`--construction`).
+  weights. Repeat measurements. Build with `markilo construct` so the recipe is saved as `construction.json`
+  (see `construction.md`).
 - **Optical corrections** (what separates professional marks):
   - Round and pointed forms overshoot flat ones by ~1–3% to look the same size.
   - Horizontal strokes are drawn slightly thinner than vertical ones to look equal.

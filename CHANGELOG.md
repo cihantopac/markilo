@@ -6,6 +6,24 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Construction kit: `markilo construct` builds marks from JSON construction specs (primitives, booleans, gaps,
+  offsets, fillets, repeats, mirrors, font glyphs, parameter expressions) with Skia PathKit geometry and curve
+  refitting; `--vary` builds and ranks parameter variants; construction drawings and `construction.json` are saved
+  with the concept.
+- `markilo deliverables`: suggests the asset groups a product needs from its type and platforms; `export` produces
+  the chosen groups by default (`--all` for everything).
+
+### Changed
+
+- The concept designer builds every mark from construction specs, explores 3–5 different moves and tunes the winner
+  by measured variants; the critic answers "would a senior designer present this?" and concepts that miss the gate
+  are rejected instead of shown.
+- Review sheets show colors adapted to the dark ground, as exports ship them.
+- The balance check allows the optical-centre lift (up to 5 % high) and says which way a mark leans.
+- `concept update --construction` records construction notes.
+
 ## [0.3.0-beta.1] - 2026-10-30
 
 ### Added
