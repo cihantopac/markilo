@@ -1,0 +1,17 @@
+{
+  "name": "tallyline",
+  "version": "1.4.0",
+  "private": true,
+  "description": "Invoicing and cash-flow forecasting for freelancers and small agencies",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build"
+  },
+  "dependencies": {
+    "next": "15.1.0",
+    "react": "19.0.0",
+    "@prisma/client": "6.1.0",
+    "stripe": "17.4.0",
+    "next-auth": "4.24.11"
+  }
+}

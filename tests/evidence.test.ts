@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buildOriginalityReport } from '../src/report/originality.js';
+import { brandKeyOf, brandsOf, sourceQualityOf } from '../src/report/references.js';
 import { addReference } from '../src/research/competitors.js';
 import { addSource } from '../src/research/profile.js';
 import { fixture, synthBrand } from './helpers.js';
@@ -13,7 +14,7 @@ const ref = (
 ) =>
   addReference(ws, 'nimbra', {
     name,
-    source: 'https://example.com',
+    source: `https://cdn.simpleicons.org/${name.toLowerCase()}`,
     bytes: readFileSync(fixture(`marks/${file}.svg`)),
     ext: '.svg',
     category,
@@ -101,5 +102,40 @@ describe('originality verdicts are only as strong as their evidence', () => {
     const { report } = await buildOriginalityReport(ws, 'nimbra', 'fold');
     expect(report.verdict).toBe('redesign');
     expect(report.visual.risk).toBe('high');
+  });
+});
+
+describe('reference evidence counts brands, not files', () => {
+  it('groups files of one brand and rates their sources', () => {
+    expect(brandKeyOf('GitHub Copilot icon')).toBe('github copilot');
+    expect(brandKeyOf('github-copilot (2)')).toBe('github copilot');
+    expect(brandKeyOf('Adobe Express logo dark')).toBe('adobe express');
+    expect(sourceQualityOf('https://github.com/features/copilot', 'github copilot')).toBe('official');
+    expect(sourceQualityOf('https://cdn.simpleicons.org/githubcopilot', 'github copilot')).toBe('catalog');
+    expect(sourceQualityOf('https://is1-ssl.mzstatic.com/image/x.png', 'tallyline')).toBe('store');
+    expect(sourceQualityOf('https://random-mirror.example/logo.svg', 'tallyline')).toBe('unknown');
+    expect(sourceQualityOf('https://competitor.io/', 'acme', ['competitor.io'])).toBe('official');
+    const brands = brandsOf([
+      { id: '1', name: 'Rival icon', source: 'https://random.example/a.png', category: 'category' },
+      { id: '2', name: 'Rival logo', source: 'https://rival.com/logo.svg', category: 'direct' },
+      { id: '3', name: 'Rival', source: 'https://random.example/b.png' },
+    ]);
+    expect(brands).toEqual([
+      { brand: 'rival', files: ['1', '2', '3'], category: 'direct', quality: 'official' },
+    ]);
+  });
+  it('does not reach adequate visual coverage with many files of few brands or unverified sources', async () => {
+    const { ws } = synthBrand();
+    for (const [i, f] of ['bolt', 'bars', 'leaf-letter', 'orbit', 'orbit-tweaked', 'fine-lines'].entries())
+      await addReference(ws, 'nimbra', {
+        name: `Same Brand ${i % 2 ? 'icon' : 'logo'}`,
+        source: 'https://cdn.simpleicons.org/x',
+        bytes: readFileSync(fixture(`marks/${f}.svg`)),
+        ext: '.svg',
+      });
+    const { report } = await buildOriginalityReport(ws, 'nimbra', 'fold');
+    expect(report.evidence.visual.have).toMatch(/^1 brand\(s\) from 6 reference file/);
+    expect(report.evidence.visual.coverage).toBe('none');
+    expect(report.scope.brandsCompared).toBe(1);
   });
 });

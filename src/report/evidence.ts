@@ -1,5 +1,6 @@
 import type { Source } from '../core/types.js';
 import type { ReferenceEntry } from './originality.js';
+import { brandsOf } from './references.js';
 
 export type Coverage = 'none' | 'minimal' | 'adequate';
 export type Confidence = 'low' | 'medium' | 'high';
@@ -9,9 +10,10 @@ export type Confidence = 'low' | 'medium' | 'high';
  * Deliberately simple and published (docs/ORIGINALITY.md) so users can see what a verdict rests on.
  */
 export const EVIDENCE_CRITERIA = {
+  /** Counted in distinct brands, not files: three logos of one competitor are one brand. */
   visual: {
     minimal: { total: 3, direct: 1 },
-    adequate: { total: 8, direct: 3, other: 2 },
+    adequate: { total: 8, direct: 3, other: 2, knownSources: 0.75 },
   },
   registry: {
     minimal: { searches: 1 },
@@ -49,31 +51,44 @@ export function assessEvidence(input: {
   sources: Source[];
   competitorNames: string[];
   suggestedClasses: number[];
+  /** Hosts of the brief's competitor URLs: files from there count as official sources. */
+  officialHosts?: string[];
 }): EvidenceAssessment {
   const V = EVIDENCE_CRITERIA.visual;
-  const direct = input.references.filter((r) => (r.category ?? 'direct') === 'direct').length;
-  const other = input.references.length - direct;
-  const total = input.references.length;
+  const brands = brandsOf(input.references, input.officialHosts);
+  const direct = brands.filter((b) => b.category === 'direct').length;
+  const other = brands.length - direct;
+  const total = brands.length;
+  const known = brands.filter((b) => b.quality !== 'unknown').length;
+  const knownShare = total ? known / total : 0;
+  const q = (k: string) => brands.filter((b) => b.quality === k).length;
   const visual: EvidenceDimension = {
     coverage:
-      total >= V.adequate.total && direct >= V.adequate.direct && other >= V.adequate.other
+      total >= V.adequate.total &&
+      direct >= V.adequate.direct &&
+      other >= V.adequate.other &&
+      knownShare >= V.adequate.knownSources
         ? 'adequate'
         : total >= V.minimal.total && direct >= V.minimal.direct
           ? 'minimal'
           : 'none',
-    have: `${total} reference mark(s): ${direct} direct competitor, ${other} category/form-family`,
+    have: `${total} brand(s) from ${input.references.length} reference file(s): ${direct} direct competitor, ${other} category/form-family; sources ${q('official')} official, ${q('store')} app store, ${q('catalog')} logo catalog, ${q('unknown')} unverified`,
     next: [],
   };
   if (visual.coverage !== 'adequate') {
     if (direct < V.adequate.direct)
       visual.next.push(
-        `add ${V.adequate.direct - direct} more direct competitor mark(s) (markilo research competitors)`,
+        `add ${V.adequate.direct - direct} more direct competitor brand(s) (markilo research competitors)`,
+      );
+    if (total && knownShare < V.adequate.knownSources)
+      visual.next.push(
+        "take reference marks from the brands' own sites, app stores or logo catalogs (sources of some are unverified)",
       );
     if (other < V.adequate.other)
       visual.next.push(
-        `add ${V.adequate.other - other} category leader or similar-form mark(s) (--category category|form-family)`,
+        `add ${V.adequate.other - other} category leader or similar-form brand(s) (--category category|form-family)`,
       );
-    if (total < V.adequate.total) visual.next.push(`reach ${V.adequate.total} references in total`);
+    if (total < V.adequate.total) visual.next.push(`reach ${V.adequate.total} distinct brands in total`);
   }
 
   const name = norm(input.brandName);

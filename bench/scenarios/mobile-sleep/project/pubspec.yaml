@@ -1,0 +1,13 @@
+name: dozeline
+description: A wind-down and sleep journal app for iOS and Android.
+version: 0.9.0+12
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  just_audio: ^0.9.40
+flutter:
+  uses-material-design: true

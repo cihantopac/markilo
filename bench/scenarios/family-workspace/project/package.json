@@ -1,0 +1,7 @@
+{
+  "name": "lumenfold",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ]
+}

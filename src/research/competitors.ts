@@ -1,11 +1,13 @@
 import { rmSync } from 'node:fs';
 import { join } from 'node:path';
-import { sampleFromRaster, sampleFromSvg } from '../analyze/mark.js';
+import { loadMark, type MarkSample, sampleFromRaster, sampleFromSvg } from '../analyze/mark.js';
+import { compareMarks } from '../analyze/similarity.js';
 import { MarkiloError } from '../core/errors.js';
 import { nowIso, sha256, writeFileSafe, writeJson } from '../core/fsx.js';
 import { resolveInsideReal, slugify } from '../core/paths.js';
 import type { Workspace } from '../core/workspace.js';
-import { readReferences, referenceIndexPath } from '../report/originality.js';
+import { type ReferenceEntry, readReferences, referenceIndexPath } from '../report/originality.js';
+import { brandKeyOf, officialHostsFrom, sourceQualityOf } from '../report/references.js';
 import { sanitizeSvg } from '../svg/sanitize.js';
 import { mergeSiteScan } from './profile.js';
 import { type CrawlOptions, fetchBinary, scanSite } from './site.js';
@@ -105,6 +107,55 @@ export function removeReferences(
   });
   writeJson(referenceIndexPath(ws, brand), { ...idx, references: keep });
   return { removed, missing: ids.filter((i) => !removed.includes(i)) };
+}
+
+export interface DuplicateGroup {
+  keep: { id: string; name: string; source: string };
+  remove: { id: string; name: string; source: string; similarity: number }[];
+}
+
+/**
+ * Finds reference files that add no evidence: near-identical files of the same brand (≥ 0.90 visual similarity) and
+ * the same artwork filed under two names (≥ 0.97). In each group the file with the best source is kept.
+ */
+export async function findDuplicateReferences(ws: Workspace, brand: string): Promise<DuplicateGroup[]> {
+  const idx = readReferences(ws, brand);
+  const hosts = officialHostsFrom(ws.brief(brand).competitors);
+  const rank: Record<string, number> = { official: 3, store: 2, catalog: 1, unknown: 0 };
+  const items: { ref: ReferenceEntry; key: string; quality: number; sample: MarkSample }[] = [];
+  for (const r of idx.references) {
+    const file = join(ws.referencesDir(brand), r.file);
+    try {
+      const key = brandKeyOf(r.name);
+      items.push({
+        ref: r,
+        key,
+        quality: rank[sourceQualityOf(r.source, key, hosts)]!,
+        sample: await loadMark(file, { id: r.id, label: r.name }),
+      });
+    } catch {
+      // Unreadable files are reported by the originality check.
+    }
+  }
+  // Better sources first, so the kept file of a group is the most trustworthy one.
+  items.sort((a, b) => b.quality - a.quality);
+  const removed = new Set<string>();
+  const groups: DuplicateGroup[] = [];
+  for (const [i, a] of items.entries()) {
+    if (removed.has(a.ref.id)) continue;
+    const remove: DuplicateGroup['remove'] = [];
+    for (const b of items.slice(i + 1)) {
+      if (removed.has(b.ref.id)) continue;
+      const c = await compareMarks(a.sample, b.sample);
+      if ((a.key === b.key && c.visual >= 0.9) || c.visual >= 0.97) {
+        removed.add(b.ref.id);
+        remove.push({ id: b.ref.id, name: b.ref.name, source: b.ref.source, similarity: c.visual });
+      }
+    }
+    if (remove.length)
+      groups.push({ keep: { id: a.ref.id, name: a.ref.name, source: a.ref.source }, remove });
+  }
+  return groups;
 }
 
 const extOf = (contentType: string, url: string): NewReference['ext'] | undefined => {

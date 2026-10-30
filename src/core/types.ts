@@ -134,6 +134,8 @@ export interface Concept {
   createdAt: string;
   updatedAt: string;
   judgment?: Record<string, { score: number; rationale: string }>;
+  /** What the critic saw before reading the rationale (first impressions, in order). */
+  readsAs?: string[];
   /** The critic's early verdict on the sketch board: which sketch to develop (null = none, rethink the move). */
   sketchReview?: { pick: string | null; notes: string; at: string };
 }

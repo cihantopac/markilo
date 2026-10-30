@@ -1,10 +1,39 @@
-import { join } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { extname, join } from 'node:path';
 import { assessQuality, type QualityReport } from '../analyze/quality.js';
 import { MarkiloError } from '../core/errors.js';
 import { readText, writeGenerated, writeJson } from '../core/fsx.js';
 import type { Workspace } from '../core/workspace.js';
+import { composeLockup } from '../design/lockup.js';
+import { inkMetrics } from '../export/geometry.js';
+import { type ContextPeer, renderContextSheet } from '../render/context.js';
 import { renderReviewSheet } from '../render/sheet.js';
-import { buildOriginalityReport } from './originality.js';
+import { buildOriginalityReport, readReferences } from './originality.js';
+
+/** Collected reference marks, direct competitors first, one per brand, for the context sheet. */
+function contextPeers(ws: Workspace, brand: string): ContextPeer[] {
+  const seen = new Set<string>();
+  const refs = [...readReferences(ws, brand).references].sort(
+    (a, b) => Number((b.category ?? 'direct') === 'direct') - Number((a.category ?? 'direct') === 'direct'),
+  );
+  const out: ContextPeer[] = [];
+  for (const r of refs) {
+    const key = r.name.toLowerCase().replace(/\s+(icon|logo|mark|app)$/i, '');
+    if (seen.has(key)) continue;
+    const file = join(ws.referencesDir(brand), r.file);
+    if (!existsSync(file)) continue;
+    seen.add(key);
+    const ext = extname(file).toLowerCase();
+    if (ext === '.svg') out.push({ name: r.name, svg: readFileSync(file, 'utf8') });
+    else
+      out.push({
+        name: r.name,
+        raster: { bytes: readFileSync(file), mime: ext === '.png' ? 'image/png' : 'image/jpeg' },
+      });
+    if (out.length >= 7) break;
+  }
+  return out;
+}
 
 const ICON: Record<string, string> = { pass: '✓', warn: '!', fail: '✗', info: 'i' };
 
@@ -72,6 +101,33 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
   };
   writeJson(qPath, merged);
   writeGenerated(join(ws.reportsDir(brand), `quality-${id}.md`), qualityMarkdown(reports, concept.title));
+  // The mark in real contexts (tabs, home screen, header, avatars) next to the collected competitors. It contains
+  // third-party marks, so it goes to the git-ignored research cache.
+  let contextSheet: string | undefined;
+  if (concept.files.symbol) {
+    contextSheet = join(ws.cacheDir(brand), 'review', `context-${id}.png`);
+    const symbolSvg = readText(ws.conceptFile(brand, id, concept.files.symbol));
+    const lockupRel = concept.files.lockupHorizontal;
+    const lockup = lockupRel
+      ? readText(ws.conceptFile(brand, id, lockupRel))
+      : concept.files.wordmark
+        ? composeLockup(symbolSvg, readText(ws.conceptFile(brand, id, concept.files.wordmark)), {
+            layout: 'horizontal',
+            symbolInk: (await inkMetrics(symbolSvg)).bbox,
+          }).svg
+        : undefined;
+    writeGenerated(
+      contextSheet,
+      await renderContextSheet({
+        name: ws.brand(brand).name,
+        symbol: symbolSvg,
+        ...(lockup ? { lockup } : {}),
+        paper: concept.palette.paper ?? '#ffffff',
+        primary: concept.palette.primary,
+        peers: contextPeers(ws, brand),
+      }),
+    );
+  }
   const orig = await buildOriginalityReport(ws, brand, id);
   const blocking = merged.summary.fail > 0 || orig.report.verdict === 'redesign';
   if (concept.status === 'draft' && !blocking) ws.saveConcept({ ...concept, status: 'verified' });
@@ -96,6 +152,11 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
       closestConcept: orig.report.diversity.sort((a, b) => b.visual - a.visual)[0] ?? null,
       nameRisk: orig.report.name.risk,
     },
-    files: { reviewSheets: sheets, quality: qPath, originality: orig.mdPath },
+    files: {
+      reviewSheets: sheets,
+      ...(contextSheet ? { contextSheet } : {}),
+      quality: qPath,
+      originality: orig.mdPath,
+    },
   };
 }

@@ -1,8 +1,13 @@
+import { spawnSync } from 'node:child_process';
+import { mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { basename, join } from 'node:path';
 import { dihedral, type Mask } from '../render/image.js';
+import { encodePng } from '../render/png.js';
 import { deltaE2000 } from './color.js';
 import type { ShapeFeatures } from './features.js';
 import { hashSimilarity, pHash } from './hash.js';
-import { type MarkSample, sampleFromSvg } from './mark.js';
+import { coreSample, type MarkSample, sampleFromSvg } from './mark.js';
 
 export type RiskLevel = 'low' | 'review' | 'high';
 
@@ -124,6 +129,50 @@ export function registerComparator(c: Comparator): void {
 
 export const comparators = (): readonly Comparator[] => registry;
 
+/**
+ * Optional local embedding comparator. Markilo bundles no model (hundreds of MB, licensing, platform builds); set
+ * MARKILO_EMBEDDER to an executable that takes two PNG paths and prints their similarity (0–1), e.g. a small CLIP
+ * script, and it joins the combined score (weight MARKILO_EMBEDDER_WEIGHT, default 0.3). Measure it with
+ * `markilo similarity calibrate` before trusting it.
+ */
+const embedFiles = new WeakMap<MarkSample, string>();
+let embedDir: string | undefined;
+function embedFile(s: MarkSample): string {
+  const hit = embedFiles.get(s);
+  if (hit) return hit;
+  embedDir ??= mkdtempSync(join(tmpdir(), 'markilo-embed-'));
+  const f = join(
+    embedDir,
+    `${embedFiles instanceof WeakMap ? Math.random().toString(36).slice(2) : 'x'}.png`,
+  );
+  writeFileSync(f, encodePng(s.raster));
+  embedFiles.set(s, f);
+  return f;
+}
+export function externalEmbedder(cmd = process.env.MARKILO_EMBEDDER): Comparator | undefined {
+  if (!cmd) return undefined;
+  const weight = Number(process.env.MARKILO_EMBEDDER_WEIGHT ?? 0.3);
+  return {
+    id: 'embedding',
+    description: `External image embedder (${basename(cmd)})`,
+    weight: Number.isFinite(weight) && weight > 0 ? weight : 0.3,
+    compare(a, b): ComparatorResult {
+      // A .js/.mjs script runs with this Node (also on Windows, where shebangs do nothing).
+      const [bin, pre] = /\.(m?js|cjs)$/i.test(cmd) ? [process.execPath, [cmd]] : [cmd, []];
+      const r = spawnSync(bin, [...pre, embedFile(a), embedFile(b)], { encoding: 'utf8', timeout: 30_000 });
+      const v = Number.parseFloat(String(r.stdout).trim());
+      if (r.status !== 0 || !Number.isFinite(v))
+        return {
+          score: 0,
+          details: { error: (r.stderr || r.error?.message || 'no number printed').slice(0, 120) },
+        };
+      return { score: Math.max(0, Math.min(1, v)), details: { similarity: round(v) } };
+    },
+  };
+}
+const embedder = externalEmbedder();
+if (embedder) registry.push(embedder);
+
 /** Average best-match CIEDE2000 between palettes, mapped to 0..1 similarity. */
 export function paletteSimilarity(a: string[], b: string[]): number {
   if (!a.length || !b.length) return 0;
@@ -146,7 +195,7 @@ export interface Comparison {
 
 export const RISK_THRESHOLDS = { review: 0.62, high: 0.78 } as const;
 
-export async function compareMarks(a: MarkSample, b: MarkSample): Promise<Comparison> {
+async function scoreOf(a: MarkSample, b: MarkSample) {
   const signals: Record<string, ComparatorResult> = {};
   let shape = 0;
   let weights = 0;
@@ -160,6 +209,28 @@ export async function compareMarks(a: MarkSample, b: MarkSample): Promise<Compar
   const color = paletteSimilarity(a.colors, b.colors);
   // Color matters only once shapes are already alike: identical shapes in new colors are still copies.
   const visual = shape * (0.92 + 0.08 * color);
+  return { signals, shape, color, visual };
+}
+
+export async function compareMarks(a: MarkSample, b: MarkSample): Promise<Comparison> {
+  let best = await scoreOf(a, b);
+  // Also compare the marks without their minor parts: an added dot or badge must not hide a copy.
+  const ac = coreSample(a);
+  const bc = coreSample(b);
+  let viaCore = false;
+  for (const [x, y] of [
+    [ac, b],
+    [a, bc],
+    [ac, bc],
+  ] as const) {
+    if (!x || !y) continue;
+    const alt = await scoreOf(x, y);
+    if (alt.visual > best.visual + 0.05) {
+      best = alt;
+      viaCore = true;
+    }
+  }
+  const { signals, shape, color, visual } = best;
   const risk: RiskLevel =
     visual >= RISK_THRESHOLDS.high ? 'high' : visual >= RISK_THRESHOLDS.review ? 'review' : 'low';
   const reasons: string[] = [];
@@ -174,6 +245,8 @@ export async function compareMarks(a: MarkSample, b: MarkSample): Promise<Compar
     reasons.push('Same topology and proportions (holes, parts, symmetry).');
   if (color >= 0.75 && shape >= 0.5)
     reasons.push(`Palettes are close (${pct(color)}), which raises confusion risk.`);
+  if (viaCore && risk !== 'low')
+    reasons.push('Matches once a small extra element is ignored (a copy with an added detail).');
   if (!reasons.length) reasons.push('No strong overlap in silhouette, composition or structure.');
   return {
     a: a.id,

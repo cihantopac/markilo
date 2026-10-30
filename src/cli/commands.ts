@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, extname, join, resolve } from 'node:path';
+import { type CalibrationMark, calibrate } from '../analyze/calibrate.js';
 import { contrastRatio, deltaE2000, normalizeColor } from '../analyze/color.js';
 import { loadMark } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
@@ -43,10 +44,12 @@ import { renderPng } from '../render/resvg.js';
 import { renderCompareSheet, renderReviewSheet } from '../render/sheet.js';
 import { buildOriginalityReport, readReferences } from '../report/originality.js';
 import { verifyConcept } from '../report/quality.js';
+import { brandKeyOf, brandsOf, officialHostsFrom } from '../report/references.js';
 import { type AppListing, downloadIcon, lookupAndroidApp, searchIosApps } from '../research/appstore.js';
 import {
   addReference,
   competitorsFromBrief,
+  findDuplicateReferences,
   type ReferenceCategory,
   removeReferences,
   researchCompetitor,
@@ -795,12 +798,78 @@ export const COMMANDS: CommandSpec[] = [
     },
   },
   {
+    name: 'reference dedupe',
+    summary:
+      'Find reference files that add no evidence (near-identical files of one brand, or one artwork under two names); --apply removes them, keeping the best-sourced file.',
+    usage: 'reference dedupe --brand <slug> [--apply]',
+    options: { ...brandOpt, apply: { type: 'boolean', description: 'Remove the duplicates' } },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      const groups = await findDuplicateReferences(w, slug);
+      const ids = groups.flatMap((g) => g.remove.map((r) => r.id));
+      if (c.bool('apply') && ids.length) removeReferences(w, slug, ids);
+      return {
+        groups,
+        duplicates: ids.length,
+        applied: c.bool('apply'),
+        total: readReferences(w, slug).references.length,
+      };
+    },
+  },
+  {
+    name: 'similarity calibrate',
+    summary:
+      'Measure the similarity engine on a set of logos: copies with typical edits must score high, different marks low. Reports caught copies, false alarms and suggested thresholds.',
+    usage: 'similarity calibrate (--brand <slug> | <folder of svg/png/jpg>) [--limit 40]',
+    options: {
+      ...brandOpt,
+      limit: { type: 'string', description: 'Most marks to use (default 40)' },
+    },
+    async run(c) {
+      const limit = c.num('limit', 40)!;
+      const marks: CalibrationMark[] = [];
+      const add = (id: string, path: string) => {
+        const ext = extname(path).toLowerCase();
+        if (ext === '.svg') marks.push({ id, svg: readText(path) });
+        else if (['.png', '.jpg', '.jpeg'].includes(ext)) marks.push({ id, raster: readFileSync(path) });
+      };
+      if (c.str('brand')) {
+        const w = ws(c);
+        const slug = c.req('brand');
+        // One file per brand: several logos of one brand are not "different marks".
+        const seen = new Set<string>();
+        for (const r of readReferences(w, slug).references) {
+          const key = brandKeyOf(r.name);
+          if (seen.has(key)) continue;
+          seen.add(key);
+          add(r.id, join(w.referencesDir(slug), r.file));
+        }
+      } else {
+        const dir = file(c, pos(c, 0, 'folder'));
+        if (!isDir(dir)) throw new MarkiloError('NOT_FOUND', `Not a folder: ${dir}`);
+        for (const f of readdirSync(dir).sort()) add(basename(f, extname(f)), join(dir, f));
+      }
+      if (marks.length < 3) throw new MarkiloError('USAGE', 'Calibration needs at least 3 different marks.');
+      return calibrate(marks.slice(0, limit));
+    },
+  },
+  {
     name: 'reference list',
-    summary: 'List collected reference marks.',
+    summary: 'List collected reference marks, grouped by brand with the quality of their sources.',
     usage: 'reference list --brand <slug>',
     options: brandOpt,
     async run(c) {
-      return readReferences(ws(c), c.req('brand'));
+      const w = ws(c);
+      const slug = c.req('brand');
+      const idx = readReferences(w, slug);
+      const brands = brandsOf(idx.references, officialHostsFrom(w.brief(slug).competitors));
+      return {
+        brands: brands.length,
+        files: idx.references.length,
+        byBrand: brands,
+        references: idx.references,
+      };
     },
   },
   // ------------------------------------------------------------ concepts
@@ -919,6 +988,10 @@ export const COMMANDS: CommandSpec[] = [
       weight: { type: 'string', description: 'Font weight' },
       construction: { type: 'string', description: 'Grid / geometry notes' },
       'sketch-pick': { type: 'string', description: 'Critic: sketch to develop (e.g. s3), or "none"' },
+      'reads-as': {
+        type: 'string',
+        description: 'Critic: first impressions before reading the rationale, separated by ";"',
+      },
       'sketch-notes': {
         type: 'string',
         description: 'Critic: why, and what the developed mark must keep or fix',
@@ -964,6 +1037,13 @@ export const COMMANDS: CommandSpec[] = [
       }
       if (c.str('construction')) next.construction = c.str('construction')!;
       for (const k of ['title', 'direction', 'rationale'] as const) if (c.str(k)) next[k] = c.str(k)!;
+      if (c.str('reads-as'))
+        next.readsAs = c
+          .str('reads-as')!
+          .split(';')
+          .map((x) => x.trim())
+          .filter(Boolean)
+          .slice(0, 5);
       if (c.str('sketch-pick')) {
         const pick = c.str('sketch-pick')!;
         if (pick !== 'none' && !existsSync(w.conceptFile(slug, cur.id, join('sketches', `${pick}.json`))))

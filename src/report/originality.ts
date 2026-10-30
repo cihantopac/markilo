@@ -18,6 +18,7 @@ import { REGISTRIES, suggestNiceClasses } from '../name/trademark.js';
 import { createRaster, dihedral } from '../render/image.js';
 import { encodePng } from '../render/png.js';
 import { assessEvidence, type Confidence, type EvidenceAssessment } from './evidence.js';
+import { brandKeyOf, officialHostsFrom } from './references.js';
 
 export interface ReferenceEntry {
   id: string;
@@ -62,6 +63,8 @@ export interface OriginalityReport {
   evidence: EvidenceAssessment;
   scope: {
     referencesCompared: number;
+    /** Distinct brands among the references (what the evidence level counts). */
+    brandsCompared?: number;
     references: { id: string; name: string; source: string; retrievedAt: string }[];
     conceptsCompared: string[];
     nameCompetitors: number;
@@ -70,7 +73,8 @@ export interface OriginalityReport {
   visual: {
     risk: AssessedRisk;
     thresholds: typeof RISK_THRESHOLDS;
-    matches: (Comparison & { name: string; source: string; image?: string })[];
+    /** Closest file per brand, most similar first (several logos of one brand are one comparison). */
+    matches: (Comparison & { name: string; brand?: string; source: string; image?: string })[];
   };
   diversity: { concept: string; visual: number; risk: RiskLevel; reasons: string[] }[];
   genericity?: Genericity;
@@ -165,7 +169,12 @@ export async function buildOriginalityReport(
       continue;
     }
     const c = await compareMarks(sample, ref);
-    const entry: (typeof matches)[number] = { ...c, name: r.name, source: r.source };
+    const entry: (typeof matches)[number] = {
+      ...c,
+      name: r.name,
+      brand: brandKeyOf(r.name),
+      source: r.source,
+    };
     if (c.risk !== 'low') {
       const imgName = `vs-${r.id}.png`;
       writeGenerated(
@@ -177,6 +186,8 @@ export async function buildOriginalityReport(
     matches.push(entry);
   }
   matches.sort((a, b) => b.visual - a.visual);
+  // Keep the closest file of each brand: a brand's second and third logo add no new evidence, only noise.
+  const perBrand = matches.filter((m, i) => matches.findIndex((x) => x.brand === m.brand) === i);
 
   const others: Concept[] = ws.concepts(brand).filter((c) => c.id !== conceptId && c.status !== 'rejected');
   const diversity: OriginalityReport['diversity'] = [];
@@ -226,6 +237,7 @@ export async function buildOriginalityReport(
   const evidence = assessEvidence({
     brandName: brief.name,
     references: refs,
+    officialHosts: officialHostsFrom(brief.competitors),
     sources: profile.sources,
     competitorNames,
     suggestedClasses: nice.classes,
@@ -233,7 +245,7 @@ export async function buildOriginalityReport(
 
   const g = concept.files.symbol ? await genericity(sample) : undefined;
   // "low" is only claimed when something was actually compared; otherwise the risk is unknown.
-  const visualRisk: AssessedRisk = matches.length ? maxRisk(matches.map((m) => m.risk)) : 'unknown';
+  const visualRisk: AssessedRisk = perBrand.length ? maxRisk(perBrand.map((m) => m.risk)) : 'unknown';
   const diversityRisk = maxRisk(diversity.map((d) => d.risk));
   const measuredNameRisk = nameComparisons.length ? maxRisk(nameComparisons.map((n) => n.risk)) : 'unknown';
   const nameRisk: AssessedRisk =
@@ -278,12 +290,13 @@ export async function buildOriginalityReport(
     evidence,
     scope: {
       referencesCompared: matches.length,
+      brandsCompared: perBrand.length,
       references: refs.map((r) => ({ id: r.id, name: r.name, source: r.source, retrievedAt: r.retrievedAt })),
       conceptsCompared: diversity.map((d) => d.concept),
       nameCompetitors: competitorNames.length,
       registrySearchesLogged: registrySearches,
     },
-    visual: { risk: visualRisk, thresholds: RISK_THRESHOLDS, matches: matches.slice(0, 10) },
+    visual: { risk: visualRisk, thresholds: RISK_THRESHOLDS, matches: perBrand.slice(0, 10) },
     diversity,
     ...(g ? { genericity: g } : {}),
     name: {
@@ -335,7 +348,9 @@ export function originalityMarkdown(r: OriginalityReport, concept: Concept): str
   if (r.evidence.missing.length)
     lines.push('To raise confidence:', '', ...r.evidence.missing.map((m) => `- ${m}`), '');
   lines.push('## Research scope', '');
-  lines.push(`- Reference marks compared: ${r.scope.referencesCompared}`);
+  lines.push(
+    `- Reference marks compared: ${r.scope.referencesCompared}${r.scope.brandsCompared !== undefined ? ` (${r.scope.brandsCompared} distinct brands)` : ''}`,
+  );
   for (const ref of r.scope.references)
     lines.push(`  - ${ref.name} — ${ref.source} (retrieved ${ref.retrievedAt.slice(0, 10)})`);
   lines.push(`- Other concepts compared: ${r.scope.conceptsCompared.join(', ') || 'none'}`);

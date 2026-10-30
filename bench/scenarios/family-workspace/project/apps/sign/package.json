@@ -1,0 +1,8 @@
+{
+  "name": "@lumenfold/sign",
+  "private": true,
+  "description": "Lumenfold Sign",
+  "dependencies": {
+    "next": "15.1.0"
+  }
+}

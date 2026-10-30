@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { loadMark, rasterizeSvgSquare, sampleFromRaster } from '../src/analyze/mark.js';
 import { compareMarks, genericity } from '../src/analyze/similarity.js';
@@ -41,4 +42,32 @@ describe('visual similarity', () => {
     expect((await genericity(await load('plain-circle'))).level).toBe('generic');
     expect((await genericity(await load('fold-n'))).level).toBe('distinct');
   });
+});
+
+describe('optional external embedder', () => {
+  it('runs the configured command on two PNGs and uses its number', async () => {
+    const { externalEmbedder } = await import('../src/analyze/similarity.js');
+    const { sampleFromSvg } = await import('../src/analyze/mark.js');
+    const cmp = externalEmbedder(fixture('embedder/size-embedder.mjs'))!;
+    const a = await sampleFromSvg(readFileSync(fixture('marks/orbit.svg'), 'utf8'), { id: 'a' });
+    const same = await cmp.compare(a, a);
+    expect(same.score).toBe(1);
+    expect(externalEmbedder('/nonexistent/embedder')!.compare(a, a)).toMatchObject({ score: 0 });
+  });
+});
+
+describe('calibration on the fixture marks', () => {
+  it('catches mirrored, rotated and recolored copies and separates different marks', async () => {
+    const { calibrate } = await import('../src/analyze/calibrate.js');
+    const { readdirSync } = await import('node:fs');
+    const dir = fixture('marks');
+    const marks = readdirSync(dir)
+      .filter((f) => f.endsWith('.svg') && !/orbit-(mirrored|tweaked)/.test(f))
+      .map((f) => ({ id: f, svg: readFileSync(`${dir}/${f}`, 'utf8') }));
+    const r = await calibrate(marks);
+    expect(r.auc).toBeGreaterThan(0.95);
+    for (const t of ['mirror', 'rotate-90', 'recolor'] as const)
+      expect(r.copiesCaught.byTransform[t]!.review).toBe(1);
+    expect(r.falseAlarms.review).toBe(0);
+  }, 60_000);
 });

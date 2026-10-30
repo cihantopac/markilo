@@ -15,8 +15,10 @@ Markilo designs original marks. Research informs differentiation; it is never a 
 
 1. **Before design**: collect reference marks for direct competitors, category leaders and famous marks in
    the same form family (`markilo research competitors`, `markilo reference add`). Note the category's conventions.
-   Evidence levels that verdicts depend on: visual references (minimal: 3 incl. 1 direct; adequate: 8 incl. 3 direct
-   and 2 category/form-family), registry searches (minimal: 1 logged search for the name; adequate: 2 registers incl.
+   Evidence levels count **distinct brands**, not files (three logos of one competitor are one brand), and prefer
+   files from the brand's own site, an app store or a logo catalog over unverified mirrors: visual references
+   (minimal: 3 brands incl. 1 direct; adequate: 8 brands incl. 3 direct and 2 category/form-family, ≥ 75 % from known
+   sources). Run `markilo reference dedupe --brand <slug> --apply` after collecting. Registry searches (minimal: 1 logged search for the name; adequate: 2 registers incl.
    WIPO or TMview, covering the suggested classes), competitor names (minimal 1, adequate 3).
 2. **During design**: run `markilo verify` after every meaningful change. It compares the concept with all
    references (silhouette under rotation/mirroring, perceptual hashes, structure, color) and with the

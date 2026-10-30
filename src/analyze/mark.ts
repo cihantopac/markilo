@@ -142,3 +142,67 @@ export async function loadMark(
   if (['.png', '.jpg', '.jpeg'].includes(ext)) return sampleFromRaster(buf, base);
   throw new MarkiloError('INVALID_INPUT', `Unsupported file type ${ext} for ${path}.`);
 }
+
+const coreCache = new WeakMap<MarkSample, MarkSample | null>();
+
+/**
+ * The mark without its minor parts: ink regions under 6 % of all ink are removed. Copies often add a
+ * small element (a dot, a sparkle, a badge) that shifts the bounding box and hides the match; comparing cores finds
+ * them. Returns undefined when the mark has no minor parts.
+ */
+export function coreSample(s: MarkSample): MarkSample | undefined {
+  const hit = coreCache.get(s);
+  if (hit !== undefined) return hit ?? undefined;
+  const { width: w, height: h, data } = s.mask;
+  const label = new Int32Array(w * h).fill(-1);
+  const sizes: number[] = [];
+  const stack: number[] = [];
+  for (let start = 0; start < data.length; start++) {
+    if (data[start]! < 0.5 || label[start] !== -1) continue;
+    const id = sizes.length;
+    let size = 0;
+    label[start] = id;
+    stack.push(start);
+    while (stack.length) {
+      const p = stack.pop()!;
+      size++;
+      const x = p % w;
+      const y = (p - x) / w;
+      for (let dy = -1; dy <= 1; dy++)
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+          const q = ny * w + nx;
+          if (data[q]! >= 0.5 && label[q] === -1) {
+            label[q] = id;
+            stack.push(q);
+          }
+        }
+    }
+    sizes.push(size);
+  }
+  const total = sizes.reduce((a, b) => a + b, 0);
+  const minor = new Set(sizes.flatMap((n, i) => (n < total * 0.06 ? [i] : [])));
+  if (!minor.size || minor.size === sizes.length) {
+    coreCache.set(s, null);
+    return undefined;
+  }
+  const kept = new Float32Array(data.length);
+  for (let i = 0; i < data.length; i++) {
+    // Anti-aliased edge pixels (< 0.5) follow the nearest labelled neighbour's fate via their own label (-1 = keep).
+    kept[i] = label[i]! >= 0 && minor.has(label[i]!) ? 0 : data[i]!;
+  }
+  const mask: Mask = { width: w, height: h, data: kept };
+  const normalized = normalizeMask(mask, 64);
+  const core: MarkSample = {
+    ...s,
+    id: `${s.id}:core`,
+    mask,
+    normalized,
+    features: shapeFeatures(mask),
+    hashes: hashes(normalized),
+  };
+  coreCache.set(s, core);
+  return core;
+}
