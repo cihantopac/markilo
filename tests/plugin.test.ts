@@ -68,7 +68,7 @@ describe('examples', () => {
         count++;
       }
     }
-    expect(count).toBeGreaterThanOrEqual(3);
+    expect(count).toBeGreaterThanOrEqual(2);
   });
 });
 

@@ -24,6 +24,7 @@ All notable changes to this project are documented here. The format follows
 - CLI prints compact JSON when piped (fewer tokens for Claude); `MARKILO_PRETTY=1` restores indentation.
 - `research repo` and `research site` print a digest; the full scan is cached in the workspace (`--full` to print it).
 - The `brand-researcher` agent runs on Sonnet.
+- Examples are fully synthetic (Tidepool, Lumen, Acme); the repository contains no real customer or product data.
 - Skills require each toolchain command as one full `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" …` call (pre-approved),
   and never offer to unlock or redesign a locked brand.
 

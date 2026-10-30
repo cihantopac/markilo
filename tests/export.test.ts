@@ -123,7 +123,7 @@ describe('export kit', () => {
 describe('locked identities', () => {
   it('are exported without altering the artwork', async () => {
     const lockedDir = tmp();
-    const symbolPath = join(lockedDir, 'boss.svg');
+    const symbolPath = join(lockedDir, 'legacy-symbol.svg');
     writeFileSync(symbolPath, mark('bars'));
     ws.addBrand({ name: 'Keeper', locked: true });
     lockIdentity(ws, 'keeper', { symbol: symbolPath, primary: '#7a3cf0' });

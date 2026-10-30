@@ -120,7 +120,7 @@ you  › /markilo:design ./ — we're launching this as a product, it needs an i
 ### Monorepos and product families
 
 ```text
-/markilo:research This is our product family monorepo at ./ — sites in products/, apps in apps/. BOSS is locked.
+/markilo:research This is our product family monorepo at ./ — sites in products/, apps in apps/. The Ledger app's existing identity is locked.
 ```
 
 Markilo runs `research monorepo`, shows you the packages it considers brands, and after you confirm registers them

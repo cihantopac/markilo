@@ -210,7 +210,7 @@ function sharedIconIndex(root: string): Map<string, string[]> {
 }
 
 /** Exact name match first; otherwise a ≥ 4-letter prefix/suffix match ("market" → "marketplace"), skipping icons that
- * already belong to another package by exact name (so "mailkodo" does not take "mail"'s icons). */
+ * already belong to another package by exact name (so "mailbox" does not take the "mail" app's icons). */
 function sharedIconsFor(index: Map<string, string[]>, slug: string, claimed: Set<string>): string[] {
   const exact = index.get(slug);
   if (exact) return exact;
