@@ -6,6 +6,22 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Context sheets: `verify` shows the mark in browser tabs, on a home screen next to the collected competitors, in site
+  headers and as avatars; the critic starts with a blind first impression (`concept update --reads-as`) that caps
+  scores when the idea does not read or the mark reads as a UI icon or cliché.
+- Originality evidence counts distinct brands and rates sources (official, store, catalog, unverified);
+  `reference dedupe`; reports keep the closest file per brand; copies that add a small element are found by
+  comparing marks without minor parts; `similarity calibrate` measures the engine on real logos (24 real brands:
+  AUC 0.99, 1.1 % false alarms at review); optional `MARKILO_EMBEDDER` hook.
+- Product understanding: `research repo` and `research site` extract value proposition, features, audience, surfaces,
+  platforms, languages and pricing with sources (stated vs inferred); `profile understanding`; unknowns become gaps.
+- Gallery: pins with notes on the mark, side-by-side comparison with a preferred concept, `gallery --serve`
+  (127.0.0.1, token) so "Send to Claude" saves decisions; `feedback` reads them (`--import`, `--apply`).
+- `install-assets --framework auto|next|laravel|flutter|static` with backups; `agent-setup` for Codex, Cursor and other
+  agents; `web/favicon-32.png` export.
+
 ## [0.3.0-beta.7] - 2026-10-30
 
 ### Fixed

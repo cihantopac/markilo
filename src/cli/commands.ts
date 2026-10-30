@@ -69,7 +69,9 @@ import { fetchBinary, scanSite } from '../research/site.js';
 import { lintSvg } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
 import { sanitizeSvg } from '../svg/sanitize.js';
+import { type AgentTarget, agentSetup } from './agents.js';
 import type { CommandSpec, RunContext } from './args.js';
+import { FRAMEWORKS, type Framework, planFrameworkInstall } from './frameworks.js';
 import { doctor, installAssets, shortcut } from './system.js';
 
 declare const __MARKILO_VERSION__: string;
@@ -1384,26 +1386,66 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'install-assets',
     summary:
-      'Copy an exported group (e.g. web) into your project (the current folder, or --project for another folder such as a monorepo package). Dry run unless --apply; never overwrites without --force.',
+      'Put exported assets into your project. With --framework (next, laravel, flutter, static, or auto to detect) every file goes where that framework expects it; without it, one export group is copied into --into. Dry run unless --apply; never overwrites without --force (replaced files are backed up).',
     usage:
-      'install-assets --brand <slug> --group web --into <dir> [--project <project dir>] [--apply] [--force]',
+      'install-assets --brand <slug> (--framework auto|next|laravel|flutter|static | --group web --into <dir>) [--project <dir>] [--apply] [--force]',
     options: {
       project: {
         type: 'string',
         description: 'Project folder to install into (default: current folder). Ask the user first.',
       },
       ...brandOpt,
-      group: { type: 'string', description: 'Export group to copy' },
-      into: { type: 'string', description: 'Destination inside the project' },
+      framework: { type: 'string', description: 'auto | next | laravel | flutter | static' },
+      group: { type: 'string', description: 'Export group to copy (without --framework)' },
+      into: {
+        type: 'string',
+        description: 'Destination inside the project (without --framework, or for static)',
+      },
       apply: { type: 'boolean', description: 'Actually copy' },
-      force: { type: 'boolean', description: 'Overwrite existing files' },
+      force: { type: 'boolean', description: 'Overwrite existing files (backed up first)' },
     },
     async run(c) {
       const projectDir = c.str('project') ? file(c, c.str('project')!) : c.cwd;
       if (!isDir(projectDir)) throw new MarkiloError('NOT_FOUND', `Project folder not found: ${projectDir}`);
+      const fw = c.str('framework');
+      if (fw) {
+        if (fw !== 'auto' && !(FRAMEWORKS as readonly string[]).includes(fw))
+          throw new MarkiloError('USAGE', `--framework must be auto, ${FRAMEWORKS.join(', ')}.`);
+        return planFrameworkInstall(ws(c), c.req('brand'), projectDir, {
+          ...(fw !== 'auto' ? { framework: fw as Framework } : {}),
+          ...(c.str('into') ? { into: c.str('into')! } : {}),
+          apply: c.bool('apply'),
+          force: c.bool('force'),
+        });
+      }
       return installAssets(ws(c), c.req('brand'), c.req('group'), c.req('into'), projectDir, {
         apply: c.bool('apply'),
         force: c.bool('force'),
+      });
+    },
+  },
+  {
+    name: 'agent-setup',
+    summary:
+      'Let another coding agent use Markilo: writes its instruction file with the workflow, rules and CLI calls — AGENTS.md section for Codex, .cursor/rules/markilo.mdc for Cursor, or MARKILO.md. Dry run unless --apply.',
+    usage:
+      'agent-setup --target codex|cursor|generic [--project <dir>] [--cli "<command>"] [--references <dir>] [--apply] [--force]',
+    options: {
+      target: { type: 'string', description: 'codex | cursor | generic' },
+      project: { type: 'string', description: 'Project folder (default: current folder)' },
+      apply: { type: 'boolean', description: 'Write the file' },
+      force: { type: 'boolean', description: 'Replace a same-named file Markilo did not write' },
+      cli: { type: 'string', description: 'How the agent runs Markilo (default: node "<this bundle>")' },
+      references: { type: 'string', description: "Where the agent finds Markilo's reference docs" },
+    },
+    async run(c) {
+      const projectDir = c.str('project') ? file(c, c.str('project')!) : c.cwd;
+      if (!isDir(projectDir)) throw new MarkiloError('NOT_FOUND', `Project folder not found: ${projectDir}`);
+      return agentSetup(projectDir, c.req('target') as AgentTarget, {
+        apply: c.bool('apply'),
+        force: c.bool('force'),
+        ...(c.str('cli') ? { command: c.str('cli')! } : {}),
+        ...(c.str('references') ? { references: c.str('references')! } : {}),
       });
     },
   },

@@ -318,6 +318,13 @@ async function exportWeb(ctx: Ctx) {
   const icoPngs: Buffer[] = [];
   for (const s of SPECS.web.icoSizes)
     icoPngs.push(await png(await canvas(sym, s, s, { mode: 'box', fraction: 0.94 }), s));
+  const i32 = SPECS.web.icoSizes.indexOf(32);
+  if (i32 >= 0)
+    await emit(ctx, 'web/favicon-32.png', icoPngs[i32]!, {
+      group: 'web',
+      purpose: '32 px PNG favicon (for frameworks that expect a PNG, e.g. Flutter web)',
+      derivedFrom: 'symbol.svg',
+    });
   await emit(ctx, 'web/favicon.ico', encodeIco(icoPngs), {
     group: 'web',
     purpose: `Legacy favicon (${SPECS.web.icoSizes.join('/')} px)`,
