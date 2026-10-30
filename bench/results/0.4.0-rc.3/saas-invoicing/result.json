@@ -1,0 +1,156 @@
+{
+  "scenario": "saas-invoicing",
+  "title": "Independent SaaS",
+  "kind": "saas",
+  "brief": {
+    "ask": "Create a brand identity for Tallyline, the invoicing and cash-flow forecasting product in this folder.",
+    "owner": "Owner preferences: calm and trustworthy, friendly to freelancers, not the generic fintech blue-and-green. Web app only."
+  },
+  "markilo": "0.4.0-rc.3",
+  "ranAt": "2026-10-30T13:37:09.932Z",
+  "minutes": 14.14,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.336604800000002,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 72787,
+    "output": 119454,
+    "cacheRead": 8592280,
+    "cacheWrite": 447683
+  },
+  "turns": 9,
+  "subagents": 13,
+  "claim": {
+    "passed": [
+      "horizon"
+    ],
+    "finalized": "horizon",
+    "notes": "Horizon (plum T with a rising bar toward an ochre dot) passed the critic gate at 6.77 and was finalized with insufficient-evidence originality accepted; split-stick failed on distinctiveness and tl-ligature was dropped at sketch review."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "tallyline",
+      "name": "Tallyline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "horizon",
+          "title": "Horizon",
+          "status": "approved",
+          "critic": 6.77,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 6,
+            "distinctiveness": 7,
+            "memorability": 7,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 6,
+            "color": 8,
+            "cultural-fit": 7,
+            "timelessness": 7,
+            "premium-perception": 6,
+            "versatility": 7
+          },
+          "present": true,
+          "gate": true,
+          "readsAs": [
+            "a T with a bent arm and a ball (person kicking / sun over a ridge)",
+            "a T-shaped signpost or branch",
+            "a letter T with a dot"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 S-curve/sun glyph; s2 a T with a bent bar and a dot; s3 minus plus pill (equals sign); s4 dash and dots (loading/ellipsis); s5 swoosh and dot (moon/Nike-like). Keep s2: only one with letter T plus forecast lift, 88% at 16px. Fix: the dot is timid at 32px, make the lift one confident gesture, avoid reading as a tap or pipe, own the plum/ochre pair.",
+          "checks": {
+            "pass": 17,
+            "warn": 1,
+            "fail": 0,
+            "info": 4
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.274
+          }
+        },
+        {
+          "id": "split-stick",
+          "title": "Split Stick",
+          "status": "rejected",
+          "critic": 6.77,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 6,
+            "simplicity": 8,
+            "balance": 7,
+            "craft": 7,
+            "typography": 8,
+            "color": 8,
+            "cultural-fit": 7,
+            "timelessness": 7,
+            "premium-perception": 7,
+            "versatility": 6
+          },
+          "present": false,
+          "gate": false,
+          "readsAs": [
+            "a rounded block with an interlocking notch (Tetris-like piece)",
+            "two nested L shapes / a toggle or battery UI icon",
+            "a split folder or brick"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 zipper/cracked bar; s2 hash or grid of slashes; s3 a T split on a zigzag; s4 two saw blades/combs; s5 a key. Pick s3 reluctantly: the only one pairing the letter T with the real tally-stock-and-foil story. Risks: reads as a broken or cracked T (bad for money), 47% stock-shape similarity, zigzag detail mushy at 16px. Fix: fewer, bolder teeth (2-3), make the seam clearly a fit not a crack.",
+          "checks": {
+            "pass": 17,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.412
+          }
+        },
+        {
+          "id": "tl-ligature",
+          "title": "TL Ligature",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 exclamation mark or broken 'i'/'l' (different letter, alert icon); s2 loading spinner/progress ring; s3 plain tally-mark icon (the product's own object, cliche); s4 a U or checkmark with a hook. None clears distinctiveness/memorability 7: s1 is a warning glyph, s2 a spinner, s3 a cliche, s4 a U/tick. Direction dropped.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": "horizon",
+      "exported": 81,
+      "byGroup": {
+        "logos": 54,
+        "web": 11,
+        "social": 11,
+        "tokens": 3,
+        "guidelines": 2
+      },
+      "success": true
+    }
+  ],
+  "sessionId": "1392af48-64b5-411f-84e8-b93d524204de"
+}

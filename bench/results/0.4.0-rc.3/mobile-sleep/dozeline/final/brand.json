@@ -1,0 +1,49 @@
+{
+  "schema": "markilo/kit@1",
+  "brand": "dozeline",
+  "name": "Dozeline",
+  "concept": "dusk-arch",
+  "locked": false,
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "lockupHorizontal": "lockup-horizontal.svg",
+    "lockupStacked": "lockup-stacked.svg",
+    "lockupCompact": "lockup-compact.svg"
+  },
+  "palette": {
+    "primary": "#C2763A",
+    "secondary": "#8e3f5c",
+    "accent": "#F2DFC0",
+    "ink": "#3A2B2E",
+    "paper": "#FBF3E8",
+    "dark": "#110c08"
+  },
+  "typography": {
+    "fontId": "outfit",
+    "weight": 600,
+    "family": "Outfit",
+    "license": "OFL-1.1"
+  },
+  "tagline": "Wind down. Write it down.",
+  "notes": [
+    "Originality is insufficient-evidence: registry searches (WIPO/TMview, USPTO, TÜRKPATENT, UKIPO; classes 9/42/44) still to be done by hand; trademark clearance needs a lawyer."
+  ],
+  "approvedAt": "2026-10-30T13:51:49.671Z",
+  "originality": {
+    "verdict": "insufficient-evidence",
+    "confidence": "low",
+    "acceptedRisk": true,
+    "report": "../reports/originality-dusk-arch.md",
+    "evidence": {
+      "visual": "8 brand(s) from 9 reference file(s): 8 direct competitor, 0 category/form-family; sources 3 official, 5 app store, 0 logo catalog, 0 unverified",
+      "registry": "no registry searches logged for \"Dozeline\"",
+      "registryCoverage": "none"
+    }
+  },
+  "gate": {
+    "status": "passed",
+    "average": 6.77,
+    "reasons": []
+  }
+}

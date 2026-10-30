@@ -1,0 +1,44 @@
+[
+  {
+    "brand": "tallyline",
+    "concept": "horizon",
+    "final": true,
+    "judge": {
+      "readsAs": [
+        "A stylized letter T whose right arm bends upward toward a gold sun or dot",
+        "A rising forecast line pointing at a target, set in plum and gold",
+        "A person or figure reaching up toward a ball"
+      ],
+      "distinctiveness": 7,
+      "memorability": 6,
+      "brandFit": 7,
+      "craft": 6,
+      "versatility": 6,
+      "presentAsIs": true,
+      "why": "The plum and gold palette avoids fintech blue-green, and the T with its upturned arm and gold dot is ownable and tied to forecasting. The wordmark is clean but generic. The symbol sits slightly unbalanced and the dot is detached and small at 16px, so it is strong but not flawless."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.1096915
+  },
+  {
+    "brand": "tallyline",
+    "concept": "split-stick",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a rounded rectangle split into two interlocking L-shaped pieces, terracotta and sand",
+        "an abstract stepped block like a stylized 'L' or 'LJ' monogram",
+        "a tally stick or split ledger tally, two halves fitting together"
+      ],
+      "distinctiveness": 6,
+      "memorability": 6,
+      "brandFit": 7,
+      "craft": 7,
+      "versatility": 7,
+      "presentAsIs": true,
+      "why": "The two-tone split tally-stick form is a clever nod to the name, and the warm terracotta and sand palette avoids fintech blue-green, but the shape is fairly plain and holds up only as an abstract block at the smallest sizes."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.1061299
+  }
+]

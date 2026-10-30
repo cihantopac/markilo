@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0-rc.4] - 2026-10-30
+
+### Fixed
+
+- Context sheets drew a blank white app icon for every home-screen slot without a collected competitor, which made the
+  concept look more distinctive than it was.
+
+### Added
+
+- Benchmark results for rc.3: two of three products got an identity that passed the gate and the blind judge (rc.2:
+  one, which the judge would not present; rc.1: none).
+
 ## [0.4.0-rc.3] - 2026-10-30
 
 ### Added

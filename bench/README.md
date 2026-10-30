@@ -12,21 +12,31 @@ company) plus the owner's preferences:
 
 ## Results
 
-| Run                                         | Model      | Passed the gate | Developed / directions | Blind judge agrees | Minutes (total) | Cost (API equivalent) |
-| ------------------------------------------- | ---------- | --------------- | ---------------------- | ------------------ | --------------- | --------------------- |
-| [0.4.0-rc.1](results/0.4.0-rc.1)            | Sonnet 5.5 | 0 of 3          | 7 / 9                  | 7 of 7             | 48              | $9.76                 |
-| [0.4.0-rc.2](results/0.4.0-rc.2)            | Sonnet 5.5 | 1 of 3          | 1 / 9                  | 0 of 1             | 32              | $6.10                 |
-| [0.4.0-rc.2, Opus](results/0.4.0-rc.2-opus) | Opus 5.5   | 0 of 1          | 1 / 3                  | 1 of 1             | 17              | $5.23                 |
+| Run                                         | Model      | Passed the gate | Blind judge would present | Developed / directions | Gate agrees with the judge | Minutes (total) | Cost (API equivalent) |
+| ------------------------------------------- | ---------- | --------------- | ------------------------- | ---------------------- | -------------------------- | --------------- | --------------------- |
+| [0.4.0-rc.1](results/0.4.0-rc.1)            | Sonnet 5.5 | 0 of 3          | —                         | 7 / 9                  | 7 of 7                     | 48              | $9.76                 |
+| [0.4.0-rc.2](results/0.4.0-rc.2)            | Sonnet 5.5 | 1 of 3          | 0 of 1                    | 1 / 9                  | 0 of 1                     | 32              | $6.10                 |
+| [0.4.0-rc.2, Opus](results/0.4.0-rc.2-opus) | Opus 5.5   | 0 of 1          | —                         | 1 / 3                  | 1 of 1                     | 17              | $5.23                 |
+| [0.4.0-rc.3](results/0.4.0-rc.3)            | Sonnet 5.5 | 2 of 3          | 2 of 2                    | 6 / 9                  | 5 of 6                     | 54              | $10.85                |
 
-What changed between rc.1 and rc.2, and why: in rc.1 every concept that the gate rejected had passed the sketch
-review with a cliché the critic had named itself ("may read as a barcode", "a folded page corner"), and the critic's
-"would not present it" had nowhere to be recorded. rc.2 makes the sketch review a procedure that strikes such sketches,
-counts the product's own object as a cliché, and applies the gate in code. Runs that cannot succeed now stop at the
-sketch review. The one identity that passed (Dozeline, critic 6.5) was marginal; the blind judge would not present it.
-The Opus run checked whether the model was the bottleneck: on the SaaS brief it was not.
+What changed, and why:
 
-Judging cost about $1.20 in total. Each run counts against a Claude subscription's usage limits instead of being
-billed; the costs are what the same tokens would cost on the API.
+- **rc.1 → rc.2.** In rc.1 every concept the gate rejected had passed the sketch review with a cliché the critic had
+  named itself ("may read as a barcode", "a folded page corner"), and the critic's "would not present it" had nowhere
+  to be recorded. rc.2 made the sketch review a procedure that strikes such sketches, counted the product's own
+  object as a cliché and applied the gate in code. Runs that could not succeed stopped at the sketch review — 8 of 9
+  directions — and the one identity that passed was marginal; the blind judge would not present it. Opus 5.5 on the
+  SaaS brief did no better, so the model was not the bottleneck.
+- **rc.2 → rc.3.** 69 % of the sketches the critic had struck (22 % of the picked ones) failed verify's 16 px
+  thinnest-detail check: the construction guide asked for gaps of 1/24 of the artboard, below verify's own failing
+  threshold. rc.3 fixed the rule (≥ 80 units on 1024), made `markilo sketches` say which sketches are not ready and
+  how to fix them in construction units, had the designer redraw before handing over and name the visual hook a
+  stranger sees at 32 px, and gave the construction guide a worked example. Developed concepts went from 1 to 6 of 9;
+  the SaaS and mobile app identities passed the gate and the blind judge. The family brief is still unsolved.
+
+Benchmarking so far (four runs of the three briefs plus judging) cost $33.80 in API-equivalent terms. Each run counts
+against a Claude subscription's usage limits instead of being billed; the costs are what the same tokens would cost
+on the API.
 
 ## Run
 

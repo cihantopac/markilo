@@ -54,6 +54,11 @@ async function peerMark(p: ContextPeer, box: { x: number; y: number; width: numb
  * research cache, never to the concept folder.
  */
 export async function renderContextSheet(input: ContextSheetInput): Promise<Buffer> {
+  const { svg, width } = await contextSheetSvg(input);
+  return renderPng(svg, { width });
+}
+
+export async function contextSheetSvg(input: ContextSheetInput): Promise<{ svg: string; width: number }> {
   const dark = input.dark ?? '#111318';
   const peers = input.peers.slice(0, 7);
   let body = '';
@@ -113,10 +118,11 @@ export async function renderContextSheet(input: ContextSheetInput): Promise<Buff
         { mode: 'box', fraction: 0.62 },
       );
       body += label(input.name.slice(0, 14), x, ty + 76, 11, '#ffffff');
-    } else {
+    } else if (t) {
+      // A slot with no collected peer stays empty: a blank white tile would read as a white app icon.
       body += `<rect x="${x}" y="${ty}" width="60" height="60" rx="14" fill="#ffffff"/>`;
-      if (t) body += await peerMark(t, { x: x + 6, y: ty + 6, width: 48, height: 48 });
-      if (t?.name) body += label(t.name.slice(0, 14), x, ty + 76, 11, '#dfe4ee');
+      body += await peerMark(t, { x: x + 6, y: ty + 6, width: 48, height: 48 });
+      if (t.name) body += label(t.name.slice(0, 14), x, ty + 76, 11, '#dfe4ee');
     }
   }
   y += 216;
@@ -153,5 +159,5 @@ export async function renderContextSheet(input: ContextSheetInput): Promise<Buff
   y += 56;
 
   const H = y + PAD;
-  return renderPng(svgDocument(W, H, body, { background: '#f7f8fa' }), { width: W });
+  return { svg: svgDocument(W, H, body, { background: '#f7f8fa' }), width: W };
 }

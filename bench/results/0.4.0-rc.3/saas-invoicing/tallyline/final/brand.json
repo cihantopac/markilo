@@ -1,0 +1,39 @@
+{
+  "schema": "markilo/kit@1",
+  "brand": "tallyline",
+  "name": "Tallyline",
+  "concept": "horizon",
+  "locked": false,
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "lockupHorizontal": "lockup-horizontal.svg",
+    "lockupStacked": "lockup-stacked.svg",
+    "lockupCompact": "lockup-compact.svg"
+  },
+  "palette": {
+    "primary": "#4A2F55",
+    "accent": "#D9A441",
+    "ink": "#231A2A",
+    "paper": "#FAF7F2",
+    "dark": "#0f0c11"
+  },
+  "tagline": "Know what's next.",
+  "approvedAt": "2026-10-30T13:50:51.363Z",
+  "originality": {
+    "verdict": "insufficient-evidence",
+    "confidence": "low",
+    "acceptedRisk": true,
+    "report": "../reports/originality-horizon.md",
+    "evidence": {
+      "visual": "5 brand(s) from 9 reference file(s): 5 direct competitor, 0 category/form-family; sources 3 official, 0 app store, 0 logo catalog, 2 unverified",
+      "registry": "no registry searches logged for \"Tallyline\"",
+      "registryCoverage": "none"
+    }
+  },
+  "gate": {
+    "status": "passed",
+    "average": 6.77,
+    "reasons": []
+  }
+}

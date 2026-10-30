@@ -13,7 +13,7 @@
 <p align="center">
   <a href="https://github.com/cihantopac/markilo/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/cihantopac/markilo/actions/workflows/ci.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-d12c12"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-0.4.0--rc.3-101218">
+  <img alt="Version" src="https://img.shields.io/badge/version-0.4.0--rc.4-101218">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-101218">
 </p>
 
@@ -76,27 +76,30 @@ registry search has been done yet; the guidelines say so.</sub>
 
 Markilo is benchmarked end to end on three realistic products — an independent SaaS, a mobile app and a
 multi-product family — with nobody steering: the plugin researches, writes the brief, designs, critiques, and
-finalizes only what passes its own gate. Every run, image and score is in [bench/](bench).
+finalizes only what passes its own gate. A separate blind judge then rates every critiqued concept from the brief and
+the images alone. Every run, image and score is in [bench/](bench).
 
-| Version    | Model      | Identities that passed the gate | Concepts critiqued | Gate agrees with a blind judge | Time per run | Cost per run (API equivalent) |
-| ---------- | ---------- | ------------------------------- | ------------------ | ------------------------------ | ------------ | ----------------------------- |
-| 0.4.0-rc.1 | Sonnet 5.5 | 0 of 3                          | 7                  | 7 of 7                         | 11–21 min    | $2.61–3.67                    |
-| 0.4.0-rc.2 | Sonnet 5.5 | 1 of 3 (mobile app)             | 1                  | 0 of 1                         | 8–15 min     | $1.60–2.68                    |
-| 0.4.0-rc.2 | Opus 5.5   | 0 of 1 (SaaS only)              | 1                  | 1 of 1                         | 17 min       | $5.23                         |
+| Version    | Model      | Passed the gate       | Blind judge would present it | Concepts critiqued | Gate agrees with the judge | Time per run | Cost per run (API equivalent) |
+| ---------- | ---------- | --------------------- | ---------------------------- | ------------------ | -------------------------- | ------------ | ----------------------------- |
+| 0.4.0-rc.1 | Sonnet 5.5 | 0 of 3                | —                            | 7                  | 7 of 7                     | 11–21 min    | $2.61–3.67                    |
+| 0.4.0-rc.2 | Sonnet 5.5 | 1 of 3                | 0 of 1                       | 1                  | 0 of 1                     | 8–15 min     | $1.60–2.68                    |
+| 0.4.0-rc.2 | Opus 5.5   | 0 of 1 (SaaS only)    | —                            | 1                  | 1 of 1                     | 17 min       | $5.23                         |
+| 0.4.0-rc.3 | Sonnet 5.5 | 2 of 3 (SaaS, mobile) | 2 of 2                       | 6                  | 5 of 6                     | 14–24 min    | $3.15–4.37                    |
 
 What this shows, plainly:
 
-- **Unattended, Markilo does not yet reliably reach a presentable identity.** One run in seven produced an identity
-  that passed the gate, and the independent judge would not have presented it as is. It is built to work with you:
-  you pick directions and react in the gallery. Markilo's own identity (`branding/`, an Opus session with five
-  directions and more rounds than the benchmark allows) passed the gate and the same blind judge rated it
-  presentable — one data point, not a rate.
-- **It does not ship weak work.** The critic gate and a blind judge that sees only the brief and the images agreed on
-  8 of 9 critiqued concepts; the one disagreement was the judge being stricter. Failures are reported as failures —
-  nothing is finalized or exported.
-- **Failures got cheaper.** rc.1 developed clichés (a folded page for documents, tally marks for "Tallyline") that
-  the gate rejected after two rounds. rc.2's sketch review strikes them before development: the three runs cost 37%
-  less and took a third less time.
+- **Unattended, rc.3 delivers a presentable identity for two of three products.** Both passed the gate and the blind
+  judge would present both as is. The multi-product family is not solved yet: its best concept missed the gate
+  narrowly (6.38 against 6.5), so its product icons were never reached. Three products, one run each: the numbers
+  will move with more runs.
+- **It does not ship weak work.** Across all runs the gate and the blind judge agreed on 13 of 15 critiqued concepts,
+  with one disagreement in each direction. Failures are reported as failures — nothing is finalized or exported.
+- **What moved the needle was measured, not guessed.** In rc.1 and rc.2, 69 % of the sketches the critic struck had
+  hairline gaps that vanish at 16 px — because Markilo's own construction guide asked for gaps below its own verify
+  threshold. rc.3 fixed the rule, made every sketch pass its checks before review, and asked for the visual hook a
+  stranger sees at 32 px: concepts that reached development went from 1 of 9 (rc.2) to 6 of 9. More development costs
+  more: rc.3's three runs cost $10.85 against rc.2's $6.10 and rc.1's $9.76.
+- **The model was not the bottleneck.** Opus 5.5 on the SaaS brief failed with rc.2 too; rc.3 passed it with Sonnet.
 
 ## Install
 

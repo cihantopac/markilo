@@ -1,0 +1,181 @@
+{
+  "scenario": "family-workspace",
+  "title": "Multi-product family",
+  "kind": "family",
+  "brief": {
+    "ask": "Create the brand family for Lumenfold, the office suite in this monorepo: the Lumenfold master brand and product icons for Lumenfold Docs, Sheets and Sign.",
+    "owner": "Owner preferences: privacy-first and European, calm and precise. The three product icons must clearly belong to one family and still be told apart at small sizes. Web apps only."
+  },
+  "markilo": "0.4.0-rc.3",
+  "ranAt": "2026-10-30T13:37:10.123Z",
+  "minutes": 24.2,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 4.366637900000004,
+  "budgetUsd": 25,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 28125,
+    "output": 168213,
+    "cacheRead": 12110510,
+    "cacheWrite": 521909
+  },
+  "turns": 3,
+  "subagents": 12,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "No concept passed the quality gate (facet 6.38 and horizon 5.31 vs 6.5 required; hinge was rejected at sketch review), so nothing was finalized, exported or installed."
+  },
+  "workspace": true,
+  "family": "Lumenfold",
+  "brands": [
+    {
+      "slug": "lumenfold",
+      "name": "Lumenfold",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "facet",
+          "title": "Lit Facet",
+          "status": "rejected",
+          "critic": 6.38,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 6,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 6,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 7,
+            "premium-perception": 6,
+            "versatility": 6
+          },
+          "present": true,
+          "gate": false,
+          "readsAs": [
+            "letter L split by a diagonal slash",
+            "set square / drafting triangle",
+            "cut-corner page fragment"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 rounded-square app tile split diagonally, generic; s2 same tile sheared; s3 striped tile, UI/sticker; s4 folded green ribbon L with a pale triangle at the bend. Keep s4: the only sketch where the fold and the light are the mark. Fix: enlarge the pale fold triangle so it survives 16px, and make the family variant a single element in the counter.",
+          "checks": {
+            "pass": 14,
+            "warn": 4,
+            "fail": 0,
+            "info": 5
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.367
+          }
+        },
+        {
+          "id": "hinge",
+          "title": "Hinge L",
+          "status": "rejected",
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a letter K/B in a rounded tile with a bar through it; s2 a V or checkmark with a ball (also a wine glass/pin); s3 a Ǝ/E-like three-bar glyph or menu/align icon. None has an ownable hook: the hinge object is drawn literally and the amber pin is a stripe laid on top. Different move: drop the literal hinge. Make the fold itself the shape, one silhouette whose single crease or offset is the whole idea, and let the amber appear only where light passes through the fold.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "horizon",
+          "title": "Horizon",
+          "status": "rejected",
+          "critic": 5.31,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 5,
+            "typography": 5,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 4
+          },
+          "present": false,
+          "gate": false,
+          "readsAs": [
+            "letter S",
+            "a split or sliced block (two-part shape)",
+            "a shifted-slab / broken bookmark"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 hourglass/two arrowheads or a split gem; s2 a sliced slab or broken tablet, amber top piece slipped off teal; s3 a book or two panels / flag. Pick s2 as the only one with a single clear gesture and a family rule (cut angle: 0/90/28) that holds at 16px. Keep: tall slab, one cut, amber slid along it. Fix: make the shift bigger and the gap even so the step is the memorable bit; keep the corner radii consistent (only the outer corners rounded); check Docs (level cut) does not read as a plain two-bar stack, and keep Sign's slant clearly steeper than the cut in this sketch. Not a sure 7+: if distinctiveness stalls at 6, it needs a more unusual slab silhouette, not more detail.",
+          "checks": {
+            "pass": 16,
+            "warn": 0,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.38
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "docs",
+      "name": "Lumenfold Docs",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "sheets",
+      "name": "Lumenfold Sheets",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    },
+    {
+      "slug": "sign",
+      "name": "Lumenfold Sign",
+      "role": "sub-brand",
+      "locked": false,
+      "concepts": [],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "421d13cc-6a4f-4e2b-a83b-838da52963d1"
+}

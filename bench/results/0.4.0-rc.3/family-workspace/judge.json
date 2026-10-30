@@ -1,0 +1,44 @@
+[
+  {
+    "brand": "lumenfold",
+    "concept": "facet",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "an L monogram, which fits Lumenfold",
+        "a folded corner or set square",
+        "a corner bracket with a diagonal cut"
+      ],
+      "distinctiveness": 6,
+      "memorability": 6,
+      "brandFit": 6,
+      "craft": 5,
+      "versatility": 5,
+      "presentAsIs": false,
+      "why": "The folded L is a clear and ownable idea, and the green, black and cream palette feels calm and European. But the corner geometry is uneven: the rounded notch at the top-left, the sharp cuts elsewhere and the unbalanced mass don't match. The cream triangle also disappears at 16–24px, and the mark is a single-product L that doesn't yet show how the Docs, Sheets and Sign family would work."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.1062446
+  },
+  {
+    "brand": "lumenfold",
+    "concept": "horizon",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a folded sheet of paper split into two offset halves, amber and teal",
+        "an abstract letter S or a stepped, diagonal cut block",
+        "a generic fintech or productivity app mark"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 5,
+      "craft": 6,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "The mark is clean and holds up at small sizes in two colours and in mono, but it is a generic two-block split with no clear fold or light idea. Nothing in it is specifically European, private or precise, and it gives no room to tell Docs, Sheets and Sign apart as a family."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.1067467
+  }
+]

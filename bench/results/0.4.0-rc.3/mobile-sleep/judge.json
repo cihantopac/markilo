@@ -1,0 +1,44 @@
+[
+  {
+    "brand": "dozeline",
+    "concept": "dusk-arch",
+    "final": true,
+    "judge": {
+      "readsAs": [
+        "a nested arch or doorway in plum and amber, like a lowercase n",
+        "a warm, calm dusk window or shelter",
+        "a friendly rounded wordmark with a simple icon"
+      ],
+      "distinctiveness": 6,
+      "memorability": 6,
+      "brandFit": 8,
+      "craft": 7,
+      "versatility": 7,
+      "presentAsIs": true,
+      "why": "The nested plum and amber arch is warm, calm and simple, and it avoids the moon and star cliché. It stays legible down to small sizes, though arches are a fairly common motif and the wordmark is generic."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.10922880000000001
+  },
+  {
+    "brand": "dozeline",
+    "concept": "tucked-d",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a bold rounded letter D",
+        "a D with the stem tucked under an overhanging top arm, like a blanket or tab",
+        "a generic rounded sans monogram"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 6,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The tucked, overhanging top arm gives the D a soft blanket-like gesture and it holds up at small sizes in sage green and in one colour, but the stem gap looks like a slightly awkward notch, and the mark stays a monogram that could belong to many apps and does not clearly say sleep or wind-down."
+    },
+    "model": "claude-sonnet-5-5",
+    "costUsdApiEquivalent": 0.1070386
+  }
+]
