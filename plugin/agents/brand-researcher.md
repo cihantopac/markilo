@@ -16,6 +16,13 @@ Rules:
 - Every factual statement is recorded with `markilo profile add-source` (url/search/registry, with the date) and
   `markilo profile add-finding --status observed|verified --source S…`. Your interpretations use `--status inferred`.
 - Never invent competitors, numbers, registrations or quotes. If you cannot find something, `markilo profile add-gap`.
+- Understand the product before the market: after `research repo` / `research site`, run
+  `markilo profile understanding --brand <slug>`. It lists the value proposition, features, audience, surfaces,
+  platforms, languages and pricing with their source and basis. **Stated** items may go into the brief as facts.
+  **Inferred** items (e.g. "probably takes payments" from a dependency) must be confirmed — open the code that uses
+  the dependency, or the page that says it — before they appear in the brief; otherwise leave them out. Everything
+  under `unknown` stays a gap: research it, or hand it to the caller as a question. Never fill it with a plausible
+  guess, and say in your summary which parts of the product picture are unconfirmed.
 - Do not include private or unreleased names in web searches unless the caller says the user approved it.
 - Competitors: first put them in the brief (`markilo brief update` with `competitors[].name/url`), then run
   `markilo research competitors --brand <slug> --allow-network` (only if the caller says network use is approved). It

@@ -10,6 +10,7 @@ import type {
   Source,
   SourceReliability,
 } from '../core/types.js';
+import { emptyUnderstanding, fromSite, mergeUnderstanding, type ProductUnderstanding } from './product.js';
 import type { RepoScan } from './repo.js';
 import type { SiteScan } from './site.js';
 
@@ -113,6 +114,52 @@ export function addFinding(
   return finding;
 }
 
+const GAP_PREFIX = 'Product understanding — ';
+
+/**
+ * Folds a product understanding (from a repository or website) into the profile: merged into `profile.product`,
+ * recorded as findings (stated → observed, derived → inferred) and its unknowns turned into gaps. Gaps from an
+ * earlier pass are replaced, so a website that states the pricing closes the repository's "pricing unknown" gap.
+ */
+export function applyUnderstanding(p: BrandProfile, add: ProductUnderstanding, sourceId: string): void {
+  p.product = mergeUnderstanding(p.product ?? emptyUnderstanding(), add);
+  const f = (topic: FindingTopic, statement: string, inferred = false) =>
+    addFinding(p, { topic, statement, status: inferred ? 'inferred' : 'observed', sourceIds: [sourceId] });
+  if (add.valueProposition)
+    f(
+      'product',
+      `What it is, in its own words (${add.valueProposition.source}): "${add.valueProposition.text}"`,
+    );
+  if (add.features.length)
+    f(
+      'product',
+      `Stated features: ${add.features
+        .slice(0, 8)
+        .map((x) => `"${x.text}"`)
+        .join('; ')}`,
+    );
+  for (const a of add.audience.slice(0, 3)) f('audience', `Stated audience (${a.source}): "${a.text}"`);
+  if (add.pricing) f('market', `Pricing (${add.pricing.source}): ${add.pricing.text}`);
+  if (add.surfaces.length)
+    f(
+      'product',
+      `Product surfaces (routes/screens): ${add.surfaces
+        .slice(0, 12)
+        .map((x) => x.text)
+        .join(', ')}`,
+    );
+  if (add.platforms.length)
+    f('platform', `Runs on: ${[...new Set(add.platforms.map((x) => x.text))].join(', ')}`);
+  if (add.languages.length)
+    f('audience', `Languages: ${[...new Set(add.languages.map((x) => x.text))].join(', ')}`);
+  for (const c of add.capabilities.slice(0, 8))
+    f('product', `Probably ${c.text} — inferred, confirm before relying on it.`, true);
+  p.gaps = [
+    ...p.gaps.filter((g) => !g.startsWith(GAP_PREFIX)),
+    ...p.product.unknown.map((u) => `${GAP_PREFIX}${u}`),
+  ];
+}
+
 export function mergeRepoScan(p: BrandProfile, scan: RepoScan): { source: Source; added: number } {
   const source = addSource(p, {
     type: 'repo',
@@ -154,6 +201,7 @@ export function mergeRepoScan(p: BrandProfile, scan: RepoScan): { source: Source
     );
   if (scan.fonts.length)
     obs('typography', `Fonts referenced: ${scan.fonts.map((f) => f.family).join(', ')}.`);
+  applyUnderstanding(p, scan.product, source.id);
 
   const ident = p.existingIdentity;
   for (const l of scan.logos)
@@ -237,6 +285,20 @@ export function mergeSiteScan(
       `Logo candidates: ${scan.logoCandidates.length} <img>, ${scan.inlineSvgLogos} inline <svg>.`,
     );
   if (scan.language && !competitor) obs('audience', `Page language attribute: ${scan.language}`);
+  if (!competitor)
+    applyUnderstanding(
+      p,
+      fromSite([
+        {
+          url: scan.finalUrl,
+          ...(scan.description ? { description: scan.description } : {}),
+          headings: scan.headings,
+          ...(scan.language ? { language: scan.language } : {}),
+        },
+        ...scan.pages.slice(1),
+      ]),
+      source.id,
+    );
   const gap = (t: string) => {
     if (!p.gaps.includes(t)) p.gaps.push(t);
   };

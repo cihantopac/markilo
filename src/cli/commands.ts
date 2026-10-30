@@ -575,6 +575,27 @@ export const COMMANDS: CommandSpec[] = [
     },
   },
   {
+    name: 'profile understanding',
+    summary:
+      'What the product does, for whom, where it runs and how it is priced — merged from repository and website research, each item with its source and basis (stated or inferred), plus what is still unknown.',
+    usage: 'profile understanding --brand <slug>',
+    options: { ...brandOpt },
+    async run(c) {
+      const p = ws(c).profile(c.req('brand'));
+      if (!p.product)
+        return {
+          understanding: null,
+          unknown: ['everything: no repository or website research yet'],
+          next: 'markilo research repo <path> --brand … or markilo research site <url> --brand … --allow-network',
+        };
+      return {
+        understanding: p.product,
+        unknown: p.product.unknown,
+        note: 'stated = the project or its website says so; inferred = derived (e.g. from a dependency), confirm before using it in the brief.',
+      };
+    },
+  },
+  {
     name: 'profile show',
     summary: 'Show the Brand Intelligence Profile (summary by default, --full for everything).',
     usage: 'profile show --brand <slug> [--full] [--topic <topic>]',

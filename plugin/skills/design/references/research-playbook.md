@@ -14,6 +14,18 @@ labeled as inference, or is listed as a gap.
 
 Never upgrade an inference to observed. When sources disagree, record both findings and the conflict.
 
+## Product understanding first
+
+Brand work starts from what the product really does. `markilo research repo` and `markilo research site` extract it
+with sources (README sections, package and app manifests, routes and screens, locale files, website hero, feature and
+pricing pages); `markilo profile understanding` shows the merged picture:
+
+- **stated** — the project or its website says it; usable as a fact.
+- **inferred** — derived, e.g. "probably takes payments" because a payment library is a dependency; confirm in the code
+  or on the site, or leave it out.
+- **unknown** — value proposition, features, audience, pricing, platforms or languages the evidence does not answer.
+  They are profile gaps (`Product understanding — …`). Research them or ask; never fill them with guesses.
+
 ## What to cover
 
 1. **Product**: what it does, for whom, the core mechanism or promise, platforms, pricing model.

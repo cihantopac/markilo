@@ -4,6 +4,16 @@ import { normalizeColor } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
 import { isDir, isFile } from '../core/fsx.js';
 import { portableRelative } from '../core/paths.js';
+import {
+  emptyUnderstanding,
+  finishUnderstanding,
+  fromDependencies,
+  fromReadme,
+  laravelRoutes,
+  localeOf,
+  type ProductUnderstanding,
+  surfaceOf,
+} from './product.js';
 
 export interface RepoScan {
   root: string;
@@ -24,6 +34,8 @@ export interface RepoScan {
   iconSets: { dir: string; count: number; examples: string[] }[];
   /** Design-system / brand documentation found in the tree, with the colors they mention. */
   designDocs: { path: string; title?: string; colors: string[] }[];
+  /** What the product does, for whom and where it runs, with sources; unknowns listed, never guessed. */
+  product: ProductUnderstanding;
 }
 
 const SKIP_DIRS = new Set([
@@ -62,6 +74,7 @@ const SKIP_DIRS = new Set([
 /** Files that may hold secrets are never opened. */
 const SENSITIVE =
   /(^\.env(\..*)?$)|(\.(pem|key|p8|p12|pfx|keystore|jks|mobileprovision|kdbx|ppk|asc|gpg|tfvars|tfstate)$)|(^id_(rsa|dsa|ecdsa|ed25519))|(credentials?)|(secrets?[._-])|(\.npmrc$)|(\.netrc$)|(\.pypirc$)|(\.git-credentials$)|(^service-account.*\.json$)|(^google-services\.json$)|(^GoogleService-Info\.plist$)|(^\.htpasswd$)|(\.sqlite3?$)|(\.db$)/i;
+
 const STYLE_EXT = new Set(['.css', '.scss', '.sass', '.less', '.styl', '.pcss']);
 const CODE_EXT = new Set([
   '.ts',
@@ -188,7 +201,12 @@ export function scanRepo(rootInput: string, opts: { maxFiles?: number } = {}): R
     html: [],
     iconSets: [],
     designDocs: [],
+    product: emptyUnderstanding(),
   };
+  const u = scan.product;
+  const deps: { name: string; source: string }[] = [];
+  const platforms = new Map<string, string>();
+  const locales = new Map<string, string>();
   const svgDirs = new Map<string, { count: number; small: number; examples: string[] }>();
   const colorCount = new Map<string, { count: number; files: Set<string> }>();
   const fonts = new Map<string, string>();
@@ -207,6 +225,14 @@ export function scanRepo(rootInput: string, opts: { maxFiles?: number } = {}): R
     }
     scan.scannedFiles++;
     const ext = extname(name).toLowerCase();
+    const surface = surfaceOf(rel);
+    if (surface) u.surfaces.push({ text: surface, source: rel, basis: 'stated' });
+    const loc = localeOf(rel);
+    if (loc && !locales.has(loc)) locales.set(loc, rel);
+    if (/(^|\/)ios\/Runner\/|\.xcodeproj\//.test(rel)) platforms.set('iOS', platforms.get('iOS') ?? rel);
+    if (/(^|\/)android\/app\//.test(rel)) platforms.set('Android', platforms.get('Android') ?? rel);
+    if (/(^|\/)(web\/index\.html|index\.html|public\/index\.html)$/.test(rel))
+      platforms.set('web', platforms.get('web') ?? rel);
     let size = 0;
     try {
       size = statSync(file).size;
@@ -257,11 +283,13 @@ export function scanRepo(rootInput: string, opts: { maxFiles?: number } = {}): R
             : {}),
           ...(typeof pkg.homepage === 'string' ? { homepage: pkg.homepage } : {}),
         };
-        const deps = { ...(pkg.dependencies as object), ...(pkg.devDependencies as object) } as Record<
+        const allDeps = { ...(pkg.dependencies as object), ...(pkg.devDependencies as object) } as Record<
           string,
           string
         >;
-        for (const d of Object.keys(deps)) {
+        for (const d of Object.keys(pkg.dependencies ?? {})) deps.push({ name: d, source: rel });
+        if (pkg.bin) platforms.set('command line', rel);
+        for (const d of Object.keys(allDeps)) {
           if (d.startsWith('@fontsource'))
             fonts.set(d.replace(/^@fontsource(-variable)?\//, ''), 'package.json');
           for (const [fw, re] of [
@@ -283,8 +311,50 @@ export function scanRepo(rootInput: string, opts: { maxFiles?: number } = {}): R
       } catch {
         // Malformed package.json is reported by its own tooling; ignore here.
       }
+    } else if (name === 'package.json' && rel.split('/').length <= 4) {
+      // Packages of a monorepo: their dependencies say what the product family does and where it runs.
+      try {
+        const pkg = JSON.parse(readFileSync(file, 'utf8')) as Record<string, unknown>;
+        for (const d of Object.keys((pkg.dependencies as object) ?? {})) {
+          deps.push({ name: d, source: rel });
+          if (d === 'next') frameworks.add('Next.js');
+          if (d === 'react-native') frameworks.add('React Native');
+          if (d === 'electron') frameworks.add('Electron');
+        }
+      } catch {
+        // Malformed package.json; skip.
+      }
     } else if (/^readme(\.md|\.markdown)?$/i.test(name) && !scan.readme && rel.split('/').length <= 2) {
-      scan.readme = { path: rel, ...readmeSummary(readFileSync(file, 'utf8')) };
+      const text = readFileSync(file, 'utf8');
+      scan.readme = { path: rel, ...readmeSummary(text) };
+      fromReadme(text, rel, u);
+    } else if (name === 'pubspec.yaml' && !rel.includes('/')) {
+      const text = readFileSync(file, 'utf8');
+      const desc = /^description:\s*(.+)$/m.exec(text)?.[1]?.replace(/^['"]|['"]$/g, '');
+      if (desc && !scan.project.description) scan.project.description = desc;
+      const block = /^dependencies:\n((?:[ \t]+.*\n?)+)/m.exec(text)?.[1] ?? '';
+      for (const m of block.matchAll(/^[ \t]{2}([a-z0-9_]+):/gm)) deps.push({ name: m[1]!, source: rel });
+      platforms.set('iOS', platforms.get('iOS') ?? rel);
+      platforms.set('Android', platforms.get('Android') ?? rel);
+      frameworks.add('Flutter');
+    } else if (name === 'composer.json' && !rel.includes('/')) {
+      try {
+        const c = JSON.parse(readFileSync(file, 'utf8')) as {
+          description?: string;
+          require?: Record<string, string>;
+        };
+        if (c.description && !scan.project.description) scan.project.description = c.description;
+        for (const d of Object.keys(c.require ?? {})) {
+          deps.push({ name: d, source: rel });
+          if (d === 'laravel/framework') frameworks.add('Laravel');
+        }
+        platforms.set('web', platforms.get('web') ?? rel);
+      } catch {
+        // Malformed composer.json; skip.
+      }
+    } else if (name === 'web.php' && /(^|\/)routes\/web\.php$/.test(rel)) {
+      for (const r of laravelRoutes(readFileSync(file, 'utf8')))
+        u.surfaces.push({ text: r, source: rel, basis: 'stated' });
     } else if (
       /^(site\.webmanifest|manifest\.(webmanifest|json))$/i.test(name) &&
       !rel.includes('node_modules')
@@ -360,6 +430,22 @@ export function scanRepo(rootInput: string, opts: { maxFiles?: number } = {}): R
     .slice(0, 12)
     .map(([dir, e]) => ({ dir, count: e.count, examples: e.examples }));
   scan.html = scan.html.slice(0, 10);
+  if (!u.valueProposition && scan.project.description)
+    u.valueProposition = { text: scan.project.description, source: 'package manifest', basis: 'stated' };
+  for (const fw of scan.frameworks) {
+    if (/Next\.js|Nuxt|Astro|Remix|Svelte|Vue|Angular|React$/.test(fw))
+      platforms.set('web', platforms.get('web') ?? 'package.json');
+    if (/Electron/.test(fw)) platforms.set('desktop', 'package.json');
+    if (/React Native|Expo/.test(fw)) {
+      platforms.set('iOS', platforms.get('iOS') ?? 'package.json');
+      platforms.set('Android', platforms.get('Android') ?? 'package.json');
+    }
+  }
+  if (scan.manifests.length) platforms.set('installable web app (PWA)', scan.manifests[0]!.path);
+  for (const [text, source] of platforms) u.platforms.push({ text, source, basis: 'stated' });
+  for (const [text, source] of locales) u.languages.push({ text, source, basis: 'stated' });
+  for (const d of deps) fromDependencies([d.name], d.source, u);
+  finishUnderstanding(u);
   return scan;
 }
 
@@ -381,5 +467,6 @@ export function summarizeScan(scan: RepoScan) {
     designDocs: scan.designDocs.slice(0, 8).map((d) => d.path),
     colors: scan.colors.slice(0, 6).map((c) => c.hex),
     fonts: scan.fonts.slice(0, 6).map((f) => f.family),
+    product: scan.product,
   };
 }

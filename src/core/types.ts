@@ -1,3 +1,4 @@
+import type { ProductUnderstanding } from '../research/product.js';
 export type FindingStatus = 'observed' | 'inferred' | 'verified' | 'user-provided';
 export type Confidence = 'low' | 'medium' | 'high';
 export type BrandRole = 'master' | 'product' | 'sub-brand' | 'endorsed';
@@ -77,6 +78,8 @@ export interface BrandProfile {
   existingIdentity: ExistingIdentity;
   /** Things we could not establish. Listed so nobody fills them with guesses. */
   gaps: string[];
+  /** What the product does, for whom and where, merged from repository and website research, with sources. */
+  product?: ProductUnderstanding;
 }
 
 export interface AnswerLog {
