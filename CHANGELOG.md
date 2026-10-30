@@ -28,7 +28,7 @@ All notable changes to this project are documented here. The format follows
 - `concept update` takes `--construction`, `--title`, `--direction`, `--rationale` and every palette role
   (`--secondary/--accent none` removes one); committing a new mark clears the previous critic scores.
 - Construction specs: params may be expressions over earlier params, `{expr}` works inside `path` data, and
-  wordmarks drawn without a font take explicit `metrics` for lockup alignment.
+  wordmarks drawn without a font take explicit `metrics` for lockup alignment, and `repeat` exposes the copy index `i`.
 
 ## [0.3.0-beta.1] - 2026-10-30
 

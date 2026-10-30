@@ -124,6 +124,31 @@ describe('construction specs', () => {
       compileSpec({ layers: [{ fill: 'ink', shape: { path: { d: 'M{nope} 0L10 10', width: 4 } } }] }),
     ).rejects.toThrow(/unknown name "nope"/);
   });
+  it('exposes the copy index inside repeat', async () => {
+    const c = await compileSpec({
+      layers: [
+        {
+          fill: 'ink',
+          shape: {
+            repeat: { shape: { rect: { x: 100, y: 100, w: '200+i*200', h: 100 } }, n: 3, step: [0, 200] },
+          },
+        },
+      ],
+    });
+    // Widest copy (i = 2) is 600 wide; with one shared size it would be 200.
+    expect(c.stats.ink).toBeCloseTo(600 / 1024, 2);
+  });
+  it('applies an optical nudge after fit', async () => {
+    const spec: ConstructionSpec = {
+      layers: [{ fill: 'ink', shape: { circle: { c: [300, 300], r: 100 } } }],
+      fit: 0.1,
+    };
+    const a = await compileSpec(spec);
+    const b = await compileSpec({ ...spec, nudge: [0, -20] });
+    const top = (d: string) =>
+      Math.min(...[...d.matchAll(/[ML ]?([\d.]+) ([\d.]+)/g)].map((m) => Number(m[2])));
+    expect(top(a.layers[0]!.d) - top(b.layers[0]!.d)).toBeCloseTo(20, 0);
+  });
   it('reports mistakes with the spec path', async () => {
     await expect(
       compileSpec({ layers: [{ fill: 'primary', shape: { cirle: { c: [0, 0], r: 1 } } }] }),

@@ -15,7 +15,9 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 does the sketch say its idea without explanation, is it ownable (not a known device, a UI icon, a cliché or a
 different letter), will it survive 16 px, and is there room to make it excellent? Pick at most one sketch per concept
 to develop, or none: `markilo concept update --brand <slug> --concept <id> --sketch-pick <sN|none> --sketch-notes
-"<what to keep, what to fix>"`. Pick none rather than a weak sketch; say what move to try instead. Final answer ≤ 150
+"<what to keep, what to fix>"`. Pick a sketch only if you believe it can reach distinctiveness and
+memorability ≥ 7 once finished; the best of a weak board is still weak. Otherwise pick none and say what move to try
+instead. Final answer ≤ 150
 words. Do not score the full criteria in a sketch review.
 
 **Full review** — for each concept the caller names (or all non-rejected concepts in `markilo concept list --brand <slug>`):

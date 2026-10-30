@@ -71,6 +71,8 @@ export interface ConstructionSpec {
   layers: Layer[];
   /** Scale and centre the drawing into the artboard leaving this margin (fraction of the short side). */
   fit?: number;
+  /** Optical correction applied after `fit`: [dx, dy] in artboard units (e.g. [0, -16] lifts the mark). */
+  nudge?: Pt;
 }
 
 export interface CompiledLayer {
@@ -388,21 +390,34 @@ function primitive(kind: string, raw: unknown, at: string, ctx: Ctx): string {
     case 'offset':
       return offsetPath(shape(o.shape as Shape, `${a}.shape`, ctx), n('by'), join(o.join));
     case 'repeat': {
-      const base = shape(o.shape as Shape, `${a}.shape`, ctx);
       const count = Math.max(1, Math.min(64, Math.round(n('n'))));
+      // Inside the repeated shape, `i` is the copy index (0-based), so sizes can change per copy ("w": "400-i*64").
+      const prev = Object.hasOwn(ctx.vars, 'i') ? ctx.vars.i : undefined;
+      const copyOf = (i: number) => {
+        ctx.vars.i = i;
+        return shape(o.shape as Shape, `${a}.shape[i=${i}]`, ctx);
+      };
       const copies: string[] = [];
-      if (o.c !== undefined || o.angle !== undefined) {
-        const [cx, cy] = ctx.pt(o.c, `${a}.c`);
-        const step = n('angle', 360 / count);
-        for (let i = 0; i < count; i++) {
-          const t = (step * i * Math.PI) / 180;
-          copies.push(
-            transformPath(base, about([Math.cos(t), Math.sin(t), -Math.sin(t), Math.cos(t), 0, 0], cx, cy)),
-          );
+      try {
+        if (o.c !== undefined || o.angle !== undefined) {
+          const [cx, cy] = ctx.pt(o.c, `${a}.c`);
+          const step = n('angle', 360 / count);
+          for (let i = 0; i < count; i++) {
+            const t = (step * i * Math.PI) / 180;
+            copies.push(
+              transformPath(
+                copyOf(i),
+                about([Math.cos(t), Math.sin(t), -Math.sin(t), Math.cos(t), 0, 0], cx, cy),
+              ),
+            );
+          }
+        } else {
+          const [dx, dy] = ctx.pt(o.step, `${a}.step`);
+          for (let i = 0; i < count; i++) copies.push(transformPath(copyOf(i), [1, 0, 0, 1, dx * i, dy * i]));
         }
-      } else {
-        const [dx, dy] = ctx.pt(o.step, `${a}.step`);
-        for (let i = 0; i < count; i++) copies.push(transformPath(base, [1, 0, 0, 1, dx * i, dy * i]));
+      } finally {
+        if (prev === undefined) delete ctx.vars.i;
+        else ctx.vars.i = prev;
       }
       return booleanOp('union', copies);
     }
@@ -535,6 +550,14 @@ export async function compileSpec(spec: ConstructionSpec, opts: CompileOptions =
     ctx.guides = ctx.guides.map((g) => transformPath(g, m));
     if (ctx.type)
       ctx.type = { ...ctx.type, baseline: s * ctx.type.baseline + m[5], capHeight: s * ctx.type.capHeight };
+  }
+
+  if (spec.nudge !== undefined) {
+    const [dx, dy] = ctx.pt(spec.nudge, 'nudge');
+    const m: M = [1, 0, 0, 1, dx, dy];
+    layers = layers.map((l) => ({ ...l, d: transformPath(l.d, m) }));
+    ctx.guides = ctx.guides.map((g) => transformPath(g, m));
+    if (ctx.type) ctx.type = { ...ctx.type, baseline: ctx.type.baseline + dy };
   }
 
   // Facts a designer checks on every build.

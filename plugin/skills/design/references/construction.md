@@ -44,8 +44,8 @@ With `--brand/--concept`, palette roles come from the concept, the result is wri
 - `fill` is a palette role (`primary`, `secondary`, `accent`, `ink`, `paper`) or a hex color. Later layers draw on top.
 - `fit` scales and centres everything into the artboard with that margin. It scales gaps and stroke widths too, so a
   variant that grows taller also gets thinner gaps; leave `fit` out while tuning gaps and widths, and place by grid.
-  `fit` centres the bounding box; correct the optical centre yourself with `move` (verify's balance check says which
-  way a mark leans).
+  `fit` centres the bounding box; correct the optical centre with `"nudge": [dx, dy]`, applied after `fit`
+  (verify's balance check says which way a mark leans).
 - Angles: 0° is 12 o'clock, clockwise. An `arc` or `sector` runs from `from` to `to`: `to` > `from` sweeps
   clockwise, `to` < `from` counter-clockwise (270° counter-clockwise from 3 o'clock: `from: 90, to: -180`).
 
@@ -65,16 +65,16 @@ With `--brand/--concept`, palette roles come from the concept, the result is wri
 | `path`     | `d` (filled, nonzero rule), or with `width`/`cap`/`join` a stroked centre line — use it for one continuous stroke mixing lines and arcs (`A`); `{expr}` inside `d` uses params (`"M{x} 800L{x} 300"`) |
 | `glyph`    | `text`, `font` (id from `markilo fonts`), `weight`, `height` (cap height) or `size`, `c` (centre) or `at` (baseline start), `tracking`, `locale`, `letters` (positions to keep, e.g. `[0]`)           |
 
-| Operation                     | Fields                                                                                                                   |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `union` / `intersect` / `xor` | list of shapes                                                                                                           |
-| `subtract`                    | list: the first shape minus all others                                                                                   |
-| `gap`                         | `shape`, `cut`, `width`, `keep` — removes `cut` grown by `width` from `shape` (a knockout); `keep: true` adds `cut` back |
-| `outline`                     | `shape`, `width` — the contour as a band                                                                                 |
-| `offset`                      | `shape`, `by` (+ grows, − shrinks)                                                                                       |
-| `repeat`                      | `shape`, `n`, then `c` (+ `angle`) for radial or `step: [dx, dy]` for linear                                             |
-| `mirror`                      | `shape`, `axis` `x`/`y`, `at` — the shape plus its reflection                                                            |
-| `ref`                         | name in `defs`                                                                                                           |
+| Operation                     | Fields                                                                                                                                  |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `union` / `intersect` / `xor` | list of shapes                                                                                                                          |
+| `subtract`                    | list: the first shape minus all others                                                                                                  |
+| `gap`                         | `shape`, `cut`, `width`, `keep` — removes `cut` grown by `width` from `shape` (a knockout); `keep: true` adds `cut` back                |
+| `outline`                     | `shape`, `width` — the contour as a band                                                                                                |
+| `offset`                      | `shape`, `by` (+ grows, − shrinks)                                                                                                      |
+| `repeat`                      | `shape`, `n`, then `c` (+ `angle`) for radial or `step: [dx, dy]` for linear; inside `shape`, `i` is the copy index (`"w": "400-i*64"`) |
+| `mirror`                      | `shape`, `axis` `x`/`y`, `at` — the shape plus its reflection                                                                           |
+| `ref`                         | name in `defs`                                                                                                                          |
 
 Every shape also takes `round` (fillet all corners with this radius), `grow` (offset), `scale`, `rotate`, `flip`
 (`x`/`y`), `move` `[dx, dy]` and `origin` (default: the shape's centre). Order: grow, round, scale, flip, rotate, move.
