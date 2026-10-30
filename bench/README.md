@@ -4,13 +4,15 @@ End-to-end runs of the installed Markilo plugin on realistic products, to measur
 effort and cost release by release. Each scenario is a fixture project (a README, manifests and screens, no real
 company) plus the owner's preferences:
 
-| Scenario                                             | Product                                                                              | What it tests                                                                                       |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| [saas-invoicing](scenarios/saas-invoicing)           | Tallyline — invoicing and cash-flow forecasting for freelancers (Next.js)            | A crowded category (fintech blue and green), web-only deliverables                                  |
-| [mobile-sleep](scenarios/mobile-sleep)               | Dozeline — wind-down and sleep journal app (Flutter, iOS + Android, EN + TR)         | Clichés to avoid (moons, stars), home-screen legibility, mobile exports                             |
-| [family-workspace](scenarios/family-workspace)       | Lumenfold — office suite with Docs, Sheets and Sign (monorepo)                       | A master brand and three product icons that belong together                                         |
-| [devtool-cli](scenarios/devtool-cli) (holdout)       | Seamline — zero-downtime PostgreSQL migrations, an open-source CLI (Rust, docs site) | A developer audience, GitHub avatar and README, no category clichés (cylinders, elephants, prompts) |
-| [ecommerce-shop](scenarios/ecommerce-shop) (holdout) | Kilnroom — online shop for small-batch ceramics (Laravel, TR + EU)                   | Warm without folksy, labels and stickers, Laravel asset install                                     |
+| Scenario                                                        | Product                                                                              | What it tests                                                                                       |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| [saas-invoicing](scenarios/saas-invoicing)                      | Tallyline — invoicing and cash-flow forecasting for freelancers (Next.js)            | A crowded category (fintech blue and green), web-only deliverables                                  |
+| [mobile-sleep](scenarios/mobile-sleep)                          | Dozeline — wind-down and sleep journal app (Flutter, iOS + Android, EN + TR)         | Clichés to avoid (moons, stars), home-screen legibility, mobile exports                             |
+| [family-workspace](scenarios/family-workspace)                  | Lumenfold — office suite with Docs, Sheets and Sign (monorepo)                       | A master brand and three product icons that belong together                                         |
+| [devtool-cli](scenarios/devtool-cli) (holdout until rc.5)       | Seamline — zero-downtime PostgreSQL migrations, an open-source CLI (Rust, docs site) | A developer audience, GitHub avatar and README, no category clichés (cylinders, elephants, prompts) |
+| [ecommerce-shop](scenarios/ecommerce-shop) (holdout until rc.5) | Kilnroom — online shop for small-batch ceramics (Laravel, TR + EU)                   | Warm without folksy, labels and stickers, Laravel asset install                                     |
+| [b2b-logistics](scenarios/b2b-logistics) (holdout)              | Portwise — freight visibility for mid-size shippers (Django)                         | An enterprise audience, a category full of globes, ships and arrows                                 |
+| [edu-app](scenarios/edu-app) (holdout)                          | Quillnest — a writing coach for teenagers (Expo, iOS, Android, web)                  | Bold but not childish, app icons, a category full of owls and pencils                               |
 
 ## Results
 

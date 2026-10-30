@@ -1,0 +1,11 @@
+{
+  "id": "b2b-logistics",
+  "title": "B2B platform",
+  "kind": "b2b",
+  "sector": "logistics software",
+  "name": "Portwise",
+  "holdout": true,
+  "ask": "Create a brand identity for Portwise, the freight visibility platform in this folder.",
+  "owner": "Owner preferences: dependable and calm, for operations teams who look at it all day; serious enough for enterprise procurement. No globes, ships, containers, trucks or arrows. Web app, sales decks and LinkedIn.",
+  "budgetUsd": 20
+}

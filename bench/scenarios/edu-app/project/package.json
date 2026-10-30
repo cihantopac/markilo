@@ -1,0 +1,13 @@
+{
+  "name": "quillnest",
+  "version": "2.0.1",
+  "private": true,
+  "description": "A writing coach for teenagers",
+  "main": "expo-router/entry",
+  "dependencies": {
+    "expo": "~52.0.0",
+    "expo-router": "~4.0.0",
+    "react": "18.3.1",
+    "react-native": "0.76.3"
+  }
+}

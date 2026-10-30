@@ -1,0 +1,5 @@
+[project]
+name = "portwise"
+version = "3.2.0"
+description = "Freight visibility for mid-size shippers"
+dependencies = ["django>=5.1", "celery>=5.4", "psycopg[binary]>=3.2"]
