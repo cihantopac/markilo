@@ -9,12 +9,13 @@ layout and the bar a change needs to clear.
 git clone https://github.com/cihantopac/markilo.git && cd markilo
 npm ci
 npm run ci          # lint, types, tests, build, dist check
+node scripts/smoke.mjs   # an empty folder to installed assets with the bundle alone
 ```
 
 Try the plugin from source in any other project:
 
 ```bash
-claude --plugin-dir /path/to/markilo
+claude --plugin-dir /path/to/markilo/plugin
 ```
 
 Inside the session run `/reload-plugins` after editing skills or agents.
@@ -28,7 +29,9 @@ Inside the session run `/reload-plugins` after editing skills or agents.
 | `plugin/skills/`, `plugin/agents/` | Claude Code skills and subagents (process and judgment)                                                                                                      |
 | `fonts/`                           | Vendored OFL fonts (`npm run fonts` regenerates)                                                                                                             |
 | `tests/`                           | Vitest unit, integration and bundled-CLI tests; `tests/fixtures/` holds synthetic marks and a fake repo                                                      |
-| `evals/`                           | `claude plugin eval` behavioral cases                                                                                                                        |
+| `plugin/evals/`                    | `claude plugin eval` behavioral cases                                                                                                                        |
+| `bench/`                           | End-to-end benchmark scenarios and results (`node scripts/bench.mjs`)                                                                                        |
+| `scripts/`                         | Build, dist check, smoke test, benchmark, notices, README images                                                                                             |
 | `branding/`                        | Markilo's own identity workspace (made with Markilo)                                                                                                         |
 | `docs/`                            | Architecture, outputs, originality method, privacy, maintenance                                                                                              |
 

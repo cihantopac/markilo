@@ -94,6 +94,9 @@ claude plugin marketplace add cihantopac/markilo
 claude plugin install markilo@markilo
 ```
 
+To update later: `claude plugin marketplace update markilo`, then `claude plugin update markilo@markilo` and restart
+Claude Code.
+
 ### `/markilo` and `/markilo:design`
 
 After installing, both `/markilo` and `/markilo:design` start the studio (verified with Claude Code 2.1.308). If another

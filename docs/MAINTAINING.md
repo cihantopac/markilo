@@ -10,8 +10,8 @@ flags, JSON output fields, error codes, workspace file formats (`markilo/*@1` sc
 - **Major**: removed/renamed commands, flags, fields or export paths; schema version bumps (`@2`), threshold changes
   that alter existing verdicts.
 
-The version appears in `package.json`, `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`; a test fails
-if they disagree. Setting `version` in the plugin manifest means users receive updates only when it changes.
+The version appears in `package.json`, `plugin/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`; a test
+fails if they disagree. Setting `version` in the plugin manifest means users receive updates only when it changes.
 
 ## Release checklist
 
