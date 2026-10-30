@@ -133,7 +133,14 @@ export interface Concept {
     tracking?: number;
     case?: 'as-is' | 'lower' | 'upper';
   };
-  files: { symbol?: string; wordmark?: string; lockupHorizontal?: string; lockupStacked?: string };
+  /** small: a simplified symbol for 32 px and below (favicons, small ICO sizes), checked against the main one. */
+  files: {
+    symbol?: string;
+    wordmark?: string;
+    lockupHorizontal?: string;
+    lockupStacked?: string;
+    small?: string;
+  };
   status: ConceptStatus;
   createdAt: string;
   updatedAt: string;

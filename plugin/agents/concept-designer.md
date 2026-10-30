@@ -67,7 +67,8 @@ Steps:
    result keeps its type metrics. An untouched font is a placeholder, not a wordmark — but change one or two letters, not
    all of them (construction.md → Wordmarks).
 6. `markilo verify --brand <slug> --concept <id>`, then `Read` `concepts/<id>/review/symbol-sheet.png`. Look at 16 px,
-   dark background and one-color rows critically.
+   dark background and one-color rows critically. If the idea is lost at 16 px but right at 64 px and up, add a small
+   version (`construct … --role small`, construction.md → Craft checklist) rather than coarsening the main mark.
 7. Iterate (usually 2–4 rounds) by editing the spec, never the compiled SVG, until: no `fail` checks (including "Visible on its paper"), originality verdict is not
    `redesign`, the 16 px render is clearly the same mark, and it still expresses the idea. Before finishing, rate your
    own result honestly 0–10 on distinctiveness and memorability; below 7, go back to step 3 with a stronger move. If a reference match is high, change the idea's form —

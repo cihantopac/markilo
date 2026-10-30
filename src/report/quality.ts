@@ -1,7 +1,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
-import { loadMark } from '../analyze/mark.js';
+import { loadMark, sampleFromSvg } from '../analyze/mark.js';
 import { assessQuality, type QualityReport } from '../analyze/quality.js';
+import { compareMarks, RISK_THRESHOLDS } from '../analyze/similarity.js';
 import { MarkiloError } from '../core/errors.js';
 import { readText, writeGenerated, writeJson } from '../core/fsx.js';
 import type { Workspace } from '../core/workspace.js';
@@ -79,6 +80,30 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
     reports.push(
       await assessQuality(svg, `${id}/${rel}`, role, { paper: concept.palette.paper ?? '#ffffff' }),
     );
+    if (role === 'symbol' && concept.files.small) {
+      // The small version is measured like a symbol, and must still read as the same mark: the similarity
+      // engine's "review" bar (0.62), the level at which it would flag two marks as related.
+      const small = readText(ws.conceptFile(brand, id, concept.files.small));
+      const r = await assessQuality(small, `${id}/${concept.files.small}`, 'symbol', {
+        paper: concept.palette.paper ?? '#ffffff',
+      });
+      const cmp = await compareMarks(
+        await sampleFromSvg(small, { id: 'small' }),
+        await sampleFromSvg(svg, { id: 'symbol' }),
+      );
+      const same = cmp.visual >= RISK_THRESHOLDS.review;
+      r.checks.push({
+        id: 'same-mark',
+        label: 'Reads as the main symbol',
+        status: same ? 'pass' : 'warn',
+        value: cmp.visual,
+        message: same
+          ? `${Math.round(cmp.visual * 100)}% like the main symbol: the same mark, simplified.`
+          : `Only ${Math.round(cmp.visual * 100)}% like the main symbol (≥ ${Math.round(RISK_THRESHOLDS.review * 100)}% reads as the same mark): at 16 px people would not connect them.`,
+      });
+      r.summary[same ? 'pass' : 'warn']++;
+      reports.push({ ...r, role: 'small' });
+    }
     if (role === 'symbol') {
       const sheet = join(dir, 'review', 'symbol-sheet.png');
       writeGenerated(sheet, await renderReviewSheet(svg, `${concept.title} — symbol`));
@@ -129,6 +154,7 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
       await renderContextSheet({
         name: ws.brand(brand).name,
         symbol: symbolSvg,
+        ...(concept.files.small ? { small: readText(ws.conceptFile(brand, id, concept.files.small)) } : {}),
         ...(lockup ? { lockup } : {}),
         paper: concept.palette.paper ?? '#ffffff',
         primary: concept.palette.primary,

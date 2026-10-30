@@ -25,6 +25,8 @@ export interface BrandKit {
     lockupHorizontal?: string;
     lockupStacked?: string;
     lockupCompact?: string;
+    /** The simplified symbol used at 32 px and below. */
+    symbolSmall?: string;
   };
   palette: { primary: string; secondary?: string; accent?: string; ink: string; paper: string; dark: string };
   typography?: { fontId: string; weight: number; family?: string; license?: string };
@@ -171,6 +173,7 @@ export async function finalizeConcept(
   const wordmark = take(concept.files.wordmark, 'wordmark.svg');
   if (symbol) files.symbol = 'symbol.svg';
   if (wordmark) files.wordmark = 'wordmark.svg';
+  if (symbol && take(concept.files.small, 'symbol-small.svg')) files.symbolSmall = 'symbol-small.svg';
   const lockup = (
     rel: string | undefined,
     out: string,

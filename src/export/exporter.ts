@@ -64,6 +64,8 @@ interface Ctx {
   kit: BrandKit;
   outDir: string;
   symbol?: string;
+  /** Simplified symbol for 32 px and below (favicons, small ICO sizes, Windows target sizes). */
+  small?: string;
   wordmark?: string;
   lockupH?: string;
   lockupS?: string;
@@ -309,26 +311,29 @@ export function adaptiveFavicon(symbol: string, dark: string, paper: string): st
 async function exportWeb(ctx: Ctx) {
   const { kit } = ctx;
   const sym = ctx.symbol!;
-  const fav = kit.locked ? sym : optimizeSvg(adaptiveFavicon(sym, '#202124', kit.palette.paper));
+  // Browser tabs show the favicon at 16–32 px: the small version when there is one.
+  const tiny = ctx.small ?? sym;
+  const tinyFrom = ctx.small ? 'symbol-small.svg' : 'symbol.svg';
+  const fav = kit.locked ? tiny : optimizeSvg(adaptiveFavicon(tiny, '#202124', kit.palette.paper));
   await emit(ctx, 'web/favicon.svg', fav, {
     group: 'web',
     purpose: 'SVG favicon (adapts to dark browser UI)',
-    derivedFrom: 'symbol.svg',
+    derivedFrom: tinyFrom,
   });
   const icoPngs: Buffer[] = [];
   for (const s of SPECS.web.icoSizes)
-    icoPngs.push(await png(await canvas(sym, s, s, { mode: 'box', fraction: 0.94 }), s));
+    icoPngs.push(await png(await canvas(s <= 32 ? tiny : sym, s, s, { mode: 'box', fraction: 0.94 }), s));
   const i32 = SPECS.web.icoSizes.indexOf(32);
   if (i32 >= 0)
     await emit(ctx, 'web/favicon-32.png', icoPngs[i32]!, {
       group: 'web',
       purpose: '32 px PNG favicon (for frameworks that expect a PNG, e.g. Flutter web)',
-      derivedFrom: 'symbol.svg',
+      derivedFrom: tinyFrom,
     });
   await emit(ctx, 'web/favicon.ico', encodeIco(icoPngs), {
     group: 'web',
     purpose: `Legacy favicon (${SPECS.web.icoSizes.join('/')} px)`,
-    derivedFrom: 'symbol.svg',
+    derivedFrom: ctx.small ? 'symbol-small.svg (≤ 32 px), symbol.svg' : 'symbol.svg',
   });
   const touch = kit.locked
     ? await canvas(sym, 180, 180, { mode: 'box', fraction: 0.66 }, kit.palette.paper)
@@ -654,7 +659,15 @@ async function exportWindows(ctx: Ctx) {
   const forDark = kit.locked ? sym : reversedVariant(sym, '#202020', '#ffffff');
   const pngs: Buffer[] = [];
   for (const s of W.icoSizes)
-    pngs.push(await png(await canvas(sym, s, s, { mode: 'box', fraction: s <= 32 ? 0.94 : 0.86 }), s));
+    pngs.push(
+      await png(
+        await canvas(s <= 32 ? (ctx.small ?? sym) : sym, s, s, {
+          mode: 'box',
+          fraction: s <= 32 ? 0.94 : 0.86,
+        }),
+        s,
+      ),
+    );
   await emit(ctx, 'windows/app.ico', encodeIco(pngs), {
     group: 'windows',
     purpose: `Windows app icon (${W.icoSizes.join('/')} px)`,
@@ -687,7 +700,14 @@ async function exportWindows(ctx: Ctx) {
   }
   for (const t of W.targetSizes) {
     const frac = t <= 32 ? 0.94 : 0.88;
-    await put(`Square44x44Logo.targetsize-${t}.png`, sym, t, t, frac, `Taskbar/app list ${t}px (plated)`);
+    await put(
+      `Square44x44Logo.targetsize-${t}.png`,
+      t <= 32 ? (ctx.small ?? sym) : sym,
+      t,
+      t,
+      frac,
+      `Taskbar/app list ${t}px (plated)`,
+    );
     await put(
       `Square44x44Logo.targetsize-${t}_altform-unplated.png`,
       forDark,
@@ -1032,6 +1052,7 @@ export async function exportBrand(
     kit,
     outDir,
     ...(kit.files.symbol ? { symbol: kit.read('symbol') } : {}),
+    ...(kit.files.symbolSmall ? { small: kit.read('symbolSmall') } : {}),
     ...(kit.files.wordmark ? { wordmark: kit.read('wordmark') } : {}),
     ...(kit.files.lockupHorizontal ? { lockupH: kit.read('lockupHorizontal') } : {}),
     ...(kit.files.lockupStacked ? { lockupS: kit.read('lockupStacked') } : {}),

@@ -17,7 +17,8 @@ export interface QualityCheck {
 
 export interface QualityReport {
   subject: string;
-  role: 'symbol' | 'wordmark' | 'lockup';
+  /** small: the simplified symbol for 32 px and below, measured like a symbol. */
+  role: 'symbol' | 'wordmark' | 'lockup' | 'small';
   measuredAt: string;
   checks: QualityCheck[];
   summary: Record<CheckStatus, number>;

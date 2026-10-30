@@ -30,6 +30,8 @@ export interface ContextPeer {
 export interface ContextSheetInput {
   name: string;
   symbol: string;
+  /** The simplified symbol for 32 px and below, shown in the 16 px tabs when there is one. */
+  small?: string;
   lockup?: string;
   paper: string;
   primary: string;
@@ -90,7 +92,10 @@ export async function contextSheetSvg(input: ContextSheetInput): Promise<{ svg: 
       body += `<rect x="${x}" y="${y + 6}" width="210" height="28" rx="6" fill="${tabFill}"/>`;
       const icon = { x: x + 8, y: y + 12, width: 16, height: 16 };
       if (own)
-        body += await placeMark(onFillVariant(input.symbol, tabFill).svg, icon, { mode: 'box', fraction: 1 });
+        body += await placeMark(onFillVariant(input.small ?? input.symbol, tabFill).svg, icon, {
+          mode: 'box',
+          fraction: 1,
+        });
       else if (t) body += await peerMark(t, icon);
       else body += `<circle cx="${icon.x + 8}" cy="${icon.y + 8}" r="7" fill="${NEUTRAL}"/>`;
       const name = own ? input.name : (t?.name ?? 'Untitled');

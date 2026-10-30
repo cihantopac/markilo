@@ -54,7 +54,8 @@ export interface ConstructionSpec {
   title?: string;
   /** For sketches: the idea in one sentence, shown on the sketch board. */
   idea?: string;
-  role?: 'symbol' | 'wordmark' | 'lockup';
+  /** small: a simplified symbol for 32 px and below (written to symbol-small.svg). */
+  role?: 'symbol' | 'wordmark' | 'lockup' | 'small';
   /**
    * Type metrics for a wordmark drawn without `glyph` (numbers or expressions): baseline y, cap height and x-height,
    * so lockups align it like a typeset one. With a glyph they are measured from the font.

@@ -6,6 +6,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0-rc.5] - 2026-10-30
+
 ### Added
 
 - `markilo status`: where the work stands — the workspace (or `found: false`, exit 0), each brand's stage and the
@@ -20,6 +22,10 @@ All notable changes to this project are documented here. The format follows
 - `markilo wordmarks`: the name in the concept's face and three contrasting ones (or a shortlist, weights and
   spacings) next to the symbol on one board, each measured; `--pick` commits one with its typography. The blind judge
   called most benchmark wordmarks generic: they were the first font the designer tried.
+- A small version of the symbol for 32 px and below: `construct … --role small` writes `symbol-small.svg`; verify
+  measures it and checks it still reads as the main symbol (the similarity engine's review bar, 62 %); finalize keeps
+  it; favicons (SVG, ICO ≤ 32, 32 px PNG), Windows ICO and target sizes ≤ 32 use it; the context sheet's tabs show it.
+  The blind judge's most common objection was a mark that turns to mush or loses a dot at 16 px.
 - The gate reports a `nearMiss` (only the average is short, every required criterion ≥ 6 and the critic said yes); it
   gets one targeted round on its lowest criteria before rejection. The bar does not move.
 

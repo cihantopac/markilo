@@ -200,6 +200,10 @@ check `e`, `a`, `w`, `m` and other complex forms at 1200 px and at 64 px wide.
   works at 160 px is not part of the mark. Differently coloured parts that touch need a `gap`, or the one-colour
   version merges them (construct warns about this).
 - Keep the drawing at 80–98% of the artboard; symbols under ~40 path commands (construct reports `stats`).
+- If the 16 px render loses the idea (a detached dot, a thin cut, a crowded counter), build a **small version** from the
+  same spec with fewer details and wider gaps: `construct small.json --brand <slug> --concept <id> --role small`
+  (writes `symbol-small.svg`). Favicons and other sizes ≤ 32 px use it; verify checks that it still reads as the same
+  mark (≥ 62 % like the main symbol).
 - Before you commit, describe the mark in one sentence without naming a shape ("a ring and a bar" is a shape; "a
   door left ajar" is an idea). If you can only name shapes, go back to step 1.
 

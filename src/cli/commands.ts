@@ -1071,6 +1071,10 @@ export const COMMANDS: CommandSpec[] = [
       status: { type: 'string', description: 'draft | verified | shortlisted | rejected | approved' },
       symbol: { type: 'string', description: 'Symbol file name inside the concept folder' },
       wordmark: { type: 'string', description: 'Wordmark file name inside the concept folder' },
+      small: {
+        type: 'string',
+        description: 'Simplified symbol for 32 px and below, file name inside the concept folder',
+      },
       'lockup-horizontal': { type: 'string', description: 'Hand-made horizontal lockup file' },
       'lockup-stacked': { type: 'string', description: 'Hand-made stacked lockup file' },
       judgment: {
@@ -1118,6 +1122,7 @@ export const COMMANDS: CommandSpec[] = [
       for (const [opt, key] of [
         ['symbol', 'symbol'],
         ['wordmark', 'wordmark'],
+        ['small', 'small'],
         ['lockup-horizontal', 'lockupHorizontal'],
         ['lockup-stacked', 'lockupStacked'],
       ] as const) {
@@ -1913,7 +1918,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Build a mark from a construction spec (primitives, booleans, gaps, offsets, repeats, glyphs) into clean SVG; --vary explores and scores parameter variants.',
     usage:
-      'construct <spec.json> (-o <out.svg> | --brand <slug> --concept <id>) [--role symbol|wordmark] [--member <name>] [--set k=v,…] [--guides <png>] [--vary [--max 24] [--sheet <png>] [--out-dir <dir>]] [--force]',
+      'construct <spec.json> (-o <out.svg> | --brand <slug> --concept <id>) [--role symbol|wordmark|small] [--member <name>] [--set k=v,…] [--guides <png>] [--vary [--max 24] [--sheet <png>] [--out-dir <dir>]] [--force]',
     options: {
       ...brandOpt,
       concept: {
@@ -1934,7 +1939,11 @@ export const COMMANDS: CommandSpec[] = [
         type: 'string',
         description: 'Background the mark lives on (default: concept paper or #ffffff)',
       },
-      role: { type: 'string', description: 'symbol | wordmark | lockup (default from spec)' },
+      role: {
+        type: 'string',
+        description:
+          'symbol | wordmark | small (a simplified symbol for 32 px and below) | lockup (default from spec)',
+      },
       member: {
         type: 'string',
         description: "Family member from the spec's members block: its parameters and colours",
@@ -2032,7 +2041,15 @@ export const COMMANDS: CommandSpec[] = [
       let out: string;
       if (c.str('out')) out = file(c, c.str('out')!);
       else if (concept)
-        out = w!.conceptFile(brand!, conceptId!, spec.role === 'wordmark' ? 'wordmark.svg' : 'symbol.svg');
+        out = w!.conceptFile(
+          brand!,
+          conceptId!,
+          spec.role === 'wordmark'
+            ? 'wordmark.svg'
+            : spec.role === 'small'
+              ? 'symbol-small.svg'
+              : 'symbol.svg',
+        );
       else throw new MarkiloError('USAGE', 'Give -o <out.svg>, or --brand and --concept.');
       writeFileSafe(out, compiled.svg, { force: c.bool('force') || (!!concept && !c.str('out')) });
       if (concept && !c.str('out')) {
@@ -2041,16 +2058,18 @@ export const COMMANDS: CommandSpec[] = [
           ...spec,
           params: { ...spec.params, ...overrides },
         });
-        const key = spec.role === 'wordmark' ? 'wordmark' : 'symbol';
+        const key = spec.role === 'wordmark' ? 'wordmark' : spec.role === 'small' ? 'small' : 'symbol';
         // Scores, the present-as-is answer and first readings judged the previous drawing; a changed mark needs a
-        // fresh critique. A family member's colours become the concept's palette.
-        const { judgment: _old, critique: _answer, readsAs: _readings, ...rest } = concept;
+        // fresh critique (the small version is checked against the mark by verify instead). A family member's
+        // colours become the concept's palette.
+        const keepCritique = key === 'small';
+        const { judgment, critique, readsAs: _readings, ...rest } = concept;
         w!.saveConcept({
-          ...rest,
+          ...(keepCritique ? concept : rest),
           ...(member ? { palette: { ...concept.palette, ...member.palette } } : {}),
           files: { ...concept.files, [key]: basename(out) },
         });
-        if (_old || _answer)
+        if (!keepCritique && (judgment || critique))
           compiled.warnings.push(
             'Previous critic scores were cleared: the mark changed and needs a new review.',
           );
