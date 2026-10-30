@@ -102,6 +102,28 @@ describe('construction specs', () => {
     expect(c.svg).toMatch(/data-baseline="200"/);
     expect(Number(/data-cap-height="([\d.]+)"/.exec(c.svg)![1])).toBeGreaterThan(130);
   });
+  it('evaluates params in order and takes explicit wordmark metrics', async () => {
+    const c = await compileSpec({
+      role: 'wordmark',
+      params: { stem: 20, arm: 'stem*3', base: 100 },
+      metrics: { baseline: 'base', capHeight: 'arm' },
+      layers: [{ fill: 'ink', shape: { rect: { x: 0, y: 'base-arm', w: 'arm', h: 'arm' } } }],
+    });
+    expect(c.params.arm).toBe(60);
+    expect(c.svg).toMatch(/data-baseline="100" data-cap-height="60"/);
+  });
+  it('substitutes params inside path data', async () => {
+    const c = await compileSpec({
+      params: { x: 200 },
+      layers: [
+        { fill: 'ink', shape: { path: { d: 'M{x} 800L{x} 300L{x*3} 300', width: 100, cap: 'round' } } },
+      ],
+    });
+    expect(c.stats.ink).toBeCloseTo(0.586, 2); // x 200…600 plus round caps, on a 1024 artboard
+    await expect(
+      compileSpec({ layers: [{ fill: 'ink', shape: { path: { d: 'M{nope} 0L10 10', width: 4 } } }] }),
+    ).rejects.toThrow(/unknown name "nope"/);
+  });
   it('reports mistakes with the spec path', async () => {
     await expect(
       compileSpec({ layers: [{ fill: 'primary', shape: { cirle: { c: [0, 0], r: 1 } } }] }),

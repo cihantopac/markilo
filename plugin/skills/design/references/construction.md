@@ -44,24 +44,26 @@ With `--brand/--concept`, palette roles come from the concept, the result is wri
 - `fill` is a palette role (`primary`, `secondary`, `accent`, `ink`, `paper`) or a hex color. Later layers draw on top.
 - `fit` scales and centres everything into the artboard with that margin. It scales gaps and stroke widths too, so a
   variant that grows taller also gets thinner gaps; leave `fit` out while tuning gaps and widths, and place by grid.
+  `fit` centres the bounding box; correct the optical centre yourself with `move` (verify's balance check says which
+  way a mark leans).
 - Angles: 0° is 12 o'clock, clockwise. An `arc` or `sector` runs from `from` to `to`: `to` > `from` sweeps
   clockwise, `to` < `from` counter-clockwise (270° counter-clockwise from 3 o'clock: `from: 90, to: -180`).
 
-| Shape      | Fields                                                                                                                                                                                      |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `circle`   | `c`, `r`                                                                                                                                                                                    |
-| `ellipse`  | `c`, `rx`, `ry`                                                                                                                                                                             |
-| `rect`     | `x`,`y` or `c`; `w`, `h`; `r` (one radius or `[tl, tr, br, bl]`)                                                                                                                            |
-| `squircle` | `c`, `w`, `h`, `n` (4 = app-icon squircle, 2 = ellipse)                                                                                                                                     |
-| `ring`     | `c`, `r` (outer), `width`                                                                                                                                                                   |
-| `arc`      | `c`, `r` (centre line), `from`, `to`, `width`, `cap` `butt`/`round`/`square` — a stroked arc as a filled shape                                                                              |
-| `sector`   | `c`, `r`, `from`, `to`, `inner` (0 = pie slice)                                                                                                                                             |
-| `polygon`  | `points`                                                                                                                                                                                    |
-| `regular`  | `c`, `r`, `sides`, `rotate`                                                                                                                                                                 |
-| `star`     | `c`, `r`, `inner`, `points`, `rotate`                                                                                                                                                       |
-| `line`     | `points`, `width`, `cap`, `join`, `smooth` (curve through the points), `closed`                                                                                                             |
-| `path`     | `d` (filled, nonzero rule), or with `width`/`cap`/`join` a stroked centre line — use it for one continuous stroke mixing lines and arcs (`A`)                                               |
-| `glyph`    | `text`, `font` (id from `markilo fonts`), `weight`, `height` (cap height) or `size`, `c` (centre) or `at` (baseline start), `tracking`, `locale`, `letters` (positions to keep, e.g. `[0]`) |
+| Shape      | Fields                                                                                                                                                                                                |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `circle`   | `c`, `r`                                                                                                                                                                                              |
+| `ellipse`  | `c`, `rx`, `ry`                                                                                                                                                                                       |
+| `rect`     | `x`,`y` or `c`; `w`, `h`; `r` (one radius or `[tl, tr, br, bl]`)                                                                                                                                      |
+| `squircle` | `c`, `w`, `h`, `n` (4 = app-icon squircle, 2 = ellipse)                                                                                                                                               |
+| `ring`     | `c`, `r` (outer), `width`                                                                                                                                                                             |
+| `arc`      | `c`, `r` (centre line), `from`, `to`, `width`, `cap` `butt`/`round`/`square` — a stroked arc as a filled shape                                                                                        |
+| `sector`   | `c`, `r`, `from`, `to`, `inner` (0 = pie slice)                                                                                                                                                       |
+| `polygon`  | `points`                                                                                                                                                                                              |
+| `regular`  | `c`, `r`, `sides`, `rotate`                                                                                                                                                                           |
+| `star`     | `c`, `r`, `inner`, `points`, `rotate`                                                                                                                                                                 |
+| `line`     | `points`, `width`, `cap`, `join`, `smooth` (curve through the points), `closed`                                                                                                                       |
+| `path`     | `d` (filled, nonzero rule), or with `width`/`cap`/`join` a stroked centre line — use it for one continuous stroke mixing lines and arcs (`A`); `{expr}` inside `d` uses params (`"M{x} 800L{x} 300"`) |
+| `glyph`    | `text`, `font` (id from `markilo fonts`), `weight`, `height` (cap height) or `size`, `c` (centre) or `at` (baseline start), `tracking`, `locale`, `letters` (positions to keep, e.g. `[0]`)           |
 
 | Operation                     | Fields                                                                                                                   |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
@@ -115,6 +117,13 @@ Each is a construction technique, not a shape to copy. Combine at most two.
 - **Fold / facet**: two planes that meet at a crease, separated by a `gap` (not by colour alone), suggesting a turn
   of paper, a page, a screen.
 
+## Wordmarks
+
+Carry the symbol's idea into the wordmark **once**: one or two letters that share the symbol's move (a cut, a corner,
+a terminal), on top of a calm, well-spaced typeface. Rebuilding every letter from the idea makes the word busy and
+harder to read, and it reads as a display face rather than a brand. Every letter must still be readable on its own:
+check `e`, `a`, `w`, `m` and other complex forms at 1200 px and at 64 px wide.
+
 ## Craft checklist
 
 - One unit `u` and a few multiples of it for all widths, radii and gaps; a single corner radius family.
@@ -128,5 +137,6 @@ Each is a construction technique, not a shape to copy. Combine at most two.
 ## Patterns the critic scores low
 
 Circle + bar, plain rings, a single letter in a stock font in a rounded square, generic arrows/checkmarks/sparkles,
-radial petals, interlocking circles, gradient blobs, swooshes, abstract "network" dots. Clean execution does not
+radial petals, interlocking circles, gradient blobs, swooshes, abstract "network" dots, and shapes that are already
+UI icons (paperclip/hairpin = attachment, power symbol, refresh arrows, padlock, cloud). Clean execution does not
 rescue a generic idea.

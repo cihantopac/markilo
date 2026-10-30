@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { basename, extname, join, resolve } from 'node:path';
+import { normalizeColor } from '../analyze/color.js';
 import { loadMark } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
 import { compareMarks, genericity } from '../analyze/similarity.js';
@@ -857,9 +858,16 @@ export const COMMANDS: CommandSpec[] = [
       'lockup-stacked': { type: 'string', description: 'Hand-made stacked lockup file' },
       judgment: { type: 'string', multiple: true, description: 'criterion=score:rationale (repeatable)' },
       primary: { type: 'string', description: 'Primary color' },
+      secondary: { type: 'string', description: 'Secondary color ("none" removes it)' },
+      accent: { type: 'string', description: 'Accent color ("none" removes it)' },
+      ink: { type: 'string', description: 'Text color on paper' },
+      paper: { type: 'string', description: 'Background the brand lives on' },
       font: { type: 'string', description: 'Font id' },
       weight: { type: 'string', description: 'Font weight' },
       construction: { type: 'string', description: 'Grid / geometry notes' },
+      title: { type: 'string', description: 'Concept title' },
+      direction: { type: 'string', description: 'Direction (the idea in one sentence)' },
+      rationale: { type: 'string', description: 'Why it fits the brand' },
     },
     async run(c) {
       const w = ws(c);
@@ -885,7 +893,19 @@ export const COMMANDS: CommandSpec[] = [
         next.files[key] = v;
       }
       if (c.str('primary')) next.palette.primary = c.str('primary')!;
+      for (const role of ['secondary', 'accent', 'ink', 'paper'] as const) {
+        const v = c.str(role);
+        if (!v) continue;
+        if (v === 'none' && (role === 'secondary' || role === 'accent')) delete next.palette[role];
+        else if (normalizeColor(v)) next.palette[role] = normalizeColor(v)!;
+        else
+          throw new MarkiloError(
+            'INVALID_INPUT',
+            `--${role} must be a hex color${role === 'secondary' || role === 'accent' ? ' or "none"' : ''}.`,
+          );
+      }
       if (c.str('construction')) next.construction = c.str('construction')!;
+      for (const k of ['title', 'direction', 'rationale'] as const) if (c.str(k)) next[k] = c.str(k)!;
       if (c.str('font'))
         next.typography = {
           fontId: c.str('font')!,
@@ -1352,8 +1372,13 @@ export const COMMANDS: CommandSpec[] = [
           params: { ...spec.params, ...overrides },
         });
         const key = spec.role === 'wordmark' ? 'wordmark' : 'symbol';
-        if (concept.files[key] !== basename(out))
-          w!.saveConcept({ ...concept, files: { ...concept.files, [key]: basename(out) } });
+        // Scores judged the previous drawing; a changed mark needs a fresh critique.
+        const { judgment: _old, ...rest } = concept;
+        w!.saveConcept({ ...rest, files: { ...concept.files, [key]: basename(out) } });
+        if (_old)
+          compiled.warnings.push(
+            'Previous critic scores were cleared: the mark changed and needs a new review.',
+          );
       }
       const guides = c.str('guides')
         ? file(c, c.str('guides')!)

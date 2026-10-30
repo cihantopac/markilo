@@ -53,11 +53,16 @@ export interface Layer {
 export interface ConstructionSpec {
   title?: string;
   role?: 'symbol' | 'wordmark' | 'lockup';
+  /**
+   * Type metrics for a wordmark drawn without `glyph` (numbers or expressions): baseline y, cap height and x-height,
+   * so lockups align it like a typeset one. With a glyph they are measured from the font.
+   */
+  metrics?: { baseline: Num; capHeight: Num; xHeight?: Num };
   /** Artboard: one number (square) or [width, height]. Default 1024. */
   size?: number | [number, number];
   /** Grid step drawn in construction views. */
   grid?: number;
-  params?: Record<string, number>;
+  params?: Record<string, Num>;
   /** Parameter values to explore with `markilo construct --vary`. */
   vary?: Record<string, number[]>;
   defs?: Record<string, Shape>;
@@ -360,7 +365,11 @@ function primitive(kind: string, raw: unknown, at: string, ctx: Ctx): string {
       return strokeOutline(centre, n('width'), join(o.join), cap(o.cap, 'round'));
     }
     case 'path': {
-      const d = String(o.d ?? '');
+      // "{expr}" inside path data is replaced by its value, so path geometry can use params and vary.
+      const d = String(o.d ?? '').replace(/\{([^{}]+)\}/g, (_, e: string) => {
+        const v = ctx.num(e, `${a}.d {${e}}`);
+        return String(Math.round(v * 1000) / 1000);
+      });
       if (!/^[\sMmLlHhVvCcSsQqTtAaZz0-9.,eE+-]+$/.test(d)) ctx.fail(`${a}.d`, 'not valid path data');
       return o.width !== undefined ? strokeOutline(d, n('width'), join(o.join), cap(o.cap)) : normalizeD(d);
     }
@@ -474,12 +483,13 @@ export async function compileSpec(spec: ConstructionSpec, opts: CompileOptions =
   if (!(W > 0 && H > 0 && W <= 8192 && H <= 8192))
     throw new MarkiloError('INVALID_INPUT', '"size" must be between 1 and 8192.');
   const vars: Record<string, number> = Object.assign(Object.create(null), { W, H, cx: W / 2, cy: H / 2 });
-  for (const [k, v] of Object.entries({ ...spec.params, ...opts.params })) {
-    if (typeof v !== 'number' || !Number.isFinite(v))
-      throw new MarkiloError('INVALID_INPUT', `params.${k} must be a number.`);
-    vars[k] = v;
-  }
   const ctx = new Ctx(vars, spec.defs ?? {});
+  // Params are numbers or expressions over the params above them ("arm": "stem*2.5"), in order.
+  for (const [k, v] of Object.entries({ ...spec.params, ...opts.params })) {
+    if (typeof v !== 'number' && typeof v !== 'string')
+      throw new MarkiloError('INVALID_INPUT', `params.${k} must be a number or an expression.`);
+    vars[k] = ctx.num(v, `params.${k}`);
+  }
   const palette = { ...opts.palette };
   let layers: CompiledLayer[] = spec.layers.map((l, i) => {
     const at = `layers[${i}]`;
@@ -496,6 +506,18 @@ export async function compileSpec(spec: ConstructionSpec, opts: CompileOptions =
     return !empty;
   });
   if (!layers.length) throw new MarkiloError('INVALID_INPUT', 'Every layer is empty; nothing to draw.');
+  if (spec.metrics) {
+    const capHeight = ctx.num(spec.metrics.capHeight, 'metrics.capHeight');
+    ctx.type = {
+      baseline: ctx.num(spec.metrics.baseline, 'metrics.baseline'),
+      capHeight,
+      xHeight: ctx.num(spec.metrics.xHeight, 'metrics.xHeight', capHeight * 0.72),
+      font: 'constructed',
+    };
+  } else if (spec.role === 'wordmark' && !ctx.type)
+    ctx.warnings.push(
+      'This wordmark has no type metrics; add "metrics": { "baseline", "capHeight", "xHeight" } so lockups align it.',
+    );
 
   if (spec.fit !== undefined) {
     const margin = Math.max(0, Math.min(0.4, Number(spec.fit)));

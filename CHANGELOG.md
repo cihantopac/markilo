@@ -22,7 +22,10 @@ All notable changes to this project are documented here. The format follows
   are rejected instead of shown.
 - Review sheets show colors adapted to the dark ground, as exports ship them.
 - The balance check allows the optical-centre lift (up to 5 % high) and says which way a mark leans.
-- `concept update --construction` records construction notes.
+- `concept update` takes `--construction`, `--title`, `--direction`, `--rationale` and every palette role
+  (`--secondary/--accent none` removes one); committing a new mark clears the previous critic scores.
+- Construction specs: params may be expressions over earlier params, `{expr}` works inside `path` data, and
+  wordmarks drawn without a font take explicit `metrics` for lockup alignment.
 
 ## [0.3.0-beta.1] - 2026-10-30
 

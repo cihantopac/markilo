@@ -41,7 +41,8 @@ Steps:
    fits and the caller says network use is approved, `markilo fonts search <style> --allow-network` and
    `markilo fonts add <id> --allow-network` give you ~1,800 open-licensed families. Edit letters when the idea calls
    for it (a signature cut, ligature or terminal) — build them with a `glyph` spec and `"role": "wordmark"` so the
-   result keeps its type metrics. An untouched font is a placeholder, not a wordmark.
+   result keeps its type metrics. An untouched font is a placeholder, not a wordmark — but change one or two letters, not
+   all of them (construction.md → Wordmarks).
 6. `markilo verify --brand <slug> --concept <id>`, then `Read` `concepts/<id>/review/symbol-sheet.png`. Look at 16 px,
    dark background and one-color rows critically.
 7. Iterate (usually 2–4 rounds) by editing the spec, never the compiled SVG, until: no `fail` checks (including "Visible on its paper"), originality verdict is not
