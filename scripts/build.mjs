@@ -2,7 +2,7 @@
 // Bundles the Markilo CLI into a single dependency-free ESM file plus the resvg WASM binary.
 // dist/ is committed so the Claude Code plugin works right after install, with no npm install step.
 import { copyFileSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 
@@ -26,7 +26,7 @@ const inlineJsonRequires = {
 };
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const outdir = process.argv[2] ? join(process.cwd(), process.argv[2]) : join(root, 'plugin', 'dist');
+const outdir = process.argv[2] ? resolve(process.cwd(), process.argv[2]) : join(root, 'plugin', 'dist');
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 
 rmSync(outdir, { recursive: true, force: true });

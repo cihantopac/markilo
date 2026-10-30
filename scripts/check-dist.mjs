@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, relative } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -19,7 +19,7 @@ const digest = (dir) =>
     ]),
   );
 try {
-  execFileSync(process.execPath, [join(root, 'scripts/build.mjs'), relative(process.cwd(), tmp)], {
+  execFileSync(process.execPath, [join(root, 'scripts/build.mjs'), tmp], {
     stdio: 'ignore',
   });
   const fresh = digest(tmp);
