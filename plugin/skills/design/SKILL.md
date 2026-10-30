@@ -67,9 +67,14 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    questions, asked together, each with your suggested answer.
 4. **Explore** — propose 3–5 genuinely different creative directions (idea, metaphor, form language,
    type, color, why it fits, risks). Different ideas, not variations of one idea. Let the user steer.
-5. **Design** — for each chosen direction, delegate to the `markilo:concept-designer` agent (run them
-   in parallel when there are several). Each builds its marks from construction specs (`markilo construct`), explores
-   3–5 sketches and measured variants, and produces `symbol.svg`, `construction.json` and an outlined wordmark.
+5. **Design**, in two passes so weak ideas die cheap:
+   a. **Sketch** — for each chosen direction, a `markilo:concept-designer` agent in `sketch` mode (in parallel)
+   writes 3–5 construction-spec sketches and a sketch board (`markilo sketches`).
+   b. **Sketch review** — one `markilo:design-critic` agent reviews every board and records a pick or `none` per
+   concept (`--sketch-pick`). For `none`, send the direction back for one more sketch pass with the critic's
+   suggested move, or drop it (`--status rejected`).
+   c. **Develop** — for each picked sketch, a concept-designer in `develop <sketch id>` mode finishes the mark:
+   measured variants, `symbol.svg`, `construction.json` and a wordmark that carries the idea in one or two letters.
 6. **Verify** — `markilo verify --brand <slug> --concept <id>` for every concept, then
    `markilo diversity --brand <slug>`. Fix failures. Ask the `markilo:design-critic` agent for an
    independent visual critique. Record judgment with `markilo concept update … --judgment`.

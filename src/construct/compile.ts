@@ -52,6 +52,8 @@ export interface Layer {
 
 export interface ConstructionSpec {
   title?: string;
+  /** For sketches: the idea in one sentence, shown on the sketch board. */
+  idea?: string;
   role?: 'symbol' | 'wordmark' | 'lockup';
   /**
    * Type metrics for a wordmark drawn without `glyph` (numbers or expressions): baseline y, cap height and x-height,

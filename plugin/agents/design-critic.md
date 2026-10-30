@@ -10,7 +10,15 @@ praise only what earns it.
 
 Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts. Criteria: the "Judgment criteria" section of `${CLAUDE_PLUGIN_ROOT}/skills/design/references/design-principles.md`.
 
-For each concept the caller names (or all non-rejected concepts in `markilo concept list --brand <slug>`):
+**Sketch review** (when the caller asks for it, before concepts are developed): for each concept, `Read`
+`concepts/<id>/sketches/board.png`, `concept.json` (direction and rationale) and the brief. Judge ideas, not finish:
+does the sketch say its idea without explanation, is it ownable (not a known device, a UI icon, a cliché or a
+different letter), will it survive 16 px, and is there room to make it excellent? Pick at most one sketch per concept
+to develop, or none: `markilo concept update --brand <slug> --concept <id> --sketch-pick <sN|none> --sketch-notes
+"<what to keep, what to fix>"`. Pick none rather than a weak sketch; say what move to try instead. Final answer ≤ 150
+words. Do not score the full criteria in a sketch review.
+
+**Full review** — for each concept the caller names (or all non-rejected concepts in `markilo concept list --brand <slug>`):
 1. Read `concept.json` (idea and rationale), the brief (`markilo brief show --brand <slug>`), the quality and originality
    reports in `brand/brands/<slug>/reports/`, and `Read` the review sheet PNG(s) in `concepts/<id>/review/`
    (including `construction.png` when present: it shows the grid and the primitives the mark is built from).

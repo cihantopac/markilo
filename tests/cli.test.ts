@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { tmp } from './helpers.js';
@@ -60,6 +60,81 @@ describe('cli (bundled)', () => {
     expect(v.status, v.stderr).toBe(0);
     expect(JSON.parse(v.stdout).built).toBe(2);
     expect(existsSync(join(cwd, 'v', 'variants.png'))).toBe(true);
+  });
+  it('builds a sketch board and records the critic pick', () => {
+    const cwd = tmp();
+    run(['init'], cwd);
+    run(['brand', 'add', 'Nimbra'], cwd);
+    const made = run(
+      [
+        'concept',
+        'new',
+        '--brand',
+        'nimbra',
+        '--id',
+        'a',
+        '--title',
+        'A',
+        '--direction',
+        'd',
+        '--rationale',
+        'r',
+        '--semantics',
+        'x',
+        '--primary',
+        '#225577',
+      ],
+      cwd,
+    );
+    expect(made.status, made.stderr).toBe(0);
+    const dir = join(cwd, 'brand', 'brands', 'nimbra', 'concepts', 'a', 'sketches');
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(
+      join(dir, 's1.json'),
+      JSON.stringify({
+        idea: 'a door left ajar',
+        layers: [{ fill: 'primary', shape: { rect: { x: 200, y: 100, w: 600, h: 820, r: 40 } } }],
+      }),
+    );
+    writeFileSync(
+      join(dir, 's2.json'),
+      JSON.stringify({
+        idea: 'one gesture',
+        layers: [
+          {
+            fill: 'primary',
+            shape: { arc: { c: [512, 512], r: 380, from: 20, to: 300, width: 120, cap: 'round' } },
+          },
+        ],
+      }),
+    );
+    const b = run(['sketches', '--brand', 'nimbra', '--concept', 'a'], cwd);
+    expect(b.status, b.stderr).toBe(0);
+    expect(JSON.parse(b.stdout).sketches.map((x: { idea: string }) => x.idea)).toEqual([
+      'a door left ajar',
+      'one gesture',
+    ]);
+    expect(readFileSync(join(dir, 's1.svg'), 'utf8')).toContain('fill="#225577"');
+    expect(existsSync(join(dir, 'board.png'))).toBe(true);
+    const pick = run(
+      [
+        'concept',
+        'update',
+        '--brand',
+        'nimbra',
+        '--concept',
+        'a',
+        '--sketch-pick',
+        's2',
+        '--sketch-notes',
+        'keep the gesture',
+      ],
+      cwd,
+    );
+    expect(JSON.parse(pick.stdout).sketchReview.pick).toBe('s2');
+    expect(
+      run(['concept', 'update', '--brand', 'nimbra', '--concept', 'a', '--sketch-pick', 's9'], cwd).status,
+    ).toBe(1);
   });
   it('shortcut install is a dry run without --yes and refuses foreign files', () => {
     const dir = tmp();

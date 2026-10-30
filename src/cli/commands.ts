@@ -1,11 +1,17 @@
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, extname, join, resolve } from 'node:path';
 import { normalizeColor } from '../analyze/color.js';
 import { loadMark } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
 import { compareMarks, genericity } from '../analyze/similarity.js';
 import { type ConstructionSpec, compileSpec, constructionSvg } from '../construct/compile.js';
-import { type Reference, renderVariantSheet, runVariants } from '../construct/vary.js';
+import {
+  type Reference,
+  renderVariantSheet,
+  runVariants,
+  type ScoredVariant,
+  scoreSvg,
+} from '../construct/vary.js';
 import { MarkiloError } from '../core/errors.js';
 import { isDir, nowIso, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
 import { isSlug, slugify } from '../core/paths.js';
@@ -70,6 +76,21 @@ const pos = (c: RunContext, i: number, label: string): string => {
   return v;
 };
 const file = (c: RunContext, p: string) => resolve(c.cwd, p);
+async function loadReferences(w: Workspace, brand: string): Promise<Reference[]> {
+  const out: Reference[] = [];
+  for (const r of readReferences(w, brand).references.slice(0, 60)) {
+    try {
+      out.push({
+        name: r.name,
+        sample: await loadMark(join(w.referencesDir(brand), r.file), { id: r.id, label: r.name }),
+      });
+    } catch {
+      // Unreadable references are reported by the originality check.
+    }
+  }
+  return out;
+}
+
 /** construction.json / construction-wordmark.json, so a wordmark recipe never replaces the symbol's. */
 const recipeName = (role: string | undefined, ext: string) =>
   `construction${role && role !== 'symbol' ? `-${role}` : ''}.${ext}`;
@@ -865,6 +886,11 @@ export const COMMANDS: CommandSpec[] = [
       font: { type: 'string', description: 'Font id' },
       weight: { type: 'string', description: 'Font weight' },
       construction: { type: 'string', description: 'Grid / geometry notes' },
+      'sketch-pick': { type: 'string', description: 'Critic: sketch to develop (e.g. s3), or "none"' },
+      'sketch-notes': {
+        type: 'string',
+        description: 'Critic: why, and what the developed mark must keep or fix',
+      },
       title: { type: 'string', description: 'Concept title' },
       direction: { type: 'string', description: 'Direction (the idea in one sentence)' },
       rationale: { type: 'string', description: 'Why it fits the brand' },
@@ -906,6 +932,16 @@ export const COMMANDS: CommandSpec[] = [
       }
       if (c.str('construction')) next.construction = c.str('construction')!;
       for (const k of ['title', 'direction', 'rationale'] as const) if (c.str(k)) next[k] = c.str(k)!;
+      if (c.str('sketch-pick')) {
+        const pick = c.str('sketch-pick')!;
+        if (pick !== 'none' && !existsSync(w.conceptFile(slug, cur.id, join('sketches', `${pick}.json`))))
+          throw new MarkiloError('NOT_FOUND', `sketches/${pick}.json is not in the concept folder.`);
+        next.sketchReview = {
+          pick: pick === 'none' ? null : pick,
+          notes: c.str('sketch-notes') ?? '',
+          at: nowIso(),
+        };
+      }
       if (c.str('font'))
         next.typography = {
           fontId: c.str('font')!,
@@ -1233,6 +1269,82 @@ export const COMMANDS: CommandSpec[] = [
     },
   },
   {
+    name: 'sketches',
+    summary:
+      "Build every sketch spec in a concept's sketches/ folder in the concept palette and lay them out on one board (160/32/16 px, each with its idea) for an early critique.",
+    usage: 'sketches --brand <slug> --concept <id>',
+    options: {
+      ...brandOpt,
+      concept: { type: 'string', description: 'Concept id' },
+    },
+    async run(c) {
+      const w = ws(c);
+      const brand = c.req('brand');
+      const id = c.req('concept');
+      const concept = w.concept(brand, id);
+      const dir = join(w.conceptDir(brand, id), 'sketches');
+      const files = existsSync(dir)
+        ? readdirSync(dir)
+            .filter((f) => /^[\w-]+\.json$/.test(f) && f !== 'variants.json' && f !== 'board.json')
+            .sort((a, b) => a.localeCompare(b, 'en', { numeric: true }))
+        : [];
+      if (!files.length)
+        throw new MarkiloError(
+          'NOT_FOUND',
+          `No sketch specs in ${dir}.`,
+          'Write 3–5 construction specs there (s1.json …), each with an "idea" sentence.',
+        );
+      if (files.length > 8)
+        throw new MarkiloError('USAGE', 'A board holds at most 8 sketches; keep the strongest.');
+      const palette: Record<string, string> = {};
+      for (const [k, v] of Object.entries(concept.palette)) if (v) palette[k] = v;
+      const paper = concept.palette.paper ?? '#ffffff';
+      const references = await loadReferences(w, brand);
+      const items: ScoredVariant[] = [];
+      for (const f of files) {
+        const name = f.replace(/\.json$/, '');
+        let spec: ConstructionSpec & { idea?: string };
+        try {
+          spec = JSON.parse(readText(join(dir, f))) as ConstructionSpec & { idea?: string };
+        } catch (err) {
+          throw new MarkiloError('INVALID_INPUT', `${f} is not valid JSON: ${(err as Error).message}`);
+        }
+        const compiled = await compileSpec(spec, { palette });
+        writeGenerated(join(dir, `${name}.svg`), compiled.svg);
+        const scored = await scoreSvg(name, compiled.svg, { paper, references });
+        items.push({
+          ...scored,
+          params: {},
+          warnings: compiled.warnings,
+          caption: spec.idea ?? spec.title ?? name,
+        });
+      }
+      const board = join(dir, 'board.png');
+      writeGenerated(
+        board,
+        await renderVariantSheet(items, paper, {
+          title: `${concept.title}: sketches (id · score · 16 px legibility · stock-shape similarity)`,
+          highlightFirst: false,
+        }),
+      );
+      const summary = items.map(({ svg: _svg, params: _p, ...v }) => v);
+      writeJson(join(dir, 'board.json'), { concept: id, paper, sketches: summary });
+      return {
+        board,
+        sketches: summary.map((v) => ({
+          id: v.id,
+          idea: v.caption,
+          legibility16: v.quality.legibility16,
+          stockShape: v.genericity.similarity,
+          ...(v.closestReference ? { closestReference: v.closestReference } : {}),
+          failing: v.quality.failing.map((f) => f.split(':')[0]),
+          warnings: v.warnings,
+        })),
+        next: 'Critic: Read the board, then concept update --sketch-pick <id|none> --sketch-notes "…"',
+      };
+    },
+  },
+  {
     name: 'construct',
     summary:
       'Build a mark from a construction spec (primitives, booleans, gaps, offsets, repeats, glyphs) into clean SVG; --vary explores and scores parameter variants.',
@@ -1294,19 +1406,7 @@ export const COMMANDS: CommandSpec[] = [
       const title = concept ? `${w!.brand(brand!).name} — ${spec.role ?? 'symbol'}` : spec.title;
 
       if (c.bool('vary')) {
-        const references: Reference[] = [];
-        if (w && brand) {
-          for (const r of readReferences(w, brand).references.slice(0, 60)) {
-            try {
-              references.push({
-                name: r.name,
-                sample: await loadMark(join(w.referencesDir(brand), r.file), { id: r.id, label: r.name }),
-              });
-            } catch {
-              // Unreadable references are reported by the originality check.
-            }
-          }
-        }
+        const references = w && brand ? await loadReferences(w, brand) : [];
         const variants = await runVariants(
           { ...spec, params: { ...spec.params, ...overrides } },
           {

@@ -32,6 +32,8 @@ export function variantParams(spec: ConstructionSpec, max = 24): Record<string, 
 export interface ScoredVariant {
   id: string;
   params: Record<string, number>;
+  /** Shown under the tile instead of the params (sketch boards show each sketch's idea). */
+  caption?: string;
   svg: string;
   warnings: string[];
   quality: { pass: number; warn: number; fail: number; legibility16: number; failing: string[] };
@@ -129,13 +131,32 @@ export async function runVariants(
   return out.sort((a, b) => b.score - a.score);
 }
 
+function wrap(text: string, width: number, max: number): string[] {
+  const out: string[] = [];
+  let line = '';
+  for (const word of text.split(/\s+/)) {
+    if ((line ? `${line} ${word}` : word).length > width && line) {
+      out.push(line);
+      line = word;
+    } else line = line ? `${line} ${word}` : word;
+  }
+  if (line) out.push(line);
+  if (out.length > max) out.splice(max - 1, out.length, `${out[max - 1]!.slice(0, width - 1)}…`);
+  return out;
+}
+
 /** Contact sheet of variants, best first: each at 160 px on the brand's paper, plus 32 px and 16 px at 1:1. */
-export async function renderVariantSheet(variants: ScoredVariant[], paper = '#ffffff'): Promise<Buffer> {
+export async function renderVariantSheet(
+  variants: ScoredVariant[],
+  paper = '#ffffff',
+  opts: { title?: string; highlightFirst?: boolean } = {},
+): Promise<Buffer> {
   const shown = variants.filter((v) => v.svg);
   if (!shown.length) throw new MarkiloError('INVALID_INPUT', 'No variant compiled; nothing to show.');
   const cols = Math.min(4, shown.length);
   const tw = 230;
-  const th = 268;
+  const captioned = shown.some((v) => v.caption);
+  const th = captioned ? 284 : 268;
   const W = cols * tw + 16;
   const H = Math.ceil(shown.length / cols) * th + 46;
   const dark = Number.parseInt(paper.slice(1), 16);
@@ -143,8 +164,9 @@ export async function renderVariantSheet(variants: ScoredVariant[], paper = '#ff
     ((dark >> 16) & 255) * 0.3 + ((dark >> 8) & 255) * 0.59 + (dark & 255) * 0.11 < 128
       ? '#d9dce3'
       : '#30343c';
+  const highlight = opts.highlightFirst ?? true;
   let body = label(
-    'Variants, best first (score · 16 px legibility · stock-shape similarity)',
+    opts.title ?? 'Variants, best first (score · 16 px legibility · stock-shape similarity)',
     16,
     28,
     14,
@@ -153,7 +175,7 @@ export async function renderVariantSheet(variants: ScoredVariant[], paper = '#ff
   shown.forEach((v, i) => {
     const x = 16 + (i % cols) * tw;
     const y = 46 + Math.floor(i / cols) * th;
-    body += `<rect x="${x}" y="${y}" width="${tw - 16}" height="${th - 16}" rx="10" fill="${paper}" stroke="${i === 0 ? '#2f9e44' : '#c9ced8'}" stroke-width="${i === 0 ? 3 : 1}"/>`;
+    body += `<rect x="${x}" y="${y}" width="${tw - 16}" height="${th - 16}" rx="10" fill="${paper}" stroke="${highlight && i === 0 ? '#2f9e44' : '#c9ced8'}" stroke-width="${highlight && i === 0 ? 3 : 1}"/>`;
     body += nestSvg(v.svg, { x: x + 27, y: y + 12, width: 160, height: 160 });
     body += nestSvg(v.svg, { x: x + 60, y: y + 182, width: 32, height: 32 });
     body += nestSvg(v.svg, { x: x + 110, y: y + 190, width: 16, height: 16 });
@@ -163,8 +185,12 @@ export async function renderVariantSheet(variants: ScoredVariant[], paper = '#ff
       .map(([k, n]) => `${k}=${n}`)
       .join(' ');
     // A failing variant names its first failing check instead of its parameters (they are in variants.json).
-    const second = v.quality.fail ? (v.quality.failing[0] ?? '').split(':')[0]! : ps;
-    body += label(second.slice(0, 40), x + 10, y + 247, 10, v.quality.fail ? '#e5484d' : ink);
+    const second = v.quality.fail ? (v.quality.failing[0] ?? '').split(':')[0]! : (v.caption ?? ps);
+    // Captions (sketch ideas) wrap onto two lines; anything longer is in board.json.
+    const lines = v.quality.fail || !v.caption ? [second.slice(0, 40)] : wrap(second, 40, 2);
+    lines.forEach((l, k) => {
+      body += label(l, x + 10, y + 247 + k * 14, 10, v.quality.fail ? '#e5484d' : ink);
+    });
   });
   const sheet = svgDocument(W, H, body, { background: paper });
   return renderPng(sheet, { width: W });

@@ -12,6 +12,9 @@ All notable changes to this project are documented here. The format follows
   offsets, fillets, repeats, mirrors, font glyphs, parameter expressions) with Skia PathKit geometry and curve
   refitting; `--vary` builds and ranks parameter variants; construction drawings and `construction.json` are saved
   with the concept.
+- Early sketch gate: `markilo sketches` builds a concept's sketch specs onto one board; the critic reviews boards
+  before any concept is developed and records `--sketch-pick <id|none>`; designers run in `sketch` and `develop`
+  modes, so weak ideas are dropped before the expensive finishing work.
 - `markilo deliverables`: suggests the asset groups a product needs from its type and platforms; `export` produces
   the chosen groups by default (`--all` for everything).
 

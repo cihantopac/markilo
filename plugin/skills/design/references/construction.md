@@ -82,7 +82,9 @@ Every shape also takes `round` (fillet all corners with this radius), `grow` (of
 ## Process
 
 1. **Write the idea sentence first** (design-principles.md). Then pick the _move_ that makes it ownable (below).
-2. **Sketch wide**: 3–5 specs (`sketches/s1.json …`), each a different move, not a nudge. Build each with
+2. **Sketch wide**: 3–5 specs (`sketches/s1.json …`), each a different move, not a nudge, each with an `"idea"`
+   sentence. `markilo sketches --brand <slug> --concept <id>` builds them all onto `sketches/board.png` for the
+   critic's sketch review. Build each with
    `construct sN.json -o sN.svg --brand <slug> --concept <id>` (with `-o` the concept's palette is used and nothing
    in the concept changes), compare with `markilo render s1.svg s2.svg … --compare --paper <paper> -o
    compare.png`, `Read` it. Keep one; say why the others lost.
