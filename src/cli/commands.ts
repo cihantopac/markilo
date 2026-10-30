@@ -2,10 +2,10 @@ import { existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, extname, join, resolve } from 'node:path';
 import { type CalibrationMark, calibrate } from '../analyze/calibrate.js';
 import { contrastRatio, deltaE2000, normalizeColor } from '../analyze/color.js';
-import { loadMark } from '../analyze/mark.js';
+import { loadMark, sampleFromSvg } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
 import { compareMarks, genericity } from '../analyze/similarity.js';
-import { type ConstructionSpec, compileSpec, constructionSvg } from '../construct/compile.js';
+import { type ConstructionSpec, compileSpec, constructionSvg, memberOf } from '../construct/compile.js';
 import {
   type Reference,
   renderVariantSheet,
@@ -1677,6 +1677,16 @@ export const COMMANDS: CommandSpec[] = [
       const references = await loadReferences(w, brand);
       const items: ScoredVariant[] = [];
       const sizes = new Map<string, number>();
+      // Families: each sketch's members, drawn with the master on family.png and checked as one system.
+      const familyTiles: ScoredVariant[] = [];
+      const memberResults = new Map<
+        string,
+        {
+          members: { name: string; label: string; ready: boolean; fix: string[] }[];
+          fix: string[];
+          notes: string[];
+        }
+      >();
       for (const f of files) {
         const name = f.replace(/\.json$/, '');
         let spec: ConstructionSpec & { idea?: string };
@@ -1689,12 +1699,55 @@ export const COMMANDS: CommandSpec[] = [
         sizes.set(name, typeof spec.size === 'number' ? spec.size : 1024);
         writeGenerated(join(dir, `${name}.svg`), compiled.svg);
         const scored = await scoreSvg(name, compiled.svg, { paper, references });
-        items.push({
+        const item: ScoredVariant = {
           ...scored,
           params: {},
           warnings: compiled.warnings,
           caption: spec.idea ?? spec.title ?? name,
-        });
+        };
+        items.push(item);
+        if (spec.members && Object.keys(spec.members).length) {
+          const size = typeof spec.size === 'number' ? spec.size : 1024;
+          const marks = [{ name: 'master', svg: compiled.svg }];
+          const members = [];
+          familyTiles.push({ ...item, id: `${name} · master`, caption: 'master' });
+          for (const m of Object.keys(spec.members).slice(0, 7)) {
+            const { params, palette: own } = memberOf(spec, m);
+            const built = await compileSpec(spec, { palette: { ...palette, ...own }, params });
+            writeGenerated(join(dir, `${name}-${m}.svg`), built.svg);
+            const s2 = await scoreSvg(`${name} · ${m}`, built.svg, { paper, references });
+            const tile: ScoredVariant = {
+              ...s2,
+              params: {},
+              warnings: built.warnings,
+              caption: spec.members[m]!.label ?? m,
+            };
+            familyTiles.push(tile);
+            members.push({ name: m, label: spec.members[m]!.label ?? m, ...sketchReadiness(tile, size) });
+            marks.push({ name: m, svg: built.svg });
+          }
+          // Members the similarity engine would call copies of each other (or of the master) cannot be told apart,
+          // unless their colours differ (the engine's own "palettes are close" bar, 0.75): then only in one colour.
+          const fix: string[] = [];
+          const notes: string[] = [];
+          const samples = await Promise.all(marks.map((k) => sampleFromSvg(k.svg, { id: k.name })));
+          for (let i = 0; i < marks.length; i++)
+            for (let j = i + 1; j < marks.length; j++) {
+              const cmp = await compareMarks(samples[i]!, samples[j]!);
+              if (cmp.risk !== 'high') continue;
+              const pair = `${marks[i]!.name} and ${marks[j]!.name}`;
+              if (cmp.color >= 0.75)
+                fix.push(
+                  `${pair} read as the same mark (shape ${Math.round(cmp.shape * 100)}%, colours ${Math.round(cmp.color * 100)}%): make the difference between members bigger than a parameter nudge.`,
+                );
+              else
+                notes.push(
+                  `${pair} differ only by colour (shape ${Math.round(cmp.shape * 100)}%): fine for a colour-coded family, but in one colour (grey tabs, print) they look the same.`,
+                );
+            }
+          for (const m of members) for (const x of m.fix) fix.push(`${m.name}: ${x}`);
+          memberResults.set(name, { members, fix, notes });
+        }
       }
       const board = join(dir, 'board.png');
       writeGenerated(
@@ -1704,19 +1757,39 @@ export const COMMANDS: CommandSpec[] = [
           highlightFirst: false,
         }),
       );
-      const summary = items.map(({ svg: _svg, params: _p, ...v }) => ({
-        ...v,
-        ...sketchReadiness(v as ScoredVariant, sizes.get(v.id)),
-      }));
+      const summary = items.map(({ svg: _svg, params: _p, ...v }) => {
+        const own = sketchReadiness(v as ScoredVariant, sizes.get(v.id));
+        const fam = memberResults.get(v.id);
+        const fix = [...own.fix, ...(fam?.fix ?? [])];
+        return {
+          ...v,
+          ready: fix.length === 0,
+          fix,
+          ...(fam ? { members: fam.members.map(({ name, label, ready }) => ({ name, label, ready })) } : {}),
+          ...(fam?.notes.length ? { notes: fam.notes } : {}),
+        };
+      });
+      const family = familyTiles.length ? join(dir, 'family.png') : undefined;
+      if (family)
+        writeGenerated(
+          family,
+          await renderVariantSheet(familyTiles, paper, {
+            title: `${concept.title}: family — each sketch's master and members at 160, 32 and 16 px`,
+            highlightFirst: false,
+          }),
+        );
       writeJson(join(dir, 'board.json'), { concept: id, paper, sketches: summary });
       const notReady = summary.filter((v) => !v.ready).map((v) => v.id);
       return {
         board,
+        ...(family ? { family } : {}),
         sketches: summary.map((v) => ({
           id: v.id,
           idea: v.caption,
           ready: v.ready,
           ...(v.fix.length ? { fix: v.fix } : {}),
+          ...(v.members ? { members: v.members } : {}),
+          ...(v.notes ? { notes: v.notes } : {}),
           legibility16: v.quality.legibility16,
           stockShape: v.genericity.similarity,
           ...(v.closestReference ? { closestReference: v.closestReference } : {}),
@@ -1734,7 +1807,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Build a mark from a construction spec (primitives, booleans, gaps, offsets, repeats, glyphs) into clean SVG; --vary explores and scores parameter variants.',
     usage:
-      'construct <spec.json> (-o <out.svg> | --brand <slug> --concept <id>) [--role symbol|wordmark] [--set k=v,…] [--guides <png>] [--vary [--max 24] [--sheet <png>] [--out-dir <dir>]] [--force]',
+      'construct <spec.json> (-o <out.svg> | --brand <slug> --concept <id>) [--role symbol|wordmark] [--member <name>] [--set k=v,…] [--guides <png>] [--vary [--max 24] [--sheet <png>] [--out-dir <dir>]] [--force]',
     options: {
       ...brandOpt,
       concept: {
@@ -1756,6 +1829,10 @@ export const COMMANDS: CommandSpec[] = [
         description: 'Background the mark lives on (default: concept paper or #ffffff)',
       },
       role: { type: 'string', description: 'symbol | wordmark | lockup (default from spec)' },
+      member: {
+        type: 'string',
+        description: "Family member from the spec's members block: its parameters and colours",
+      },
       force: { type: 'boolean', description: 'Overwrite output' },
     },
     async run(c) {
@@ -1772,7 +1849,8 @@ export const COMMANDS: CommandSpec[] = [
         );
       }
       if (c.str('role')) spec.role = c.str('role') as ConstructionSpec['role'];
-      const overrides: Record<string, number> = {};
+      const member = c.str('member') ? memberOf(spec, c.str('member')!) : undefined;
+      const overrides: Record<string, number> = { ...member?.params };
       for (const kv of c.list('set')) {
         const [k, v] = kv.split('=');
         const n = Number(v);
@@ -1787,6 +1865,7 @@ export const COMMANDS: CommandSpec[] = [
       const concept = w && brand && conceptId ? w.concept(brand, conceptId) : undefined;
       const palette: Record<string, string> = {};
       if (concept) for (const [k, v] of Object.entries(concept.palette)) if (v) palette[k] = v;
+      Object.assign(palette, member?.palette);
       const paper = c.str('paper') ?? concept?.palette.paper ?? '#ffffff';
       const title = concept ? `${w!.brand(brand!).name} — ${spec.role ?? 'symbol'}` : spec.title;
 
@@ -1857,10 +1936,15 @@ export const COMMANDS: CommandSpec[] = [
           params: { ...spec.params, ...overrides },
         });
         const key = spec.role === 'wordmark' ? 'wordmark' : 'symbol';
-        // Scores judged the previous drawing; a changed mark needs a fresh critique.
-        const { judgment: _old, ...rest } = concept;
-        w!.saveConcept({ ...rest, files: { ...concept.files, [key]: basename(out) } });
-        if (_old)
+        // Scores, the present-as-is answer and first readings judged the previous drawing; a changed mark needs a
+        // fresh critique. A family member's colours become the concept's palette.
+        const { judgment: _old, critique: _answer, readsAs: _readings, ...rest } = concept;
+        w!.saveConcept({
+          ...rest,
+          ...(member ? { palette: { ...concept.palette, ...member.palette } } : {}),
+          files: { ...concept.files, [key]: basename(out) },
+        });
+        if (_old || _answer)
           compiled.warnings.push(
             'Previous critic scores were cleared: the mark changed and needs a new review.',
           );

@@ -60,10 +60,17 @@ Recommend a mode with evidence (measurements of the current mark + findings) and
    (`--role product --parent <master>`). Locked members: `brand add "<Name>" --locked` then
    `markilo lock --brand <slug> --symbol … --primary …`.
 2. Research the family once (master brand), then product-specific facts per product.
-3. Define the shared system in `shared/system.json` before product concepts.
-4. Design products in parallel with the concept-designer agent, all following the shared system.
-5. Verify each product, then `markilo compare` across products: siblings should be related (shared
-   construction) but not confusable (similarity < 0.62 between products).
+3. Sketch the family as one system, not the master alone: every sketch spec of a family direction has a `members`
+   block (one parameter set, and colours if they differ, per product — construction.md → Families). `markilo
+   sketches` draws master and members together on `sketches/family.png` and marks a sketch not ready when two members
+   read as the same mark (same shape and close colours); members told apart only by colour get a note. The sketch
+   review judges the system: do the members belong together, and can each be told apart at 16 px?
+4. When the master passes the gate, build each product from the same spec: `markilo concept new --brand <product> …`,
+   then `markilo construct <spec> --brand <product> --concept <id> --member <name>` (its parameters and colours),
+   `markilo verify`, and a critique per product. Record the system (construction, colour logic) in
+   `shared/system.json`.
+5. Products that need their own idea (an acquired brand, a different audience) are designed separately with the
+   concept-designer agent, inside the shared system.
 
 ## Using Markilo from another project
 

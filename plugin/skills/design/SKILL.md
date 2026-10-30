@@ -54,7 +54,8 @@ Work through these stages. Tell the user which stage you are in. If they asked f
 
 1. **Discover** — `markilo status` (where the work stands and the next step; `found: false` means `markilo init` +
    `markilo brand add`). For a repository, first run
-   `markilo research monorepo <path>`: if it lists several sites/apps, treat the work as a family (see
+   `markilo research monorepo <path>`: if it lists several sites/apps, treat the work as a family, sketched as one
+   system with `members` (see
    `references/workflow.md` → Monorepos) and confirm the brand list and any locked members with the user before
    `--register`. For a single project: `markilo research repo <path> --brand <slug>`. For a URL: ask, then
    `markilo research site <url> --brand <slug> --allow-network`. Look at existing logos you found

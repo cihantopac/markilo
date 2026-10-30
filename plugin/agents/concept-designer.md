@@ -43,7 +43,8 @@ Steps:
    is not the hook you wrote, change the drawing (proportion, weight, the size of the hook), not the caption.
    c. Replace any sketch that reads as a known device, a UI icon, a different letter or the product's own object drawn
    plainly (a page for documents, a chart for finance, a moon for sleep).
-   Hand over only when every sketch is `ready` and you would defend each one. In `sketch` mode, stop here.
+   For a family brief, every sketch carries a `members` block (construction.md → Families) and the members must be
+   ready too. Hand over only when every sketch is `ready` and you would defend each one. In `sketch` mode, stop here.
    Otherwise pick the one that is (a) recognisable at 16 px, (b) still says the idea without explanation, (c) least
    like anything you have seen before, and say in one line why it won and why each other lost.
    Simple is not the same as empty: two generic blobs or a circle and a bar is not a concept. Every mark needs one

@@ -73,6 +73,48 @@ export interface ConstructionSpec {
   fit?: number;
   /** Optical correction applied after `fit`: [dx, dy] in artboard units (e.g. [0, -16] lifts the mark). */
   nudge?: Pt;
+  /**
+   * A family drawn as one system: each product is the same construction with its own parameters and colours
+   * (`markilo sketches` draws them together; `construct --member <name>` builds one).
+   */
+  members?: Record<string, FamilyMember>;
+}
+
+export interface FamilyMember {
+  label?: string;
+  /** Parameter values for this member (numbers). */
+  set?: Record<string, number>;
+  /** Palette roles that differ for this member, e.g. { "accent": "#d9822b" }. */
+  palette?: Record<string, string>;
+}
+
+/** The spec's parameters and palette for one family member; throws for an unknown name. */
+export function memberOf(
+  spec: ConstructionSpec,
+  name: string,
+): { params: Record<string, number>; palette: Record<string, string> } {
+  const m = spec.members?.[name];
+  if (!m)
+    throw new MarkiloError(
+      'USAGE',
+      `The spec has no member "${name}".`,
+      spec.members
+        ? `Members: ${Object.keys(spec.members).join(', ')}.`
+        : 'Add a "members" block to the spec.',
+    );
+  const palette: Record<string, string> = {};
+  for (const [role, value] of Object.entries(m.palette ?? {})) {
+    if (!['primary', 'secondary', 'accent', 'ink', 'paper'].includes(role) || !/^#[0-9a-f]{6}$/i.test(value))
+      throw new MarkiloError(
+        'INVALID_INPUT',
+        `members.${name}.palette.${role} must be a palette role (primary, secondary, accent, ink, paper) with a #rrggbb color.`,
+      );
+    palette[role] = value.toLowerCase();
+  }
+  for (const [k, v] of Object.entries(m.set ?? {}))
+    if (typeof v !== 'number' || !Number.isFinite(v))
+      throw new MarkiloError('INVALID_INPUT', `members.${name}.set.${k} must be a number.`);
+  return { params: { ...(m.set ?? {}) }, palette };
 }
 
 export interface CompiledLayer {

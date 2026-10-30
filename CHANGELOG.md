@@ -12,11 +12,18 @@ All notable changes to this project are documented here. The format follows
   next step. The skills start with it instead of probing for a workspace and getting an error.
 - Decisions are logged by the toolchain: sketch picks, critiques with the gate result, rejections, deliverables,
   approvals and locks are appended to `decisions.md` with a timestamp. In the benchmark the file stayed empty.
+- Families are sketched as one system: a spec's `members` block gives each product its parameters (and colours);
+  `markilo sketches` draws master and members on `sketches/family.png`, checks each member, marks a sketch not ready
+  when two members read as the same mark (copy-level shape and close colours) and notes members told apart only by
+  colour. `construct --member <name>` builds a product from the same spec. The workflow guide no longer asks for
+  sibling similarity under 0.62, which ruled out shared constructions and was never checked.
 - The gate reports a `nearMiss` (only the average is short, every required criterion ≥ 6 and the critic said yes); it
   gets one targeted round on its lowest criteria before rejection. The bar does not move.
 
 ### Fixed
 
+- A changed mark kept the critic's present-as-is answer and first readings from the previous drawing; they are
+  cleared with the scores now.
 - Context sheets show light reference marks (white logos made for dark app tiles) on a dark tile instead of letting
   them vanish on white.
 

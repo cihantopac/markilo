@@ -167,6 +167,23 @@ Each is a construction technique, not a shape to copy. Combine at most two.
 - **Fold / facet**: two planes that meet at a crease, separated by a `gap` (not by colour alone), suggesting a turn
   of paper, a page, a screen.
 
+## Families
+
+A product family is one construction with a different parameter set (and colour, if the system is colour-coded) per
+product. Put the products in the spec:
+
+```json
+"members": {
+  "docs": { "label": "Docs", "set": { "cut": 30 }, "palette": { "accent": "#d9822b" } },
+  "sheets": { "label": "Sheets", "set": { "cut": 120 } }
+}
+```
+
+`markilo sketches` draws each sketch's master and members on `sketches/family.png`, checks every member like a sketch,
+and marks the sketch not ready when two members read as the same mark. Differences that survive 16 px are structural
+(a cut, a count, a corner, an orientation that changes the silhouette), not a few units of a parameter. Build a
+product with `construct <spec> --brand <product> --concept <id> --member <name>`.
+
 ## Wordmarks
 
 Carry the symbol's idea into the wordmark **once**: one or two letters that share the symbol's move (a cut, a corner,
