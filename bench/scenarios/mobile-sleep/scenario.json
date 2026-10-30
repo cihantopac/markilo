@@ -1,0 +1,10 @@
+{
+  "id": "mobile-sleep",
+  "title": "Mobile app",
+  "kind": "mobile",
+  "sector": "health and sleep",
+  "name": "Dozeline",
+  "ask": "Create a brand identity for Dozeline, the iOS and Android wind-down and sleep journal app in this folder.",
+  "owner": "Owner preferences: calm, warm, not clinical, no moons or stars cliché. The app icon must be recognisable on a home screen at small sizes. English and Turkish markets.",
+  "budgetUsd": 20
+}

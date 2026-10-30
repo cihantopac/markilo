@@ -6,7 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0-rc.1] - 2026-10-30
+
 ### Added
+
+- Benchmark: `scripts/bench.mjs` runs the installed plugin end to end on realistic scenarios (`bench/scenarios/`: an
+  independent SaaS, a mobile app, a multi-product family) in headless Claude Code, measures success, the quality gate,
+  checks, originality, exports, tokens and cost, has a blind judge rate every critiqued concept and writes the report
+  to `bench/results/<version>/`.
 
 - Context sheets: `verify` shows the mark in browser tabs, on a home screen next to the collected competitors, in site
   headers and as avatars; the critic starts with a blind first impression (`concept update --reads-as`) that caps
