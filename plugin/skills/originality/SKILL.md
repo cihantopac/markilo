@@ -3,14 +3,14 @@
 name: originality
 description: Markilo market intelligence and originality check — compare a logo concept or existing mark against competitor and category marks (silhouette, perceptual hash, structure, color), check name confusion and plan trademark pre-screening, and write an Originality & Similarity Report. Use when the user asks whether a logo or name is original, similar to others, or safe to use.
 argument-hint: "[brand slug, concept id, or path to a logo file]"
-allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs *) Read Write Edit Glob Grep WebSearch WebFetch
+allowed-tools: Bash(node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" *) Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs *) Read Write Edit Glob Grep WebSearch WebFetch
 ---
 
 # Markilo · Originality
 
 Request: $ARGUMENTS
 
-Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Policy: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/originality.md`.
+Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts. Policy: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/originality.md`.
 
 - **A concept in the workspace**: make sure references exist (`markilo reference list --brand <slug>`); if fewer than ~5,
   collect more (competitors, category leaders, famous marks with a similar form) and add them with `markilo reference add`

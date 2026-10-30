@@ -1,6 +1,6 @@
 # Markilo CLI reference
 
-`markilo` = `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs"`. All commands print JSON. Add `--help` to any
+`markilo` = `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs"`. All commands print JSON. Run each command as its own Bash call with the full `node "…/markilo.mjs"` prefix — no shell variables, `cd` or `&&` chains (they defeat the plugin's pre-approved permission). Add `--help` to any
 command for its options. `--workspace <dir>` selects a workspace (default: `./brand` or the nearest
 `markilo.json` above the current directory).
 

@@ -3,14 +3,14 @@
 name: audit
 description: Markilo brand audit — evaluate an existing logo or identity (small-size legibility, balance, monochrome, contrast, genericity, similarity to competitors, name confusion) and recommend keep, refresh or redesign with evidence. Use when the user asks for feedback on, or an assessment of, an existing logo or brand.
 argument-hint: "[logo file, URL, repo path or brand slug]"
-allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs *) Read Write Edit Glob Grep
+allowed-tools: Bash(node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" *) Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs *) Read Write Edit Glob Grep
 ---
 
 # Markilo · Audit
 
 Request: $ARGUMENTS
 
-Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Read `${CLAUDE_PLUGIN_ROOT}/skills/design/references/design-principles.md` (refresh vs. redesign).
+Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts. Read `${CLAUDE_PLUGIN_ROOT}/skills/design/references/design-principles.md` (refresh vs. redesign).
 
 1. Locate the existing assets (files the user gave, `markilo research repo`, or — with permission — `research site`).
    `Read` them.

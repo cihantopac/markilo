@@ -3,14 +3,14 @@
 name: research
 description: Markilo brand research only — scan a repository or website, research the market, audience, competitors, category conventions, culture and trademarks, and build a sourced Brand Intelligence Profile and brief. Use when the user asks to research or analyze a brand before any design.
 argument-hint: "[URL, repo path or brand name]"
-allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs *) Read Write Edit Glob Grep WebSearch WebFetch
+allowed-tools: Bash(node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" *) Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs *) Read Write Edit Glob Grep WebSearch WebFetch
 ---
 
 # Markilo · Research
 
 Request: $ARGUMENTS
 
-Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Read `${CLAUDE_PLUGIN_ROOT}/skills/design/references/research-playbook.md` and `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` first.
+Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts. Read `${CLAUDE_PLUGIN_ROOT}/skills/design/references/research-playbook.md` and `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` first.
 
 1. Find or create the workspace: `markilo brand list` — else `markilo init` and `markilo brand add "<Name>"`.
 2. Check what is already known: `markilo profile show --brand <slug>` and `markilo answers --brand <slug>`.

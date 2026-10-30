@@ -3,14 +3,14 @@
 name: concepts
 description: Markilo creative exploration and concept design — turn a brief into 3–5 genuinely different creative directions and original, verified SVG logo concepts (symbol + outlined wordmark). Use when the user wants logo concepts or design directions for a brand that already has research or a brief.
 argument-hint: "[brand slug and any direction notes]"
-allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs *) Read Write Edit Glob Grep
+allowed-tools: Bash(node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" *) Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs *) Read Write Edit Glob Grep
 ---
 
 # Markilo · Explore and design concepts
 
 Request: $ARGUMENTS
 
-Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Read `${CLAUDE_PLUGIN_ROOT}/skills/design/references/design-principles.md` and `${CLAUDE_PLUGIN_ROOT}/skills/design/references/svg-authoring.md`.
+Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts. Read `${CLAUDE_PLUGIN_ROOT}/skills/design/references/design-principles.md` and `${CLAUDE_PLUGIN_ROOT}/skills/design/references/svg-authoring.md`.
 
 1. `markilo brief show --brand <slug>` and `markilo profile show --brand <slug>`. If the brief is thin, run the
    research skill first or ask the user. Refuse concept work for locked brands.

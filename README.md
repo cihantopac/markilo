@@ -72,10 +72,11 @@ claude plugin marketplace add cihantopac/markilo
 claude plugin install markilo@markilo
 ```
 
-### Optional: a bare `/markilo` shortcut
+### `/markilo` and `/markilo:design`
 
-Plugin commands are namespaced (`/markilo:design`). If you also want to type just `/markilo`, Markilo can install a tiny
-personal skill that forwards to the plugin. It never touches existing files:
+After installing, both `/markilo` and `/markilo:design` start the studio (verified with Claude Code 2.1.308). If another
+command already uses the name `/markilo` on your machine, Markilo can install a tiny personal skill that forwards to the
+plugin. It never touches files it did not create:
 
 ```bash
 node ~/.claude/plugins/marketplaces/markilo/plugin/dist/markilo.mjs shortcut install --yes

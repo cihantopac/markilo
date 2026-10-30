@@ -3,7 +3,7 @@
 name: design
 description: Markilo brand identity studio. Use when the user wants a logo, brand identity, icon set or brand refresh for a product, website, app, repository or multi-product family — or asks Markilo to research, design, verify, refine or export a brand. Runs the full Discover → Deliver workflow with real SVG output, visual verification and originality checks.
 argument-hint: "[URL, repo path, brand name or task — e.g. 'https://acme.dev', './my-app', 'refresh our logo']"
-allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs *) Read Write Edit Glob Grep
+allowed-tools: Bash(node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" *) Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs *) Read Write Edit Glob Grep
 ---
 
 # Markilo — brand identity studio
@@ -22,7 +22,7 @@ Run every Markilo command as:
 node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> [options]
 ```
 
-(Written below as `markilo`.) Output is JSON. Errors are JSON on stderr with a stable `code`.
+(Written below as `markilo`.) Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts. Output is JSON. Errors are JSON on stderr with a stable `code`.
 Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — read it once per session.
 
 ## Non-negotiables
@@ -36,8 +36,9 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
    (`--allow-network`), web searches that include private names, copying assets into their project
    (`install-assets --apply`), or anything that costs money. Never edit files outside the brand workspace
    without permission.
-4. **Locked brands stay untouched.** If a brand is locked (`markilo brand list`), do not create concepts,
-   recolor or "improve" it. Only analyze, show and export it as provided.
+4. **Locked brands stay untouched.** If a brand is locked (`markilo brand list`), do not create concepts, recolor,
+   "improve" or recreate it, and do not offer to remove the lock. Analyze, show and export it as provided, or offer
+   to design other, unlocked brands. Only the owner can unlock a brand, by editing the workspace manifest themselves.
 5. **Originality is mandatory.** Competitor research is for differentiation only. A concept with verdict
    `redesign`, or high similarity to any reference, is reworked from the idea up — not nudged.
 6. **Look at your work.** After writing or changing any SVG, run `markilo verify` and `Read` the review

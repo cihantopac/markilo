@@ -16,4 +16,6 @@ claude plugin eval plugin --runs 1 --max-cost-usd 5 --allow-tools "Bash(node *)"
 | locked-brand        | Locked identities are never redesigned                               |
 | asks-before-network | Websites are not fetched without the user's OK                       |
 
-Results are written to `evals/results/` (git-ignored).
+`--case` takes one glob per run (for example `--case wordmark-outlined`). Results are written to `evals/results/` (git-ignored).
+
+Last full run: 6/6 cases passed (Claude Code 2.1.308, `--model sonnet --ablation none --runs 1`).
