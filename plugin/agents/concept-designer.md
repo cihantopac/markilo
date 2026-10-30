@@ -34,7 +34,8 @@ Steps:
    copies. Give every spec an `"idea"` sentence (what it says, not which shapes it uses). Run
    `markilo sketches --brand <slug> --concept <id>`: it builds every sketch in the concept palette and writes
    `sketches/board.png` (160, 32 and 16 px with each idea). `Read` the board; replace any sketch that reads as a
-   known device, a UI icon or a different letter before you hand it over. In `sketch` mode, stop here.
+   known device, a UI icon, a different letter or the product's own object drawn plainly (a page for documents, a
+   chart for finance, a moon for sleep) before you hand it over. In `sketch` mode, stop here.
    Otherwise pick the one that is (a) recognisable at 16 px, (b) still says the idea without explanation, (c) least
    like anything you have seen before, and say in one line why it won and why each other lost.
    Simple is not the same as empty: two generic blobs or a circle and a bar is not a concept. Every mark needs one

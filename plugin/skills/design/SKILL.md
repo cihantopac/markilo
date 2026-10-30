@@ -66,7 +66,10 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    (`markilo brief update --brand <slug> --file …`). Ask only what you truly cannot infer — usually 2–5
    questions, asked together, each with your suggested answer.
 4. **Explore** — propose 3–5 genuinely different creative directions (idea, metaphor, form language,
-   type, color, why it fits, risks). Different ideas, not variations of one idea. Let the user steer.
+   type, color, why it fits, risks). Different ideas, not variations of one idea. For each, write what a stranger
+   would see first; at most one direction may draw the product's own object or the name's literal noun (a page for
+   documents, a chart for finance, a moon for sleep — see "The product's own object is a cliché too" in
+   `references/design-principles.md`), and only with a named transformation. Let the user steer.
 5. **Design**, in two passes so weak ideas die cheap:
    a. **Sketch** — for each chosen direction, a `markilo:concept-designer` agent in `sketch` mode (in parallel)
    writes 3–5 construction-spec sketches and a sketch board (`markilo sketches`).

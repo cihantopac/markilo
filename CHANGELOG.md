@@ -20,6 +20,12 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- Sketch review is a procedure: read every sketch before knowing its idea, strike UI icons, clichés and the product's
+  own object drawn plainly, and pick only a sketch with no reading the critic had to name as a risk. Directions name
+  what a stranger would see first, and at most one may draw the product's own object or the name's literal noun.
+  The design principles list those category objects (pages and folded corners for documents, charts and tally marks
+  for finance, moons for sleep…) and no longer use a folded page as their example idea. In the benchmark every
+  rejected concept had passed sketch review with exactly such a named risk.
 - Judgment criteria are checked against the critic's list and stored under one spelling (`brandFit` → `brand-fit`,
   `premium` → `premium-perception`); unknown criteria are refused with the list. Older concepts are read the same way.
 - The brief's `constraints.colors` accepts color directions in words as well as hex values.

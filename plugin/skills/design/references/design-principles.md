@@ -6,8 +6,8 @@ critiquing.
 ## Start from an idea, not a shape
 
 A strong mark compresses one true, specific idea about the brand into a form simple enough to remember
-after one look. Before drawing, write the idea in one sentence: _"A folded page that reads as an N —
-notes that become structure."_ If you cannot write that sentence, you do not have a concept yet.
+after one look. Before drawing, write the idea in one sentence: _"Two arches that share one stem — research and
+verification meeting in an m."_ If you cannot write that sentence, you do not have a concept yet.
 
 Good sources of ideas, in order of strength:
 1. **What the product uniquely does** (its mechanism, its transformation, its promise).
@@ -21,6 +21,13 @@ Avoid category clichés unless you subvert them knowingly: lightbulbs for ideas,
 speech bubbles for chat, shields for security, rockets for growth, generic leaves for "green", swooshes,
 brain/circuit hybrids for AI, interlocking rings, abstract "connected dots" networks, and default
 gradient blobs. Markilo's genericity check flags marks that collapse to a stock primitive.
+
+**The product's own object is a cliché too.** The first idea everyone has — and the icon most competitors already
+use — is the thing the product handles: a page, a folded corner or a sticky note for documents and invoices; bars,
+charts, tally marks or coins for finance; a moon, stars, clouds or a bed for sleep; a padlock, a key or a shield for
+privacy; a check mark for tasks; a speech bubble for messaging. Draw it only when a transformation is the first thing
+a stranger notices; otherwise it reads as a UI icon next to the competitors. The same goes for the literal noun in
+the name (a tally for "Tally…", a fold for "…fold").
 
 ## Directions must be genuinely different
 

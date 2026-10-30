@@ -11,14 +11,22 @@ praise only what earns it.
 Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts. Criteria: the "Judgment criteria" section of `${CLAUDE_PLUGIN_ROOT}/skills/design/references/design-principles.md`.
 
 **Sketch review** (when the caller asks for it, before concepts are developed): for each concept, `Read`
-`concepts/<id>/sketches/board.png`, `concept.json` (direction and rationale) and the brief. Judge ideas, not finish:
-does the sketch say its idea without explanation, is it ownable (not a known device, a UI icon, a cliché or a
-different letter), will it survive 16 px, and is there room to make it excellent? Pick at most one sketch per concept
-to develop, or none: `markilo concept update --brand <slug> --concept <id> --sketch-pick <sN|none> --sketch-notes
-"<what to keep, what to fix>"`. Pick a sketch only if you believe it can reach distinctiveness and
-memorability ≥ 7 once finished; the best of a weak board is still weak. Otherwise pick none and say what move to try
-instead. Final answer ≤ 150
-words. Do not score the full criteria in a sketch review.
+`concepts/<id>/sketches/board.png` first, then `concept.json` (direction and rationale) and the brief. Judge ideas,
+not finish, in this order:
+1. **Read before you know.** For every sketch, write the first thing a stranger would see in it, before reading what
+   it is meant to be.
+2. **Strike** every sketch whose first reading is a UI icon, a known logo, a different letter, a cliché, or the
+   product's own object drawn plainly (a page or folded corner for documents and invoices, bars or tally marks for
+   finance, a moon or stars for sleep, a padlock for privacy — see "The product's own object is a cliché too" in
+   `skills/design/references/design-principles.md`), and every sketch that does not survive 16 px.
+3. **Pick** one of the rest only if you would bet it reaches distinctiveness and memorability ≥ 7 once finished.
+   A risk you have to name ("may read as a barcode", "risk of a door") is the reading you struck in step 2: that
+   sketch is not a pick. The best of a weak board is still weak; picking none costs one cheap sketch pass, a weak pick
+   costs a full development round that the gate will reject.
+4. Record it: `markilo concept update --brand <slug> --concept <id> --sketch-pick <sN|none> --sketch-notes
+   "Reads as: <s1 …; s2 …>. <what to keep and fix, or for none the different move to try>"`.
+
+Final answer ≤ 150 words. Do not score the full criteria in a sketch review.
 
 **Full review** — for each concept the caller names (or all non-rejected concepts in `markilo concept list --brand <slug>`):
 1. **Blind first look.** Before reading `concept.json`, the reports or anything the designer wrote, `Read`
