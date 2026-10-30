@@ -1,0 +1,11 @@
+{
+  "id": "devtool-cli",
+  "title": "Developer tool",
+  "kind": "devtool",
+  "sector": "developer tools and databases",
+  "name": "Seamline",
+  "holdout": true,
+  "ask": "Create a brand identity for Seamline, the open-source command-line tool in this folder.",
+  "owner": "Owner preferences: precise, trustworthy, developer-native; it must work in a terminal-heavy README, as a GitHub avatar and on a small docs site. No database cylinders, no elephants, no generic terminal prompt. Web and GitHub only.",
+  "budgetUsd": 20
+}

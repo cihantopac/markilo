@@ -4,11 +4,13 @@ End-to-end runs of the installed Markilo plugin on realistic products, to measur
 effort and cost release by release. Each scenario is a fixture project (a README, manifests and screens, no real
 company) plus the owner's preferences:
 
-| Scenario                                       | Product                                                                      | What it tests                                                           |
-| ---------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| [saas-invoicing](scenarios/saas-invoicing)     | Tallyline — invoicing and cash-flow forecasting for freelancers (Next.js)    | A crowded category (fintech blue and green), web-only deliverables      |
-| [mobile-sleep](scenarios/mobile-sleep)         | Dozeline — wind-down and sleep journal app (Flutter, iOS + Android, EN + TR) | Clichés to avoid (moons, stars), home-screen legibility, mobile exports |
-| [family-workspace](scenarios/family-workspace) | Lumenfold — office suite with Docs, Sheets and Sign (monorepo)               | A master brand and three product icons that belong together             |
+| Scenario                                             | Product                                                                              | What it tests                                                                                       |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| [saas-invoicing](scenarios/saas-invoicing)           | Tallyline — invoicing and cash-flow forecasting for freelancers (Next.js)            | A crowded category (fintech blue and green), web-only deliverables                                  |
+| [mobile-sleep](scenarios/mobile-sleep)               | Dozeline — wind-down and sleep journal app (Flutter, iOS + Android, EN + TR)         | Clichés to avoid (moons, stars), home-screen legibility, mobile exports                             |
+| [family-workspace](scenarios/family-workspace)       | Lumenfold — office suite with Docs, Sheets and Sign (monorepo)                       | A master brand and three product icons that belong together                                         |
+| [devtool-cli](scenarios/devtool-cli) (holdout)       | Seamline — zero-downtime PostgreSQL migrations, an open-source CLI (Rust, docs site) | A developer audience, GitHub avatar and README, no category clichés (cylinders, elephants, prompts) |
+| [ecommerce-shop](scenarios/ecommerce-shop) (holdout) | Kilnroom — online shop for small-batch ceramics (Laravel, TR + EU)                   | Warm without folksy, labels and stickers, Laravel asset install                                     |
 
 ## Results
 
@@ -37,6 +39,9 @@ What changed, and why:
 Benchmarking so far (four runs of the three briefs plus judging) cost $33.80 in API-equivalent terms. Each run counts
 against a Claude subscription's usage limits instead of being billed; the costs are what the same tokens would cost
 on the API.
+
+Holdout scenarios were written before the changes they test and were never run while Markilo was being tuned;
+they show whether an improvement generalizes beyond the briefs it was found on.
 
 ## Run
 

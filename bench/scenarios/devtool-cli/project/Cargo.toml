@@ -1,0 +1,12 @@
+[package]
+name = "seamline"
+version = "0.9.2"
+edition = "2021"
+description = "Zero-downtime schema migrations for PostgreSQL"
+license = "Apache-2.0"
+repository = "https://example.com/seamline"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+tokio-postgres = "0.7"
+tokio = { version = "1", features = ["full"] }

@@ -1,0 +1,11 @@
+{
+  "id": "ecommerce-shop",
+  "title": "Online shop",
+  "kind": "ecommerce",
+  "sector": "independent retail, handmade ceramics",
+  "name": "Kilnroom",
+  "holdout": true,
+  "ask": "Create a brand identity for Kilnroom, the online shop in this folder.",
+  "owner": "Owner preferences: handmade and warm but not rustic or folksy; no pottery wheels, no vase or mug silhouettes, no flames. It must work on a shipping label, a tissue-paper sticker and Instagram. Web and social only; customers in Turkey and Europe.",
+  "budgetUsd": 20
+}
