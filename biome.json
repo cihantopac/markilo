@@ -10,8 +10,8 @@
       "!plugin/evals/results",
       "!tests/.tmp",
       "!examples/**/output",
-      "!branding/**/*.html",
-      "!branding/**/exports",
+      "!branding",
+      "!branding-next",
       "!**/*.png"
     ]
   },

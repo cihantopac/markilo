@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0-beta.2] - 2026-10-30
+
+### Fixed
+
+- The installed plugin could not load the path engine (`pathkit-wasm` was required at run time from `node_modules`,
+  which a plugin install does not have); it is now bundled. A test runs the bundle from a folder with no
+  `node_modules` above it.
+
 ### Added
 
 - Construction kit: `markilo construct` builds marks from JSON construction specs (primitives, booleans, gaps,
@@ -94,7 +102,8 @@ All notable changes to this project are documented here. The format follows
 - Self-contained HTML Brand Preview Gallery with mockups and a feedback export.
 - Locked identities that are reproduced byte-for-byte and never redesigned.
 
-[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.1...HEAD
+[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.2...HEAD
+[0.3.0-beta.2]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.1...markilo--v0.3.0-beta.2
 [0.3.0-beta.1]: https://github.com/cihantopac/markilo/compare/markilo--v0.2.0...markilo--v0.3.0-beta.1
 [0.2.0]: https://github.com/cihantopac/markilo/compare/markilo--v0.1.0...markilo--v0.2.0
 [0.1.0]: https://github.com/cihantopac/markilo/releases/tag/markilo--v0.1.0

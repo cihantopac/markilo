@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { tmp } from './helpers.js';
 
@@ -36,6 +36,29 @@ describe('cli (bundled)', () => {
     expect(run(['wordmark', '--text', 'x', '--font', 'inter', '-o', 'wm.svg'], cwd).status).toBe(1);
     const net = run(['research', 'site', 'https://example.com', '--brand', 'ornek-marka'], cwd);
     expect(JSON.parse(net.stderr).error.code).toBe('NETWORK_DISABLED');
+  });
+  // Regression: the installed plugin has no node_modules; everything must be inside plugin/dist.
+  it('runs from a copy of dist with no node_modules anywhere above it', () => {
+    const dir = tmp();
+    for (const f of readdirSync(dirname(bin))) copyFileSync(join(dirname(bin), f), join(dir, f));
+    writeFileSync(
+      join(dir, 'spec.json'),
+      JSON.stringify({ layers: [{ fill: '#123456', shape: { circle: { c: [512, 512], r: 400 } } }] }),
+    );
+    const r = spawnSync(
+      process.execPath,
+      [join(dir, 'markilo.mjs'), 'construct', 'spec.json', '-o', 'o.svg'],
+      {
+        cwd: dir,
+        encoding: 'utf8',
+      },
+    );
+    expect(r.status, r.stderr).toBe(0);
+    const v = spawnSync(process.execPath, [join(dir, 'markilo.mjs'), 'render', 'o.svg', '-o', 'o.png'], {
+      cwd: dir,
+      encoding: 'utf8',
+    });
+    expect(v.status, v.stderr).toBe(0);
   });
   it('builds a mark from a construction spec with the bundled PathKit', () => {
     const cwd = tmp();

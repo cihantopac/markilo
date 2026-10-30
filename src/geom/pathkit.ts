@@ -2,6 +2,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// Imported statically so esbuild bundles it: the installed plugin has no node_modules to require it from at runtime.
+import PathKitInit from 'pathkit-wasm/bin/pathkit.js';
 import { MarkiloError } from '../core/errors.js';
 import { refitPath } from './refit.js';
 
@@ -70,10 +72,7 @@ export function ensurePathKit(): Promise<PathKit> {
       ue: process.listeners('uncaughtException'),
       ur: process.listeners('unhandledRejection'),
     };
-    const init = createRequire(import.meta.url)('pathkit-wasm/bin/pathkit.js') as (o: {
-      wasmBinary: Uint8Array;
-    }) => Promise<PathKit>;
-    kit = await init({ wasmBinary: readFileSync(wasmPath()) });
+    kit = (await PathKitInit({ wasmBinary: readFileSync(wasmPath()) })) as PathKit;
     for (const l of process.listeners('uncaughtException'))
       if (!before.ue.includes(l)) process.removeListener('uncaughtException', l);
     for (const l of process.listeners('unhandledRejection'))
