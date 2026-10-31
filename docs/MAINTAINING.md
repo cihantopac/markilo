@@ -24,6 +24,8 @@ fails if they disagree. Setting `version` in the plugin manifest means users rec
    --allow-tools "Bash(node *)" Write Edit --no-publish`.
 5. Commit, then `claude plugin tag --push` (creates `markilo--v<version>`). The release workflow runs CI and publishes
    GitHub release notes from the changelog.
+6. `npm publish` from the tagged commit, by a maintainer (`prepublishOnly` runs CI and the smoke test; npm asks for
+   two-factor approval). The package installs nothing besides itself: keep bundled libraries in `devDependencies`.
 
 ## Platform specs
 
