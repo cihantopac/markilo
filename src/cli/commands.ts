@@ -72,7 +72,7 @@ import { fetchBinary, scanSite } from '../research/site.js';
 import { lintSvg } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
 import { sanitizeSvg } from '../svg/sanitize.js';
-import { type AgentTarget, agentSetup } from './agents.js';
+import { type AgentTarget, agentSetup, ROLE_IDS, type Role } from './agents.js';
 import type { CommandSpec, RunContext } from './args.js';
 import { FRAMEWORKS, type Framework, planFrameworkInstall } from './frameworks.js';
 import { doctor, installAssets, shortcut } from './system.js';
@@ -970,10 +970,15 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Create a concept folder and concept.json. Then write symbol.svg (and optionally wordmark.svg) into it.',
     usage:
-      'concept new --brand <slug> --id <id> --title <title> --direction <direction> --rationale <why> --semantics a,b,c --primary <#hex> [--secondary --accent --ink --paper] [--font <id> --weight <n>]',
+      'concept new --brand <slug> --id <id> --title <title> --direction <direction> --rationale <why> --semantics a,b,c --primary <#hex> [--secondary --accent --ink --paper] [--font <id> --weight <n>] [--lead symbol|wordmark]',
     options: {
       ...brandOpt,
       id: { type: 'string', description: 'Concept id (slug)' },
+      lead: {
+        type: 'string',
+        description:
+          'symbol (default) or wordmark: the identity is a word drawn from a typeface with one or two letters changed',
+      },
       title: { type: 'string', description: 'Concept name' },
       direction: { type: 'string', description: 'Creative direction in one line' },
       rationale: { type: 'string', description: 'Why this expresses the brand' },
@@ -1002,10 +1007,14 @@ export const COMMANDS: CommandSpec[] = [
       if (existsSync(join(dir, 'concept.json')))
         throw new MarkiloError('EXISTS', `Concept ${id} already exists.`);
       const font = c.str('font');
+      const lead = c.str('lead');
+      if (lead && lead !== 'symbol' && lead !== 'wordmark')
+        throw new MarkiloError('USAGE', '--lead must be symbol or wordmark.');
       const concept: Concept = {
         schema: 'markilo/concept@1',
         id,
         brand: slug,
+        ...(lead === 'wordmark' ? { lead } : {}),
         title: c.req('title'),
         direction: c.req('direction'),
         rationale: c.req('rationale'),
@@ -1052,17 +1061,23 @@ export const COMMANDS: CommandSpec[] = [
     async run(c) {
       return ws(c)
         .concepts(c.req('brand'))
-        .map((x) => ({
-          id: x.id,
-          title: x.title,
-          status: x.status,
-          direction: x.direction,
-          files: x.files,
-          palette: x.palette,
-          gate: gateOf(x).status,
-          ...(gateOf(x).average !== undefined ? { criticAverage: gateOf(x).average } : {}),
-          ...(gateOf(x).nearMiss ? { nearMiss: true } : {}),
-        }));
+        .map((x) => {
+          const g = gateOf(x);
+          return {
+            id: x.id,
+            title: x.title,
+            status: x.status,
+            ...(x.lead === 'wordmark' ? { lead: 'wordmark' } : {}),
+            direction: x.direction,
+            files: x.files,
+            palette: x.palette,
+            gate: g.status,
+            ...(g.average !== undefined ? { criticAverage: g.average } : {}),
+            ...(g.nearMiss ? { nearMiss: true } : {}),
+            ...(g.next && g.status === 'failed' ? { next: g.next } : {}),
+            ...(g.calibration === 'unmeasured' ? { reviewer: g.reviewer, calibration: g.calibration } : {}),
+          };
+        });
     },
   },
   {
@@ -1079,7 +1094,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1106,6 +1121,11 @@ export const COMMANDS: CommandSpec[] = [
         type: 'string',
         description:
           'Critic, before reading the rationale: distinctiveness=n,memorability=n,brand-fit=n,craft=n,versatility=n (0–10)',
+      },
+      reviewer: {
+        type: 'string',
+        description:
+          'Critic: the model giving the blind scores (e.g. claude-opus-5-5, gpt-…); the gate reports it',
       },
       primary: { type: 'string', description: 'Primary color' },
       secondary: { type: 'string', description: 'Secondary color ("none" removes it)' },
@@ -1181,6 +1201,7 @@ export const COMMANDS: CommandSpec[] = [
           pick: pick === 'none' ? null : pick,
           notes: c.str('sketch-notes') ?? '',
           at: nowIso(),
+          by: 'critic',
         };
       }
       if (c.str('font'))
@@ -1191,6 +1212,8 @@ export const COMMANDS: CommandSpec[] = [
           license: fontInfo(c.str('font')!).license,
         };
       const presentAs = (answer: string, reason: string) => {
+        // A new drawing has no answer yet (construct clears it): this is the critic's first verdict on it.
+        if (!cur.critique) next.reviews = (cur.reviews ?? 0) + 1;
         next.critique = { present: /^y/i.test(answer), reason: reason.trim(), at: nowIso() };
       };
       if (c.str('present')) {
@@ -1216,6 +1239,14 @@ export const COMMANDS: CommandSpec[] = [
           throw new MarkiloError('USAGE', `--blind needs all five scores; missing ${missing.join(', ')}.`);
         next.blind = { scores, at: nowIso() };
       }
+      if (c.str('reviewer')) {
+        if (!next.blind)
+          throw new MarkiloError(
+            'USAGE',
+            '--reviewer names the model behind the blind scores; record --blind first.',
+          );
+        next.blind = { ...next.blind, reviewer: c.str('reviewer')!.trim() };
+      }
       for (const j of c.list('judgment').length ? (c.values.judgment as string[]) : []) {
         // Critics sometimes record the present-as-is answer as a judgment: keep it where the gate reads it.
         const p = /^present(?:able)?(?:[-_ ]?as[-_ ]?is)?\s*=\s*(yes|no)\s*:(.+)$/is.exec(j);
@@ -1240,14 +1271,15 @@ export const COMMANDS: CommandSpec[] = [
           'Sketch review',
           `${cur.id}: ${next.sketchReview?.pick ? `develop ${next.sketchReview.pick}` : 'no sketch picked'}${next.sketchReview?.notes ? ` — ${next.sketchReview.notes}` : ''}`,
         );
-      if (c.str('present') || c.list('judgment').length || c.str('blind')) {
+      // One line per verdict: the blind scores and the informed feedback are often recorded in separate calls.
+      if (next.critique && next.critique !== cur.critique) {
         const answer = next.critique
           ? `${next.critique.present ? 'would present as is' : 'would not present as is'} — ${next.critique.reason}. `
           : '';
         w.logDecision(
           slug,
           'Critique',
-          `${cur.id}: ${answer}Gate ${gate.status}${gate.average !== undefined ? ` (average ${gate.average})` : ''}${gate.reasons.length ? `: ${gate.reasons.join('; ')}` : ''}.`,
+          `${cur.id}: ${answer}Gate ${gate.status}${gate.average !== undefined ? ` (average ${gate.average})` : ''}${gate.reasons.length ? `: ${gate.reasons.join('; ')}` : ''}${gate.next && gate.next !== 'present' ? ` Next: ${gate.next}.` : ''}${gate.reviewer ? ` Reviewer: ${gate.reviewer}${gate.calibration === 'unmeasured' ? ' (gate not calibrated on this model)' : ''}.` : ''}`,
         );
       }
       if (st && st !== cur.status && (st === 'rejected' || st === 'shortlisted'))
@@ -1473,7 +1505,7 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'gallery',
     summary:
-      'Build the self-contained HTML Brand Preview Gallery (concepts, scores, mockups, exports). With --serve it is served on 127.0.0.1 so "Send to Claude" saves decisions for `markilo feedback`.',
+      'Build the self-contained HTML Brand Preview Gallery (sketch boards, concepts, scores, mockups, exports). With --serve it is served on 127.0.0.1 so "Send to your agent" saves decisions for `markilo feedback`.',
     usage: 'gallery [--brand <slug>]... [--serve [--port <n>] [--idle <minutes>]]',
     options: {
       brand: { type: 'string', short: 'b', multiple: true, description: 'Limit to brands' },
@@ -1505,12 +1537,15 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'feedback',
     summary:
-      'Read the decisions saved from the gallery (keep/refine/drop, revision tags, notes, pinned spots, preferred concept); --import a downloaded file; --apply marks dropped concepts rejected and kept ones shortlisted.',
+      'Read the decisions saved from the gallery (sketch picks, keep/refine/drop, revision tags, notes, pinned spots, preferred concept); --import a downloaded file; --apply records sketch picks and marks dropped concepts rejected and kept ones shortlisted.',
     usage: 'feedback [--brand <slug>] [--import <markilo-feedback.json>] [--apply]',
     options: {
       ...brandOpt,
       import: { type: 'string', description: 'A markilo-feedback.json downloaded from the gallery' },
-      apply: { type: 'boolean', description: 'Apply keep/drop decisions to concept status' },
+      apply: {
+        type: 'boolean',
+        description: 'Record sketch picks and apply keep/drop decisions to concept status',
+      },
     },
     async run(c) {
       const w = ws(c);
@@ -1524,13 +1559,43 @@ export const COMMANDS: CommandSpec[] = [
       if (!f)
         return {
           feedback: null,
-          next: 'Ask the user to open the gallery (markilo gallery --serve) and press "Send to Claude", or to import a downloaded file.',
+          next: 'Ask the user to open the gallery (markilo gallery --serve) and press "Send to your agent", or to import a downloaded file.',
         };
       const brand = c.str('brand');
       const decisions = f.decisions.filter((d) => !brand || d.brand === brand);
       const applied: string[] = [];
       if (c.bool('apply'))
         for (const d of decisions) {
+          if (d.sketch) {
+            const cur = w.concept(d.brand, d.concept);
+            const pick = d.sketch === 'none' ? null : d.sketch;
+            if (pick && !existsSync(w.conceptFile(d.brand, d.concept, join('sketches', `${pick}.json`))))
+              throw new MarkiloError('NOT_FOUND', `sketches/${pick}.json is not in ${d.brand}/${d.concept}.`);
+            const critic = cur.sketchReview && cur.sketchReview.by !== 'user' ? cur.sketchReview : undefined;
+            // The user's pick wins over the critic's; the critic's reading stays in the notes for the designer.
+            w.saveConcept({
+              ...cur,
+              sketchReview: {
+                pick,
+                notes: [
+                  `User's pick${d.note ? `: ${d.note}` : '.'}`,
+                  critic
+                    ? `Critic (${critic.pick ? `picked ${critic.pick}` : 'picked none'}): ${critic.notes}`
+                    : '',
+                ]
+                  .filter(Boolean)
+                  .join(' '),
+                at: nowIso(),
+                by: 'user',
+              },
+            });
+            w.logDecision(
+              d.brand,
+              'Sketch pick (user)',
+              `${d.concept}: ${pick ? `develop ${pick}` : 'none — a different move'}${d.note ? ` — ${d.note}` : ''}`,
+            );
+            applied.push(`${d.brand}/${d.concept} → sketch ${pick ?? 'none'}`);
+          }
           if (d.decision !== 'keep' && d.decision !== 'drop') continue;
           const cur = w.concept(d.brand, d.concept);
           if (cur.status === 'approved') continue;
@@ -1590,11 +1655,17 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'agent-setup',
     summary:
-      'Let another coding agent use Markilo: writes its instruction file with the workflow, rules and CLI calls — AGENTS.md section for Codex, .cursor/rules/markilo.mdc for Cursor, or MARKILO.md. Dry run unless --apply.',
+      'Let another coding agent use Markilo: writes the workflow, rules and CLI calls (an AGENTS.md section for Codex, .cursor/rules/markilo.mdc for Cursor, a .github/agents custom agent for VS Code, or MARKILO.md) and the researcher, designer and critic as sub-agents with their own model (.codex/agents, .cursor/agents, .github/agents). Dry run unless --apply.',
     usage:
-      'agent-setup --target codex|cursor|generic [--project <dir>] [--cli "<command>"] [--references <dir>] [--apply] [--force]',
+      'agent-setup --target codex|cursor|vscode|generic [--model critic=<id>[,<fallback>]]... [--project <dir>] [--cli "<command>"] [--references <dir>] [--apply] [--force]',
     options: {
-      target: { type: 'string', description: 'codex | cursor | generic' },
+      target: { type: 'string', description: 'codex | cursor | vscode | generic' },
+      model: {
+        type: 'string',
+        multiple: true,
+        description:
+          'role=model id for a sub-agent (researcher, designer, critic); without one it runs on the chat model. VS Code takes a comma-separated preference list.',
+      },
       project: { type: 'string', description: 'Project folder (default: current folder)' },
       apply: { type: 'boolean', description: 'Write the file' },
       force: { type: 'boolean', description: 'Replace a same-named file Markilo did not write' },
@@ -1604,9 +1675,24 @@ export const COMMANDS: CommandSpec[] = [
     async run(c) {
       const projectDir = c.str('project') ? file(c, c.str('project')!) : c.cwd;
       if (!isDir(projectDir)) throw new MarkiloError('NOT_FOUND', `Project folder not found: ${projectDir}`);
+      const models: Partial<Record<Role, string[]>> = {};
+      for (const v of c.list('model').length ? (c.values.model as string[]) : []) {
+        const m = /^\s*([a-z]+)\s*=\s*(.+)$/.exec(v);
+        if (!m || !(ROLE_IDS as string[]).includes(m[1]!))
+          throw new MarkiloError(
+            'USAGE',
+            `Bad --model "${v}".`,
+            `Use ${ROLE_IDS.map((r) => `${r}=<model id>`).join(', ')}.`,
+          );
+        models[m[1] as Role] = m[2]!
+          .split(',')
+          .map((x) => x.trim())
+          .filter(Boolean);
+      }
       return agentSetup(projectDir, c.req('target') as AgentTarget, {
         apply: c.bool('apply'),
         force: c.bool('force'),
+        ...(Object.keys(models).length ? { models } : {}),
         ...(c.str('cli') ? { command: c.str('cli')! } : {}),
         ...(c.str('references') ? { references: c.str('references')! } : {}),
       });

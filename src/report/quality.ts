@@ -9,7 +9,7 @@ import type { Workspace } from '../core/workspace.js';
 import { composeLockup } from '../design/lockup.js';
 import { inkMetrics } from '../export/geometry.js';
 import { type ContextPeer, groundFor, renderContextSheet } from '../render/context.js';
-import { renderReviewSheet } from '../render/sheet.js';
+import { renderReviewSheet, renderWordmarkSheet } from '../render/sheet.js';
 import { buildOriginalityReport, readReferences } from './originality.js';
 
 /** Collected reference marks, direct competitors first, one per brand, for the context sheet. */
@@ -107,6 +107,11 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
     if (role === 'symbol') {
       const sheet = join(dir, 'review', 'symbol-sheet.png');
       writeGenerated(sheet, await renderReviewSheet(svg, `${concept.title} — symbol`));
+      sheets.push(sheet);
+    }
+    if (role === 'wordmark') {
+      const sheet = join(dir, 'review', 'wordmark-sheet.png');
+      writeGenerated(sheet, await renderWordmarkSheet(svg, `${concept.title} — wordmark`));
       sheets.push(sheet);
     }
   }

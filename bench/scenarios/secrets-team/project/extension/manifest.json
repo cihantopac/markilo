@@ -1,0 +1,6 @@
+{
+  "manifest_version": 3,
+  "name": "Pinehold",
+  "description": "Fill your team's passwords and one-time codes",
+  "version": "2.4.0"
+}

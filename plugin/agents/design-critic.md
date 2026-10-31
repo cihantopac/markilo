@@ -41,6 +41,8 @@ predicted an independent judge far better than scores given after it.
    `brand/brands/<slug>/research/cache/review/context-<id>.png` (the mark in browser tabs, on a home screen among the
    collected competitors, in a header and as an avatar; `markilo verify` writes it) and
    `concepts/<id>/review/symbol-sheet.png` — but not `concept.json`, the reports or anything the designer wrote.
+   When `markilo concept list` shows the concept as `lead: wordmark`, the word is the identity: read
+   `concepts/<id>/review/wordmark-sheet.png` first and score the word and its icon together.
    a. Write the first three things the mark looks like to a stranger and the most unfortunate thing this product's
    audience could take it for (a gravestone for a sleep app, a quotation mark for a finance app, a back button):
    `markilo concept update --brand <slug> --concept <id> --reads-as "<first>; <second>; <third>"`.
@@ -48,7 +50,8 @@ predicted an independent judge far better than scores given after it.
    against the brief). Calibration: 3 = clip art or a stock shape, 5 = competent but forgettable, 7 = strong and
    ownable, 9 = category-defining.
    c. Answer, still cold: would a senior identity designer put this in front of a client as is?
-   `--present yes:"<why>"` or `--present no:"<why>"`.
+   `--present yes:"<why>"` or `--present no:"<why>"`. Name the model you run on with `--reviewer <model id>` (e.g.
+   `claude-opus-5-5`); the gate reports it.
    Then describe it from memory in at most eight words, without looking again.
 2. Now read `concept.json` (idea and rationale), the quality and originality reports in `brand/brands/<slug>/reports/`
    and `review/construction.png` when present. A cold yes may become a no only for a measured reason (a failing check,
@@ -71,7 +74,9 @@ predicted an independent judge far better than scores given after it.
 5. Be calibrated: 5 = competent but forgettable, 7 = strong and ownable, 9 = category-defining. Generic geometry
    (two blobs, circle + bar, a stacked monogram in a stock font) scores ≤ 4 on distinctiveness however clean it is.
 6. The output's `gate` (also in `markilo concept list`) applies the rule — blind brand-fit, distinctiveness and
-   memorability ≥ 6, and a yes — so report that, not your own sum.
+   memorability ≥ 6, and a yes — and its `next` says what follows (`fix` once, or `reject`); report those, not your own
+   sum. For `fix`, name exactly what must change; a cold score under 6 means the idea did not land, and a rework of
+   the same idea almost never passes, so say which different move to try instead.
 7. Name the single most important improvement for each concept, and flag anything that looks like an existing mark
    or a cliché even if the automated similarity was low (conceptual similarity is not measured automatically).
 

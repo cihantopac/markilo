@@ -73,6 +73,10 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    documents, a chart for finance, a moon for sleep — see "The product's own object is a cliché too" in
    `references/design-principles.md`), and only with a named transformation; at most one may be built on the name's
    initial; at least one must come from what the product does or the audience's world, with no letter and no object.
+   Unless the user wants a symbol above all, one direction is **wordmark-led** (`concept new … --lead wordmark`): the
+   name drawn from a good typeface with one or two letters changed so the word carries the idea, and a symbol cut from
+   that same drawing for icons. Where a category is full of pictograms (developer tools, SaaS), symbols drift into UI
+   icons; a crafted word starts from professionally drawn letters and is often the stronger identity.
    Name each direction's form language from the brief's adjectives ("Form language follows the brief's character").
    Let the user steer.
 5. **Design**, in two passes so weak ideas die cheap:
@@ -81,9 +85,13 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    Before the review, every sketch must be `ready` in `markilo sketches` (no hairline gaps or failing checks); send
    boards that are not back to their designer with the `fix` lines.
    b. **Sketch review** — one `markilo:design-critic` agent reviews every board and records a pick or `none` per
-   concept (`--sketch-pick`). For `none`, send the direction back for one more sketch pass with the critic's
-   suggested move and a second sketch review, or drop it (`--status rejected`). The pick is the critic's: never
-   override a `none` with your own pick.
+   concept (`--sketch-pick`). When the user is here, show them the boards before anything is developed — a sketch is
+   cheap, a developed mark that fails the gate is not: open the gallery (`markilo gallery --serve`; it shows every
+   board with the critic's reading and pick), ask them to pick a sketch per direction or accept the critic's picks,
+   then `markilo feedback --brand <slug> --apply` records their picks (a user's pick wins over the critic's, `none`
+   included). For `none`, send the direction back for one more sketch pass with the suggested move and a second
+   review, or drop it (`--status rejected`). Never override the critic with your own pick; with nobody to ask
+   (unattended), the critic's pick stands.
    c. **Develop** — for each picked sketch, a concept-designer in `develop <sketch id>` mode finishes the mark:
    measured variants, `symbol.svg`, `construction.json` and a wordmark that carries the idea in one or two letters.
 6. **Verify** — `markilo verify --brand <slug> --concept <id>` for every concept, then
@@ -93,16 +101,17 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    **Quality gate:** a concept goes to the user only if the critic's blind brand-fit, distinctiveness and memorability
    are each ≥ 6 and its answer is yes — read the result
    from `markilo concept list --brand <slug>` (`gate: passed|failed`); `finalize` refuses a failed concept unless the
-   user chose it anyway (`--user-choice "<their reason>"`). A `nearMiss` (only the average is short, every required
-   criterion ≥ 6 and the critic said yes) gets one targeted round on its lowest-scored criteria before anything else,
-   then a fresh critique; the bar does not move. Otherwise send it
-   back to a concept-designer with the critique (up to 2 rounds), asking for a different move, not a polish. A concept
-   that still misses is set to `rejected` (`markilo concept update --status rejected`) so the gallery hides it.
+   user chose it anyway (`--user-choice "<their reason>"`). The gate's `next` says what to do with a concept that
+   failed: `fix` (the cold scores clear the bar and only the critic's no, for a reason it named, stands in the way) gets
+   one round on exactly that, then a fresh critique; `reject` is set to `rejected`
+   (`markilo concept update --status rejected`) so the gallery hides it. Do not rework a rejected idea: in Markilo's
+   benchmark 1 of 34 concepts sent back after a failed gate passed later (after three rounds); every other pass came
+   from a first look. Spend the budget on new directions instead.
    If fewer than two concepts pass, say so plainly, show what passed, and propose new directions — do not fill the
    gallery with weak work. Two strong concepts beat four mediocre ones.
 7. **Review** — open the gallery as the gallery skill describes (`markilo gallery --serve` in the background, or the
    offline file), summarize each concept in two lines with its measured strengths and risks, and ask the user to
-   decide there: Keep / Refine / Drop, pins on the mark, side-by-side comparison, then "Send to Claude". Read the
+   decide there: Keep / Refine / Drop, pins on the mark, side-by-side comparison, then "Send to your agent". Read the
    decisions with `markilo feedback --brand <slug>` instead of asking the user to retype them.
 8. **Refine** — iterate on the chosen concept (optical corrections, construction, wordmark spacing,
    palette), re-verifying each round. Then `markilo finalize --brand <slug> --concept <id> --tagline …`.

@@ -26,7 +26,7 @@ export interface GalleryServer {
 }
 
 /**
- * Serves the workspace's gallery on 127.0.0.1 only, so "Send to Claude" in the page can save decisions where the
+ * Serves the workspace's gallery on 127.0.0.1 only, so "Send to your agent" in the page can save decisions where the
  * plugin reads them (feedback/latest.json). Every request needs the random token in the URL or header; only files
  * inside the workspace are served (no dotfiles, no symlinks); feedback is size-limited and validated.
  */

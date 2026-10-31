@@ -1,7 +1,7 @@
 import { loadBundledFace } from '../design/fonts.js';
 import { textPathMarkup } from '../design/wordmark.js';
 import { adaptToGround, groundsFor } from '../export/variants.js';
-import { fmt, nestSvg, svgDocument } from '../svg/compose.js';
+import { aspectOf, fmt, nestSvg, svgDocument } from '../svg/compose.js';
 import { monochrome } from '../svg/variants.js';
 import { renderPng } from './resvg.js';
 
@@ -38,12 +38,13 @@ export function label(text: string, x: number, y: number, size: number, fill: st
   return textPathMarkup(loadBundledFace('inter', 500), text, x, y, size, fill).markup;
 }
 
-export function sheetSvg(rows: SheetRow[], sizes: number[], title?: string): string {
+export function sheetSvg(rows: SheetRow[], sizes: number[], title?: string, aspect = 1): string {
   const pad = 16;
   const labelH = 22;
   const max = Math.max(...sizes);
   const rowH = max + pad * 2 + labelH;
-  const width = sizes.reduce((a, s) => a + s + pad, pad);
+  const wide = (s: number) => Math.round(s * aspect);
+  const width = sizes.reduce((a, s) => a + wide(s) + pad, pad);
   const headerH = title ? 34 : 0;
   const height = headerH + rows.length * rowH;
   let body = '';
@@ -55,8 +56,8 @@ export function sheetSvg(rows: SheetRow[], sizes: number[], title?: string): str
     body += label(caption, pad, y0 + 17, 11, isDark(row.background) ? '#c9ced8' : '#5b6170');
     let x = pad;
     for (const s of sizes) {
-      body += nestSvg(row.svg, { x, y: y0 + labelH + pad + (max - s), width: s, height: s });
-      x += s + pad;
+      body += nestSvg(row.svg, { x, y: y0 + labelH + pad + (max - s), width: wide(s), height: s });
+      x += wide(s) + pad;
     }
   });
   return svgDocument(width, height, body, { background: '#ffffff' });
@@ -71,6 +72,26 @@ export async function renderReviewSheet(svg: string, title?: string): Promise<Bu
   const sheet = reviewSheetSvg(svg, title ? { title } : {});
   const width = Number(/width="(\d+)"/.exec(sheet)![1]);
   return renderPng(sheet, { width });
+}
+
+/** Heights (px) a wordmark is read at: a browser tab's title, a site header, a slide, a hero. */
+export const WORDMARK_HEIGHTS = [12, 16, 24, 36, 64];
+
+/**
+ * The wordmark on the same four grounds as the symbol sheet, at the heights it is read at. For a concept led by its
+ * wordmark this is the identity, so the critic reads it the way it reads the symbol sheet.
+ */
+export async function renderWordmarkSheet(svg: string, title?: string): Promise<Buffer> {
+  const light = '#ffffff';
+  const dark = '#111318';
+  const rows: SheetRow[] = [
+    { label: 'Color on light', background: light, svg: adaptToGround(svg, light) },
+    { label: 'Color on dark (adapted)', background: dark, svg: adaptToGround(svg, dark) },
+    { label: 'Black', background: light, svg: monochrome(svg, '#000000') },
+    { label: 'White (reversed)', background: dark, svg: monochrome(svg, '#ffffff') },
+  ];
+  const sheet = sheetSvg(rows, WORDMARK_HEIGHTS, title, Math.min(8, Math.max(1, aspectOf(svg))));
+  return renderPng(sheet, { width: Number(/width="(\d+)"/.exec(sheet)![1]) });
 }
 
 /**

@@ -1,0 +1,5 @@
+[package]
+name = "pinehold"
+version = "2.4.0"
+description = "Secrets manager for small teams"
+edition = "2021"

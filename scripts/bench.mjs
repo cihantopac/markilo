@@ -114,6 +114,9 @@ function measure(ws) {
           id: c.id,
           title: c.title ?? null,
           status: c.status,
+          // From 0.5.0-rc.1: a wordmark-led concept (the word is the identity, the icon is cut from it).
+          lead: c.lead ?? 'symbol',
+          reviews: c.reviews ?? null,
           critic: avg !== undefined ? Math.round(avg * 100) / 100 : null,
           scores: Object.fromEntries(Object.entries(j).map(([k, v]) => [k, v.score])),
           // Before 0.4.0-rc.2 the critic's present-as-is answer was not recorded (present: null).

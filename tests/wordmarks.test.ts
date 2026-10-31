@@ -35,6 +35,8 @@ describe('wordmark exploration', () => {
         'inter',
         '--weight',
         '600',
+        '--lead',
+        'wordmark',
       ],
       cwd,
     );
@@ -67,5 +69,18 @@ describe('wordmark exploration', () => {
     expect(concept.typography).toMatchObject({ fontId: 'fraunces', weight: 600 });
     expect(readFileSync(join(dir, 'wordmark.svg'), 'utf8')).toContain('data-cap-height');
     expect(run(['wordmarks', '--brand', 'kestrel', '--concept', 'k', '--pick', 'w9'], cwd).status).toBe(1);
+    // A wordmark-led concept: the word is the identity, so verify renders it at the heights it is read at.
+    expect(JSON.parse(run(['concept', 'list', '--brand', 'kestrel'], cwd).stdout)[0].lead).toBe('wordmark');
+    const v = run(['verify', '--brand', 'kestrel', '--concept', 'k'], cwd);
+    expect(v.status, v.stderr).toBe(0);
+    expect(existsSync(join(dir, 'review', 'wordmark-sheet.png'))).toBe(true);
+    const bad = run(
+      [
+        ...['concept', 'new', '--brand', 'kestrel', '--id', 'z', '--title', 'Z', '--direction', 'd'],
+        ...['--rationale', 'r', '--semantics', 'x', '--primary', '#1d4e89', '--lead', 'banner'],
+      ],
+      cwd,
+    );
+    expect(JSON.parse(bad.stderr).error.message).toMatch(/--lead must be symbol or wordmark/);
   }, 60_000);
 });

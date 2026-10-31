@@ -61,6 +61,31 @@ describe('quality gate', () => {
     );
   });
 
+  it('says what to do next: present, fix once, or reject', () => {
+    const c = (d: number, present: boolean, reviews?: number, reviewer?: string) =>
+      ({
+        critique: { present, reason: 'because', at: '2026-01-01T00:00:00Z' },
+        blind: {
+          scores: { distinctiveness: d, memorability: 7, 'brand-fit': 7, craft: 6, versatility: 6 },
+          at: '2026-01-01T00:00:00Z',
+          ...(reviewer ? { reviewer } : {}),
+        },
+        ...(reviews ? { reviews } : {}),
+      }) as unknown as Concept;
+    expect(gateOf(c(7, true)).next).toBe('present');
+    // The cold scores clear the bar and only the critic's no stands in the way: one round on what it named.
+    expect(gateOf(c(7, false, 1)).next).toBe('fix');
+    expect(gateOf(c(7, false, 2)).next).toBe('reject');
+    // A required score below the bar is the idea failing, not the execution: a new direction, not a rework.
+    expect(gateOf(c(5, false, 1)).next).toBe('reject');
+    expect(gateOf(c(7, true, 1, 'claude-opus-5-5'))).toMatchObject({
+      reviewer: 'claude-opus-5-5',
+      calibration: 'measured',
+    });
+    expect(gateOf(c(7, true, 1, 'gpt-5.5')).calibration).toBe('unmeasured');
+    expect(gateOf(c(7, true)).calibration).toBeUndefined();
+  });
+
   it('reads criteria under the spellings critics use', () => {
     expect(['brandFit', 'Brand fit', 'brand_fit', 'brandfit'].map(criterionOf)).toEqual(
       Array(4).fill('brand-fit'),
@@ -162,10 +187,18 @@ describe('cli: critique and research', () => {
       ).status,
     ).toBe(64);
     expect(JSON.parse(run(['concept', 'list', '--brand', 'gate-test'], cwd).stdout)[0].gate).toBe('failed');
-    // Decisions are logged by the toolchain, not left to the agent.
+    const reviewed = run(
+      ['concept', 'update', '--brand', 'gate-test', '--concept', 'a', '--reviewer', 'gpt-5.5'],
+      cwd,
+    );
+    expect(JSON.parse(reviewed.stdout).gate).toMatchObject({
+      reviewer: 'gpt-5.5',
+      calibration: 'unmeasured',
+    });
+    // Decisions are logged by the toolchain, not left to the agent: one line per verdict, not per call.
     const log = readFileSync(join(cwd, 'brand', 'brands', 'gate-test', 'decisions.md'), 'utf8');
     expect(log).toMatch(/\*\*Critique\*\* · a: would not present as is — Reads as a bar chart/);
-    expect(log.match(/^- \d{4}-\d{2}-\d{2} \d{2}:\d{2} · /gm)?.length).toBeGreaterThanOrEqual(2);
+    expect(log.match(/\*\*Critique\*\*/g)).toHaveLength(2);
     const named = run(
       [
         'concept',

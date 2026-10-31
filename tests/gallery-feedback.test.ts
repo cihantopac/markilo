@@ -18,6 +18,8 @@ const sample = {
       pins: [{ x: 70.4, y: 30, where: 'top-right', note: 'thicker stem' }],
     },
     { brand: '../etc', concept: 'x', decision: 'drop' },
+    { brand: 'nimbra', concept: 'wave', decision: null, sketch: 's4', note: '' },
+    { brand: 'nimbra', concept: 'wave', decision: null, sketch: '../s1' },
     { brand: 'nimbra', concept: 'fold', decision: 'explode' },
   ],
   preferred: { brand: 'nimbra', concept: 'fold', why: 'clearest', over: ['other'] },
@@ -26,11 +28,14 @@ const sample = {
 describe('gallery feedback', () => {
   it('keeps only valid decisions from untrusted page data', () => {
     const f = parseFeedback(sample);
-    expect(f.decisions).toHaveLength(2);
+    expect(f.decisions).toHaveLength(4);
     expect(f.decisions[0]!.pins[0]).toEqual({ n: 1, x: 70, y: 30, where: 'top-right', note: 'thicker stem' });
-    expect(f.decisions[1]!.decision).toBeNull();
+    expect(f.decisions[1]!.sketch).toBe('s4');
+    expect(f.decisions[2]!.sketch).toBeUndefined();
+    expect(f.decisions[3]!.decision).toBeNull();
     expect(feedbackRequests(f)).toEqual([
       'refine nimbra/fold: simpler; less ornament; at top-right: thicker stem',
+      'develop sketch s4 of nimbra/wave',
       'preferred nimbra/fold over other — clearest',
     ]);
     expect(() => parseFeedback({ decisions: [] })).toThrow(/schema/);

@@ -145,15 +145,31 @@ export interface Concept {
   createdAt: string;
   updatedAt: string;
   judgment?: Record<string, { score: number; rationale: string }>;
+  /**
+   * What carries the identity: the symbol (default), or the wordmark — a word drawn from a real typeface with one or
+   * two letters changed, and a symbol cut from that same drawing for icons. The critic then reads the wordmark sheet
+   * first.
+   */
+  lead?: 'symbol' | 'wordmark';
   /** What the critic saw before reading the rationale (first impressions, in order). */
   readsAs?: string[];
-  /** The critic's early verdict on the sketch board: which sketch to develop (null = none, rethink the move). */
-  sketchReview?: { pick: string | null; notes: string; at: string };
+  /**
+   * The early verdict on the sketch board: which sketch to develop (null = none, rethink the move). The critic records
+   * it; a user who picked in the gallery overrides it (`by: 'user'`).
+   */
+  sketchReview?: { pick: string | null; notes: string; at: string; by?: 'critic' | 'user' };
   /** The critic's answer to "would a senior identity designer put this in front of a client as is?" */
   critique?: { present: boolean; reason: string; at: string };
   /**
    * The critic's scores from the blind first look, before it reads the idea or the rationale: distinctiveness,
    * memorability, brand-fit (against the brief), craft, versatility. The gate reads these when present.
    */
-  blind?: { scores: Record<string, number>; at: string };
+  blind?: {
+    scores: Record<string, number>;
+    at: string;
+    /** The model that gave them, as the critic names it (`--reviewer`). The gate was calibrated on Opus. */
+    reviewer?: string;
+  };
+  /** How many drawings of this concept the critic has answered "present as is?" for (one per changed mark). */
+  reviews?: number;
 }

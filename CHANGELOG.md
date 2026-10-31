@@ -6,11 +6,51 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.5.0-rc.1] - 2026-10-31
+
+Found in two real projects run with 0.4.0: eight directions, six developed, none passed the gate — and the critic
+was right each time. The marks were assembled from rectangles, circles and polygons and read as UI icons; rework
+rounds polished the same failing idea; the user saw nothing until the end.
+
+### Changed
+
+- The gate says what to do next (`next` in its output, `concept list` and the decision log): `present`; `fix` once,
+  when the cold scores clear the bar and only the critic's no stands in the way; otherwise `reject` and spend the
+  budget on a new direction. In Markilo's benchmark 1 of 34 concepts sent back after a failed gate passed later
+  (after three rounds); every other pass came from a first look. The skills no longer ask for two rework rounds.
+- The concept designer runs on Sonnet (`model: sonnet`), as in every benchmark run; it used to inherit the session's
+  model, so a session on Opus ran four Opus designers in parallel. The researcher stays on Sonnet, the critic on Opus.
+- The gallery's button is "Send to your agent".
+
 ### Added
 
-- Markilo is on npm (`npm install -g markilo`, `npx markilo`), from 0.4.0: the same toolchain for other coding agents
-  and scripts. The package installs no dependencies (everything is bundled) and `prepublishOnly` runs CI and the smoke
-  test.
+- Sketch boards in the gallery: directions still at the sketch stage show every sketch at 92, 32 and 16 px with its
+  idea and the critic's reading and pick; the user picks one per direction (or none) and `feedback --apply` records
+  it. A user's pick wins over the critic's; the critic's reading stays in the notes for the designer. The design skill
+  shows the boards before anything is developed whenever the user is there.
+- Wordmark-led directions (`concept new --lead wordmark`): the name built from a real typeface with one or two
+  letters changed, and the icon cut from the same drawing. One direction is usually wordmark-led; where a category is
+  full of pictograms, invented symbols tend to read as UI icons. `verify` writes `review/wordmark-sheet.png` (the word
+  at 12–64 px on four grounds) and the critic reads it first for these concepts; the gallery leads with the word.
+- `agent-setup --target vscode` and sub-agents for VS Code (`.github/agents`), Codex (`.codex/agents`) and Cursor
+  (`.cursor/agents`): the researcher, designer and critic from the plugin's own instructions, each in its own context,
+  on the model named with `--model role=<id>` (VS Code takes a preference list; the Codex critic gets high reasoning
+  effort). docs/INTEGRATIONS.md says which model each role needs.
+- `concept update --reviewer <model>`: the gate reports which model gave the cold scores and whether the gate was
+  calibrated on it (Opus: measured; any other: "reviewer not calibrated" in the gate, `concept list` and the gallery).
+- Markilo is on npm (`npm install -g markilo`, `npx markilo`), from 0.4.0. The package installs no dependencies
+  (everything is bundled) and `prepublishOnly` runs CI and the smoke test.
+
+### Fixed
+
+- `decisions.md` logged a critique once per `concept update` call (blind scores and informed feedback are separate
+  calls), so every verdict appeared twice; it is logged once per verdict.
+
+### Not added
+
+- A "reads as a UI icon" check. Measured first on 32 labelled sketches from those two projects against 45 generic UI
+  icon silhouettes: AUC 0.72, the best match often the wrong icon, similarities 0.30–0.53. Silhouette similarity does
+  not see what a stranger reads; that stays the critic's call.
 
 ## [0.4.0] - 2026-10-31
 

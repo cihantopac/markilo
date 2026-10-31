@@ -1,0 +1,9 @@
+{
+  "name": "stagewell",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "description": "Feature flags and gradual rollouts for teams that ship every day"
+}

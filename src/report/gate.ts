@@ -93,9 +93,25 @@ export interface GateResult {
    * targeted refinement round on its lowest criteria. The bar itself does not move.
    */
   nearMiss?: true;
+  /**
+   * What to do with it: present it; fix it once (the cold scores clear the bar and only the critic's no, for a reason it
+   * named, stands in the way); or reject it and spend the budget on a new direction. In Markilo's benchmark 1 of 34
+   * concepts sent back after a failed gate passed later, after three rounds; every other pass came from a first look.
+   */
+  next?: 'present' | 'fix' | 'reject';
+  /** The model that gave the blind scores, when the critic recorded it. */
+  reviewer?: string;
+  /**
+   * measured: the reviewer is the model family the gate was calibrated against (Opus); unmeasured: any other model —
+   * the rule still applies, but how well it predicts an independent judge has not been measured.
+   */
+  calibration?: 'measured' | 'unmeasured';
 }
 
-export function gateOf(c: Pick<Concept, 'judgment' | 'critique' | 'blind'>): GateResult {
+/** Model families whose blind scores the gate was calibrated on (bench/results/calibration-rc.7, rc.8, rc.9). */
+const MEASURED_REVIEWERS = /opus/i;
+
+export function gateOf(c: Pick<Concept, 'judgment' | 'critique' | 'blind' | 'reviews'>): GateResult {
   if (c.blind) return blindGate(c);
   // Older concepts may hold criteria under other spellings (brandFit, premium); read them by their canonical name.
   const j: Record<string, { score: number }> = {};
@@ -123,10 +139,11 @@ export function gateOf(c: Pick<Concept, 'judgment' | 'critique' | 'blind'>): Gat
     ...(average !== undefined ? { average } : {}),
     reasons,
     ...(nearMiss ? { nearMiss: true as const } : {}),
+    next: !reasons.length ? 'present' : nearMiss && (c.reviews ?? 1) < 2 ? 'fix' : 'reject',
   };
 }
 
-function blindGate(c: Pick<Concept, 'critique' | 'blind'>): GateResult {
+function blindGate(c: Pick<Concept, 'critique' | 'blind' | 'reviews'>): GateResult {
   const b = c.blind!.scores;
   const reasons: string[] = [];
   for (const k of GATE.required) {
@@ -138,13 +155,24 @@ function blindGate(c: Pick<Concept, 'critique' | 'blind'>): GateResult {
   const average = values.length
     ? Math.round((values.reduce((x, y) => x + y, 0) / values.length) * 100) / 100
     : undefined;
+  const scoresClear = GATE.required.every((k) => (b[k] ?? 0) >= GATE.minimum);
   if (!c.critique) reasons.push('no answer yet to "would a senior designer present it as is?"');
   else if (!c.critique.present)
     reasons.push(`a senior designer would not present it as is: ${c.critique.reason}`);
+  const reviewer = c.blind!.reviewer;
+  const next: GateResult['next'] = !reasons.length
+    ? 'present'
+    : scoresClear && (c.reviews ?? 1) < 2
+      ? 'fix'
+      : 'reject';
   return {
     status: reasons.length ? 'failed' : 'passed',
     basis: 'blind',
     ...(average !== undefined ? { average } : {}),
     reasons,
+    ...(c.critique ? { next } : {}),
+    ...(reviewer
+      ? { reviewer, calibration: MEASURED_REVIEWERS.test(reviewer) ? 'measured' : 'unmeasured' }
+      : {}),
   };
 }

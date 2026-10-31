@@ -13,7 +13,7 @@
 <p align="center">
   <a href="https://github.com/cihantopac/markilo/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/cihantopac/markilo/actions/workflows/ci.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-d12c12"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-0.4.0-101218">
+  <img alt="Version" src="https://img.shields.io/badge/version-0.5.0--rc.1-101218">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-101218">
 </p>
 
@@ -69,8 +69,10 @@ registry search has been done yet; the guidelines say so.</sub>
   are reproduced byte-for-byte and never redesigned.
 - **Fits your stack.** `install-assets --framework auto` puts the files where Next.js (App Router metadata files),
   Laravel, Flutter (Android, iOS and web) or a static site expects them — a dry run first, backups before anything is
-  replaced. Claude Code is home; Codex, Cursor and other agents can run the same workflow through the CLI
-  (`agent-setup`, see [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md)).
+  replaced.
+- **Not tied to one AI.** Claude Code is home, but the toolchain is a plain CLI: `agent-setup` gives VS Code with
+  Copilot, Codex and Cursor the same workflow, with the researcher, designer and critic as sub-agents on the models
+  you choose (see [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md)).
 
 ## Measured quality
 
@@ -197,11 +199,11 @@ you  › /markilo:design ./ — we're launching this as a product, it needs an i
      › Research: 8 competitors, category codes (green + shields everywhere), 3 gaps recorded
      › Brief: 3 questions, each with a suggested answer
      › Explore: 3 directions — "Pulse" monogram, "Lighthouse" pictogram, "Signal" abstract
-     › Sketch: 4 quick constructions per direction; the sketch review keeps one per direction, drops "Signal"
+     › Sketch: 4 quick constructions per direction; you pick in the gallery, with the critic's reading beside each
      › Design: concept-designer agents develop the picks; each iterates on its review and context sheets
      › Verify: "Lighthouse" 71% similar to a competitor reference → reworked from the idea up
      › Critique: blind first look ("reads as: a pin, a drop") then scores; only "Pulse" passes the gate
-     › Review: gallery at http://127.0.0.1:…/ — pin a note on the stem, compare, "Send to Claude"
+     › Review: gallery at http://127.0.0.1:…/ — pin a note on the stem, compare, "Send to your agent"
      › Deliverables: a web app → logos, web, social, tokens, guidelines (app icons are one question away)
      › Finalize "Pulse" → Export: 80 files → Next.js detected: 10 files for app/ and public/ (dry run, 0 overwrites)
 ```

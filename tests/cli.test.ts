@@ -195,6 +195,29 @@ describe('cli (bundled)', () => {
     expect(
       run(['concept', 'update', '--brand', 'nimbra', '--concept', 'a', '--sketch-pick', 's9'], cwd).status,
     ).toBe(1);
+    // The user sees the boards in the gallery, with the critic's reading, and may pick another sketch there.
+    expect(run(['gallery'], cwd).status).toBe(0);
+    const html = readFileSync(join(cwd, 'brand', 'gallery', 'index.html'), 'utf8');
+    expect(html).toContain('class="card sketchcard" data-key="nimbra/a"');
+    expect(html).toMatch(/data-sketch="s2"[^>]*>[\s\S]*?critic’s pick/);
+    const fb = join(cwd, 'fb.json');
+    writeFileSync(
+      fb,
+      JSON.stringify({
+        schema: 'markilo/feedback@1',
+        decisions: [{ brand: 'nimbra', concept: 'a', decision: null, sketch: 's1', note: 'the door' }],
+        preferred: null,
+      }),
+    );
+    const applied = run(['feedback', '--import', fb, '--apply'], cwd);
+    expect(applied.status, applied.stderr).toBe(0);
+    expect(JSON.parse(applied.stdout).requests).toEqual(['develop sketch s1 of nimbra/a (the door)']);
+    const user = JSON.parse(run(['concept', 'show', '--brand', 'nimbra', '--concept', 'a'], cwd).stdout);
+    expect(user.concept?.sketchReview ?? user.sketchReview).toMatchObject({ pick: 's1', by: 'user' });
+    expect(JSON.stringify(user)).toContain('Critic (picked s2): keep the gesture');
+    expect(readFileSync(join(cwd, 'brand', 'brands', 'nimbra', 'decisions.md'), 'utf8')).toMatch(
+      /\*\*Sketch pick \(user\)\*\* · a: develop s1 — the door/,
+    );
   });
   it('compares colors by CIEDE2000 and contrast', () => {
     const r = run(['color', 'compare', '#d12c12', '#ffffff'], tmp());

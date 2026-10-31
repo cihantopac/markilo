@@ -58,6 +58,15 @@ pictorial metaphor, an abstract geometric system, a typographic-only wordmark, a
 directions that share the same idea are one direction. `markilo diversity` must report `low` risk between
 directions at the explore stage.
 
+**One direction is usually wordmark-led** (`concept new --lead wordmark`). A symbol has to be invented from nothing,
+and in categories full of pictograms (developer tools, SaaS, analytics) an invented symbol is most often read as a
+UI icon — a camera, a download arrow, a toggle. A wordmark starts from letters a type designer already drew well;
+the identity is the word with one or two letters changed so they carry the idea (a ligature that joins two letters
+the way the product joins two things, a counter that holds the product's object, a terminal that points), and the
+icon is that changed letter or pair cut from the same drawing. It is judged as a word first: on the wordmark sheet
+at 12–64 px, then the icon at 16 px. The change must be more than a slice or offset of a letter — that is the
+initial-with-a-cut cliché again.
+
 ## Form
 
 - **Simplicity**: as few elements as the idea allows. Aim for something a child could redraw from memory.

@@ -143,7 +143,13 @@ async function subjectCard(s: Subject, opts: { review?: boolean } = {}): Promise
   const on = (svg: string, ground: string) =>
     s.locked ? svg : adaptToGround(svg, ground, { dark: s.palette.ink });
   const lock = s.lockup ?? s.wordmark;
-  const hero = s.symbol ? inline(s.symbol, 112, 112) : fitInline(lock!, 220, 80);
+  // A wordmark-led concept is shown as its word first; the symbol is the icon cut from it.
+  const wordLed = s.concept?.lead === 'wordmark' && s.wordmark;
+  const hero = wordLed
+    ? fitInline(s.wordmark!, 260, 90)
+    : s.symbol
+      ? inline(s.symbol, 112, 112)
+      : fitInline(lock!, 220, 80);
   const alt = s.symbol ? inline(on(s.symbol, g.opposite), 64, 64) : fitInline(on(lock!, g.opposite), 120, 44);
   const sizes = s.symbol ? [16, 24, 32, 48].map((n) => inline(s.symbol!, n, n)).join('') : '';
   const avg = criticAverage(s);
@@ -162,6 +168,9 @@ async function subjectCard(s: Subject, opts: { review?: boolean } = {}): Promise
       : '',
     gate && gate.status !== 'not-reviewed'
       ? `<span class="pill ${gate.status === 'passed' ? 'good' : 'bad'}" title="${escapeAttr(gate.status === 'passed' ? 'Passed the critic gate' : gate.reasons.join('; '))}">${gate.status === 'passed' ? 'gate passed' : 'gate not passed'}</span>`
+      : '',
+    gate?.calibration === 'unmeasured'
+      ? `<span class="pill warn" title="${escapeAttr(`Reviewed by ${gate.reviewer}; the gate was calibrated on Claude Opus, so how well it predicts an independent judge on this model is not measured.`)}">reviewer not calibrated</span>`
       : '',
     s.locked ? '<span class="pill lock">locked</span>' : '',
   ].join('');
@@ -294,6 +303,64 @@ function maybeJson<T>(p: string): T | undefined {
   return existsSync(p) ? readJson<T>(p) : undefined;
 }
 
+interface BoardEntry {
+  id: string;
+  caption?: string;
+  ready?: boolean;
+  fix?: string[];
+  quality?: { legibility16?: number };
+}
+
+/**
+ * Directions still at the sketch stage: their boards, the critic's reading and a pick the user can make here. A sketch
+ * is cheap; a developed mark that fails the gate is not, so this is where the user's eye pays off most.
+ */
+function sketchCards(ws: Workspace, b: WorkspaceBrand): string[] {
+  const out: string[] = [];
+  for (const c of ws.concepts(b.slug)) {
+    // concept new names symbol.svg up front; a direction is past the sketch stage once a mark file exists.
+    const drawn = [c.files.symbol, c.files.wordmark].some(
+      (f) => f && existsSync(ws.conceptFile(b.slug, c.id, f)),
+    );
+    if (c.status === 'rejected' || drawn) continue;
+    const board = maybeJson<{ sketches: BoardEntry[]; paper?: string }>(
+      ws.conceptFile(b.slug, c.id, join('sketches', 'board.json')),
+    );
+    if (!board?.sketches?.length) continue;
+    const paper = board.paper ?? c.palette.paper ?? '#ffffff';
+    const review = c.sketchReview;
+    const key = escapeAttr(`${b.slug}/${c.id}`);
+    const tiles = board.sketches
+      .map((sk) => {
+        const f = ws.conceptFile(b.slug, c.id, join('sketches', `${sk.id}.svg`));
+        if (!/^[a-z][a-z0-9-]*$/.test(sk.id) || !existsSync(f)) return '';
+        const svg = readText(f);
+        const picked = review?.pick === sk.id;
+        return `<button type="button" class="sk${picked ? ' picked' : ''}" data-sketch="${escapeAttr(sk.id)}" title="${escapeAttr(sk.caption ?? sk.id)}">
+  <span class="ground" style="background:${paper}">${inline(svg, 92, 92)}</span>
+  <span class="sizes" style="background:${paper}">${inline(svg, 32, 32)}${inline(svg, 16, 16)}</span>
+  <span class="cap"><b>${escapeText(sk.id)}</b>${picked ? ` · ${review?.by === 'user' ? 'your pick' : 'critic’s pick'}` : ''}${sk.ready === false ? ' · <i class="bad">not ready</i>' : ''} — ${escapeText(sk.caption ?? '')}</span>
+</button>`;
+      })
+      .join('');
+    if (!tiles) continue;
+    const critic = review
+      ? `<p class="muted"><b>${review.by === 'user' ? 'Recorded pick' : 'Critic'}:</b> ${escapeText(review.pick ? `develop ${review.pick}` : 'none of these')} — ${escapeText(review.notes)}</p>`
+      : '<p class="muted">Not reviewed by the critic yet.</p>';
+    out.push(`<article class="card sketchcard" data-key="${key}">
+  <header><h3>${escapeText(c.title)}</h3><span class="status">sketches</span></header>
+  <p class="idea">${escapeText(c.direction)}</p>
+  <div class="skgrid">${tiles}</div>
+  <details${review ? '' : ' open'}><summary>What the critic saw</summary>${critic}</details>
+  <div class="decide sketch" data-key="${key}">
+    <button type="button" class="chip" data-sketch="none">None of these — try a different move</button>
+    <input type="text" class="note" placeholder="Why this one, or what to change (optional)">
+  </div>
+</article>`);
+  }
+  return out;
+}
+
 function subjectsFor(ws: Workspace, b: WorkspaceBrand): Subject[] {
   const out: Subject[] = [];
   const reports = ws.reportsDir(b.slug);
@@ -417,8 +484,9 @@ export async function buildGallery(
     const active: string[] = [];
     const rejected: string[] = [];
     for (const s of subjects) (s.status === 'rejected' ? rejected : active).push(await subjectCard(s));
+    const sketches = b.locked ? [] : sketchCards(ws, b);
     sections.push(
-      `<section class="brand"><h2>${escapeText(b.name)} <small>${escapeText(b.role)}${b.locked ? ' · locked' : ''} · ${active.length} to review</small></h2><div class="grid">${active.join('\n') || '<p class="empty">No concepts yet.</p>'}</div>${rejected.length ? `<details class="rejected-list"><summary>Rejected (${rejected.length})</summary><div class="grid">${rejected.join('\n')}</div></details>` : ''}${exportList}</section>`,
+      `<section class="brand"><h2>${escapeText(b.name)} <small>${escapeText(b.role)}${b.locked ? ' · locked' : ''} · ${active.length} to review</small></h2>${sketches.length ? `<h3 class="sub">Sketches — pick one per direction to develop (${sketches.length})</h3><div class="grid wide">${sketches.join('\n')}</div>` : ''}${active.length || !sketches.length ? `<div class="grid">${active.join('\n') || '<p class="empty">No concepts yet.</p>'}</div>` : ''}${rejected.length ? `<details class="rejected-list"><summary>Rejected (${rejected.length})</summary><div class="grid">${rejected.join('\n')}</div></details>` : ''}${exportList}</section>`,
     );
   }
   const family =
@@ -428,7 +496,7 @@ export async function buildGallery(
   const html = page(
     m.name,
     family + sections.join('\n'),
-    sections.some((x) => x.includes('class="decide"')),
+    sections.some((x) => x.includes('class="decide')),
   );
   const path = join(ws.galleryDir(), 'index.html');
   writeGenerated(path, html);
@@ -488,6 +556,11 @@ h4{margin:10px 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.04e
 .pinnable{position:relative;cursor:crosshair}.pin{position:absolute;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;box-shadow:0 0 0 2px #fff}
 .pins{margin:0;padding-left:20px;display:grid;gap:4px}.pins:empty{display:none}.pins li input{width:100%;border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:transparent;color:inherit;font:inherit;font-size:12px}
 .cmp{font-size:12px;color:var(--muted)}
+h3.sub{font-size:14px;margin:8px 0;color:var(--muted);font-weight:600}.grid.wide{grid-template-columns:repeat(auto-fill,minmax(420px,1fr));margin-bottom:12px}
+.skgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}
+.sk{display:grid;gap:4px;border:2px solid var(--line);border-radius:10px;background:transparent;padding:4px;text-align:left}.sk .ground{height:110px}.sk .sizes{padding:4px;gap:8px}
+.sk .cap{font-size:11px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.sk .cap b{color:var(--ink)}.sk.picked{border-style:dashed;border-color:var(--muted)}
+.sk.on{border-color:var(--accent);border-style:solid}.chip[data-sketch].on{background:var(--bad);border-color:var(--bad);color:#fff}i.bad{color:var(--bad);font-style:normal}
 dialog#cmpd{max-width:min(1100px,96vw);width:100%;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:16px}dialog#cmpd::backdrop{background:rgba(0,0,0,.45)}
 dialog#cmpd button,dialog#cmpd input{font:inherit;color:inherit;border:1px solid var(--line);background:transparent;border-radius:8px;padding:7px 12px}dialog#cmpd input{width:100%;margin:10px 0}
 .cmpgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.cmpcol{display:grid;gap:8px;align-content:start}.cmpcol h3{margin:0;font-size:15px}.cmpcol .prefer.on{background:var(--good);border-color:var(--good);color:#fff}
@@ -496,7 +569,7 @@ dialog#cmpd button,dialog#cmpd input{font:inherit;color:inherit;border:1px solid
 .bar button{border:1px solid var(--line);background:transparent;border-radius:8px;padding:7px 12px}.bar button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 @media (max-width:640px){.stage{grid-template-columns:1fr 72px}.bar .sum{display:none}}
 </style></head><body>
-<header class="top"><div><h1>${escapeText(title)} · ${reviewing ? 'review' : 'brand identity'}</h1><p>${reviewing ? 'Pick Keep, Refine or Drop, click on a mark to point at a spot, compare concepts side by side, then send your decisions to Claude.' : 'Approved identity, its variants and exported files. Explored concepts are kept for reference.'}</p></div><button type="button" id="theme">Theme</button></header>
+<header class="top"><div><h1>${escapeText(title)} · ${reviewing ? 'review' : 'brand identity'}</h1><p>${reviewing ? 'Pick a sketch to develop per direction, or Keep, Refine or Drop a concept; click on a mark to point at a spot, compare concepts side by side, then send your decisions to your agent.' : 'Approved identity, its variants and exported files. Explored concepts are kept for reference.'}</p></div><button type="button" id="theme">Theme</button></header>
 <main>${body}</main>
 ${reviewing ? '' : '<style>.bar{display:none}body{padding-bottom:16px}</style>'}<div class="bar"><span class="sum" id="sum">No decisions yet.</span><button type="button" id="clear">Clear</button><button type="button" id="cmpbtn">Compare (0)</button><button type="button" id="copy">Copy request</button><button type="button" class="primary" id="send">Save decisions</button></div>
 <dialog id="cmpd"><div class="cmpgrid" id="cmpgrid"></div><input type="text" id="cmpreason" placeholder="Why do you prefer it? (optional, then press Prefer this)"><p class="muted" id="cmpwhy"></p><button type="button" id="cmpclose">Close</button></dialog>
@@ -504,7 +577,8 @@ ${reviewing ? '' : '<style>.bar{display:none}body{padding-bottom:16px}</style>'}
 (()=>{const K='markilo-review:'+location.pathname;let st={};try{st=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){}
 const q=new URLSearchParams(location.search),TOKEN=q.get('t'),SERVED=location.protocol.startsWith('http')&&!!TOKEN;
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}render()};
-const boxes=[...document.querySelectorAll('.decide')];const get=k=>st[k]=st[k]||{};
+const boxes=[...document.querySelectorAll('.decide:not(.sketch)')];const get=k=>st[k]=st[k]||{};
+const skcards=[...document.querySelectorAll('.sketchcard')];
 const where=(x,y)=>(y<34?'top':y>66?'bottom':'middle')+'-'+(x<34?'left':x>66?'right':'center');
 function render(){boxes.forEach(b=>{const k=b.dataset.key,v=st[k]||{};b.classList.toggle('refine',v.pick==='refine');
 b.querySelectorAll('[data-pick]').forEach(x=>x.classList.toggle('on',x.dataset.pick===v.pick));
@@ -513,27 +587,31 @@ const n=b.querySelector('.note');if(document.activeElement!==n)n.value=v.note||'
 const c=b.querySelector('[data-cmp]');if(c)c.checked=!!v.compare;
 const ol=b.querySelector('.pins');const focused=ol.contains(document.activeElement);if(!focused){ol.innerHTML='';(v.pins||[]).forEach((p,i)=>{const li=document.createElement('li');const inp=document.createElement('input');inp.placeholder='What should change here ('+where(p.x,p.y)+')?';inp.value=p.note||'';inp.oninput=e=>{p.note=e.target.value;try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}};li.append(inp);ol.append(li)})}
 const g=document.querySelector('.pinnable[data-key="'+CSS.escape(k)+'"]');if(g){g.querySelectorAll('.pin').forEach(p=>p.remove());(v.pins||[]).forEach((p,i)=>{const d=document.createElement('span');d.className='pin';d.style.left=p.x+'%';d.style.top=p.y+'%';d.textContent=i+1;d.title='Remove pin';d.onclick=e=>{e.stopPropagation();v.pins.splice(i,1);save()};g.append(d)})}});
-const e=Object.entries(st).filter(([k,v])=>k!=='_prefer'&&v.pick);document.getElementById('sum').textContent=e.length?e.map(([k,v])=>v.pick+' '+k.split('/')[1]).join(' · '):'No decisions yet.';
+skcards.forEach(c=>{const v=st[c.dataset.key]||{};c.querySelectorAll('[data-sketch]').forEach(x=>x.classList.toggle('on',x.dataset.sketch===v.sketch));const n=c.querySelector('.note');if(document.activeElement!==n)n.value=v.note||''});
+const e=Object.entries(st).filter(([k,v])=>k!=='_prefer'&&(v.pick||v.sketch));document.getElementById('sum').textContent=e.length?e.map(([k,v])=>(v.sketch?'sketch '+v.sketch:v.pick)+' '+k.split('/')[1]).join(' · '):'No decisions yet.';
 document.getElementById('cmpbtn').textContent='Compare ('+Object.values(st).filter(v=>v&&v.compare).length+')'}
 boxes.forEach(b=>{const k=b.dataset.key;
 b.querySelectorAll('[data-pick]').forEach(x=>x.onclick=()=>{const v=get(k);v.pick=v.pick===x.dataset.pick?undefined:x.dataset.pick;save()});
 b.querySelectorAll('[data-chip]').forEach(x=>x.onclick=()=>{const v=get(k);v.chips=v.chips||[];const c=x.dataset.chip;v.chips=v.chips.includes(c)?v.chips.filter(y=>y!==c):[...v.chips,c];save()});
 b.querySelector('.note').oninput=e=>{get(k).note=e.target.value;try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}};
 const c=b.querySelector('[data-cmp]');if(c)c.onchange=()=>{get(k).compare=c.checked;save()}});
+skcards.forEach(c=>{const k=c.dataset.key;c.querySelectorAll('[data-sketch]').forEach(x=>x.onclick=()=>{const v=get(k);v.sketch=v.sketch===x.dataset.sketch?undefined:x.dataset.sketch;save()});
+c.querySelector('.note').oninput=e=>{get(k).note=e.target.value;try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}}});
 document.querySelectorAll('.pinnable').forEach(g=>g.onclick=ev=>{const r=g.getBoundingClientRect();const v=get(g.dataset.key);v.pins=v.pins||[];if(v.pins.length>=6)return;
 v.pins.push({x:Math.round((ev.clientX-r.left)/r.width*100),y:Math.round((ev.clientY-r.top)/r.height*100),note:''});if(!v.pick)v.pick='refine';save();
 const ol=document.querySelector('.decide[data-key="'+CSS.escape(g.dataset.key)+'"] .pins');const last=ol&&ol.lastElementChild;if(last)last.querySelector('input').focus()});
-function feedback(){const d=[];for(const[k,v]of Object.entries(st)){if(k==='_prefer'||!v||!(v.pick||(v.pins||[]).length||v.note))continue;const[brand,concept]=k.split('/');
-d.push({brand,concept,decision:v.pick||null,tags:v.chips||[],note:v.note||'',pins:(v.pins||[]).map((p,i)=>({n:i+1,x:p.x,y:p.y,where:where(p.x,p.y),note:p.note||''}))})}
+function feedback(){const d=[];for(const[k,v]of Object.entries(st)){if(k==='_prefer'||!v||!(v.pick||v.sketch||(v.pins||[]).length||v.note))continue;const[brand,concept]=k.split('/');
+d.push({brand,concept,decision:v.pick||null,...(v.sketch?{sketch:v.sketch}:{}),tags:v.chips||[],note:v.note||'',pins:(v.pins||[]).map((p,i)=>({n:i+1,x:p.x,y:p.y,where:where(p.x,p.y),note:p.note||''}))})}
 return{schema:'markilo/feedback@1',gallery:location.pathname,savedAt:new Date().toISOString(),decisions:d,preferred:st._prefer||null}}
-function request(){const f=feedback(),L=[];for(const d of f.decisions.filter(x=>x.decision==='refine')){const w=[...d.tags];if(d.note)w.push(d.note);d.pins.forEach(p=>w.push('at '+p.where+(p.note?': '+p.note:'')));L.push('/markilo:refine '+d.brand+' '+d.concept+(w.length?': '+w.join('; '):''))}
+function request(){const f=feedback(),L=[];for(const d of f.decisions.filter(x=>x.sketch))L.push(d.sketch==='none'?'No sketch for '+d.concept+': try a different move'+(d.note?' ('+d.note+')':''):'Develop sketch '+d.sketch+' of '+d.concept+(d.note?' ('+d.note+')':''));
+for(const d of f.decisions.filter(x=>x.decision==='refine')){const w=[...d.tags];if(d.note)w.push(d.note);d.pins.forEach(p=>w.push('at '+p.where+(p.note?': '+p.note:'')));L.push('/markilo:refine '+d.brand+' '+d.concept+(w.length?': '+w.join('; '):''))}
 const keep=f.decisions.filter(x=>x.decision==='keep').map(x=>x.concept),drop=f.decisions.filter(x=>x.decision==='drop').map(x=>x.concept);
 if(keep.length)L.push('Keep as is: '+keep.join(', '));if(drop.length)L.push('Drop (mark rejected): '+drop.join(', '));if(f.preferred)L.push('Preferred: '+f.preferred.concept+(f.preferred.why?' — '+f.preferred.why:''));
 return L.length?L.join('\\n'):'(no decisions yet)'}
 const flash=(id,t,orig)=>{const b=document.getElementById(id);b.textContent=t;setTimeout(()=>b.textContent=orig,1800)};
 document.getElementById('copy').onclick=async()=>{const t=request();try{await navigator.clipboard.writeText(t);flash('copy','Copied ✓','Copy request')}catch(e){prompt('Copy this request:',t)}};
-const send=document.getElementById('send');send.textContent=SERVED?'Send to Claude':'Download decisions';
-send.onclick=async()=>{const f=feedback();if(SERVED){try{const r=await fetch('/feedback',{method:'POST',headers:{'content-type':'application/json','x-markilo-token':TOKEN},body:JSON.stringify(f)});flash('send',r.ok?'Sent ✓ — tell Claude':'Not saved ('+r.status+')','Send to Claude')}catch(e){flash('send','Not saved','Send to Claude')}}
+const send=document.getElementById('send');send.textContent=SERVED?'Send to your agent':'Download decisions';
+send.onclick=async()=>{const f=feedback();if(SERVED){try{const r=await fetch('/feedback',{method:'POST',headers:{'content-type':'application/json','x-markilo-token':TOKEN},body:JSON.stringify(f)});flash('send',r.ok?'Sent ✓ — tell your agent':'Not saved ('+r.status+')','Send to your agent')}catch(e){flash('send','Not saved','Send to your agent')}}
 else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(f,null,2)],{type:'application/json'}));a.download='markilo-feedback.json';a.click();flash('send','Saved — run markilo feedback --import','Download decisions')}};
 document.getElementById('clear').onclick=()=>{st={};save()};
 const dlg=document.getElementById('cmpd');document.getElementById('cmpclose').onclick=()=>dlg.close();

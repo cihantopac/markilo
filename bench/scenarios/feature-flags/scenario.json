@@ -1,0 +1,11 @@
+{
+  "id": "feature-flags",
+  "title": "Developer platform",
+  "kind": "devtool",
+  "sector": "feature flags and progressive delivery",
+  "name": "Stagewell",
+  "holdout": true,
+  "ask": "Create a brand identity for Stagewell, the feature-flag and gradual-rollout service in this folder.",
+  "owner": "Owner preferences: calm, precise and trustworthy for platform teams who ship to millions of users; not playful. No toggles, switches, flags, rockets or traffic lights. Web app, docs site, GitHub avatar and a VS Code extension icon.",
+  "budgetUsd": 20
+}

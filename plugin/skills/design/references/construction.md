@@ -193,6 +193,21 @@ a terminal), on top of a calm, well-spaced typeface. Rebuilding every letter fro
 harder to read, and it reads as a display face rather than a brand. Every letter must still be readable on its own:
 check `e`, `a`, `w`, `m` and other complex forms at 1200 px and at 64 px wide.
 
+### Wordmark-led concepts (`--lead wordmark`)
+
+The word is the identity, so it is built, not typeset:
+
+1. Choose the face on the wordmark board: `markilo wordmarks --brand <slug> --concept <id>` (the bundled faces,
+   weights and spacing, measured), and commit one with `--pick`.
+2. Build the word as one spec with `glyph` and `"role": "wordmark"`, then change one or two letters with booleans so
+   they carry the idea — join two letters into a ligature, reshape a counter, extend or cut a terminal, share a stroke
+   between neighbours. Aim the change by the printed `glyphs` boxes (stem, bowl, x-height), not by eye.
+3. Cut the icon from the same drawing: a second spec with the same `glyph` and the same change, keeping only the
+   changed letter or pair (`"letters": [i]`), fitted to the square — `construct … --role symbol`. Add a small version
+   when the change disappears at 16 px.
+4. `markilo verify` writes `review/wordmark-sheet.png` (the word at 12–64 px on light, dark, black and white). Read it
+   as a stranger: the word must stay readable at 12 px, and the change must be visible at 24 px.
+
 ## Craft checklist
 
 - One unit `u` and a few multiples of it for all widths, radii and gaps; a single corner radius family.

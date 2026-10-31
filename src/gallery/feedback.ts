@@ -16,6 +16,8 @@ export interface GalleryFeedback {
     tags: string[];
     note: string;
     pins: { n: number; x: number; y: number; where: string; note: string }[];
+    /** At the sketch stage: the sketch to develop, or "none" for a different move. */
+    sketch?: string;
   }[];
   preferred: { brand: string; concept: string; why: string; over: string[] } | null;
 }
@@ -40,11 +42,13 @@ export function parseFeedback(raw: unknown): GalleryFeedback {
     const decision = ['keep', 'refine', 'drop'].includes(x.decision as string)
       ? (x.decision as 'keep' | 'refine' | 'drop')
       : null;
+    const sketch = str(x.sketch, 20);
     return [
       {
         brand,
         concept,
         decision,
+        ...(/^(none|[a-z][a-z0-9-]*)$/.test(sketch) ? { sketch } : {}),
         tags: (Array.isArray(x.tags) ? x.tags : [])
           .slice(0, 12)
           .map((t) => str(t, 60))
@@ -90,6 +94,12 @@ export function readLatestFeedback(ws: Workspace): GalleryFeedback | undefined {
 export function feedbackRequests(f: GalleryFeedback): string[] {
   const out: string[] = [];
   for (const d of f.decisions) {
+    if (d.sketch)
+      out.push(
+        d.sketch === 'none'
+          ? `no sketch for ${d.brand}/${d.concept}: try a different move${d.note ? ` (${d.note})` : ''}`
+          : `develop sketch ${d.sketch} of ${d.brand}/${d.concept}${d.note ? ` (${d.note})` : ''}`,
+      );
     if (d.decision === 'refine') {
       const w = [
         ...d.tags,
