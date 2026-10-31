@@ -143,9 +143,22 @@ export interface Compiled {
   /** Primitive outlines before booleans, for construction drawings. */
   guides: string[];
   glyphs: GlyphBox[];
+  /** A whole word set with `glyph` in a wordmark: each letter as the font drew it, placed where the final drawing has it. */
+  letters?: SourceLetter[];
   params: Record<string, number>;
   warnings: string[];
   stats: { paths: number; commands: number; contours: number; ink: number };
+}
+
+export interface SourceLetter {
+  char: string;
+  /** The untouched outline, in the final drawing's coordinates. */
+  d: string;
+  font: string;
+  weight: number;
+  /** Font size and baseline in the final drawing's coordinates. */
+  size: number;
+  baseline: number;
 }
 
 export interface CompileOptions {
@@ -201,6 +214,7 @@ class Ctx {
   type?: { baseline: number; capHeight: number; xHeight: number; font: string };
   /** Where each letter landed (before the shape's own transforms), so specs can aim cuts at stems and bars. */
   glyphs: GlyphBox[] = [];
+  letters: SourceLetter[] = [];
   depth = 0;
   constructor(
     readonly vars: Record<string, number>,
@@ -313,6 +327,16 @@ function glyphShape(o: Record<string, unknown>, at: string, ctx: Ctx): string {
           ),
         ).x
       : ctx.pt(o.at, `${at}.at`, [0, 0])[0];
+  if (o.letters === undefined)
+    for (const g of parts)
+      ctx.letters.push({
+        char: g.char,
+        d: transformPath(g.d, [1, 0, 0, 1, dx, dy]),
+        font,
+        weight,
+        size,
+        baseline: dy,
+      });
   for (const g of parts) {
     const b = boundsOf(g.d);
     const r = (n: number) => Math.round(n * 10) / 10;
@@ -591,6 +615,12 @@ export async function compileSpec(spec: ConstructionSpec, opts: CompileOptions =
     const m: M = [s, 0, 0, s, W / 2 - s * (all.x + all.w / 2), H / 2 - s * (all.y + all.h / 2)];
     layers = layers.map((l) => ({ ...l, d: transformPath(l.d, m) }));
     ctx.guides = ctx.guides.map((g) => transformPath(g, m));
+    ctx.letters = ctx.letters.map((l) => ({
+      ...l,
+      d: transformPath(l.d, m),
+      size: l.size * s,
+      baseline: s * l.baseline + m[5],
+    }));
     if (ctx.type)
       ctx.type = { ...ctx.type, baseline: s * ctx.type.baseline + m[5], capHeight: s * ctx.type.capHeight };
   }
@@ -600,6 +630,7 @@ export async function compileSpec(spec: ConstructionSpec, opts: CompileOptions =
     const m: M = [1, 0, 0, 1, dx, dy];
     layers = layers.map((l) => ({ ...l, d: transformPath(l.d, m) }));
     ctx.guides = ctx.guides.map((g) => transformPath(g, m));
+    ctx.letters = ctx.letters.map((l) => ({ ...l, d: transformPath(l.d, m), baseline: l.baseline + dy }));
     if (ctx.type) ctx.type = { ...ctx.type, baseline: ctx.type.baseline + dy };
   }
 
@@ -668,6 +699,7 @@ export async function compileSpec(spec: ConstructionSpec, opts: CompileOptions =
     layers,
     guides: ctx.guides,
     glyphs: ctx.glyphs,
+    ...(spec.role === 'wordmark' && ctx.letters.length > 1 ? { letters: ctx.letters } : {}),
     params: Object.fromEntries(Object.entries(vars).filter(([k]) => !['W', 'H', 'cx', 'cy'].includes(k))),
     warnings: ctx.warnings,
     stats: {

@@ -208,6 +208,13 @@ The word is the identity, so it is built, not typeset:
 4. `markilo verify` writes `review/wordmark-sheet.png` (the word at 12–64 px on light, dark, black and white). Read it
    as a stranger: the word must stay readable at 12 px, and the change must be visible at 24 px.
 
+`construct` and `sketches` measure every changed letter against the font's own alphabet. A letter that now looks more
+like another letter ("o" cut open on the right is a "c": the word reads "necn") makes the sketch not `ready`; a letter
+that lost its counter (an e without its eye) or two letters merged into one shape is a note the critic weighs. Most
+misread wordmarks in Markilo's benchmark came from exactly these: "portwise" read as "partwise", an "ll" as a "4" or
+an "n", a "pinehold" whose e lost its eye. Change a terminal, a join or a counter's shape; keep the stroke that names
+the letter.
+
 ## Craft checklist
 
 - One unit `u` and a few multiples of it for all widths, radii and gaps; a single corner radius family.

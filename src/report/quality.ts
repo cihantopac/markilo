@@ -1,8 +1,10 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
+import { checkLetters, letterAdvice } from '../analyze/letters.js';
 import { loadMark, sampleFromSvg } from '../analyze/mark.js';
 import { assessQuality, type QualityReport } from '../analyze/quality.js';
 import { compareMarks, RISK_THRESHOLDS } from '../analyze/similarity.js';
+import { type ConstructionSpec, compileSpec } from '../construct/compile.js';
 import { MarkiloError } from '../core/errors.js';
 import { readText, writeGenerated, writeJson } from '../core/fsx.js';
 import type { Workspace } from '../core/workspace.js';
@@ -63,6 +65,26 @@ export function qualityMarkdown(reports: QualityReport[], title: string): string
   return L.join('\n');
 }
 
+/** The letter check for a wordmark built from a recipe, when the file on disk is still what that recipe draws. */
+async function wordmarkLetters(ws: Workspace, brand: string, id: string, svg: string) {
+  const recipe = ws.conceptFile(brand, id, 'construction-wordmark.json');
+  if (!existsSync(recipe)) return undefined;
+  try {
+    const compiled = await compileSpec(JSON.parse(readFileSync(recipe, 'utf8')) as ConstructionSpec, {});
+    if (!compiled.letters) return undefined;
+    const drawn = [...svg.matchAll(/\sd="([^"]+)"/g)].map((m) => m[1]);
+    if (drawn.join('|') !== compiled.layers.map((l) => l.d).join('|')) return undefined;
+    return letterAdvice(
+      await checkLetters(
+        compiled.layers.map((l) => l.d),
+        compiled.letters,
+      ),
+    );
+  } catch {
+    return undefined;
+  }
+}
+
 /** Runs every automated check on a concept and writes the reports and the review contact sheet. */
 export async function verifyConcept(ws: Workspace, brand: string, id: string) {
   ws.assertNotLocked(brand);
@@ -110,6 +132,21 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
       sheets.push(sheet);
     }
     if (role === 'wordmark') {
+      const letters = await wordmarkLetters(ws, brand, id, svg);
+      if (letters) {
+        const r = reports[reports.length - 1]!;
+        const problems = [...letters.fix, ...letters.notes];
+        r.checks.push({
+          id: 'letters',
+          label: 'Letters read as themselves',
+          status: problems.length ? 'warn' : 'pass',
+          value: problems.length,
+          message: problems.length
+            ? problems.join(' ')
+            : 'Every changed letter still looks more like itself than like any other letter, and keeps its counters.',
+        });
+        r.summary[problems.length ? 'warn' : 'pass']++;
+      }
       const sheet = join(dir, 'review', 'wordmark-sheet.png');
       writeGenerated(sheet, await renderWordmarkSheet(svg, `${concept.title} — wordmark`));
       sheets.push(sheet);

@@ -15,7 +15,9 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 `concepts/<id>/sketches/board.png` first, then `concept.json` (direction and rationale) and the brief. Judge ideas,
 not finish, in this order:
 1. **Read before you know.** For every sketch, write the first thing a stranger would see in it, before reading what
-   it is meant to be; then compare with the hook the sketch's idea names (`board.json` → `caption`). For a family,
+   it is meant to be; then compare with the hook the sketch's idea names (`board.json` → `caption`). For a word,
+   then read `board.json` → `notes`: measured letter changes (a letter that lost its counter, two letters that merged)
+   — say whether the whole word still reads as the name. For a family,
    also `Read` `sketches/family.png`: do the members belong together, and can each be told apart at 16 px? A sketch
    `markilo sketches` marks as not `ready` goes back to the designer with its `fix`, unreviewed.
 2. **Strike** every sketch whose first reading is a UI icon, a known logo, a different letter, a cliché, the

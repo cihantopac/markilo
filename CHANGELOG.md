@@ -14,6 +14,12 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- Letter legibility for built wordmarks: `construct`, `sketches` and `verify` measure each changed letter against the
+  font's own alphabet. A letter that now looks more like another letter makes a sketch not `ready`; a letter that
+  lost its counter (an e without its eye) or two letters merged into one shape is a note for the designer and the
+  critic. On 46 wordmarks from earlier benchmark runs it raised no false block, and the counter note found the three
+  misread letters the critic had named (an e that lost its eye, an e struck through like a euro sign, an o opened
+  into a U); likeness alone found none of them, so the counter test carries the check.
 - `install-assets --undo` reverses the last installation from its journal (dry run unless `--apply`); files edited
   after the installation are kept, never deleted or restored over.
 - `install-assets` returns a `planId`; `--apply --expect <planId>` refuses to apply when the project changed after

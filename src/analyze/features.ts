@@ -119,6 +119,16 @@ function mirrorScore(m: Mask, fn: (x: number, y: number) => number): number {
   return total ? Math.max(0, 1 - diff / (2 * total)) : 0;
 }
 
+/** Separate ink parts and enclosed counters, ignoring specks under 0.15 % of the area. */
+export function topology(m: Mask): { parts: number; holes: number } {
+  const bin = binary(m);
+  const speck = m.width * m.height * 0.0015;
+  return {
+    parts: regions(bin, m.width, m.height, 1).filter((r) => r.size >= speck).length,
+    holes: regions(bin, m.width, m.height, 0).filter((r) => !r.border && r.size >= speck).length,
+  };
+}
+
 export function shapeFeatures(mask: Mask): ShapeFeatures {
   const m =
     mask.width === ANALYSIS_SIZE && mask.height === ANALYSIS_SIZE

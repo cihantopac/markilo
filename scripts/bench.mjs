@@ -7,6 +7,7 @@
 //   node scripts/bench.mjs run <id…|all> [--out <dir>] [--model <alias>] [--budget <usd>] [--repeat <n>]
 //                                        [--plugin <dir> | --installed] [--scenarios <dir>]
 //   node scripts/bench.mjs judge [<dir>] [--model <alias>] [--times <n>]  (majority of n looks per concept)
+//                                        [--panel opus:3,sonnet:3]  (several judge models; majority of all looks)
 //   node scripts/bench.mjs report [<dir>]
 //   node scripts/bench.mjs refresh <id> <run folder>  (re-measure a kept run folder; cost and tokens are kept)
 //   node scripts/bench.mjs measure <workspace>      (the same metrics for any Markilo workspace)
@@ -85,8 +86,19 @@ const commit = (() => {
   const r = spawnSync('git', ['-C', PLUGIN, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' });
   return r.status === 0 ? r.stdout.trim() : null;
 })();
+// A run takes half an hour; the checkout may change meanwhile (a rebuilt dist, an edited skill). Every run loads a
+// snapshot taken when the benchmark started, so it measures one version from start to finish.
+let snapshot;
+const pluginSnapshot = () => {
+  if (!snapshot) {
+    snapshot = join(mkdtempSync(join(tmpdir(), 'markilo-bench-plugin-')), 'plugin');
+    cpSync(PLUGIN, snapshot, { recursive: true });
+  }
+  return snapshot;
+};
 /** Claude Code flags that load Markilo and nothing else from this machine's setup. */
-const isolation = () => (installed ? [] : ['--setting-sources', 'project,local', '--plugin-dir', PLUGIN]);
+const isolation = () =>
+  installed ? [] : ['--setting-sources', 'project,local', '--plugin-dir', pluginSnapshot()];
 const scenarios = () =>
   readdirSync(SCEN)
     .filter((d) => existsSync(join(SCEN, d, 'scenario.json')))
@@ -396,39 +408,55 @@ function judge(out) {
           .filter((f) => f.endsWith('.png'))
           .map((f) => join(imgs, f));
         // One look at a borderline mark flips about half the time (rc.9 noise check), so --times N takes the
-        // majority of N independent looks and averages their scores.
+        // majority of N independent looks and averages their scores. --panel adds judges on other models, so the
+        // verdict does not rest on one model's taste (the critic runs on Opus too).
+        const members = opts.panel
+          ? opts.panel.split(',').map((m) => {
+              const [alias, n] = m.split(':');
+              return { alias, times: Math.max(1, Number(n ?? 1)) };
+            })
+          : [{ alias: opts.model ?? null, times: Math.max(1, Number(opts.times ?? 1)) }];
         const looks = [];
+        const panel = {};
         let cost = 0;
         let usedModel = null;
-        for (let k = 0; k < Math.max(1, Number(opts.times ?? 1)); k++) {
-          const r = spawnSync(
-            'claude',
-            [
-              '-p',
-              '--output-format',
-              'json',
-              '--allowedTools',
-              'Read',
-              '--setting-sources',
-              'project,local',
-              ...model,
-            ],
-            {
-              input: JUDGE(s, b.name, files, final, c.lead === 'wordmark'),
-              encoding: 'utf8',
-              cwd: imgs,
-              maxBuffer: 16 * 1024 * 1024,
-            },
-          );
-          let res;
-          try {
-            res = JSON.parse(r.stdout);
-          } catch {}
-          cost += res?.total_cost_usd ?? 0;
-          usedModel = usedModel ?? Object.keys(res?.modelUsage ?? {})[0] ?? null;
-          const v = lastJsonLine(res?.result);
-          if (v) looks.push(v);
-        }
+        for (const m of members)
+          for (let k = 0; k < m.times; k++) {
+            const r = spawnSync(
+              'claude',
+              [
+                '-p',
+                '--output-format',
+                'json',
+                '--allowedTools',
+                'Read',
+                '--setting-sources',
+                'project,local',
+                ...(m.alias ? ['--model', m.alias] : []),
+              ],
+              {
+                input: JUDGE(s, b.name, files, final, c.lead === 'wordmark'),
+                encoding: 'utf8',
+                cwd: imgs,
+                maxBuffer: 16 * 1024 * 1024,
+              },
+            );
+            let res;
+            try {
+              res = JSON.parse(r.stdout);
+            } catch {}
+            cost += res?.total_cost_usd ?? 0;
+            const used = Object.keys(res?.modelUsage ?? {})[0] ?? null;
+            usedModel = usedModel ?? used;
+            const v = lastJsonLine(res?.result);
+            if (!v) continue;
+            looks.push(v);
+            const key = m.alias ?? used ?? 'default';
+            panel[key] ??= { yes: 0, looks: 0, scores: [] };
+            panel[key].looks++;
+            if (v.presentAsIs) panel[key].yes++;
+            panel[key].scores.push(judgeAvg(v));
+          }
         const keys = ['distinctiveness', 'memorability', 'brandFit', 'craft', 'versatility'];
         const combined =
           looks.length > 1
@@ -449,7 +477,8 @@ function judge(out) {
           concept: c.id,
           final,
           judge: combined,
-          model: usedModel,
+          model: opts.panel ? `panel ${opts.panel}` : usedModel,
+          ...(opts.panel ? { panel } : {}),
           costUsdApiEquivalent: cost,
         });
       }
@@ -508,8 +537,15 @@ function report(out) {
     for (const b of r.brands) {
       for (const c of b.concepts) {
         const v = j.find((x) => x.brand === b.slug && x.concept === c.id)?.judge;
+        const jv = j.find((x) => x.brand === b.slug && x.concept === c.id);
         if (v && c.critic !== null)
-          pairs.push({ critic: c.critic, judge: judgeAvg(v), gate: passed(c, r), present: v.presentAsIs });
+          pairs.push({
+            critic: c.critic,
+            judge: judgeAvg(v),
+            gate: passed(c, r),
+            present: v.presentAsIs,
+            panel: jv?.panel ?? null,
+          });
         const dropped = c.critic === null && c.sketchNotes !== null && !c.sketchPick;
         const sketchReading = /Reads as:\s*([^.]*)/.exec(c.sketchNotes ?? '')?.[1];
         if (c.critic !== null || c.sketchNotes !== null)
@@ -529,6 +565,32 @@ function report(out) {
     );
   }
   const agree = pairs.filter((p) => p.gate === p.present).length;
+  // Gate precision and recall against the judge, with 95 % Wilson intervals: with few positives the interval, not
+  // the point estimate, is the honest figure.
+  const wilson = (k, n) => {
+    if (!n) return '—';
+    const z = 1.96;
+    const p = k / n;
+    const d = 1 + (z * z) / n;
+    const c = (p + (z * z) / (2 * n)) / d;
+    const h = (z * Math.sqrt((p * (1 - p)) / n + (z * z) / (4 * n * n))) / d;
+    return `${k} of ${n} (95 % interval ${Math.round(Math.max(0, c - h) * 100)}–${Math.round(Math.min(1, c + h) * 100)} %)`;
+  };
+  const tp = pairs.filter((p) => p.gate && p.present).length;
+  const gatePassed = pairs.filter((p) => p.gate).length;
+  const judgeYes = pairs.filter((p) => p.present).length;
+  const panelModels = [...new Set(pairs.flatMap((p) => Object.keys(p.panel ?? {})))];
+  const majority = (m) => m.yes * 2 > m.looks;
+  const panelLines = panelModels.map((name) => {
+    const own = pairs.filter((p) => p.panel?.[name]);
+    const withGate = own.filter((p) => majority(p.panel[name]) === p.gate).length;
+    const yes = own.filter((p) => majority(p.panel[name])).length;
+    return `| ${name} | ${own.length} | ${yes} | ${withGate} of ${own.length} |`;
+  });
+  const both = panelModels.length === 2 ? pairs.filter((p) => panelModels.every((m) => p.panel?.[m])) : [];
+  const between = both.filter(
+    (p) => majority(p.panel[panelModels[0]]) === majority(p.panel[panelModels[1]]),
+  ).length;
   const md = `# Markilo ${measured} benchmark${runModel !== 'default' ? ` (--model ${runModel})` : ''}
 
 ${runs.length} end-to-end run${runs.length === 1 ? '' : 's'} of the installed plugin in headless Claude Code, with the product owner unavailable (Markilo
@@ -568,6 +630,26 @@ ${detail.join('\n')}
 
 ${pairs.length ? `${pairs.length} concept${pairs.length === 1 ? '' : 's'} reached the critique. The gate and the blind judge agreed on ${agree} of them (gate passed ↔ judge would present as is). Mean critic score ${f1(pairs.reduce((a, p) => a + p.critic, 0) / pairs.length)}, mean judge score ${f1(pairs.reduce((a, p) => a + p.judge, 0) / pairs.length)}.` : 'Not judged yet.'}
 
+## Gate precision and recall
+
+${
+  pairs.length
+    ? `- Precision (gate passes the judge would present): ${wilson(tp, gatePassed)}
+- Recall (judge-presentable concepts the gate passed): ${wilson(tp, judgeYes)}`
+    : 'Not judged yet.'
+}
+${
+  panelLines.length
+    ? `
+### Judge panel
+
+| Judge | Concepts | Would present (majority of its looks) | Agrees with the gate |
+| --- | --- | --- | --- |
+${panelLines.join('\n')}
+${both.length ? `\nThe two judges agree with each other on ${between} of ${both.length} concepts.` : ''}
+`
+    : ''
+}
 ## Cost and effort
 
 | Scenario | Run | Minutes | Turns | Sub-agents | Tokens in / out | Cost (API equivalent) | Models |

@@ -2,6 +2,7 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from '
 import { basename, extname, join, resolve } from 'node:path';
 import { type CalibrationMark, calibrate } from '../analyze/calibrate.js';
 import { contrastRatio, deltaE2000, normalizeColor } from '../analyze/color.js';
+import { checkLetters, letterAdvice } from '../analyze/letters.js';
 import { loadMark, sampleFromSvg } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
 import { compareMarks, genericity } from '../analyze/similarity.js';
@@ -1928,6 +1929,8 @@ export const COMMANDS: CommandSpec[] = [
       const sizes = new Map<string, number>();
       // Families: each sketch's members, drawn with the master on family.png and checked as one system.
       const familyTiles: ScoredVariant[] = [];
+      // Wordmark sketches: letters that no longer read as themselves (measured on the outlines).
+      const letterResults = new Map<string, { fix: string[]; notes: string[] }>();
       const memberResults = new Map<
         string,
         {
@@ -1948,6 +1951,16 @@ export const COMMANDS: CommandSpec[] = [
         sizes.set(name, typeof spec.size === 'number' ? spec.size : 1024);
         writeGenerated(join(dir, `${name}.svg`), compiled.svg);
         const scored = await scoreSvg(name, compiled.svg, { paper, references });
+        if (compiled.letters)
+          letterResults.set(
+            name,
+            letterAdvice(
+              await checkLetters(
+                compiled.layers.map((l) => l.d),
+                compiled.letters,
+              ),
+            ),
+          );
         const item: ScoredVariant = {
           ...scored,
           params: {},
@@ -2009,13 +2022,15 @@ export const COMMANDS: CommandSpec[] = [
       const summary = items.map(({ svg: _svg, params: _p, ...v }) => {
         const own = sketchReadiness(v as ScoredVariant, sizes.get(v.id));
         const fam = memberResults.get(v.id);
-        const fix = [...own.fix, ...(fam?.fix ?? [])];
+        const letters = letterResults.get(v.id);
+        const fix = [...own.fix, ...(fam?.fix ?? []), ...(letters?.fix ?? [])];
+        const notes = [...(fam?.notes ?? []), ...(letters?.notes ?? [])];
         return {
           ...v,
           ready: fix.length === 0,
           fix,
           ...(fam ? { members: fam.members.map(({ name, label, ready }) => ({ name, label, ready })) } : {}),
-          ...(fam?.notes.length ? { notes: fam.notes } : {}),
+          ...(notes.length ? { notes } : {}),
         };
       });
       const family = familyTiles.length ? join(dir, 'family.png') : undefined;
@@ -2232,6 +2247,16 @@ export const COMMANDS: CommandSpec[] = [
         params: compiled.params,
         stats: compiled.stats,
         ...(compiled.glyphs.length ? { glyphs: compiled.glyphs } : {}),
+        ...(await (async () => {
+          if (!compiled.letters) return {};
+          const advice = letterAdvice(
+            await checkLetters(
+              compiled.layers.map((l) => l.d),
+              compiled.letters,
+            ),
+          );
+          return advice.fix.length || advice.notes.length ? { letters: advice } : {};
+        })()),
         warnings: compiled.warnings,
       };
     },
