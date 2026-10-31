@@ -208,7 +208,8 @@ you  › /markilo:design ./ — we're launching this as a product, it needs an i
      › Discover: no real identity yet → mode "new". May I research competitors on the web? (y)
      › Research: 8 competitors, category codes (green + shields everywhere), 3 gaps recorded
      › Brief: 3 questions, each with a suggested answer
-     › Explore: 3 directions — "Pulse" monogram, "Lighthouse" pictogram, "Signal" abstract
+     › Ideas: 16 visual hooks; the critic strikes 11 from the words ("a gauge", "a return key"), keeps 5
+     › Explore: 3 directions from the kept ideas — "Pulse" monogram, "Lighthouse" pictogram, "Signal" abstract
      › Sketch: 4 quick constructions per direction; you pick in the gallery, with the critic's reading beside each
      › Design: concept-designer agents develop the picks; each iterates on its review and context sheets
      › Verify: "Lighthouse" 71% similar to a competitor reference → reworked from the idea up
@@ -314,8 +315,10 @@ Details: [docs/PRIVACY.md](docs/PRIVACY.md) · [SECURITY.md](SECURITY.md).
 - Icon Composer (`.icon`) files are not written directly; Markilo exports the layer sources to import.
 - X (Twitter) image sizes could not be verified against x.com documentation (blocked to automated readers).
 - Design quality still depends on the model and on your direction: unattended runs rarely pass the critic gate, and a
-  strict independent judge accepts only a few of the marks they develop (see [Measured quality](#measured-quality)). Markilo raises the floor and refuses to hide weak work; taste is a
-  conversation.
+  strict independent judge accepts only a few of the marks they develop (see [Measured quality](#measured-quality)).
+  On real developer tools with coined names, twelve unattended runs produced no identity an independent panel would
+  present ([bench/results/1.0.0/real-projects.md](bench/results/1.0.0/real-projects.md)). Markilo raises the floor and
+  refuses to hide weak work; taste is a conversation, and the gallery is where you steer it.
 
 ## Develop
 
