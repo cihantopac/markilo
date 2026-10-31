@@ -167,7 +167,7 @@ async function subjectCard(s: Subject, opts: { review?: boolean } = {}): Promise
       ? `<span class="pill ${avg >= 7 ? 'good' : avg >= 6 ? 'warn' : 'bad'}" title="Critic average (judgment, 0–10)">critic ${avg}</span>`
       : '',
     gate && gate.status !== 'not-reviewed'
-      ? `<span class="pill ${gate.status === 'passed' ? 'good' : 'bad'}" title="${escapeAttr(gate.status === 'passed' ? 'Passed the critic gate' : gate.reasons.join('; '))}">${gate.status === 'passed' ? 'gate passed' : 'gate not passed'}</span>`
+      ? `<span class="pill ${gate.status === 'passed' ? 'good' : 'bad'}" title="${escapeAttr(gate.status === 'passed' ? 'Passed the critic gate' : gate.reasons.join('; '))}">${gate.status === 'passed' ? 'gate passed' : gate.status === 'undecided' ? 'awaiting second looks' : 'gate not passed'}</span>`
       : '',
     gate?.calibration === 'unmeasured'
       ? `<span class="pill warn" title="${escapeAttr(`Reviewed by ${gate.reviewer}; the gate was calibrated on Claude Opus, so how well it predicts an independent judge on this model is not measured.`)}">reviewer not calibrated</span>`

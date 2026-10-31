@@ -79,7 +79,8 @@ export const BLIND_CRITERIA = [
 ] as const;
 
 export interface GateResult {
-  status: 'passed' | 'failed' | 'not-reviewed';
+  /** undecided: the first look landed on the edge of the bar; two more cold looks decide (`next: second-look`). */
+  status: 'passed' | 'failed' | 'not-reviewed' | 'undecided';
   /**
    * blind: the critic's scores from its first look, before reading the rationale (in the benchmark they predicted an
    * independent judge far better than the scores given after reading it); informed: older reviews without them.
@@ -98,7 +99,9 @@ export interface GateResult {
    * named, stands in the way); or reject it and spend the budget on a new direction. In Markilo's benchmark 1 of 34
    * concepts sent back after a failed gate passed later, after three rounds; every other pass came from a first look.
    */
-  next?: 'present' | 'fix' | 'reject';
+  next?: 'present' | 'fix' | 'reject' | 'second-look';
+  /** Cold looks the verdict rests on, and how many of them passed (from the first look on; see SECOND_LOOK). */
+  looks?: { passed: number; of: number };
   /** The model that gave the blind scores, when the critic recorded it. */
   reviewer?: string;
   /**
@@ -111,7 +114,21 @@ export interface GateResult {
 /** Model families whose blind scores the gate was calibrated on (bench/results/calibration-rc.7, rc.8, rc.9). */
 const MEASURED_REVIEWERS = /opus/i;
 
-export function gateOf(c: Pick<Concept, 'judgment' | 'critique' | 'blind' | 'reviews'>): GateResult {
+/**
+ * When one cold look is not enough. Every concept that passed the gate in the benchmark through 0.5.0-rc.1 did so with
+ * its lowest required score exactly at the bar, and an independent judge rejected two of those four; around 6.0–6.4 a
+ * single look flips about half the time (rc.9 noise check). So a first look that passes with its lowest required
+ * score at most `edge`, or says yes with one required score just under the bar (≥ `below`), asks for two more cold looks
+ * by fresh critics, and the majority of the three decides. The bar itself does not move.
+ */
+export const SECOND_LOOK = { edge: 6.5, below: 5.5, looks: 3 } as const;
+
+const lookPasses = (scores: Record<string, number>, present: boolean) =>
+  present && GATE.required.every((k) => (scores[k] ?? 0) >= GATE.minimum);
+
+export function gateOf(
+  c: Pick<Concept, 'judgment' | 'critique' | 'blind' | 'reviews' | 'looks'>,
+): GateResult {
   if (c.blind) return blindGate(c);
   // Older concepts may hold criteria under other spellings (brandFit, premium); read them by their canonical name.
   const j: Record<string, { score: number }> = {};
@@ -143,7 +160,43 @@ export function gateOf(c: Pick<Concept, 'judgment' | 'critique' | 'blind' | 'rev
   };
 }
 
-function blindGate(c: Pick<Concept, 'critique' | 'blind' | 'reviews'>): GateResult {
+function blindGate(c: Pick<Concept, 'critique' | 'blind' | 'reviews' | 'looks'>): GateResult {
+  const { edge, ...first } = firstLook(c);
+  if (!c.critique || !edge) return first;
+  const looks = [
+    { scores: c.blind!.scores, present: c.critique.present },
+    ...(c.looks ?? []).map((l) => ({ scores: l.scores, present: l.present })),
+  ];
+  const passed = looks.filter((l) => lookPasses(l.scores, l.present)).length;
+  const need = Math.floor(SECOND_LOOK.looks / 2) + 1;
+  const failedLooks = looks.length - passed;
+  if (passed < need && failedLooks < need)
+    return {
+      ...first,
+      status: 'undecided',
+      next: 'second-look',
+      looks: { passed, of: looks.length },
+      reasons: [
+        ...first.reasons,
+        `the first look is on the edge of the bar: ${SECOND_LOOK.looks - looks.length} more cold look${SECOND_LOOK.looks - looks.length === 1 ? '' : 's'} by a fresh critic decide (majority of ${SECOND_LOOK.looks})`,
+      ],
+    };
+  const ok = passed >= need;
+  return {
+    ...first,
+    status: ok ? 'passed' : 'failed',
+    reasons: ok
+      ? []
+      : [
+          ...first.reasons.filter((r) => !r.startsWith('the first look')),
+          `${failedLooks} of ${looks.length} cold looks did not pass`,
+        ],
+    next: ok ? 'present' : 'reject',
+    looks: { passed, of: looks.length },
+  };
+}
+
+function firstLook(c: Pick<Concept, 'critique' | 'blind' | 'reviews'>): GateResult & { edge?: boolean } {
   const b = c.blind!.scores;
   const reasons: string[] = [];
   for (const k of GATE.required) {
@@ -165,12 +218,18 @@ function blindGate(c: Pick<Concept, 'critique' | 'blind' | 'reviews'>): GateResu
     : scoresClear && (c.reviews ?? 1) < 2
       ? 'fix'
       : 'reject';
+  const lowest = Math.min(...GATE.required.map((k) => b[k] ?? 0));
+  const edge =
+    !!c.critique &&
+    ((!reasons.length && lowest <= SECOND_LOOK.edge) ||
+      (c.critique.present && !scoresClear && lowest >= SECOND_LOOK.below));
   return {
     status: reasons.length ? 'failed' : 'passed',
     basis: 'blind',
     ...(average !== undefined ? { average } : {}),
     reasons,
     ...(c.critique ? { next } : {}),
+    ...(edge ? { edge } : {}),
     ...(reviewer
       ? { reviewer, calibration: MEASURED_REVIEWERS.test(reviewer) ? 'measured' : 'unmeasured' }
       : {}),

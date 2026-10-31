@@ -98,11 +98,19 @@ export async function finalizeConcept(
   ws.assertNotLocked(brand);
   const concept = ws.concept(brand, conceptId);
   const gate = gateOf(concept);
-  if (gate.status === 'failed' && !opts.userChoice?.trim()) {
+  // Only an independent critic's pass, or the user's own choice, finalizes a concept: an unreviewed or undecided one
+  // would let the designer approve its own work.
+  if (gate.status !== 'passed' && !opts.userChoice?.trim()) {
     throw new MarkiloError(
       'INVALID_INPUT',
-      `Concept ${conceptId} did not pass the critic gate: ${gate.reasons.join('; ')}.`,
-      'Rework it and have the critic review it again, or, if the user chose it anyway, pass --user-choice "<their reason>".',
+      gate.status === 'not-reviewed'
+        ? `Concept ${conceptId} has not been reviewed by the critic.`
+        : gate.status === 'undecided'
+          ? `Concept ${conceptId} is undecided: ${gate.reasons.join('; ')}.`
+          : `Concept ${conceptId} did not pass the critic gate: ${gate.reasons.join('; ')}.`,
+      gate.status === 'undecided'
+        ? 'Ask fresh design-critic agents for the remaining cold looks (concept update --look … --look-present …).'
+        : 'Have the design-critic agent review it, or, if the user chose it anyway, pass --user-choice "<their reason>".',
     );
   }
   const reportFile = join(ws.reportsDir(brand), `originality-${conceptId}.json`);

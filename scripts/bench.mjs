@@ -154,8 +154,22 @@ function measure(ws) {
           present: c.critique?.present ?? null,
           // Same rule as Markilo's gate: from 0.4.0-rc.8 the critic's blind scores decide when it recorded them.
           blind: c.blind?.scores ?? null,
+          // From 1.0: a first look on the edge of the bar is decided by the majority of three cold looks
+          // (src/report/gate.ts, SECOND_LOOK); an edge case without its second looks has not passed.
+          looks: c.looks?.length ? c.looks.length + 1 : null,
           gate: c.blind
-            ? GATE.every((k) => (c.blind.scores[k] ?? 0) >= 6) && c.critique?.present === true
+            ? (() => {
+                const passes = (s, p) => p === true && GATE.every((k) => (s[k] ?? 0) >= 6);
+                const all = [
+                  { s: c.blind.scores, p: c.critique?.present },
+                  ...(c.looks ?? []).map((l) => ({ s: l.scores, p: l.present })),
+                ];
+                const low = Math.min(...GATE.map((k) => c.blind.scores[k] ?? 0));
+                const first = passes(all[0].s, all[0].p);
+                const edge = (first && low <= 6.5) || (c.critique?.present === true && !first && low >= 5.5);
+                if (!edge) return first;
+                return all.filter((l) => passes(l.s, l.p)).length >= 2;
+              })()
             : avg !== undefined &&
               avg >= 6.5 &&
               GATE.every((k) => (j[k]?.score ?? 0) >= 6) &&

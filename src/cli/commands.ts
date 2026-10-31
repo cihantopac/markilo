@@ -1076,7 +1076,8 @@ export const COMMANDS: CommandSpec[] = [
             gate: g.status,
             ...(g.average !== undefined ? { criticAverage: g.average } : {}),
             ...(g.nearMiss ? { nearMiss: true } : {}),
-            ...(g.next && g.status === 'failed' ? { next: g.next } : {}),
+            ...(g.next && (g.status === 'failed' || g.status === 'undecided') ? { next: g.next } : {}),
+            ...(g.looks ? { looks: g.looks } : {}),
             ...(g.calibration === 'unmeasured' ? { reviewer: g.reviewer, calibration: g.calibration } : {}),
           };
         });
@@ -1096,7 +1097,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1128,6 +1129,15 @@ export const COMMANDS: CommandSpec[] = [
         type: 'string',
         description:
           'Critic: the model giving the blind scores (e.g. claude-opus-5-5, gpt-…); the gate reports it',
+      },
+      look: {
+        type: 'string',
+        description:
+          'Second-look critic (fresh, cold, when the gate says second-look): the same five scores as --blind',
+      },
+      'look-present': {
+        type: 'string',
+        description: 'Second-look critic: yes|no:<reason> — would a senior designer present it as is?',
       },
       primary: { type: 'string', description: 'Primary color' },
       secondary: { type: 'string', description: 'Secondary color ("none" removes it)' },
@@ -1223,25 +1233,51 @@ export const COMMANDS: CommandSpec[] = [
         if (!m) throw new MarkiloError('USAGE', 'Use --present yes:<reason> or --present no:<reason>.');
         presentAs(m[1]!, m[2]!);
       }
-      if (c.str('blind')) {
+      const blindScores = (flag: string) => {
         const scores: Record<string, number> = {};
-        for (const part of c.str('blind')!.split(',')) {
+        for (const part of c.str(flag)!.split(',')) {
           const m = /^\s*([a-z][a-z _-]*)\s*=\s*(\d+(?:\.\d+)?)\s*$/i.exec(part);
           const k = m ? criterionOf(m[1]!) : undefined;
           if (!m || !k || !(BLIND_CRITERIA as readonly string[]).includes(k) || Number(m[2]) > 10)
             throw new MarkiloError(
               'USAGE',
-              `Bad --blind part "${part}".`,
+              `Bad --${flag} part "${part}".`,
               `Use ${BLIND_CRITERIA.map((x) => `${x}=0-10`).join(',')}.`,
             );
           scores[k] = Number(m[2]);
         }
         const missing = BLIND_CRITERIA.filter((k) => scores[k] === undefined);
         if (missing.length)
-          throw new MarkiloError('USAGE', `--blind needs all five scores; missing ${missing.join(', ')}.`);
-        next.blind = { scores, at: nowIso() };
+          throw new MarkiloError('USAGE', `--${flag} needs all five scores; missing ${missing.join(', ')}.`);
+        return scores;
+      };
+      if (c.str('blind')) next.blind = { scores: blindScores('blind'), at: nowIso() };
+      if (c.str('look') || c.str('look-present')) {
+        const m = /^(yes|no)\s*[:=]\s*(.+)$/is.exec(c.str('look-present')?.trim() ?? '');
+        if (!c.str('look') || !m)
+          throw new MarkiloError(
+            'USAGE',
+            'A second look needs both --look <scores> and --look-present yes|no:<reason>.',
+          );
+        const gate = gateOf(cur);
+        if (gate.next !== 'second-look')
+          throw new MarkiloError(
+            'USAGE',
+            `This concept does not need a second look (gate: ${gate.status}${gate.next ? `, next: ${gate.next}` : ''}).`,
+            'Second looks are asked for only when the first cold look lands on the edge of the bar.',
+          );
+        next.looks = [
+          ...(cur.looks ?? []),
+          {
+            scores: blindScores('look'),
+            present: /^y/i.test(m[1]!),
+            reason: m[2]!.trim(),
+            ...(c.str('reviewer') ? { reviewer: c.str('reviewer')!.trim() } : {}),
+            at: nowIso(),
+          },
+        ];
       }
-      if (c.str('reviewer')) {
+      if (c.str('reviewer') && !c.str('look')) {
         if (!next.blind)
           throw new MarkiloError(
             'USAGE',
@@ -1282,6 +1318,14 @@ export const COMMANDS: CommandSpec[] = [
           slug,
           'Critique',
           `${cur.id}: ${answer}Gate ${gate.status}${gate.average !== undefined ? ` (average ${gate.average})` : ''}${gate.reasons.length ? `: ${gate.reasons.join('; ')}` : ''}${gate.next && gate.next !== 'present' ? ` Next: ${gate.next}.` : ''}${gate.reviewer ? ` Reviewer: ${gate.reviewer}${gate.calibration === 'unmeasured' ? ' (gate not calibrated on this model)' : ''}.` : ''}`,
+        );
+      }
+      if ((next.looks?.length ?? 0) > (cur.looks?.length ?? 0)) {
+        const l = next.looks![next.looks!.length - 1]!;
+        w.logDecision(
+          slug,
+          'Second look',
+          `${cur.id}: ${l.present ? 'would present as is' : 'would not present as is'} — ${l.reason}. Gate ${gate.status}${gate.looks ? ` (${gate.looks.passed} of ${gate.looks.of} looks passed)` : ''}.${gate.next && gate.next !== 'present' ? ` Next: ${gate.next}.` : ''}`,
         );
       }
       if (st && st !== cur.status && (st === 'rejected' || st === 'shortlisted'))
@@ -1824,7 +1868,7 @@ export const COMMANDS: CommandSpec[] = [
             'Run markilo wordmarks first.',
           );
         copyFileSync(join(dir, `${pick}.svg`), w.conceptFile(brand, id, 'wordmark.svg'));
-        const { judgment: _old, critique: _answer, blind: _blind, ...rest } = concept;
+        const { judgment: _old, critique: _answer, blind: _blind, looks: _looks, ...rest } = concept;
         w.saveConcept({
           ...rest,
           files: { ...concept.files, wordmark: 'wordmark.svg' },
@@ -2232,7 +2276,7 @@ export const COMMANDS: CommandSpec[] = [
         // fresh critique (the small version is checked against the mark by verify instead). A family member's
         // colours become the concept's palette.
         const keepCritique = key === 'small';
-        const { judgment, critique, blind: _blind, readsAs: _readings, ...rest } = concept;
+        const { judgment, critique, blind: _blind, readsAs: _readings, looks: _looks, ...rest } = concept;
         w!.saveConcept({
           ...(keepCritique ? concept : rest),
           ...(member ? { palette: { ...concept.palette, ...member.palette } } : {}),

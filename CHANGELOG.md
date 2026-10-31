@@ -8,6 +8,15 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
+
 - The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
   brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
   display, slab, serif; monospace last). It used to be one fixed list — Inter, Fraunces, Sora, Space Grotesk — for
@@ -53,6 +62,15 @@ rounds polished the same failing idea; the user saw nothing until the end.
 
 ### Changed
 
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
+
 - The gate says what to do next (`next` in its output, `concept list` and the decision log): `present`; `fix` once,
   when the cold scores clear the bar and only the critic's no stands in the way; otherwise `reject` and spend the
   budget on a new direction. In Markilo's benchmark 1 of 34 concepts sent back after a failed gate passed later
@@ -81,6 +99,15 @@ rounds polished the same failing idea; the user saw nothing until the end.
   (everything is bundled) and `prepublishOnly` runs CI and the smoke test.
 
 ### Changed
+
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
 
 - The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
   brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
@@ -159,6 +186,15 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 
 ### Changed
 
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
+
 - The critic gate rests on a cold look: the critic scores each concept from the brief and the images before reading
   the designer's rationale, then adds informed scores as feedback. On 32 benchmark concepts the informed scores
   tracked the Opus judge at Spearman 0.20, a cold look at 0.51 (`bench/results/calibration-rc.7/`). A measured problem
@@ -181,6 +217,15 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 - The brief's `constraints.colors` accepts colour directions in words as well as hex values.
 
 ### Changed
+
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
 
 - The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
   brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
@@ -205,6 +250,15 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 
 ### Changed
 
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
+
 - The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
   brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
   display, slab, serif; monospace last). It used to be one fixed list — Inter, Fraunces, Sora, Space Grotesk — for
@@ -217,12 +271,30 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 
 ### Changed
 
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
+
 - Markilo's own identity was redone by running Markilo on itself (`branding/`); README images and the plugin icon are
   unedited exports.
 
 ## [0.3.0-beta.6] - 2026-10-30
 
 ### Changed
+
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
 
 - The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
   brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
@@ -237,6 +309,15 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 ## [0.3.0-beta.5] - 2026-10-30
 
 ### Changed
+
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
 
 - The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
   brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
@@ -255,6 +336,15 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 
 ### Changed
 
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
+
 - The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
   brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
   display, slab, serif; monospace last). It used to be one fixed list — Inter, Fraunces, Sora, Space Grotesk — for
@@ -272,6 +362,15 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 ## [0.3.0-beta.3] - 2026-10-30
 
 ### Changed
+
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
 
 - The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
   brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
@@ -293,6 +392,15 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 ## [0.3.0-beta.2] - 2026-10-30
 
 ### Changed
+
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
 
 - The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
   brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
@@ -318,6 +426,15 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
   the chosen groups by default (`--all` for everything).
 
 ### Changed
+
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
 
 - The concept designer builds every mark from construction specs, explores 3–5 different moves and tunes the winner
   by measured variants; the critic answers "would a senior designer present this?" and concepts that miss the gate
@@ -367,6 +484,15 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 - `install-assets --project <dir>` installs into another project folder (still a dry run unless `--apply`).
 
 ### Changed
+
+- **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
+  through 0.5.0-rc.1 passed with its lowest required score exactly at 6, and the independent judge rejected two of
+  those four; around 6.0–6.4 one look flips about half the time. A first look that passes with its lowest required
+  score ≤ 6.5, or says yes with one required score in 5.5–6, is now `undecided` (`next: second-look`): two fresh
+  critics look at it cold, from the brief and the images alone (`concept update --look … --look-present …`), and the
+  majority of the three decides. Thresholds are unchanged. A changed mark clears its looks.
+- `finalize` refuses a concept that is not reviewed or undecided, not only a failed one, unless the user chose it
+  (`--user-choice`): the designer cannot approve its own work.
 
 - CLI prints compact JSON when piped (fewer tokens for Claude); `MARKILO_PRETTY=1` restores indentation.
 - `research repo` and `research site` print a digest; the full scan is cached in the workspace (`--full` to print it).

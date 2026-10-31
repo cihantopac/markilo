@@ -36,6 +36,12 @@ export function synthBrand(): { ws: Workspace; dir: string } {
     typography: { fontId: 'manrope', weight: 700, family: 'Manrope', license: 'OFL-1.1' },
     files: { symbol: 'symbol.svg', wordmark: 'wordmark.svg' },
     status: 'draft',
+    // Reviewed by a critic and clearly passing, so finalize accepts it like a concept that went through the gate.
+    critique: { present: true, reason: 'test fixture', at: new Date().toISOString() },
+    blind: {
+      scores: { distinctiveness: 7, memorability: 7, 'brand-fit': 7, craft: 7, versatility: 7 },
+      at: new Date().toISOString(),
+    },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });

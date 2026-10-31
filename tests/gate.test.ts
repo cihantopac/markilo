@@ -53,12 +53,64 @@ describe('quality gate', () => {
         },
       }) as Concept;
     // The informed scores are low, but the gate reads the blind ones (they predict an independent judge better).
-    expect(gateOf(blind(6, 6, 7, true))).toMatchObject({ status: 'passed', basis: 'blind' });
+    expect(gateOf(blind(7, 7, 8, true))).toMatchObject({ status: 'passed', basis: 'blind' });
     expect(gateOf(blind(6, 5, 7, true)).reasons.join(' ')).toMatch(/memorability 5 < 6 \(blind\)/);
     expect(gateOf(blind(7, 7, 7, false)).status).toBe('failed');
     expect(gateOf(scored({ 'brand-fit': 7, distinctiveness: 7, memorability: 7 }, true)).basis).toBe(
       'informed',
     );
+  });
+
+  it('decides a first look on the edge of the bar by the majority of three cold looks', () => {
+    const at = '2026-01-01T00:00:00Z';
+    const scores = (n: number) => ({
+      distinctiveness: n,
+      memorability: n,
+      'brand-fit': n,
+      craft: 6,
+      versatility: 6,
+    });
+    const concept = (first: number, present: boolean, looks: [number, boolean][] = []) =>
+      ({
+        critique: { present, reason: 'because', at },
+        blind: { scores: scores(first), at },
+        looks: looks.map(([n, p]) => ({ scores: scores(n), present: p, reason: 'cold', at })),
+      }) as unknown as Concept;
+    // Every gate pass so far sat exactly at the bar, and a judge rejected half of them: one look is not enough.
+    expect(gateOf(concept(6, true))).toMatchObject({ status: 'undecided', next: 'second-look' });
+    expect(gateOf(concept(6, true)).reasons.join(' ')).toMatch(/2 more cold looks/);
+    // Just under the bar with a yes is on the edge too: a noisy no should not lose a good mark.
+    expect(gateOf(concept(5.5, true)).next).toBe('second-look');
+    expect(gateOf(concept(5, true)).status).toBe('failed');
+    // Clear decisions need no second look.
+    expect(gateOf(concept(7, true)).status).toBe('passed');
+    expect(gateOf(concept(6, false)).next).toBe('fix');
+    // Two agreeing looks settle it; a split needs the third.
+    expect(gateOf(concept(6, true, [[6.5, true]]))).toMatchObject({
+      status: 'passed',
+      next: 'present',
+      looks: { passed: 2, of: 2 },
+    });
+    expect(gateOf(concept(6, true, [[5, false]]))).toMatchObject({
+      status: 'undecided',
+      looks: { passed: 1, of: 2 },
+    });
+    expect(
+      gateOf(
+        concept(6, true, [
+          [5, false],
+          [6, false],
+        ]),
+      ),
+    ).toMatchObject({ status: 'failed', next: 'reject' });
+    expect(
+      gateOf(
+        concept(5.5, true, [
+          [6, true],
+          [7, true],
+        ]),
+      ).status,
+    ).toBe('passed');
   });
 
   it('says what to do next: present, fix once, or reject', () => {
@@ -112,6 +164,25 @@ describe('quality gate', () => {
       userChoice: 'The owner prefers it.',
     });
     expect(kit.gate).toMatchObject({ status: 'failed', userChoice: 'The owner prefers it.' });
+  }, 60_000);
+
+  it('finalize refuses an unreviewed or undecided concept: the designer cannot approve its own work', async () => {
+    const { ws } = synthBrand();
+    await verifyConcept(ws, 'nimbra', 'fold');
+    const { critique: _c, blind: _b, ...unreviewed } = ws.concept('nimbra', 'fold');
+    ws.saveConcept(unreviewed);
+    await expect(finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true })).rejects.toThrow(
+      /not been reviewed/,
+    );
+    ws.saveConcept({
+      ...unreviewed,
+      critique: { present: true, reason: 'on the edge', at: '2026-01-01T00:00:00Z' },
+      blind: {
+        scores: { distinctiveness: 6, memorability: 6, 'brand-fit': 6, craft: 6, versatility: 6 },
+        at: '2026-01-01T00:00:00Z',
+      },
+    });
+    await expect(finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true })).rejects.toThrow(/undecided/);
   }, 60_000);
 });
 

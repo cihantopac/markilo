@@ -172,4 +172,15 @@ export interface Concept {
   };
   /** How many drawings of this concept the critic has answered "present as is?" for (one per changed mark). */
   reviews?: number;
+  /**
+   * Second looks: further cold looks at the same drawing by fresh critics that saw only the brief and the images, asked
+   * for when the first look landed on the gate's edge. The gate then takes the majority of all looks.
+   */
+  looks?: {
+    scores: Record<string, number>;
+    present: boolean;
+    reason: string;
+    reviewer?: string;
+    at: string;
+  }[];
 }

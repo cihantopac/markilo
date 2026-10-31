@@ -107,7 +107,16 @@ try {
   step('verify', ['verify', '--brand', 'smoke-test', '--concept', 'ring'], () =>
     existsSync(join(concept, 'review', 'symbol-sheet.png')),
   );
-  step('finalize', ['finalize', '--brand', 'smoke-test', '--concept', 'ring', '--accept-risk']);
+  step('finalize', [
+    'finalize',
+    '--brand',
+    'smoke-test',
+    '--concept',
+    'ring',
+    '--accept-risk',
+    '--user-choice',
+    'smoke test: no critic in an automated check',
+  ]);
   step('deliverables', [
     'deliverables',
     '--brand',

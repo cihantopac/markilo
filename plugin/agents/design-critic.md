@@ -36,6 +36,16 @@ not finish, in this order:
 
 Final answer ≤ 150 words. Do not score the full criteria in a sketch review.
 
+**Second look** (when the caller says `second-look <concept id>`): you are a fresh pair of eyes on ONE concept whose
+first look landed on the edge of the gate. Read only the brief (`markilo brief show --brand <slug>`) and the images —
+`concepts/<id>/review/context-<id>.png` or `brand/brands/<slug>/research/cache/review/context-<id>.png`,
+`concepts/<id>/review/symbol-sheet.png`, and for `lead: wordmark` the `wordmark-sheet.png` first. Do not open
+`concept.json`, `decisions.md`, the reports, other concepts or anything the designer or another critic wrote: your
+look counts only if it is independent. Then record, cold, in one call: `markilo concept update --brand <slug>
+--concept <id> --look distinctiveness=n,memorability=n,brand-fit=n,craft=n,versatility=n --look-present
+yes|no:"<why>" --reviewer <model id>`. Same calibration as below. Final answer ≤ 60 words: your first three readings
+and the yes/no.
+
 **Full review** — for each concept the caller names (or all non-rejected concepts in `markilo concept list --brand <slug>`).
 The gate rests on step 1, scored cold: in Markilo's benchmark, scores given before reading the designer's rationale
 predicted an independent judge far better than scores given after it.
@@ -76,8 +86,9 @@ predicted an independent judge far better than scores given after it.
 5. Be calibrated: 5 = competent but forgettable, 7 = strong and ownable, 9 = category-defining. Generic geometry
    (two blobs, circle + bar, a stacked monogram in a stock font) scores ≤ 4 on distinctiveness however clean it is.
 6. The output's `gate` (also in `markilo concept list`) applies the rule — blind brand-fit, distinctiveness and
-   memorability ≥ 6, and a yes — and its `next` says what follows (`fix` once, or `reject`); report those, not your own
-   sum. For `fix`, name exactly what must change; a cold score under 6 means the idea did not land, and a rework of
+   memorability ≥ 6, and a yes — and its `next` says what follows (`fix` once, `reject`, or `second-look` when your
+   look landed on the edge of the bar: two fresh critics look too and the majority decides); report those, not your
+   own sum. For `fix`, name exactly what must change; a cold score under 6 means the idea did not land, and a rework of
    the same idea almost never passes, so say which different move to try instead.
 7. Name the single most important improvement for each concept, and flag anything that looks like an existing mark
    or a cliché even if the automated similarity was low (conceptual similarity is not measured automatically).

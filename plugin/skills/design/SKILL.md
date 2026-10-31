@@ -100,8 +100,11 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    to "would a senior designer present this as is?" (`--present`) and adds informed scores as feedback (`--judgment`).
    **Quality gate:** a concept goes to the user only if the critic's blind brand-fit, distinctiveness and memorability
    are each ≥ 6 and its answer is yes — read the result
-   from `markilo concept list --brand <slug>` (`gate: passed|failed`); `finalize` refuses a failed concept unless the
-   user chose it anyway (`--user-choice "<their reason>"`). The gate's `next` says what to do with a concept that
+   from `markilo concept list --brand <slug>` (`gate: passed|failed|undecided`); `finalize` refuses any concept that has
+   not passed unless the user chose it anyway (`--user-choice "<their reason>"`). `undecided` (`next: second-look`)
+   means the first cold look landed on the edge of the bar: start two fresh `markilo:design-critic` agents in parallel,
+   each told only `second-look <concept id>` and the brand slug (never the first critic's notes), then read the gate
+   again — the majority of the three looks decides. The gate's `next` says what to do with a concept that
    failed: `fix` (the cold scores clear the bar and only the critic's no, for a reason it named, stands in the way) gets
    one round on exactly that, then a fresh critique; `reject` is set to `rejected`
    (`markilo concept update --status rejected`) so the gallery hides it. Do not rework a rejected idea: in Markilo's
