@@ -213,7 +213,8 @@ like another letter ("o" cut open on the right is a "c": the word reads "necn") 
 that lost its counter (an e without its eye) or two letters merged into one shape is a note the critic weighs. Most
 misread wordmarks in Markilo's benchmark came from exactly these: "portwise" read as "partwise", an "ll" as a "4" or
 an "n", a "pinehold" whose e lost its eye. Change a terminal, a join or a counter's shape; keep the stroke that names
-the letter.
+the letter. A separate element dropped into the word is read as punctuation: between letters a hyphen ("searve-x"),
+over a letter an accent ("jourílo"), after the word a full stop. Put it inside a counter or attach it to a letter.
 
 ## Craft checklist
 

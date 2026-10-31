@@ -41,7 +41,10 @@ All notable changes to this project are documented here. The format follows
   lost its counter (an e without its eye) or two letters merged into one shape is a note for the designer and the
   critic. On 46 wordmarks from earlier benchmark runs it raised no false block, and the counter note found the three
   misread letters the critic had named (an e that lost its eye, an e struck through like a euro sign, an o opened
-  into a U); likeness alone found none of them, so the counter test carries the check.
+  into a U); likeness alone found none of them, so the counter test carries the check. A separate small element
+  added to the word is placed too: between letters it reads as a hyphen or a dot ("searve-x"), over a letter as an
+  accent ("jourílo"), after the word as a full stop; inside a counter (a seed held by an n) it is left alone. Both
+  readings were what critics rejected in real-project runs.
 - `install-assets --undo` reverses the last installation from its journal (dry run unless `--apply`); files edited
   after the installation are kept, never deleted or restored over.
 - `install-assets` returns a `planId`; `--apply --expect <planId>` refuses to apply when the project changed after

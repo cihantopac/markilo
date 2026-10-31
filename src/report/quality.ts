@@ -78,6 +78,7 @@ async function wordmarkLetters(ws: Workspace, brand: string, id: string, svg: st
       await checkLetters(
         compiled.layers.map((l) => l.d),
         compiled.letters,
+        { name: ws.brand(brand).name },
       ),
     );
   } catch {

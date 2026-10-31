@@ -61,4 +61,35 @@ describe('letter legibility of built wordmarks', () => {
     expect(reading.readsAs?.char).toBe('c');
     expect(letterAdvice(r).fix[0]).toMatch(/"o"\) now looks more like "c".*"necn"/);
   });
+
+  it('says where a separate added element will be read as punctuation or an accent', async () => {
+    // Spaced out, as a word with an inserted element is: the element needs room between the letters.
+    const spaced = { glyph: { ...word.glyph, tracking: 150 } };
+    const c = await compileSpec(
+      {
+        role: 'wordmark',
+        size: 1600,
+        layers: [{ fill: 'primary', shape: spaced }],
+      } as unknown as ConstructionSpec,
+      {},
+    );
+    const [, e, o, n2] = c.glyphs as [
+      (typeof c.glyphs)[0],
+      (typeof c.glyphs)[0],
+      (typeof c.glyphs)[0],
+      (typeof c.glyphs)[0],
+    ];
+    const dot = (x: number, y: number) => ({ circle: { c: [x, y], r: 22 } });
+    const between = await check({ union: [spaced, dot((e.x + e.w + o.x) / 2, e.y + e.h / 2)] });
+    expect(between!.added).toEqual([{ position: 'between', letters: [1, 2] }]);
+    expect(between!.problems.join(' ')).toMatch(/"ne-on"/);
+    const above = await check({ union: [spaced, dot(o.x + o.w / 2, o.y - 90)] });
+    expect(above!.added).toEqual([{ position: 'above', letters: [2] }]);
+    expect(above!.problems.join(' ')).toMatch(/"neón"/);
+    const after = await check({ union: [spaced, dot(n2.x + n2.w + 70, n2.y + n2.h - 22)] });
+    expect(after!.added[0]?.position).toBe('after');
+    // Inside a counter it is the idea (a seed held by a letter), not punctuation.
+    const inside = await check({ union: [spaced, dot(o.x + o.w / 2, o.y + o.h / 2)] });
+    expect(inside!.added).toEqual([]);
+  });
 });

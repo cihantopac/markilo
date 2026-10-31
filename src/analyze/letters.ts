@@ -38,9 +38,18 @@ export interface PairReading {
   readsAs: { char: string; likeness: number };
 }
 
+/** A separate element added to the word (not attached to a letter), and where it sits. */
+export interface AddedMark {
+  /** between: in the gap between two letters; above: over a letter; after: past the last letter on the baseline. */
+  position: 'between' | 'above' | 'after';
+  /** The letter it sits over or after, or the pair it sits between (positions, 0 = first). */
+  letters: number[];
+}
+
 export interface LetterCheck {
   letters: LetterReading[];
   pairs: PairReading[];
+  added: AddedMark[];
   /** Plain-language problems, in construction terms; empty when every letter reads as itself. */
   problems: string[];
 }
@@ -84,13 +93,13 @@ interface Region {
   h: number;
 }
 
-async function crop(paths: string[], r: Region): Promise<Mask> {
-  const width = Math.max(8, Math.round((PX * r.w) / r.h));
+async function crop(paths: string[], r: Region, px = PX): Promise<Mask> {
+  const width = Math.max(8, Math.round((px * r.w) / r.h));
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${r.x} ${r.y} ${r.w} ${r.h}">${paths
     .filter(Boolean)
     .map((d) => `<path fill="#000" fill-rule="nonzero" d="${d}"/>`)
     .join('')}</svg>`;
-  return maskOf(await renderSvg(svg, { width, height: PX }));
+  return maskOf(await renderSvg(svg, { width, height: px }));
 }
 
 /** The candidate letter drawn alone, centred on the same point and sitting on the same baseline. */
@@ -117,6 +126,7 @@ async function cropMarkup(markup: string[], r: Region): Promise<Mask> {
 export async function checkLetters(
   drawing: string[],
   source: SourceLetter[],
+  opts: { name?: string } = {},
 ): Promise<LetterCheck | undefined> {
   // A glyph used twice (in a layer and again as a cut, or through a ref) is still one word.
   const seen = new Set<string>();
@@ -241,7 +251,143 @@ export async function checkLetters(
     problems.push(
       `Letters ${p.index + 1}–${p.index + 2} of "${word}" ("${p.chars}") have merged into what looks like one "${p.readsAs.char}" (${pct(p.readsAs.likeness)} vs ${pct(p.self)} like "${p.chars}"): a stranger reads "${[...word].slice(0, p.index).join('')}${p.readsAs.char}${[...word].slice(p.index + 2).join('')}". Keep a visible break or the two stems apart.`,
     );
-  return { letters: readings, pairs, problems };
+  // A word set with a letter left out (the designer drew that letter by hand) has its own drawing where a letter is
+  // missing; that is the letter, not an added mark.
+  const flat = (t: string) => t.toLocaleLowerCase('en').replace(/[^\p{L}\p{N}]/gu, '');
+  const complete = !opts.name || flat(opts.name) === flat(word);
+  const added = complete ? await addedMarks(drawing, letters) : [];
+  for (const a of added) {
+    const [i, k] = a.letters as [number, number | undefined];
+    if (a.position === 'between')
+      problems.push(
+        `A separate element sits in the gap between "${word[i]}" and "${word[k!]}", where punctuation goes: a stranger may read "${word.slice(0, i + 1)}-${word.slice(i + 1)}" or a dot. Attach it to a letter or put it inside a counter.`,
+      );
+    else if (a.position === 'above')
+      problems.push(
+        `A separate element sits above "${word[i]}" and may read as an accent: "${word.slice(0, i)}${accented(word[i]!)}${word.slice(i + 1)}" — a misspelled name for people who type it. Attach it to the letter or move it into a counter.`,
+      );
+    else
+      problems.push(
+        `A separate element after the last letter reads as a full stop ("${word}."), the dot-brand cliché, unless it is the idea itself.`,
+      );
+  }
+  return { letters: readings, pairs, added, problems };
+}
+
+const ACCENT: Record<string, string> = {
+  a: 'á',
+  e: 'é',
+  o: 'ó',
+  u: 'ú',
+  c: 'ć',
+  n: 'ń',
+  s: 'ś',
+  z: 'ź',
+  r: 'ŕ',
+  l: 'ĺ',
+  y: 'ý',
+};
+const accented = (ch: string) => ACCENT[ch.toLowerCase()] ?? `${ch}\u0301`;
+
+/** Ink components of a mask, with their pixel boxes. */
+function components(m: Mask, minSize: number) {
+  const { width: w, height: h } = m;
+  const seen = new Uint8Array(w * h);
+  const out: { size: number; x0: number; y0: number; x1: number; y1: number; pixels: number[] }[] = [];
+  for (let start = 0; start < w * h; start++) {
+    if (seen[start] || m.data[start]! < 0.5) continue;
+    const stack = [start];
+    seen[start] = 1;
+    const c = { size: 0, x0: w, y0: h, x1: 0, y1: 0, pixels: [] as number[] };
+    while (stack.length) {
+      const p = stack.pop()!;
+      const x = p % w;
+      const y = (p - x) / w;
+      c.size++;
+      c.pixels.push(p);
+      c.x0 = Math.min(c.x0, x);
+      c.x1 = Math.max(c.x1, x);
+      c.y0 = Math.min(c.y0, y);
+      c.y1 = Math.max(c.y1, y);
+      for (const q of [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, p - w, p + w])
+        if (q >= 0 && q < w * h && !seen[q] && m.data[q]! >= 0.5) {
+          seen[q] = 1;
+          stack.push(q);
+        }
+    }
+    if (c.size >= minSize) out.push(c);
+  }
+  return out;
+}
+
+/**
+ * Separate parts added to the word: ink in the drawing that touches no letter of the untouched word. Where they sit
+ * decides how a reader takes them — between letters a hyphen or a dot, over a letter an accent, after the word a
+ * full stop. Inside a letter's counter (a seed in an n, a dot held by a q) is not reported: there it is the idea.
+ */
+async function addedMarks(drawing: string[], letters: SourceLetter[]): Promise<AddedMark[]> {
+  const boxes = letters.map((l) => boundsOf(l.d));
+  const size = letters[0]!.size;
+  const baseline = letters[0]!.baseline;
+  const x0 = Math.min(...boxes.map((b) => b.x)) - 0.6 * size;
+  const x1 = Math.max(...boxes.map((b) => b.x + b.w)) + 0.6 * size;
+  const r: Region = { x: x0, y: baseline - 1.1 * size, w: x1 - x0, h: 1.45 * size };
+  const px = 192;
+  const scale = px / r.h;
+  const built = await crop(drawing, r, px);
+  const original = await crop(
+    letters.map((l) => l.d),
+    r,
+    px,
+  );
+  const { width: w, height: h } = original;
+  // Grow the letters by two pixels (about 0.015 of the font size): anti-aliasing is not an added part.
+  const near = new Float32Array(w * h);
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) {
+      if (original.data[y * w + x]! < 0.5) continue;
+      for (let dy = -2; dy <= 2; dy++)
+        for (let dx = -2; dx <= 2; dx++) {
+          const xx = x + dx;
+          const yy = y + dy;
+          if (xx >= 0 && yy >= 0 && xx < w && yy < h) near[yy * w + xx] = 1;
+        }
+    }
+  const extra: Mask = { width: w, height: h, data: built.data.map((v, i) => (v >= 0.5 && !near[i] ? 1 : 0)) };
+  const out: AddedMark[] = [];
+  for (const c of components(extra, Math.max(6, w * h * 0.001))) {
+    // Attached to a letter: part of a changed letter, which the per-letter reading covers.
+    const attached = c.pixels.some((p) => {
+      const x = p % w;
+      const y = (p - x) / w;
+      return [p - 1, p + 1, p - w, p + w].some(
+        (q) => q >= 0 && q < w * h && near[q] && built.data[q]! >= 0.5 && x > 0 && y > 0,
+      );
+    });
+    // A part as tall as a letter is a letter or a symbol, not something read as punctuation or an accent.
+    if ((c.y1 - c.y0 + 1) / scale > 0.4 * size) continue;
+    if (attached) continue;
+    const cx = r.x + ((c.x0 + c.x1) / 2 + 0.5) / scale;
+    const bottom = r.y + (c.y1 + 1) / scale;
+    const over = boxes.findIndex((b) => cx >= b.x && cx <= b.x + b.w);
+    if (over >= 0) {
+      const ch = letters[over]!.char;
+      // A dot or mark over i or j replaces its own tittle; inside the letter's height it sits in a counter.
+      if (bottom <= boxes[over]!.y + 0.02 * size && !/[ijıȷ]/i.test(ch))
+        out.push({ position: 'above', letters: [over] });
+      continue;
+    }
+    const after = boxes.findIndex(
+      (b, i) => cx > b.x + b.w && (i === boxes.length - 1 || cx < boxes[i + 1]!.x),
+    );
+    if (after === boxes.length - 1) out.push({ position: 'after', letters: [after] });
+    else if (after >= 0) out.push({ position: 'between', letters: [after, after + 1] });
+  }
+  const seen = new Set<string>();
+  return out.filter((a) => {
+    const k = `${a.position}:${a.letters.join(',')}`;
+    return !seen.has(k) && !!seen.add(k);
+  });
 }
 
 const round = (n: number) => Math.round(n * 1000) / 1000;

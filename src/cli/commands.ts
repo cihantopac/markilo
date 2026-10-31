@@ -2018,6 +2018,7 @@ export const COMMANDS: CommandSpec[] = [
               await checkLetters(
                 compiled.layers.map((l) => l.d),
                 compiled.letters,
+                { name: w.brand(brand).name },
               ),
             ),
           );
@@ -2313,6 +2314,7 @@ export const COMMANDS: CommandSpec[] = [
             await checkLetters(
               compiled.layers.map((l) => l.d),
               compiled.letters,
+              w && brand ? { name: w.brand(brand).name } : {},
             ),
           );
           return advice.fix.length || advice.notes.length ? { letters: advice } : {};
