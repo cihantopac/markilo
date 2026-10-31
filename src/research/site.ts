@@ -92,6 +92,8 @@ export function cleanText(input: string | undefined, max = 300): string | undefi
       (m) =>
         ({ '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp;': ' ' })[m] ?? ' ',
     )
+    // Findings quote page text in "…": a straight quote in the page must not be able to close that quote.
+    .replace(/"/g, '\u201d')
     .replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028-\u202e\u2066-\u2069]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();

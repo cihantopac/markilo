@@ -153,6 +153,7 @@ export function guidelinesHtml(g: GuidelinesInput): string {
     .join('');
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
 <title>${escapeText(kit.name)} — brand guidelines</title>
 <style>
 :root{--ink:${kit.palette.ink};--paper:${kit.palette.paper};--brand:${kit.palette.primary};--line:#e3e5ea}

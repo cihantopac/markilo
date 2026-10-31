@@ -92,7 +92,12 @@ export function serveGallery(
       return res.end();
     }
     // Static files need the token too (as ?t= on the page; sub-resources are inlined or same-origin images).
-    const rel = decodeURIComponent(url.pathname).replace(/^\/+/, '');
+    let rel: string;
+    try {
+      rel = decodeURIComponent(url.pathname).replace(/^\/+/, '');
+    } catch {
+      return send(res, 400, '{"error":"bad path"}');
+    }
     if (!rel || rel.split('/').some((part) => part.startsWith('.') || part === '..'))
       return send(res, 404, '{"error":"not found"}');
     if (rel.endsWith('.html') && url.searchParams.get('t') !== token)

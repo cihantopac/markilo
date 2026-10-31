@@ -51,6 +51,25 @@ const V4_BLOCKS: [string, number][] = [
   ['240.0.0.0', 4],
 ];
 
+/** The eight 16-bit groups of an IPv6 address (without a zone), or undefined for forms it does not parse. */
+function expandV6(a: string): number[] | undefined {
+  let s = a.split('%')[0]!;
+  const tail = /(\d+\.\d+\.\d+\.\d+)$/.exec(s);
+  if (tail) {
+    const [p, q, r, t] = tail[1]!.split('.').map(Number) as [number, number, number, number];
+    s = `${s.slice(0, -tail[1]!.length)}${((p << 8) | q).toString(16)}:${((r << 8) | t).toString(16)}`;
+  }
+  const [head, rest] = s.split('::') as [string, string | undefined];
+  const left = head ? head.split(':') : [];
+  const right = rest !== undefined && rest ? rest.split(':') : [];
+  const fill = rest === undefined ? 0 : 8 - left.length - right.length;
+  if (fill < 0) return undefined;
+  const groups = [...left, ...Array(fill).fill('0'), ...right].map((h) => Number.parseInt(h, 16));
+  return groups.length === 8 && groups.every((n) => Number.isFinite(n) && n >= 0 && n <= 0xffff)
+    ? groups
+    : undefined;
+}
+
 /** True for addresses that are not routable on the public internet (loopback, private, link-local, metadata, …). */
 export function isPrivateAddress(ip: string): boolean {
   const kind = isIP(ip);
@@ -69,11 +88,27 @@ export function isPrivateAddress(ip: string): boolean {
         .map((h) => Number.parseInt(h, 16));
       return isPrivateAddress(`${hi! >> 8}.${hi! & 255}.${lo! >> 8}.${lo! & 255}`);
     }
+    // Forms that carry an IPv4 address inside (NAT64 64:ff9b::/96, 6to4 2002::/16, IPv4-compatible ::/96): on
+    // networks that translate them they reach that IPv4 address, so it decides.
+    const g = expandV6(a);
+    if (g) {
+      const v4 = (hi: number, lo: number) => `${hi >> 8}.${hi & 255}.${lo >> 8}.${lo & 255}`;
+      if (g[0] === 0x64 && g[1] === 0xff9b && g.slice(2, 6).every((x) => x === 0))
+        return isPrivateAddress(v4(g[6]!, g[7]!));
+      if (g[0] === 0x2002) return isPrivateAddress(v4(g[1]!, g[2]!));
+      // IPv4-mapped ::ffff:0:0/96 and IPv4-translated ::ffff:0:0:0/96 in any spelling.
+      if (g.slice(0, 5).every((x) => x === 0) && g[5] === 0xffff) return isPrivateAddress(v4(g[6]!, g[7]!));
+      if (g.slice(0, 4).every((x) => x === 0) && g[4] === 0xffff && g[5] === 0)
+        return isPrivateAddress(v4(g[6]!, g[7]!));
+      if (g.slice(0, 6).every((x) => x === 0) && (g[6]! || g[7]! > 1))
+        return isPrivateAddress(v4(g[6]!, g[7]!));
+    }
     return (
       a === '::' ||
       a === '::1' ||
       /^f[cd]/.test(a) || // unique local fc00::/7
       /^fe[89ab]/.test(a) || // link-local fe80::/10
+      /^fe[c-f]/.test(a) || // deprecated site-local fec0::/10
       /^ff/.test(a) || // multicast
       /^2001:db8/.test(a) || // documentation
       /^64:ff9b:1:/.test(a)
@@ -201,6 +236,14 @@ function requestOnce(
       },
     );
     req.on('timeout', () => req.destroy(new Error('timed out')));
+    // The socket timeout only notices silence; a server that drips a byte every few seconds would hold the request
+    // forever. A total deadline (four socket timeouts) ends it.
+    const deadline = setTimeout(
+      () => req.destroy(new Error('took too long')),
+      4 * (opts.timeoutMs ?? 15_000),
+    );
+    deadline.unref();
+    req.on('close', () => clearTimeout(deadline));
     req.on('error', reject);
     req.end();
   });

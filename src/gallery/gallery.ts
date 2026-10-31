@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import type { QualityReport } from '../analyze/quality.js';
@@ -504,8 +505,13 @@ export async function buildGallery(
 }
 
 function page(title: string, body: string, reviewing: boolean): string {
+  // Defence in depth: SVG from research and other people's repositories is sanitized before it is inlined, and the
+  // page's own script is the only one allowed to run (a fresh nonce per build), so anything that slipped through
+  // still cannot execute or call out.
+  const nonce = randomBytes(16).toString('base64');
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <title>${escapeText(title)} — ${reviewing ? 'Markilo review' : 'brand identity'}</title>
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#16181d;--muted:#6a7080;--line:#e2e4e9;--good:#127a4a;--warn:#9a6400;--bad:#b42318;--accent:#2563eb}
@@ -573,7 +579,7 @@ dialog#cmpd button,dialog#cmpd input{font:inherit;color:inherit;border:1px solid
 <main>${body}</main>
 ${reviewing ? '' : '<style>.bar{display:none}body{padding-bottom:16px}</style>'}<div class="bar"><span class="sum" id="sum">No decisions yet.</span><button type="button" id="clear">Clear</button><button type="button" id="cmpbtn">Compare (0)</button><button type="button" id="copy">Copy request</button><button type="button" class="primary" id="send">Save decisions</button></div>
 <dialog id="cmpd"><div class="cmpgrid" id="cmpgrid"></div><input type="text" id="cmpreason" placeholder="Why do you prefer it? (optional, then press Prefer this)"><p class="muted" id="cmpwhy"></p><button type="button" id="cmpclose">Close</button></dialog>
-<script>
+<script nonce="${nonce}">
 (()=>{const K='markilo-review:'+location.pathname;let st={};try{st=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){}
 const q=new URLSearchParams(location.search),TOKEN=q.get('t'),SERVED=location.protocol.startsWith('http')&&!!TOKEN;
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}render()};

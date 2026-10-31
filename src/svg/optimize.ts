@@ -22,6 +22,8 @@ export function optimizeSvg(source: string, opts: { precision?: number } = {}): 
             },
           },
         },
+        // Scripts, event handlers and javascript: links never belong in a brand file.
+        'removeScripts',
         {
           name: 'removeAttrs',
           params: { attrs: ['data-name', 'sketch:type', 'inkscape:.*', 'sodipodi:.*'] },

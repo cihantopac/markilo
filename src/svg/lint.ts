@@ -97,11 +97,15 @@ export function lintSvg(source: string, opts: LintOptions = {}): LintResult {
   walk(root, (el) => {
     stats.elements++;
     const name = localName(el.name);
+    // In lower case: an SVG inlined into HTML is parsed case-insensitively, so <SCRIPT> runs like <script>.
+    const lower = name.toLowerCase();
     if (el.attrs.id) ids.set(el.attrs.id, (ids.get(el.attrs.id) ?? 0) + 1);
 
-    if (name === 'script') add('no-script', 'error', '<script> is not allowed in brand assets.');
-    if (name === 'foreignObject')
+    if (lower === 'script') add('no-script', 'error', '<script> is not allowed in brand assets.');
+    if (lower === 'foreignobject')
       add('no-foreign-object', 'error', '<foreignObject> embeds HTML and is not portable.');
+    if (['iframe', 'object', 'embed', 'audio', 'video', 'canvas', 'handler', 'listener'].includes(lower))
+      add('no-active-content', 'error', `<${name}> is active content and is not allowed in brand assets.`);
     if (name === 'image') {
       const href = el.attrs.href ?? el.attrs['xlink:href'] ?? '';
       add(

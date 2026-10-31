@@ -1,44 +1,89 @@
 import { localName, parseXml, serializeXml, type XmlElement, type XmlNode } from './xml.js';
 
-const DROP = new Set([
-  'script',
-  'foreignObject',
-  'iframe',
-  'object',
-  'embed',
-  'audio',
-  'video',
-  'canvas',
-  'handler',
-  'listener',
-]);
+/**
+ * The SVG elements a logo can be drawn with. Everything else is dropped with its content: scripts, foreign HTML,
+ * frames, media and any element this list does not name. Names are compared in lower case, because the gallery and
+ * the guidelines inline SVG into HTML, whose parser lowercases names (`<SCRIPT>` runs there just like `<script>`).
+ */
+const ALLOWED = new Set(
+  [
+    'svg',
+    'g',
+    'defs',
+    'symbol',
+    'use',
+    'title',
+    'desc',
+    'metadata',
+    'path',
+    'rect',
+    'circle',
+    'ellipse',
+    'line',
+    'polyline',
+    'polygon',
+    'text',
+    'tspan',
+    'textPath',
+    'image',
+    'linearGradient',
+    'radialGradient',
+    'stop',
+    'clipPath',
+    'mask',
+    'pattern',
+    'marker',
+    'filter',
+    'feBlend',
+    'feColorMatrix',
+    'feComponentTransfer',
+    'feComposite',
+    'feFlood',
+    'feGaussianBlur',
+    'feMerge',
+    'feMergeNode',
+    'feMorphology',
+    'feOffset',
+    'feFuncR',
+    'feFuncG',
+    'feFuncB',
+    'feFuncA',
+    'feDropShadow',
+    'style',
+    // Links are unwrapped below: the drawing inside is kept, the navigation is not.
+    'a',
+  ].map((n) => n.toLowerCase()),
+);
 const EXTERNAL_URL = /url\(\s*['"]?\s*(?!#)[^)]*\)/gi;
+/** CSS that can reach outside the file in ways a url() rewrite does not catch: escapes, image-set, imports. */
+const RISKY_CSS = /\\|image-set\s*\(|@import|expression\s*\(|behavio(u)?r\s*:|-moz-binding/i;
 
 function cleanElement(el: XmlElement): XmlElement | XmlNode[] | null {
-  const name = localName(el.name);
-  if (DROP.has(name)) return null;
+  const name = localName(el.name).toLowerCase();
+  if (!ALLOWED.has(name)) return null;
   for (const k of Object.keys(el.attrs)) {
     const v = el.attrs[k]!;
-    if (/^on/i.test(k)) delete el.attrs[k];
-    else if (k === 'href' || k === 'xlink:href') {
+    const key = k.toLowerCase();
+    if (/^on/.test(key) || key === 'xml:base') delete el.attrs[k];
+    else if (key === 'href' || key.endsWith(':href')) {
       const ok =
         v.startsWith('#') || (name === 'image' && /^data:image\/(png|jpe?g|gif|webp);base64,/i.test(v));
       if (!ok) delete el.attrs[k];
-    } else if (k === 'style') {
-      el.attrs[k] = v
-        .replace(EXTERNAL_URL, 'none')
-        .replace(/@import[^;]*;?/gi, '')
-        .replace(/expression\s*\(/gi, '');
-    } else if (EXTERNAL_URL.test(v)) {
-      el.attrs[k] = v.replace(EXTERNAL_URL, 'none');
+    } else if (key === 'style') {
+      if (RISKY_CSS.test(v)) delete el.attrs[k];
+      else el.attrs[k] = v.replace(EXTERNAL_URL, 'none');
+    } else if (EXTERNAL_URL.test(v) || /\\/.test(v)) {
+      el.attrs[k] = v.replace(EXTERNAL_URL, 'none').replace(/\\/g, '');
     }
     EXTERNAL_URL.lastIndex = 0;
   }
   if (name === 'style') {
-    el.children = el.children.map((c) =>
+    el.children = el.children.flatMap((c) =>
       c.type === 'text'
-        ? { type: 'text', value: c.value.replace(/@import[^;]*;?/gi, '').replace(EXTERNAL_URL, 'none') }
-        : c,
+        ? RISKY_CSS.test(c.value)
+          ? []
+          : [{ type: 'text' as const, value: c.value.replace(EXTERNAL_URL, 'none') }]
+        : [],
     );
   }
   const kids: XmlNode[] = [];
@@ -53,7 +98,6 @@ function cleanElement(el: XmlElement): XmlElement | XmlNode[] | null {
     else kids.push(r);
   }
   el.children = kids;
-  // Links are unwrapped: their drawing is kept, the navigation is not.
   if (name === 'a') return kids;
   return el;
 }

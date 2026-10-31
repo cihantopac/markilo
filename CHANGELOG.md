@@ -22,6 +22,26 @@ All notable changes to this project are documented here. The format follows
   display, slab, serif; monospace last). It used to be one fixed list — Inter, Fraunces, Sora, Space Grotesk — for
   every brand.
 
+### Security
+
+- **SVG sanitizer and lint compared names case-sensitively** (found in this release's security review, reproduced end
+  to end): `<SCRIPT>`, `<foreignobject>` or `<A HREF="javascript:…">` in a collected or locked logo passed both and ran
+  when the gallery or guidelines inlined the SVG into HTML, whose parser lowercases names; a script there could post
+  "feedback" that the agent then read as the user's request. The sanitizer is now an allowlist of SVG drawing elements
+  compared in lower case (anything else is dropped with its content), attributes are compared in lower case, and CSS
+  that escapes the url() rewrite (backslash escapes, `image-set()`) is removed. Lint reports active content in any
+  case. The gallery allows only its own script (a per-build nonce in a Content-Security-Policy), the guidelines page
+  none.
+- `lock` refused only unparseable files; it now also refuses SVGs with scripts, event handlers, foreign content or
+  external references, since a locked file is reproduced byte for byte in every export and may be installed into a
+  site. `svg optimize` removes scripts, handlers and `javascript:` links, so a clean copy can be locked instead.
+- A malformed percent-escape in a request path crashed `gallery --serve`; it now answers 400.
+- IPv6 forms that carry an IPv4 address (NAT64 `64:ff9b::/96`, 6to4 `2002::/16`, IPv4-compatible and -translated)
+  are judged by that IPv4 address, and `fec0::/10` is refused.
+- Downloads have a total deadline (four socket timeouts), so a server that drips bytes cannot hold research forever.
+- Web text stored in findings can no longer close the quotes it is shown in, and `profile show` and
+  `research competitors` mark quoted web text as data, not instructions.
+
 ### Fixed
 
 - `install-assets --group … --into … --force` replaced existing files without backing them up, although the docs said

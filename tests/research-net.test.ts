@@ -148,3 +148,19 @@ describe('competitor research', () => {
     expect(readReferences(ws, 'nimbra').references).toHaveLength(2);
   });
 });
+
+describe('slow servers', () => {
+  it('gives up on a server that drips bytes slower than any useful page', async () => {
+    const drip = createServer((_req, res) => {
+      res.writeHead(200, { 'content-type': 'text/html' });
+      const t = setInterval(() => res.write('.'), 50);
+      res.on('close', () => clearInterval(t));
+    });
+    await new Promise<void>((r) => drip.listen(0, '127.0.0.1', r));
+    const { port } = drip.address() as { port: number };
+    const started = Date.now();
+    await expect(safeGet(`http://127.0.0.1:${port}/`, { ...local, timeoutMs: 150 })).rejects.toThrow();
+    expect(Date.now() - started).toBeLessThan(5000);
+    drip.close();
+  });
+});

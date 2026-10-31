@@ -52,6 +52,14 @@ describe('gallery feedback', () => {
       expect((await fetch(srv.url)).status).toBe(200);
       expect((await fetch(`${base.origin}/gallery/index.html`)).status).toBe(403);
       expect((await fetch(`${base.origin}/brands/nimbra/profile.json`)).status).toBe(404);
+      // A malformed escape is a bad request, not a crash that takes the server down.
+      expect((await fetch(`${base.origin}/gallery/%E0%A4%A`)).status).toBe(400);
+      expect((await fetch(srv.url)).status).toBe(200);
+      // Only the page's own script may run.
+      const html = await (await fetch(srv.url)).text();
+      const nonce = /script-src 'nonce-([^']+)'/.exec(html)?.[1];
+      expect(nonce).toBeTruthy();
+      expect(html).toContain(`<script nonce="${nonce}">`);
       expect((await fetch(`${base.origin}/brands/nimbra/brief.json?t=${token}`)).status).toBe(404);
       const post = (t: string, body: unknown) =>
         fetch(`${base.origin}/feedback`, {

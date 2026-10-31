@@ -33,9 +33,22 @@ describe('SSRF protection', () => {
       '::ffff:127.0.0.1',
       '::ffff:7f00:1',
       '::ffff:a9fe:a9fe',
+      // IPv4 carried inside IPv6: NAT64, 6to4, IPv4-compatible, and deprecated site-local.
+      '64:ff9b::a9fe:a9fe',
+      '64:ff9b::10.0.0.1',
+      '2002:7f00:1::',
+      '::7f00:1',
+      '::ffff:0:7f00:1',
+      'fec0::1',
     ])
       expect(isPrivateAddress(ip), ip).toBe(true);
-    for (const ip of ['93.184.216.34', '1.1.1.1', '2606:4700:4700::1111'])
+    for (const ip of [
+      '93.184.216.34',
+      '1.1.1.1',
+      '2606:4700:4700::1111',
+      '64:ff9b::808:808',
+      '2002:808:808::1',
+    ])
       expect(isPrivateAddress(ip), ip).toBe(false);
   });
   it('refuses local targets, credentials and non-http schemes before connecting', async () => {
@@ -176,5 +189,54 @@ describe('symbolic links and path traversal', () => {
       /symbolic link/,
     );
     expect(readFileSync(victim, 'utf8')).toBe('keep');
+  });
+});
+
+describe('SVG sanitizer against HTML parsing', () => {
+  // Gallery and guidelines inline SVG into HTML, whose parser lowercases names: case must not matter here either.
+  it('drops active content however it is capitalised, and anything that is not an SVG drawing element', () => {
+    const evil = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">
+      <SCRIPT>alert(1)</SCRIPT><Script>alert(2)</Script>
+      <foreignobject><div>x</div></foreignobject><IFRAME src="https://evil.example"/>
+      <A HREF="javascript:alert(3)"><rect width="5" height="5" fill="#123456"/></A>
+      <use HREF="https://evil.example/x.svg#a"/><image XLINK:HREF="https://evil.example/p.png"/>
+      <unknownthing><path d="M0 0h1"/></unknownthing>
+      <rect width="1" height="1" style="background:image-set('https://evil.example/px.png' 1x)"/>
+      <rect width="1" height="1" style="fill:\\75 rl(https://evil.example/)"/>
+      <style>.a{background:\\75 rl(https://evil.example/)}</style>
+      <linearGradient id="g"><stop offset="0" stop-color="#000"/></linearGradient>
+      <path d="M0 0h10v10z" fill="url(#g)"/>
+    </svg>`;
+    const clean = sanitizeSvg(evil);
+    expect(clean).not.toMatch(/alert|script|foreignobject|iframe|javascript:|evil\.example|unknownthing/i);
+    expect(clean).toContain('fill="#123456"');
+    expect(clean).toContain('<linearGradient id="g">');
+    expect(clean).toContain('fill="url(#g)"');
+  });
+
+  it('lint reports active content however it is capitalised', async () => {
+    const { lintSvg } = await import('../src/svg/lint.js');
+    const r = lintSvg(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><SCRIPT>alert(1)</SCRIPT><foreignobject/><path d="M0 0h1"/></svg>',
+    );
+    expect(r.ok).toBe(false);
+    expect(r.issues.map((i) => i.rule)).toEqual(expect.arrayContaining(['no-script', 'no-foreign-object']));
+  });
+});
+
+describe('locking a hostile logo', () => {
+  it('refuses to lock an SVG that would run or reach out wherever it is shown', async () => {
+    const { lockIdentity } = await import('../src/export/kit.js');
+    const dir = tmp();
+    const ws = Workspace.init(join(dir, 'brand'), 'Test');
+    ws.addBrand({ name: 'Acme' });
+    const evil = join(dir, 'evil.svg');
+    writeFileSync(
+      evil,
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/><SCRIPT>alert(1)</SCRIPT></svg>',
+    );
+    expect(() => lockIdentity(ws, 'acme', { symbol: evil, primary: '#123456' })).toThrow(
+      /active or external content/,
+    );
   });
 });

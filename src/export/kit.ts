@@ -261,6 +261,14 @@ export async function finalizeConcept(
 }
 
 /** Registers an existing identity that must be preserved exactly (copied byte-for-byte). */
+const ACTIVE_RULES = new Set([
+  'no-script',
+  'no-foreign-object',
+  'no-active-content',
+  'no-event-handlers',
+  'no-external',
+]);
+
 export function lockIdentity(
   ws: Workspace,
   brand: string,
@@ -288,6 +296,15 @@ export function lockIdentity(
     const lint = lintSvg(readText(src));
     if (lint.issues.some((i) => i.rule === 'parse'))
       throw new MarkiloError('INVALID_SVG', `${src} is not a parseable SVG.`);
+    // A locked file is reproduced byte for byte in every export and may be installed into a site: it must not carry
+    // anything that runs or reaches out when a browser shows it.
+    const active = lint.issues.filter((i) => ACTIVE_RULES.has(i.rule));
+    if (active.length)
+      throw new MarkiloError(
+        'INVALID_SVG',
+        `${src} contains active or external content, so it cannot be locked as is: ${active.map((i) => i.message).join(' ')}`,
+        `Clean a copy first ("markilo svg optimize ${basename(src)} -o clean.svg" removes scripts, handlers and external references), check it looks the same, and lock the copy.`,
+      );
     const out = `locked-${key}-${basename(src)}`;
     copyFileSync(src, join(dir, out));
     files[key] = out;
