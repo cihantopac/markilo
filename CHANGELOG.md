@@ -61,6 +61,9 @@ All notable changes to this project are documented here. The format follows
   and memorability, and every symbol direction came from a mechanism metaphor (a round trip, a crossing, a threshold, a
   keystone) drawn as brackets, crosses, arches or gauges — readings a critic could have predicted from the sentence.
   The benchmark records how many ideas were written, kept and struck, from how many sources.
+- `polygon` takes `smooth: true` (with `tension` and `sharp` corner indices) to draw one curved, filled silhouette
+  through a few points — a drop, a leaf, a bean — instead of assembling an object from circles, bars and triangles,
+  which in real-project runs kept reading as pictograms.
 - 14 more bundled OFL type families (24 in all): Bricolage Grotesque, Instrument Serif, Young Serif, DM Serif Display,
   Syne, Unbounded, Archivo, Schibsted Grotesk, Newsreader, Zilla Slab, Space Mono, Atkinson Hyperlegible Next, Alegreya
   Sans and Familjen Grotesk, every weight checked for Turkish and other Latin-extended letters. In every benchmark run

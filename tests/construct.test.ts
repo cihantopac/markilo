@@ -197,4 +197,29 @@ describe('variants', () => {
     expect(v[0]!.quality.legibility16).toBeGreaterThan(0.7);
     expect(v.every((x) => x.svg.startsWith('<svg'))).toBe(true);
   });
+
+  it('draws an organic silhouette from a few points, keeping the sharp ones as corners', async () => {
+    const pts = [
+      [512, 140],
+      [640, 470],
+      [680, 640],
+      [620, 790],
+      [512, 850],
+      [404, 790],
+      [344, 640],
+      [384, 470],
+    ];
+    const drop = await compileSpec({
+      layers: [{ fill: 'primary', shape: { polygon: { points: pts, smooth: true, sharp: [0] } } }],
+    } as unknown as ConstructionSpec);
+    const d = drop.layers[0]!.d;
+    expect(d).toMatch(/C/);
+    expect(drop.stats.contours).toBe(1);
+    // The tip stays exactly where it was put; the rest is curved.
+    expect(d).toContain('512 140');
+    const plain = await compileSpec({
+      layers: [{ fill: 'primary', shape: { polygon: { points: pts } } }],
+    } as unknown as ConstructionSpec);
+    expect(plain.layers[0]!.d).not.toMatch(/C/);
+  });
 });

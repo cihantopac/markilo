@@ -419,8 +419,15 @@ function primitive(kind: string, raw: unknown, at: string, ctx: Ctx): string {
       const [cx, cy] = ctx.pt(o.c, `${a}.c`);
       return sectorD(cx, cy, n('r'), n('from'), n('to'), n('inner', 0));
     }
-    case 'polygon':
-      return polygonD(ctx.pts(o.points, `${a}.points`, 3));
+    case 'polygon': {
+      const pts = ctx.pts(o.points, `${a}.points`, 3);
+      if (!o.smooth) return polygonD(pts);
+      // A filled organic outline from a few points: one silhouette instead of a stack of primitives.
+      const sharp = Array.isArray(o.sharp)
+        ? new Set(o.sharp.map((v, i) => ctx.num(v, `${a}.sharp[${i}]`)))
+        : new Set<number>();
+      return normalizeD(smoothD(pts, true, n('tension', 1), sharp));
+    }
     case 'regular': {
       const [cx, cy] = ctx.pt(o.c, `${a}.c`);
       return regularD(cx, cy, n('r'), Math.round(n('sides')), n('rotate', 0));

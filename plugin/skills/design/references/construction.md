@@ -58,7 +58,7 @@ With `--brand/--concept`, palette roles come from the concept, the result is wri
 | `ring`     | `c`, `r` (outer), `width`                                                                                                                                                                             |
 | `arc`      | `c`, `r` (centre line), `from`, `to`, `width`, `cap` `butt`/`round`/`square` — a stroked arc as a filled shape                                                                                        |
 | `sector`   | `c`, `r`, `from`, `to`, `inner` (0 = pie slice)                                                                                                                                                       |
-| `polygon`  | `points`                                                                                                                                                                                              |
+| `polygon`  | `points`; `smooth: true` draws one curved, filled outline through them (`tension`, and `sharp: [i…]` keeps those points as corners — the tip of a drop, the point of a leaf)                          |
 | `regular`  | `c`, `r`, `sides`, `rotate`                                                                                                                                                                           |
 | `star`     | `c`, `r`, `inner`, `points`, `rotate`                                                                                                                                                                 |
 | `line`     | `points`, `width`, `cap`, `join`, `smooth` (curve through the points), `closed`                                                                                                                       |
@@ -162,6 +162,10 @@ Each is a construction technique, not a shape to copy. Combine at most two.
 - **Cut and shift**: `subtract` a thin band (`rect` rotated) through a solid, then `move` one side — motion,
   precision, a "slice" of something.
 - **Truncation**: `intersect` a form with a frame so it is cropped by the edge — tension, scale beyond the frame.
+- **One silhouette**: the object as a single filled outline — a `polygon` with `smooth: true` through 6–12 points,
+  sharp only where the object has a point — instead of a stack of circles, bars and triangles. An object assembled
+  from separate primitives reads as a pictogram (a plumb bob built from a ring, a bar, a trapezoid and a triangle read
+  as a download arrow); one drawn outline with a particular proportion reads as a drawing.
 - **Single gesture**: one `line` with `smooth: true`, consistent `width`, round caps, that draws the idea in one
   movement. Avoid the generic swoosh; the path must describe something specific.
 - **Modular system**: one unit (`defs`) repeated with `repeat` along a grid, where the arrangement itself is the

@@ -111,8 +111,16 @@ export const starD = (cx: number, cy: number, r: number, inner: number, points: 
     ),
   );
 
-/** Smooth curve through the points (centripetal Catmull-Rom converted to cubics). */
-export function smoothD(points: P[], closed = false, tension = 1): string {
+/**
+ * Smooth curve through the points (centripetal Catmull-Rom converted to cubics). Points listed in `sharp` (indices
+ * into `points`) stay corners: the curve arrives and leaves them without a tangent, like the tip of a drop.
+ */
+export function smoothD(
+  points: P[],
+  closed = false,
+  tension = 1,
+  sharp: ReadonlySet<number> = new Set(),
+): string {
   if (points.length < 3) return polylineD(points, closed);
   const pts = closed
     ? [points[points.length - 1]!, ...points, points[0]!, points[1]!]
@@ -124,8 +132,10 @@ export function smoothD(points: P[], closed = false, tension = 1): string {
     const p1 = pts[i]!;
     const p2 = pts[i + 1]!;
     const p3 = pts[i + 2]!;
-    const c1: P = [p1[0] + (p2[0] - p0[0]) * t, p1[1] + (p2[1] - p0[1]) * t];
-    const c2: P = [p2[0] - (p3[0] - p1[0]) * t, p2[1] - (p3[1] - p1[1]) * t];
+    const n = points.length;
+    const at = (k: number) => (((k - 1) % n) + n) % n;
+    const c1: P = sharp.has(at(i)) ? p1 : [p1[0] + (p2[0] - p0[0]) * t, p1[1] + (p2[1] - p0[1]) * t];
+    const c2: P = sharp.has(at(i + 1)) ? p2 : [p2[0] - (p3[0] - p1[0]) * t, p2[1] - (p3[1] - p1[1]) * t];
     d += `C${xy(c1)} ${xy(c2)} ${xy(p2)}`;
   }
   return closed ? `${d}Z` : d;
