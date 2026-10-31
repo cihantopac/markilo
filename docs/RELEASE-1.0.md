@@ -140,6 +140,11 @@ serve as realistic test subjects. They are test environments, not branding assig
 
 ## Progress log
 
+- **2026-11-01 — Released.** Tag `markilo--v1.0.0`, GitHub release created by the release workflow (CI green on
+  Linux, macOS and Windows), `markilo@1.0.0` on npm as `latest` (visible about 7 minutes after publishing). Verified
+  from the registry: `npx markilo@1.0.0` prints 1.0.0, `doctor` passes, and the smoke test passes on the downloaded
+  package.
+
 - **2026-11-01** — Decision to stop experimenting and release (maintainer). Opus designer judged: its one gate pass was
   false, no presentable concept, ~50 % higher cost → the designer stays on Sonnet. Second-look blindness hole fixed.
   Sealed-holdout evaluation run once: 0.5.0-rc.1 0 of 5, 1.0.0 1 of 5 (a false pass); panel 0 of 21 and 0 of 20.
