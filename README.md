@@ -47,15 +47,21 @@ registry search has been done yet; the guidelines say so.</sub>
   logged registry searches the answer is `insufficient-evidence`, never "clear". Calibrated on 24 real brands' logos
   (AUC 0.99; mirrored, rotated and recolored copies always caught; see [docs/ORIGINALITY.md](docs/ORIGINALITY.md)). It
   finds conflicts among what was collected; it cannot prove a mark is unique or registrable.
+- **Ideas before drawings.** Every identity starts from a longlist of at least 12 visual hooks from the product, the
+  audience, the name, type and abstract character; a critic strikes the ones a stranger would read as a UI glyph or a
+  cliché from the words alone, before anything is drawn, and the gallery shows what was kept and why.
 - **Real design output.** Symbols built from construction specs — primitives, booleans, gaps, offsets, fillets,
   repeats and real letterforms, compiled with Skia's path engine into clean SVG — and tuned by measured variants.
-  Wordmarks outlined from OFL fonts with real kerning (Turkish and other Latin-extended letters included), lockups
-  aligned to cap height, OKLCH tonal palettes with WCAG pairs.
+  Wordmarks outlined from 24 bundled OFL families chosen for the brief's character, with real kerning (Turkish and
+  other Latin-extended letters checked in every weight); every changed letter is measured against the font's own
+  alphabet, so a word that would be misread ("an e that lost its eye", a dot that reads as a hyphen) is caught before
+  review. Lockups aligned to cap height, OKLCH tonal palettes with WCAG pairs.
 - **Looks before it talks.** Directions start as cheap sketches that a critical review must pick before any are
   developed. Every concept is rendered to a review sheet (16–256 px, light, dark, black, white) and a context sheet (a
   browser tab, a home screen next to the competitors, a site header, an avatar). An independent critic records a blind
   first impression before it reads the rationale, and only concepts that pass its gate (brand fit, distinctiveness and
-  memorability ≥ 6, average ≥ 6.5, "a senior designer would present it") reach you.
+  memorability ≥ 6 and "a senior designer would present it") reach you. A first look on the edge of the bar is decided
+  by the majority of three cold looks from fresh critics, and the designer can never approve its own work.
 - **Complete asset kit.** Logo variants, favicons, PWA + maskable icons, iOS (incl. dark/tinted and Icon Composer
   layers), macOS `.icns`, Android adaptive + themed icons, Windows ICO + MSIX assets, Open Graph and social images,
   marketing templates, design tokens and brand guidelines, with a manifest of sizes and hashes. You get what the

@@ -135,7 +135,8 @@ per scenario (`budgetUsd`). The owner is not available: Markilo records its own 
 ## What is measured
 
 - **Success**: a concept passed the quality gate, was finalized with no failing check and exported.
-- **Gate**: concepts that passed Markilo's critic gate (brand fit, distinctiveness and memorability ≥ 6, average ≥ 6.5).
+- **Gate**: concepts that passed Markilo's critic gate (blind brand fit, distinctiveness and memorability ≥ 6 and a cold
+  yes; from 1.0, a first look on the edge of the bar is decided by the majority of three cold looks).
 - **Checks**: Markilo's automated checks on the finalized concept (pass / warn / fail).
 - **Originality**: the verdict of the Originality & Similarity Report.
 - **Blind judge**: a separate model call that sees only the brief and rendered images — no rationale, no scores — and

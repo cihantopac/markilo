@@ -193,6 +193,12 @@ a terminal), on top of a calm, well-spaced typeface. Rebuilding every letter fro
 harder to read, and it reads as a display face rather than a brand. Every letter must still be readable on its own:
 check `e`, `a`, `w`, `m` and other complex forms at 1200 px and at 64 px wide.
 
+A treatment can also run through the whole word instead of living in one letter — the usual way a coined name gets
+character. Transforms on a `glyph` apply to every letter at once: `"round": 18` softens every corner and terminal,
+`"grow": 6` adds weight evenly, and a `subtract` of one repeated `rect` (`repeat` with `step`) cuts every stem at the
+same angle. Pick one treatment from the brief's form language, check it at 12 px, and keep the letters themselves
+untouched.
+
 ### Wordmark-led concepts (`--lead wordmark`)
 
 The word is the identity, so it is built, not typeset:
