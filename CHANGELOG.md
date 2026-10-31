@@ -44,6 +44,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Gallery: when every concept was rejected it said "No concepts yet." and hid what was tried. It now says that
+  nothing passed the gate and why nothing is offered, opens the rejected concepts, and every card that did not pass
+  shows the critic's verdict and what a stranger sees first. The Theme button was unreadable in dark mode.
+
 - `install-assets --group … --into … --force` replaced existing files without backing them up, although the docs said
   they were backed up. Both install modes now share one transactional installer: replaced files are backed up first,
   each file is written through a temp file and a rename, and a failure halfway puts every file back.

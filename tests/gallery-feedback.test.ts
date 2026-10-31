@@ -114,3 +114,21 @@ describe('gallery: ideas', () => {
     expect(html).toContain('Struck before drawing (1)');
   });
 });
+
+describe('gallery: nothing passed', () => {
+  it('says why nothing is offered and shows the rejected concepts with the critic verdict', async () => {
+    const { ws } = synthBrand();
+    const c = ws.concept('nimbra', 'fold');
+    ws.saveConcept({
+      ...c,
+      status: 'rejected',
+      critique: { present: false, reason: 'reads as a folded page icon', at: '2026-01-01T00:00:00Z' },
+      readsAs: ['a folded page', 'a file icon'],
+    });
+    const html = readFileSync((await buildGallery(ws)).path, 'utf8');
+    expect(html).not.toContain('No concepts yet.');
+    expect(html).toContain("No concept passed the critic's gate yet");
+    expect(html).toContain('<details class="rejected-list" open>');
+    expect(html).toContain('would not present it as is — reads as a folded page icon');
+  });
+});
