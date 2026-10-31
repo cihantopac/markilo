@@ -97,6 +97,36 @@ evaluation, whatever they are.
 | 14  | Performance, model usage and limits reported honestly          | In progress            | Cost and minutes per run in every bench report                                                                     |
 | 15  | Nothing incomplete marketed as finished                        | In progress            | Icon Composer `.icon` and X header sizes listed as limits, not features                                            |
 
+## Security review (2026-10-31)
+
+An independent, read-only review of the toolchain (network, SVG/raster input, repository scanning, gallery server,
+fonts, embedder, agent setup, paths), with every finding reproduced before it was fixed:
+
+| Finding                                                                                                                                                                                            | Severity         | Status                                                                                                                                                    |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SVG sanitizer and lint compared names case-sensitively; `<SCRIPT>` in a collected or locked logo ran in the gallery and could post "feedback" the agent read as the user's (reproduced end to end) | High             | Fixed: case-insensitive allowlist sanitizer, lint in any case, gallery CSP with a per-build nonce, guidelines page without scripts; verified in a browser |
+| CSS references escaping the url() rewrite (`\75 rl(`, `image-set()`)                                                                                                                               | Medium/low       | Fixed: risky CSS removed                                                                                                                                  |
+| A malformed percent-escape crashed `gallery --serve`                                                                                                                                               | Low              | Fixed: 400                                                                                                                                                |
+| NAT64 / 6to4 / IPv4-compatible IPv6 forms and `fec0::/10` not judged private                                                                                                                       | Low              | Fixed                                                                                                                                                     |
+| No total deadline on downloads (slow-drip server)                                                                                                                                                  | Low              | Fixed: four socket timeouts in all                                                                                                                        |
+| Web text could close the quotes it is stored in; stored findings lost the untrusted label                                                                                                          | Low/medium       | Fixed: quotes replaced, `profile show` and `research competitors` label web text                                                                          |
+| `lock` accepted SVGs with active content (found while verifying the fix)                                                                                                                           | Medium           | Fixed: refused; `svg optimize` strips scripts                                                                                                             |
+| `install-assets --group --force` replaced files without a backup; no rollback                                                                                                                      | High (data loss) | Fixed: transactional installer, journal, `--undo`, `--expect`                                                                                             |
+
+Verified sound: connect-time DNS checks (no rebinding window), redirect re-checks, decompressed size limits, XML
+entity/DOCTYPE refusal, gallery Host check and token, embedder spawned without a shell, symlink and secret-file
+handling in the repository scanner.
+
+## Export validation (2026-10-31)
+
+A full kit (199 files: logos, web, iOS, macOS, Android, Windows/MSIX, social, marketing, tokens, guidelines) was
+exported from Markilo's own identity and checked with tools other than Markilo's: `iconutil` decodes the `.icns` into
+all ten iconset sizes; every iOS `Contents.json` entry, Android density (48–192 px, adaptive layers at 108/48), MSIX
+scale and target size, web manifest icon and ICO directory matches its specification; all 143 PNG sizes and all 199
+SHA-256 hashes match the manifest; every SVG and XML file is well formed and every JSON file parses. Icons were
+inspected visually, including the iOS dark and tinted appearances. Not produced, and listed as limits rather than
+features: Icon Composer `.icon` bundles (layer sources are exported to import) and verified X header sizes.
+
 ## Real-project validation protocol
 
 Three of the maintainer's own developer products (search intelligence, product experience, release engineering)
