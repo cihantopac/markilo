@@ -47,7 +47,8 @@
     "test:watch": "vitest",
     "check:dist": "node scripts/check-dist.mjs",
     "validate:plugin": "claude plugin validate . --strict && claude plugin validate plugin --strict",
-    "ci": "npm run lint && npm run typecheck && npm test && npm run build && npm run check:dist"
+    "ci": "npm run lint && npm run typecheck && npm test && npm run build && npm run check:dist",
+    "prepublishOnly": "npm run ci && node scripts/smoke.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.4",
@@ -67,12 +68,10 @@
     "esbuild": "0.28.2",
     "fontkit": "2.0.4",
     "jpeg-js": "0.4.4",
+    "pathkit-wasm": "1.0.0",
     "pngjs": "7.0.0",
     "svgo": "4.1.0",
     "typescript": "7.0.2",
     "vitest": "5.0.5"
-  },
-  "dependencies": {
-    "pathkit-wasm": "1.0.0"
   }
 }

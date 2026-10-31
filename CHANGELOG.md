@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Markilo is on npm (`npm install -g markilo`, `npx markilo`), from 0.4.0: the same toolchain for other coding agents
+  and scripts. The package installs no dependencies (everything is bundled) and `prepublishOnly` runs CI and the smoke
+  test.
+
 ## [0.4.0] - 2026-10-31
 
 Quality and trust: Markilo's design quality is measured instead of claimed. A benchmark runs the installed plugin end

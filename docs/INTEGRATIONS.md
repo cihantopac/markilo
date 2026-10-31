@@ -4,7 +4,8 @@
 
 Markilo is built for Claude Code: skills (`/markilo`, `/markilo:design`, …), sub-agents (researcher, concept designer,
 critic) and pre-approved toolchain calls. Install it as a plugin (see the README). Everything below reuses the same
-toolchain (`plugin/dist/markilo.mjs`, Node ≥ 20) without Claude Code.
+toolchain without Claude Code (Node ≥ 20.10): `npm install -g markilo` and call `markilo`, `npx markilo`, or
+`node plugin/dist/markilo.mjs` from a clone, as in the examples.
 
 ## Other coding agents (Codex, Cursor, others)
 
@@ -24,6 +25,12 @@ docs path that work for everyone, for example with Markilo vendored in the repos
 
 ```bash
 node tools/markilo/plugin/dist/markilo.mjs agent-setup --target codex --cli "node tools/markilo/plugin/dist/markilo.mjs" --references tools/markilo/plugin/skills/design/references --apply
+```
+
+or with Markilo as a dev dependency (`npm install -D markilo`):
+
+```bash
+npx markilo agent-setup --target codex --cli "npx markilo" --references node_modules/markilo/plugin/skills/design/references --apply
 ```
 
 What other agents do not get: Claude Code's sub-agents. The guide asks them to run the sketch review and the critique as

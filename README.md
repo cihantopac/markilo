@@ -152,6 +152,15 @@ claude plugin install markilo@markilo
 To update later: `claude plugin marketplace update markilo`, then `claude plugin update markilo@markilo` and restart
 Claude Code.
 
+Without Claude Code — for other coding agents ([docs/INTEGRATIONS.md](docs/INTEGRATIONS.md)) and scripts — the same
+toolchain is on npm:
+
+```bash
+npm install -g markilo
+```
+
+Then `markilo help`; to run without a global install, use `npx markilo <command>`.
+
 ### `/markilo` and `/markilo:design`
 
 After installing, both `/markilo` and `/markilo:design` start the studio (verified with Claude Code 2.1.308). If another
