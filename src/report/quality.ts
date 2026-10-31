@@ -12,17 +12,14 @@ import { composeLockup } from '../design/lockup.js';
 import { inkMetrics } from '../export/geometry.js';
 import { type ContextPeer, groundFor, renderContextSheet } from '../render/context.js';
 import { renderReviewSheet, renderWordmarkSheet } from '../render/sheet.js';
-import { type ReferenceCategory, USER_REFERENCE } from '../research/competitors.js';
 import { buildOriginalityReport, readReferences } from './originality.js';
 
 /** Collected reference marks, direct competitors first, one per brand, for the context sheet. */
 async function contextPeers(ws: Workspace, brand: string): Promise<ContextPeer[]> {
   const seen = new Set<string>();
-  const refs = [...readReferences(ws, brand).references]
-    .filter((r) => !USER_REFERENCE.includes((r.category ?? 'direct') as ReferenceCategory))
-    .sort(
-      (a, b) => Number((b.category ?? 'direct') === 'direct') - Number((a.category ?? 'direct') === 'direct'),
-    );
+  const refs = [...readReferences(ws, brand).references].sort(
+    (a, b) => Number((b.category ?? 'direct') === 'direct') - Number((a.category ?? 'direct') === 'direct'),
+  );
   const out: ContextPeer[] = [];
   for (const r of refs) {
     const key = r.name.toLowerCase().replace(/\s+(icon|logo|mark|app)$/i, '');

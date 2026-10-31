@@ -12,28 +12,7 @@ import { sanitizeSvg } from '../svg/sanitize.js';
 import { mergeSiteScan } from './profile.js';
 import { type CrawlOptions, fetchBinary, scanSite } from './site.js';
 
-export type ReferenceCategory =
-  | 'direct'
-  | 'indirect'
-  | 'category'
-  | 'form-family'
-  /** The user's own references: what they like, what they do not, and an identity that already exists. */
-  | 'inspiration'
-  | 'dislike'
-  | 'existing';
-
-export const REFERENCE_CATEGORIES: ReferenceCategory[] = [
-  'direct',
-  'indirect',
-  'category',
-  'form-family',
-  'inspiration',
-  'dislike',
-  'existing',
-];
-
-/** References the user supplied: compared for originality like any other, never shown as competitors. */
-export const USER_REFERENCE: ReferenceCategory[] = ['inspiration', 'dislike', 'existing'];
+export type ReferenceCategory = 'direct' | 'indirect' | 'category' | 'form-family';
 
 export interface NewReference {
   name: string;

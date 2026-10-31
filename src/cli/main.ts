@@ -31,7 +31,6 @@ const GROUPS: [string, string[]][] = [
       'concept list',
       'concept show',
       'concept update',
-      'proposals',
       'wordmark',
       'wordmarks',
       'lockup',
@@ -56,7 +55,7 @@ const GROUPS: [string, string[]][] = [
     ],
   ],
   ['Deliver', ['finalize', 'lock', 'export', 'gallery', 'install-assets', 'render', 'svg optimize']],
-  ['System', ['cost', 'shortcut', 'doctor']],
+  ['System', ['shortcut', 'doctor']],
 ];
 
 function usage(): string {
