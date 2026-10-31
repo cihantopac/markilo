@@ -87,6 +87,23 @@ serve as realistic test subjects. They are test environments, not branding assig
 
 ## Progress log
 
+- **2026-10-31 (3)** — Real-project diagnosis and the first design experiments (results kept private; aggregates only):
+  - Baseline (0.5.0-rc.1 + install fix) on three real developer products: 0 of 3 runs passed; 18 concepts, blind
+    distinctiveness mostly 4–5 with craft 6–7. Judge panel (Opus + Sonnet, 2 looks each): 0 of 17 presentable; both
+    judges agreed with the gate and with each other on 17 of 17. The gate is not too strict here; the work is weak.
+  - Every symbol direction came from a mechanism metaphor drawn with primitives (brackets, crosses, arches, gauges).
+    The idea longlist (`markilo ideas`) was added to strike such ideas from the words. Candidate run on the same three
+    products: the critic struck 49 of 66 ideas with sensible readings, but the kept ideas still became icon-like
+    drawings (a plumb bob assembled from a ring, a bar, a trapezoid and a triangle). 0 of 3 runs passed; mean blind
+    distinctiveness 4.4 vs 4.6 — **no measurable improvement** (n = 3, known briefs). The second look ran for the
+    first time in a real run and rejected an edge pass 1–2.
+  - Measured and not adopted: separate-part count and extreme aspect ratio vs. outcome on 79 earlier concepts (3+
+    parts: 0 of 22 passed, 1–2 parts: 4 of 57; difference not significant with 4 passes in all).
+  - Security review delegated and acted on (see CHANGELOG, Security). Export kit re-validated with system tools
+    (iconutil, sizes, hashes, XML/JSON): no problems. Clean npm install + smoke on the installed package passed.
+  - Next experiment: the concept designer on Opus instead of Sonnet on the same three products (the earlier "Opus did
+    no better" rested on one rc.2 run).
+
 - **2026-10-31 (2)** — Evaluation and design-quality groundwork, each change tested and committed:
   - Five holdouts sealed unrun at `241af5e` (ai-notes, coffee-roaster, physio-health, outdoor-tr, community-solar).
   - `bench.mjs`: isolated runs (only Markilo loaded, from a plugin snapshot), `--plugin` for baselines, `--scenarios`
