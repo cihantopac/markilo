@@ -1,0 +1,162 @@
+[
+  {
+    "brand": "emberwick",
+    "concept": "eight",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a modular S or squiggle drawn on a grid of rounded tiles",
+        "a set of keyboard keys or app-icon tiles",
+        "a hashtag, or a dollar sign made of blocks"
+      ],
+      "distinctiveness": 4.3,
+      "memorability": 4.3,
+      "brandFit": 3.5,
+      "craft": 6,
+      "versatility": 6.5,
+      "presentAsIs": false,
+      "why": "The single-radius tiles are built cleanly and hold up in one colour, but the shape reads as a generic tech grid that spells an ambiguous S, not E or Emberwick, with nothing warm, crafted or tied to where coffee comes from, and it turns to mush below 24px.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.6,
+          4.6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.4,
+          5
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3219114
+  },
+  {
+    "brand": "emberwick",
+    "concept": "ember-dot",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a lowercase serif wordmark whose i-dot is replaced by a rust-coloured faceted pebble",
+        "a candle wick with a glowing ember on top, if you're looking for it",
+        "an 'i' information icon or a gemstone when the symbol stands alone"
+      ],
+      "distinctiveness": 5.3,
+      "memorability": 5.8,
+      "brandFit": 6.8,
+      "craft": 6,
+      "versatility": 6.5,
+      "presentAsIs": false,
+      "why": "The wordmark is warm, clean and quietly confident, but swapping the i-dot for a coloured shape is a common trick, the faceted shape looks more like a rock or gem than an ember, and the standalone 'i' doesn't stand for Emberwick, so the stamp mark is weak.",
+      "votes": "1/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.4,
+          6.2
+        ]
+      },
+      "sonnet": {
+        "yes": 1,
+        "looks": 2,
+        "scores": [
+          6.2,
+          6.4
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3467108
+  },
+  {
+    "brand": "emberwick",
+    "concept": "impression",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "section sign (§)",
+        "a lowercase e stacked on an upside-down e or schwa",
+        "a serif g or an ampersand-like ligature"
+      ],
+      "distinctiveness": 6.3,
+      "memorability": 6.3,
+      "brandFit": 6,
+      "craft": 6.5,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The rotated double-e is a well-drawn typographic monogram with a warm rust colour and holds up in one colour, but at small sizes it reads as a legal section sign (§) rather than Emberwick, and nothing in it hints at roasting, warmth or where the coffee comes from.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6.4,
+          6.4
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6.6,
+          6.2
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3248796
+  },
+  {
+    "brand": "emberwick",
+    "concept": "sort",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "rubber stamp with a lowercase e",
+        "perfume or ink bottle",
+        "weight or kettlebell icon"
+      ],
+      "distinctiveness": 4.5,
+      "memorability": 5.5,
+      "brandFit": 4,
+      "craft": 5.8,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "It is a literal clip-art stamp holding a stock geometric 'e', so it takes the 'works stamped in one colour' line too literally, says nothing about origin, warmth or Emberwick, and the floating base bar and the bottle-like silhouette make it look generic and hard to read at small sizes.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.8,
+          5.2
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.6,
+          5.8
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3195968
+  }
+]

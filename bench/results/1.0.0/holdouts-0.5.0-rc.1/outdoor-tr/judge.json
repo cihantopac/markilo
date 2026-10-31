@@ -1,0 +1,162 @@
+[
+  {
+    "brand": "gocebe",
+    "concept": "bohca",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "money bag / sack of coins",
+        "drawstring sack tied with a gold band",
+        "bohça-style bundle of a traveller's belongings"
+      ],
+      "distinctiveness": 4,
+      "memorability": 5.3,
+      "brandFit": 3.8,
+      "craft": 5.3,
+      "versatility": 6.3,
+      "presentAsIs": false,
+      "why": "The nomad's-bundle idea is apt and avoids the banned clichés, but the bulbous sack with its gold band reads first as a cartoon money-bag emoji, and the lumpy flame-like top and uneven white gap lack the refinement and textile character a bohça needs.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5,
+          4.6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.2,
+          4.8
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.32095019999999996
+  },
+  {
+    "brand": "gocebe",
+    "concept": "cay",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "Turkish tulip tea glass cut out of a brown block",
+        "a bottle or vase in negative space",
+        "an armchair or stepped block shape"
+      ],
+      "distinctiveness": 5.5,
+      "memorability": 5.8,
+      "brandFit": 4.3,
+      "craft": 6,
+      "versatility": 6.8,
+      "presentAsIs": false,
+      "why": "The negative-space tea glass (ince belli) is a clever, very Turkish cue that holds up as a solid stamp down to small sizes, but it says café or tea house, not durable gear for hikers and long-distance travellers; the uneven stepped block looks arbitrary and the ö and ç wordmark is not shown, so it can't be presented as an outdoor identity yet.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.8,
+          5.6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6,
+          5.2
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3252149
+  },
+  {
+    "brand": "gocebe",
+    "concept": "percin",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a heavy rounded wordmark with a brown T-shaped stake stuck under the c",
+        "a phallic or plunger-like shape in the symbol",
+        "a tent peg or rivet standing in for the cedilla"
+      ],
+      "distinctiveness": 5.8,
+      "memorability": 5.8,
+      "brandFit": 4,
+      "craft": 4.5,
+      "versatility": 4.5,
+      "presentAsIs": false,
+      "why": "The rivet that replaces the cedilla does not read as a ç, which breaks the brief's rule on correct Turkish letters; the symbol cut from it can look phallic or like a plunger, the notches look like glitches rather than deliberate ink traps, and in one colour the peg fuses with the c into a blob, which is risky for embroidered labels.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.4,
+          5
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.2,
+          5
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3551424
+  },
+  {
+    "brand": "gocebe",
+    "concept": "stitch",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "generic lowercase grotesk wordmark with an oversized rope-loop dangling under the c",
+        "a knotted cord or shoelace standing in for the cedilla",
+        "a stray squiggle or a Greek rho/infinity glyph floating under the word"
+      ],
+      "distinctiveness": 4.3,
+      "memorability": 4.3,
+      "brandFit": 3.8,
+      "craft": 3,
+      "versatility": 3.3,
+      "presentAsIs": false,
+      "why": "The rope-knot cedilla is a relevant idea for durable travel gear, but it is drawn far too big and far from its letter, so the ç reads less like a Turkish letter and more like a separate doodle; it clashes with the stock grotesk, and the stacked symbol is lopsided and turns to mush at 16–32 px.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.4,
+          3.4
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          3.6,
+          3.4
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3594562
+  }
+]

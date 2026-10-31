@@ -89,18 +89,26 @@ never used for tuning until those results were in. The plugin researches, writes
 finalizes only what passes its own gate. Blind judges then rate every critiqued concept from the brief and the images
 alone. Every run, image and score is in [bench/](bench).
 
-| Version        | Runs                      | Passed the gate | Opus 5.5 judge would present (of concepts it judged) | Time per run | Cost per run (API equivalent) |
-| -------------- | ------------------------- | --------------- | ---------------------------------------------------- | ------------ | ----------------------------- |
-| 0.4.0-rc.1     | 3                         | 0               | —                                                    | 11–21 min    | $2.61–3.67                    |
-| 0.4.0-rc.2     | 3                         | 1               | —                                                    | 8–15 min     | $1.60–2.68                    |
-| 0.4.0-rc.3     | 3                         | 2               | 0 of 2 (the two that passed)                         | 14–24 min    | $3.15–4.37                    |
-| 0.4.0-rc.5     | 9 (6 on holdouts)         | 2               | 0 of 12                                              | 10–19 min    | $2.29–4.41                    |
-| 0.4.0-rc.7     | 11 (2 new holdouts)       | 0               | 2 of 5 — both rejected by the gate                   | 6–16 min     | $1.66–3.30                    |
-| 0.4.0-rc.8     | 9                         | 0               | 0 of 3 — the recalibrated gate agreed on all 3       | 8–18 min     | $1.91–3.48                    |
-| 0.4.0 (rc.9)   | 9                         | 2               | Portwise 2 of 4 looks, Dozeline 0 of 4               | 14–28 min    | $3.00–7.13                    |
-| **0.5.0-rc.1** | **9 (4 on new holdouts)** | **2**           | **2 of 29, the two that passed (3/3 and 2/3 looks)** | 14–36 min    | $3.37–5.86                    |
+| Version      | Runs                                        | Passed the gate          | Opus 5.5 judge would present (of concepts it judged) | Time per run | Cost per run (API equivalent) |
+| ------------ | ------------------------------------------- | ------------------------ | ---------------------------------------------------- | ------------ | ----------------------------- |
+| 0.4.0-rc.1   | 3                                           | 0                        | —                                                    | 11–21 min    | $2.61–3.67                    |
+| 0.4.0-rc.2   | 3                                           | 1                        | —                                                    | 8–15 min     | $1.60–2.68                    |
+| 0.4.0-rc.3   | 3                                           | 2                        | 0 of 2 (the two that passed)                         | 14–24 min    | $3.15–4.37                    |
+| 0.4.0-rc.5   | 9 (6 on holdouts)                           | 2                        | 0 of 12                                              | 10–19 min    | $2.29–4.41                    |
+| 0.4.0-rc.7   | 11 (2 new holdouts)                         | 0                        | 2 of 5 — both rejected by the gate                   | 6–16 min     | $1.66–3.30                    |
+| 0.4.0-rc.8   | 9                                           | 0                        | 0 of 3 — the recalibrated gate agreed on all 3       | 8–18 min     | $1.91–3.48                    |
+| 0.4.0 (rc.9) | 9                                           | 2                        | Portwise 2 of 4 looks, Dozeline 0 of 4               | 14–28 min    | $3.00–7.13                    |
+| 0.5.0-rc.1   | 9 (4 on new holdouts)                       | 2                        | 2 of 29, the two that passed (3/3 and 2/3 looks)     | 14–36 min    | $3.37–5.86                    |
+| **1.0.0**    | **14 (5 sealed holdouts, 9 on real tools)** | **2, both false passes** | **0 of 43 (Opus + Sonnet panel)**                    | 21–35 min    | $6.85–13.87                   |
 
 What this shows, plainly:
+
+- **1.0 did not make unattended work better, and says so.** On five briefs sealed before any 1.0 change and on three
+  real developer tools, an independent panel (Opus and Sonnet, blind) would present none of the 1.0 concepts; it would
+  not have presented the 0.5.0-rc.1 ones either. The two 1.0 gate passes were edge passes the panel rejected; the
+  gallery now marks such passes "at the edge". What 1.0 did improve is everything around the design: safety, the
+  install transaction, letter checks, typefaces, the critique process and the evidence. See
+  [bench/results/1.0.0](bench/results/1.0.0).
 
 - **Unattended, Markilo still rarely reaches its own gate** — 6 of the 47 validation runs since rc.5, 2 of 12 on
   briefs that were still untouched holdouts when they ran.

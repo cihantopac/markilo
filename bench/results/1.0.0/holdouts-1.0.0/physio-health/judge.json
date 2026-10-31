@@ -1,0 +1,122 @@
+[
+  {
+    "brand": "kinetra",
+    "concept": "joined-it",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "an 'i' whose dot leaps up in a bouncing arc",
+        "a ball being thrown or a comet trail",
+        "a tadpole or sperm shape over a separate stem"
+      ],
+      "distinctiveness": 5.8,
+      "memorability": 5.8,
+      "brandFit": 6.5,
+      "craft": 5.5,
+      "versatility": 4.5,
+      "presentAsIs": false,
+      "why": "The warm plum-and-orange wordmark feels reassuring and active, but the leaping i-dot is a familiar trope with an unfortunate tadpole read, the custom t adds noise, and the cut-out symbol leaves the stem stranded and badly balanced, so it falls apart as an app icon at small sizes.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5,
+          5
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6.4,
+          6
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3602023
+  },
+  {
+    "brand": "kinetra",
+    "concept": "swing",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "abstract K built from three rounded capsule strokes",
+        "a leg bending at the knee, like a progressive range-of-motion sequence",
+        "lowercase 'lk' letters or toppling dominoes"
+      ],
+      "distinctiveness": 5.8,
+      "memorability": 5.8,
+      "brandFit": 5.8,
+      "craft": 5.5,
+      "versatility": 6.3,
+      "presentAsIs": false,
+      "why": "The three-stroke K suggests guided movement in a warm, friendly way, but the cramped crescent join between the diagonal and the foot leaves a fussy sliver and a sharp spur that look accidental, and at 16–24px the mark breaks into three blobs, so it needs refinement before it is shown.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.8,
+          5.8
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6.2,
+          5.4
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.32829790000000003
+  },
+  {
+    "brand": "kinetra",
+    "concept": "tempo",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "metronome with its pendulum swung to one side",
+        "audio fader or mixer slider",
+        "a dumbbell or knob on a rod against a tilted pyramid"
+      ],
+      "distinctiveness": 5.8,
+      "memorability": 5.8,
+      "brandFit": 4.8,
+      "craft": 6,
+      "versatility": 5.5,
+      "presentAsIs": false,
+      "why": "The metronome-and-slider idea is executed cleanly in a warm indigo and coral, but it reads first as a music or audio tool rather than physiotherapy recovery, and the slider knob turns into an unclear blob at 16–32 px.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5,
+          5.6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.8,
+          5.8
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.320461
+  }
+]

@@ -1,0 +1,251 @@
+{
+  "schema": "markilo/ideas@1",
+  "ideas": [
+    {
+      "id": "i1",
+      "hook": "a lowercase q drawn as one loose pen loop, the stroke overshooting where it closes and running down into the tail",
+      "means": "the q is the circle you draw around what matters in your notes — the decision, circled",
+      "source": "name",
+      "addedAt": "2026-10-31T22:33:38.336Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a handwritten lowercase q, one loose pen loop; risk: generic script letter or an @ sign unless the overshoot is distinctive",
+        "rank": 3,
+        "at": "2026-10-31T22:35:34.221Z"
+      }
+    },
+    {
+      "id": "i2",
+      "hook": "a lowercase q whose tail ties one soft, loose knot at the bottom",
+      "means": "the string tied round a finger — the follow-up nobody forgets",
+      "source": "name",
+      "addedAt": "2026-10-31T22:33:39.760Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a lowercase q with a soft knot tied in its tail; risk: knot reads as a pretzel or infinity loop if drawn too symmetric",
+        "rank": 1,
+        "at": "2026-10-31T22:35:33.974Z"
+      },
+      "concepts": [
+        "knot"
+      ]
+    },
+    {
+      "id": "i3",
+      "hook": "an empty chair pushed neatly in under the edge of a table, seen from the side",
+      "means": "the meeting is over and your time is given back — the relief remote teams want",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:33:41.312Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a chair tucked under a table edge, side view; risk: furniture-store or desk-booking icon if drawn literally",
+        "rank": 4,
+        "at": "2026-10-31T22:35:34.342Z"
+      },
+      "concepts": [
+        "pushed-in"
+      ]
+    },
+    {
+      "id": "i4",
+      "hook": "three flat river stones stacked in a small balanced cairn, the top one smallest",
+      "means": "a trail marker left for whoever comes after — the record for those who weren't in the room; calm and balanced",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:33:42.896Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a zen stacked-stones cairn: spa, meditation and wellness-app cliché",
+        "at": "2026-10-31T22:35:34.590Z"
+      }
+    },
+    {
+      "id": "i5",
+      "hook": "a relay baton mid-handoff: one short rounded bar passing from a curved hand-shape to another",
+      "means": "follow-ups handed to the person who owns them",
+      "source": "product",
+      "addedAt": "2026-10-31T22:33:44.466Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "two hands passing a rounded pill: a handshake/pharmacy reading, and a rounded bar on the no-list",
+        "at": "2026-10-31T22:35:34.726Z"
+      }
+    },
+    {
+      "id": "i6",
+      "hook": "a round table seen from above with one seat-shaped notch missing from its rim",
+      "means": "quorum — everyone at the table, Quorvo quietly taking the note-taker's seat",
+      "source": "name",
+      "addedAt": "2026-10-31T22:33:46.087Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a ring with a notch: Pac-Man, a letter C or a loading spinner",
+        "at": "2026-10-31T22:35:34.861Z"
+      }
+    },
+    {
+      "id": "i7",
+      "hook": "a ribbon bookmark hanging from the bottom edge of a closed, square block",
+      "means": "the place you'll come back to: the part of the meeting worth keeping",
+      "source": "product",
+      "addedAt": "2026-10-31T22:33:47.592Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a book with a ribbon: the bookmark/save UI icon and a notes-product object",
+        "at": "2026-10-31T22:35:34.996Z"
+      }
+    },
+    {
+      "id": "i8",
+      "hook": "a door standing slightly ajar, a tall slab with a thin wedge of light at its edge",
+      "means": "you can leave the meeting — someone is keeping the notes",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:33:49.187Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a door ajar: the exit / log-out UI icon",
+        "at": "2026-10-31T22:35:35.132Z"
+      }
+    },
+    {
+      "id": "i9",
+      "hook": "the word quorvo in a soft lowercase serif whose q descender sweeps right into a long, calm underline under the whole word",
+      "means": "underlined — what was decided, noted once and done",
+      "source": "type",
+      "addedAt": "2026-10-31T22:33:50.951Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a soft serif wordmark with a swash underline from the q; risk: common swash-underline wordmark trope, weak as a standalone icon",
+        "rank": 5,
+        "at": "2026-10-31T22:35:34.464Z"
+      }
+    },
+    {
+      "id": "i10",
+      "hook": "the word quorvo in a humanist sans where the two o's are drawn as the same open hand-drawn circle, not quite closed",
+      "means": "two notes circled in one hand — a human writing, not a machine",
+      "source": "type",
+      "addedAt": "2026-10-31T22:33:52.846Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "the word quorvo with two matching hand-drawn open circles for the o's; risk: open circles read as loading spinners if too regular",
+        "rank": 2,
+        "at": "2026-10-31T22:35:34.099Z"
+      },
+      "concepts": [
+        "circled"
+      ]
+    },
+    {
+      "id": "i11",
+      "hook": "a low sun half-sunk below a straight horizon line, with a wide calm gap above",
+      "means": "the workday ends on time; teams across time zones",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:33:54.452Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a sunset over a horizon: travel/solar/weather cliché",
+        "at": "2026-10-31T22:35:35.267Z"
+      }
+    },
+    {
+      "id": "i12",
+      "hook": "a fountain-pen nib seen head-on whose slit and breather hole form a lowercase q",
+      "means": "notes written for you, by a careful hand",
+      "source": "product",
+      "addedAt": "2026-10-31T22:33:56.045Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a fountain-pen nib: the note-taking/writing product-object cliché",
+        "at": "2026-10-31T22:35:35.394Z"
+      }
+    },
+    {
+      "id": "i13",
+      "hook": "a tall cup of tea seen from the side, a single smooth steam curl rising and turning into a q",
+      "means": "the quiet hour you get back instead of a meeting",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:33:57.632Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a steaming cup: café/coffee-shop logo cliché",
+        "at": "2026-10-31T22:35:35.518Z"
+      }
+    },
+    {
+      "id": "i14",
+      "hook": "two heavy rounded pebbles resting against each other, one slightly larger, sharing a small gap of light between them",
+      "means": "two people agreeing, quietly; calm weight, nothing urgent",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:33:59.337Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "two leaning blobs: generic geometry, reads as pebbles/spa or an unfortunate bum shape",
+        "at": "2026-10-31T22:35:35.656Z"
+      }
+    },
+    {
+      "id": "i15",
+      "hook": "the word quorvo in a calm sans where the r's arm runs on without a break into the left stroke of the v, one letter handing the line to the next",
+      "means": "a follow-up handed on from the person who said it to the person who owns it",
+      "source": "type",
+      "addedAt": "2026-10-31T22:45:27.011Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "the word quorvo in a plain sans with an r-v ligature; risk: the joined rv reads as a w ('quowo') or a kerning accident unless the hand-on is deliberate",
+        "rank": 1,
+        "at": "2026-10-31T22:45:53.682Z"
+      },
+      "concepts": [
+        "handoff"
+      ]
+    },
+    {
+      "id": "i16",
+      "hook": "a small paper boat folded from one square, sitting level on a single flat line",
+      "means": "what was decided, folded by hand and sent on its way — calm water, nothing left behind",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:45:27.186Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "an origami paper boat on a line: a common send/launch and kids'-craft cliché",
+        "at": "2026-10-31T22:45:53.806Z"
+      }
+    },
+    {
+      "id": "i17",
+      "hook": "a round, soft-edged wax seal pressed slightly off-centre into the corner of a folded square of paper",
+      "means": "signed off: the meeting's outcome closed and sent, with consent",
+      "source": "product",
+      "addedAt": "2026-10-31T22:45:27.374Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a sealed envelope or certificate with a wax seal: the mail/document product object and a verified-badge icon",
+        "at": "2026-10-31T22:45:53.924Z"
+      }
+    },
+    {
+      "id": "i18",
+      "hook": "the word quorvo drawn as one unbroken handwritten line with no pen lift, upright and unhurried like a signature",
+      "means": "a careful human hand writing it all down; signed and settled",
+      "source": "type",
+      "addedAt": "2026-10-31T22:45:27.551Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a generic monoline script signature wordmark; one-unbroken-line overlaps knot's string territory and has no ownable form at icon size",
+        "at": "2026-10-31T22:45:54.042Z"
+      }
+    },
+    {
+      "id": "i19",
+      "hook": "a coat hanging alone on a single wall peg, its shoulders drawn as one soft curve",
+      "means": "you can go home: the meeting is handled",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:45:27.738Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a coat on a wall hook: a cloakroom/wardrobe icon, the furniture-scene hat/hook reading rejected in round 1",
+        "at": "2026-10-31T22:45:54.161Z"
+      }
+    }
+  ]
+}

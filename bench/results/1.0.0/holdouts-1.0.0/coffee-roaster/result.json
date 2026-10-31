@@ -1,0 +1,338 @@
+{
+  "scenario": "coffee-roaster",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Coffee roaster",
+  "kind": "consumer",
+  "brief": {
+    "ask": "Create a brand identity for Emberwick, the coffee roaster whose website is in this folder.",
+    "owner": "Owner preferences: warm, crafted and quietly confident, not rustic or hipster; for people who care where their coffee comes from. No coffee beans, cups, steam, mountains or flames drawn literally. Web shop, bag labels and stickers, social, and a mark that works stamped in one colour."
+  },
+  "markilo": "0.5.0-rc.1",
+  "plugin": {
+    "version": "0.5.0-rc.1",
+    "commit": "560ecfc"
+  },
+  "ranAt": "2026-10-31T22:32:33.515Z",
+  "minutes": 27.1,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 10.31448509999999,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 106581,
+    "output": 292979,
+    "cacheRead": 18901388,
+    "cacheWrite": 1009132
+  },
+  "turns": 9,
+  "subagents": 21,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "All six directions over two rounds were rejected by the blind critic gate (best: sort at 5.8, its mirrored e read as a 9), so nothing was finalized, exported or installed."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "emberwick",
+      "name": "Emberwick",
+      "role": "master",
+      "locked": false,
+      "ideas": {
+        "total": 22,
+        "kept": 6,
+        "struck": 16,
+        "sources": 5
+      },
+      "concepts": [
+        {
+          "id": "counters",
+          "title": "Glowing Counters",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.31,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 6,
+            "balance": 6,
+            "craft": 5,
+            "typography": 5,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 6,
+            "craft": 5,
+            "versatility": 6
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a stock bold serif wordmark (Fraunces/Young Serif style) with nothing visible at 12-24 px",
+            "a lowercase e with a rock or pebble lodged in its eye",
+            "a lowercase e whose counter holds a little hill/mound (unfortunate: mountain, which the brief bans, or a stain/rendering glitch)"
+          ],
+          "sketchPick": "s5",
+          "sketchNotes": "Reads as: s1 a serif e with a stray fleck or pupil, the ember too small to name; s2 an e with a googly pupil, an eye first; s3 a fried egg / amber eye, and the idea depends on a second colour, so it fails the one-colour stamp; s4 a lone lowercase b with a water drop or flame in its bowl, the teardrop reads as the banned flame and a b icon does not name Emberwick; s5 an e with a faceted stone resting on the crossbar floor: the closest any gets to coal in a hearth. Keep s5: a faceted, angular coal (never round or teardrop) sitting on the crossbar, off-axis right, same copper. Fix: the main risk is the eye or pupil reading, so make the coal wider than it is tall and clearly resting on the floor; put it in ONE e of the word only (s5w puts it in both e's, which reads as two eyes and as a pattern); make sure it survives at 16 px as a coal, not as a dot. Check the icon e does not read as a mirrored 9 or a lone stock e (the round-1 failures).",
+          "checks": {
+            "pass": 29,
+            "warn": 4,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.468
+          }
+        },
+        {
+          "id": "inktrap",
+          "title": "Ink-Trap W",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a W split by a slot, a VV or a W with a keyhole; s2 a W with an egg-shaped hole punched in the joint; s3 a W with a diamond bitten out; s4 a dripping or stencilled W with paint drops at the joints. All four are a single letter with a cut, slot, bite or notch: the most common monogram device, and round 1 already found a W monogram read as stock. The ink-trap idea belongs in the wordmark, not as a carved icon. Different move: make ink traps a real typographic property of the whole custom EMBERWICK (small, functional traps at every acute joint, as on press type), so the printworks story is the voice of the word; find the icon from a different source than a carved letter, e.g. a printers' element (a stamp, a fleuron or a rule mark) the word already owns, with no single-cut W.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "ligature",
+          "title": "Printer's Ligature",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.54,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 6,
+            "balance": 6,
+            "craft": 6,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 5
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 6,
+            "craft": 6,
+            "versatility": 6
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "the word emberwick set in a soft display serif (Fraunces/Recoleta family), ligature barely noticed",
+            "the letters 'rw' as an icon, read as unexplained initials or 'IW'",
+            "a Unix read-write flag / .rw (Rwanda) domain - unfortunate: initials that are not the brand's"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 'rw' in a heavy serif with an ink-squash join between the letters (faint CD-RW echo, harmless); s2 'mb', which is megabyte to a stranger, and the shared stem is invisible at 16 px; s3 'Wi' as in the Wi-Fi sign on a cafe counter, a bad misreading for a coffee brand, and the floating dot as the wick's flame does not come across. Struck s2 and s3. Keep s1: it is the only pair whose join is visible as an event, and it fits the printworks story (ink spread under pressure). Fix: the fused r-ear/w-serif currently looks like a casting defect or blob. Draw it as a deliberate ligature, a single swelling terminal with a clear counter-shape where the two meet, so it reads as intended at 32 px and still as 'rw' at 16 px. Hold the same serif and weight as the full wordmark so the icon is visibly cut from it, and check one-colour stamping, where the join must not fill in. Risk: 'rw' is a mid-word pair, so the wordmark lockup has to make the link to Emberwick obvious.",
+          "checks": {
+            "pass": 23,
+            "warn": 6,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.217
+          }
+        },
+        {
+          "id": "plait",
+          "title": "Plaited Wick",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.46,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 3,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 6,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 6
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a W monogram with interlaced gaps",
+            "V and J overlapping (VJ)",
+            "two checkmarks / tick strokes"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 a W made of two overlapping Vs (generic double-V W, common device; weave invisible at 16 px); s2 'vvv'/a wave pattern, muddy at 16 px (struck); s3 a calligraphic thick-thin W, a heavy rounded stroke bound by a thin one; s4 a sharp mitred W with a broken stroke - hard, condensed, contradicts warm (struck). Pick s3: the unequal weights give it a hand and the most room to be ownable. Risk: today it reads only as 'W' with a hairline - the wick/plait idea does not land, and W is not the name's initial. Fix: make the over-under crossing legible at 16 px (a real gap where the thin strand passes under, sized for small use), give the thin strand a twist or second crossing so 'two-ply wick' reads before 'letter W', keep the rounded terminals for warmth, and avoid drifting toward any stock double-V W.",
+          "checks": {
+            "pass": 16,
+            "warn": 0,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.347
+          }
+        },
+        {
+          "id": "sort",
+          "title": "Type Sort",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.77,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 6,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 6,
+            "craft": 6,
+            "versatility": 7
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a numeral 9 (or a schwa) knocked out of a rectangle",
+            "a price tag or luggage ticket with a notch",
+            "a document/clip-art label icon"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 a phone/remote with a 9 on it (UI device, struck); s2 a sandwich-board sign with a 9 (struck); s3 a flowerpot/bucket with a 9 (struck); s4 a heavy reversed e cropped in a dark block - closest to the idea, a printer's sort; s5 a book or door with a 9 (struck). Pick s4. Main risk across the board: the mirrored e reads as a 9 or a schwa to a stranger - in s4 the e is big enough that its full crossbar carries it, keep that bar full-width and the aperture clearly an e's (open at lower-left, not a 9's tail). Make the block read as a metal sort, not a tag: a visible nick on the flank at 16 px, proper shoulder proportions, no rounded app-icon corners. Do not let the crop eat the e's terminal or it becomes a C/G fragment. Check one-colour stamp: it is solid, good.",
+          "checks": {
+            "pass": 16,
+            "warn": 1,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.396
+          }
+        },
+        {
+          "id": "wickmark",
+          "title": "Wick and Ember",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 4.46,
+          "scores": {
+            "brand-fit": 3,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 4,
+            "craft": 4,
+            "typography": 3,
+            "color": 6,
+            "cultural-fit": 4,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 4
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 3,
+            "craft": 4,
+            "versatility": 4
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "the word 'emberwr-ck' / 'ember wreck' - the i reads as an r plus a dash",
+            "a candy cane or walking-stick hook next to a pebble",
+            "a lowercase r and a rock"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 the info 'i' glyph with a wobbly stem (UI icon, struck); s3 the same info 'i' (struck); s5 an italic i / info icon (struck); s4 Arabic script ('عا'-like) rather than 'ic' (struck - unfortunate misreading for EU audience and not the name); s2 a bent thread or crook with a glowing dot beyond its tip - a lamp-post/'r.' at worst. Pick s2: the only one that escapes the info glyph and is closest to 'spent wick, lit coal'. Risks: it can read as a lowercase 'r' followed by a full stop, or a street lamp; in one colour the coal is just a dot, so its shape (flat, irregular, set on the curve's tangent) must carry 'ember' without the amber. Give the stroke a taper or frayed tip so it is thread, not pipe; keep it from forming a question mark. In the wordmark, echo this droop in the i of emberwick so icon and word connect.",
+          "checks": {
+            "pass": 20,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.21
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "06aeca21-a9f5-4294-a683-b8efbaa1dd5d"
+}

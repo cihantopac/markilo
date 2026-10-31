@@ -23,17 +23,20 @@ company) plus the owner's preferences:
 
 ## Results
 
-| Run                                                        | Model      | Passed the gate | Blind judge would present                                | Developed / directions | Gate agrees with the judge | Minutes (total) | Cost (API equivalent) |
-| ---------------------------------------------------------- | ---------- | --------------- | -------------------------------------------------------- | ---------------------- | -------------------------- | --------------- | --------------------- |
-| [0.4.0-rc.1](results/0.4.0-rc.1)                           | Sonnet 5.5 | 0 of 3          | —                                                        | 7 / 9                  | 7 of 7                     | 48              | $9.76                 |
-| [0.4.0-rc.2](results/0.4.0-rc.2)                           | Sonnet 5.5 | 1 of 3          | 0 of 1                                                   | 1 / 9                  | 0 of 1                     | 32              | $6.10                 |
-| [0.4.0-rc.2, Opus](results/0.4.0-rc.2-opus)                | Opus 5.5   | 0 of 1          | —                                                        | 1 / 3                  | 1 of 1                     | 17              | $5.23                 |
-| [0.4.0-rc.3](results/0.4.0-rc.3)                           | Sonnet 5.5 | 2 of 3          | 2 of 2                                                   | 6 / 9                  | 5 of 6                     | 54              | $10.85                |
-| [0.4.0-rc.5](results/0.4.0-rc.5) (9 runs, 6 holdout)       | Sonnet 5.5 | 2 of 9          | 0 of 2 (Opus judge)                                      | 12 / 27                | 10 of 12                   | 139             | $29.93                |
-| [0.4.0-rc.7](results/0.4.0-rc.7) (11 runs, 2 new holdouts) | Sonnet 5.5 | 0 of 11         | 2 of 5 developed (Opus judge), both rejected by the gate | 5 / 33                 | 3 of 5                     | 129             | $26.81                |
-| [0.4.0-rc.8](results/0.4.0-rc.8) (9 runs, Opus critic)     | Sonnet 5.5 | 0 of 9          | 0 of 3 (Opus judge)                                      | 3 / 27                 | 3 of 3                     | 105             | $23.79                |
-| [0.4.0-rc.9](results/0.4.0-rc.9) (9 runs)                  | Sonnet 5.5 | 2 of 9          | Portwise 2/4 looks, Dozeline 0/4 (Opus)                  | 22 / 27                | 19 of 22                   | 155             | $37.75                |
-| [0.5.0-rc.1](results/0.5.0-rc.1) (9 runs, 4 new holdout)   | Sonnet 5.5 | 2 of 9          | 2 of 29 (3 looks each, Opus)                             | 29 / 43                | 29 of 29                   | 191             | $42.43                |
+| Run                                                                 | Model         | Passed the gate      | Blind judge would present                                | Developed / directions | Gate agrees with the judge | Minutes (total) | Cost (API equivalent) |
+| ------------------------------------------------------------------- | ------------- | -------------------- | -------------------------------------------------------- | ---------------------- | -------------------------- | --------------- | --------------------- |
+| [0.4.0-rc.1](results/0.4.0-rc.1)                                    | Sonnet 5.5    | 0 of 3               | —                                                        | 7 / 9                  | 7 of 7                     | 48              | $9.76                 |
+| [0.4.0-rc.2](results/0.4.0-rc.2)                                    | Sonnet 5.5    | 1 of 3               | 0 of 1                                                   | 1 / 9                  | 0 of 1                     | 32              | $6.10                 |
+| [0.4.0-rc.2, Opus](results/0.4.0-rc.2-opus)                         | Opus 5.5      | 0 of 1               | —                                                        | 1 / 3                  | 1 of 1                     | 17              | $5.23                 |
+| [0.4.0-rc.3](results/0.4.0-rc.3)                                    | Sonnet 5.5    | 2 of 3               | 2 of 2                                                   | 6 / 9                  | 5 of 6                     | 54              | $10.85                |
+| [0.4.0-rc.5](results/0.4.0-rc.5) (9 runs, 6 holdout)                | Sonnet 5.5    | 2 of 9               | 0 of 2 (Opus judge)                                      | 12 / 27                | 10 of 12                   | 139             | $29.93                |
+| [0.4.0-rc.7](results/0.4.0-rc.7) (11 runs, 2 new holdouts)          | Sonnet 5.5    | 0 of 11              | 2 of 5 developed (Opus judge), both rejected by the gate | 5 / 33                 | 3 of 5                     | 129             | $26.81                |
+| [0.4.0-rc.8](results/0.4.0-rc.8) (9 runs, Opus critic)              | Sonnet 5.5    | 0 of 9               | 0 of 3 (Opus judge)                                      | 3 / 27                 | 3 of 3                     | 105             | $23.79                |
+| [0.4.0-rc.9](results/0.4.0-rc.9) (9 runs)                           | Sonnet 5.5    | 2 of 9               | Portwise 2/4 looks, Dozeline 0/4 (Opus)                  | 22 / 27                | 19 of 22                   | 155             | $37.75                |
+| [0.5.0-rc.1](results/0.5.0-rc.1) (9 runs, 4 new holdout)            | Sonnet 5.5    | 2 of 9               | 2 of 29 (3 looks each, Opus)                             | 29 / 43                | 29 of 29                   | 191             | $42.43                |
+| [1.0.0](results/1.0.0) — 5 sealed holdouts (0.5.0-rc.1 baseline)    | Sonnet 5.5    | 0 of 5               | 0 of 21 (panel: Opus + Sonnet, 2 looks each)             | 21 / 32                | 21 of 21                   | 133             | $40.43                |
+| [1.0.0](results/1.0.0) — 5 sealed holdouts (1.0.0)                  | Sonnet 5.5    | 1 of 5 (false pass)  | 0 of 20 (panel)                                          | 20 / 25                | 19 of 20                   | 132             | $43.97                |
+| [1.0.0](results/1.0.0/real-projects.md) — 3 real tools × 4 versions | Sonnet / Opus | 1 of 12 (false pass) | 0 of 40 (panel)                                          | —                      | 39 of 40                   | 333             | $114.14               |
 
 What changed, and why:
 
@@ -114,6 +117,13 @@ they show whether an improvement generalizes beyond the briefs it was found on. 
 results have shaped a change: the rc.5 holdouts after rc.5, the rc.7 holdouts after rc.7, since their concepts were in
 the rc.8 calibration set. The rc.8 and rc.9 reports still label them holdouts, as they were recorded at run time; by
 this rule they were known briefs. 0.5.0-rc.1 got fresh ones (feature-flags, secrets-team), written before any run.
+
+- **1.0.0 (sealed holdouts, real projects, judge panel).** Runs became isolated (only Markilo loaded, from a plugin
+  snapshot) and judging moved to a panel of Opus and Sonnet. 1.0 added the idea longlist, the letter check, 24 faces
+  chosen for the brief, one-silhouette construction and second looks at the edge of the gate. Independently judged
+  quality did not improve: on the five holdouts the panel would present none of the 0.5.0-rc.1 concepts (0 of 21) and
+  none of the 1.0 concepts (0 of 20); on three real developer tools, 0 of 40. Both 1.0 gate passes were edge passes the
+  panel rejected, and Opus as designer did not help. Details: [results/1.0.0](results/1.0.0).
 
 For 1.0.0, five holdouts were sealed on 2026-10-31 before any 1.0 design change (ai-notes, coffee-roaster,
 physio-health, outdoor-tr, community-solar). They stay unrun until the 1.0 evaluation, where the 0.5.0-rc.1 baseline

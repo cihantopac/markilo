@@ -1,0 +1,162 @@
+[
+  {
+    "brand": "kinetra",
+    "concept": "guided",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "the word 'kinetra' with an extended t-crossbar acting as a canopy or handrail over 'ra'",
+        "a parallel-bar or support rail, read as a quiet reference to guided rehab",
+        "a 'Tr' monogram that reads more like a table or a shelf than like Kinetra"
+      ],
+      "distinctiveness": 5.8,
+      "memorability": 5.8,
+      "brandFit": 6,
+      "craft": 5.8,
+      "versatility": 5.8,
+      "presentAsIs": false,
+      "why": "The warm terracotta and the supportive handrail crossbar suit a reassuring, active brand, but the icon is cut to 'Tr' rather than the brand's initial, the rounded bar clashes with the square-cut letter ends, and the overhang makes the t read like an l, so the system feels like a single typographic gesture that is competent but not yet ownable.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.6,
+          6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6,
+          5.6
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.35691130000000004
+  },
+  {
+    "brand": "kinetra",
+    "concept": "held",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "lowercase k monogram with a separate orange hook",
+        "a bent joint or knee with a swinging limb",
+        "a person with an outstretched arm next to a ball or smile curve"
+      ],
+      "distinctiveness": 5.8,
+      "memorability": 5.8,
+      "brandFit": 5.8,
+      "craft": 5.5,
+      "versatility": 6.3,
+      "presentAsIs": false,
+      "why": "The friendly rounded-stroke k with an orange arc reads warm and active, but the orange piece floats loose and awkwardly against the stem, so the letter doesn't read cleanly, the shape looks half-built rather than ownable, and the orange hook turns into a smudge at 16–24px.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.8,
+          5.6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.8,
+          6
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.31632720000000003
+  },
+  {
+    "brand": "kinetra",
+    "concept": "range",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "boomerang or wide chevron with a speed-gauge arc above it",
+        "a bent joint shown with a goniometer range-of-motion arc",
+        "a hand or shoe-like blob, or a wifi/signal icon tilted on its side"
+      ],
+      "distinctiveness": 5.8,
+      "memorability": 5.5,
+      "brandFit": 5,
+      "craft": 4.8,
+      "versatility": 5.5,
+      "presentAsIs": false,
+      "why": "The joint angle with a range-of-motion arc is a relevant idea for physio, but the heavy, lopsided limb shape reads as a boomerang or blob, it sits off-center and floats in its frame, the arc's sharp cuts don't match the round ends, and both the reading and the gap fall apart at 16–24px.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.8,
+          5.8
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5,
+          5.6
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.32162620000000003
+  },
+  {
+    "brand": "kinetra",
+    "concept": "softserif",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "plum serif wordmark where the 'e' sweeps up into the 't' crossbar",
+        "'et' ligature monogram, which reads like the word 'et' rather than a K for Kinetra",
+        "calm editorial or wellness brand with a little movement"
+      ],
+      "distinctiveness": 5.5,
+      "memorability": 5.5,
+      "brandFit": 6,
+      "craft": 5.3,
+      "versatility": 5.8,
+      "presentAsIs": false,
+      "why": "The soft plum serif feels reassuring and professional, and the e-to-t swash hints at movement, but the thin, wobbly connecting stroke and the bump where it meets the t look unresolved, and an 'et' icon cut from the middle of the name does not point back to Kinetra, so it is weak as a standalone app mark.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.4,
+          5.2
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6,
+          5.8
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3480289
+  }
+]

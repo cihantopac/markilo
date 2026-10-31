@@ -1,0 +1,300 @@
+{
+  "scenario": "outdoor-tr",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Outdoor gear (Turkish name)",
+  "kind": "consumer",
+  "brief": {
+    "ask": "Create a brand identity for Göçebe, the outdoor and travel gear shop in this folder.",
+    "owner": "Owner preferences: durable, free-spirited and grounded, Turkish at heart but ready for Europe; for hikers and long-distance travellers. The wordmark must keep the Turkish letters ö and ç correct. No mountains, tents, compasses, trees or arrows. Web shop, product tags, social, and an embroidered or woven label version."
+  },
+  "markilo": "0.5.0-rc.1",
+  "plugin": {
+    "version": "0.5.0-rc.1",
+    "commit": "a7194d4"
+  },
+  "ranAt": "2026-10-31T22:15:18.878Z",
+  "minutes": 28.01,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 8.391116399999998,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 86542,
+    "output": 279885,
+    "cacheRead": 15267090,
+    "cacheWrite": 765510
+  },
+  "turns": 9,
+  "subagents": 15,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Six directions over two rounds; none passed the critic's quality gate (best cold average 5.0, cay), so nothing was finalized or exported."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "gocebe",
+      "name": "Göçebe",
+      "role": "master",
+      "locked": false,
+      "ideas": null,
+      "concepts": [
+        {
+          "id": "bohca",
+          "title": "Bohça knot",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 4,
+            "craft": 4,
+            "typography": 6,
+            "color": 6,
+            "cultural-fit": 5,
+            "timelessness": 6,
+            "premium-perception": 4,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 4,
+            "craft": 4,
+            "versatility": 5
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a money bag (the loot-sack emoji without the dollar)",
+            "a tied rubbish bag",
+            "a stacked cairn of stones at small sizes - unfortunate: money bag / loot for a shop"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as (32 px): s1 a heavy ö, then a surprised face (two eyes over an open mouth), then a donut - no bundle; s2 a rounded box with two diamond ears - a robot head, toaster or cat-eared creature (stock-shape 0.68); s4 a chain-link/hyperlink UI icon over a pill - struck. Weak pick s1: the only sketch whose first reading matches part of its idea (the ö), but the bundle and the tie are absent, so as drawn it is a stock bold ö with a cute-face risk that works against durable/grounded. Fix (the one move): make the dots the knot - the two ochre ears must rise from the body as cloth corners that meet and tie on top (a bohça is a cloth gathered and knotted at the top), so the silhouette reads as a bundle first and an ö second. Flatten the body into a soft cloth sack rather than a perfect ring, drop the round dots, and keep the knot chunky enough to embroider. If the tied ears read as bunny ears or a face, stop.",
+          "checks": {
+            "pass": 16,
+            "warn": 1,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.433
+          }
+        },
+        {
+          "id": "cay",
+          "title": "Çay stop",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 5,
+            "typography": 3,
+            "color": 7,
+            "cultural-fit": 5,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 4,
+            "craft": 5,
+            "versatility": 6
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a bottle opener / bottle-neck cutout in a block",
+            "a zipper slider or strap buckle seen flat",
+            "a keyhole-like slot in a squared tile (unfortunate: beer bottle or bottle opener for a gear shop)"
+          ],
+          "sketchPick": "s5",
+          "sketchNotes": "Reads as: s1 a tulip glass/vase knocked out of a U-block, with a candle flame inside; s2 two lumpy cushions or a bum around a glass (strike); s3 a round café badge with a tea glass (stock shape 0.79, every çay house logo, strike); s4 a pocket or hot-water bottle with a drop; s5 a tulip glass standing between a low bench and a tall block. Keep s5: the asymmetry is the only ownable part and it carries the two-stops idea without words. Risks: (1) the amber drop floats mid-bowl and reads as a flame, making it a candle or lantern. Make the tea a liquid that fills the lower bowl up to a flat, horizontal surface line, so it is clearly tea in a glass. (2) Tighten the waist and flare the rim so the silhouette is unmistakably an ince belli glass and not a vase or hourglass. (3) For DE/NL the glass reads only as 'a glass'. That is acceptable, but the two blocks must feel like gear or rest (pack-high block, bench) and not like generic slabs. (4) Check the one-colour version: without amber the tea needs to be a knocked-out band, not a lost detail.",
+          "checks": {
+            "pass": 16,
+            "warn": 1,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.436
+          }
+        },
+        {
+          "id": "menderes",
+          "title": "Menderes",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 an undo/return-key arrow or a horseshoe magnet lying down (UI icon; also a banned arrow by implication); s2 an @ sign or a lowercase e in a box; s3 a lowercase r followed by a dot ('r.'); s4 a B / reversed 3 knocked out of a square. Every sketch reads as a glyph or UI icon before it reads as a river: a single meander turn in a heavy band is simply a letter terminal. The Menderes story needs words to land, and a stranger cold gets nothing. Do not rework the single hairpin. If the river is kept, it has to come in through texture or making (for example a woven-label edge or stitch line that wanders), not as a standalone symbol. Better to put effort into cay or percin.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "percin",
+          "title": "Perçin (rivets)",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 4.69,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 6,
+            "balance": 4,
+            "craft": 4,
+            "typography": 4,
+            "color": 6,
+            "cultural-fit": 5,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 5
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 4,
+            "craft": 4,
+            "versatility": 5
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a c impaled on a peg or stand",
+            "a plunger / mushroom stalk hanging under the c",
+            "a bubbly rounded geometric sans like a snack or kids app (unfortunate: the cedilla reads as a T-stand, so ç reads as c+I)"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 a plain o with two orange dots, a surprised face; s2 a c with a bell clapper or thermometer bulb hanging below it; s3 'öç', which in Turkish means 'revenge' (strike for the TR audience; it is also the weakest at 16 px, 0.83); s4 a Mickey-ears / teddy-bear head (known-logo reading, strike); s5 two eyes over an open mouth (owl or face). Pick s2 because ç is the letter that makes the name Turkish. ö is ordinary German, so s1, s4 and s5 say 'German' to the DE market, and the cedilla rivet is the only new move on the board. Fix: the shank must pass through the c's lower terminal, the way a rivet goes through material, and end in a flat, wider-than-tall peened head (mushroom profile). Right now it hangs below as a ball on a stick and reads as a pendulum or a drip. Keep the cedilla's size and placement correct so the word never reads 'cp' (round 1's failure). Prove it in the full Göçebe wordmark at text size, with the ö dots as matching flat rivet heads.",
+          "checks": {
+            "pass": 17,
+            "warn": 4,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.459
+          }
+        },
+        {
+          "id": "stitch",
+          "title": "Stitched ç",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 4.08,
+          "scores": {
+            "brand-fit": 3,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 6,
+            "balance": 3,
+            "craft": 3,
+            "typography": 4,
+            "color": 6,
+            "cultural-fit": 5,
+            "timelessness": 5,
+            "premium-perception": 3,
+            "versatility": 3
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 3,
+            "craft": 3,
+            "versatility": 3
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a c stacked over a p (cp)",
+            "a pretzel or ribbon-loop squiggle hanging under the wordmark",
+            "a stray glyph error in the wordmark - unfortunate: 'cp' monogram, an unwelcome abbreviation in EN/DE web contexts"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as (32 px): s1 a c over a smile of three blobs (emoticon/sun, the dashes are too fat to be thread); s2 a c over two quote ticks or eyes; s3 a c over an X, a close/delete glyph - struck; s4 a cedilla-c whose tail runs down into a knot - reads as a ç first, then thread, then a pin or lollipop; s5 an inverted question mark - struck. Pick s4: the only one where the cedilla reads as one continuous loose thread end rather than dashes, and the knot is an ownable detail tied to the repair promise. Fix: the tail is drawn as thick as the letter stroke, so it reads as a stick-and-ball (pin, lollipop, matchstick); make it a thinner thread with a slight curl and a small tight knot, not a round ball. Open a gap where tail leaves the c (the tool warns layers merge in one colour) so it still reads as attached thread on a woven label. Prove it inside the full word gocebe - the ç must not be the only element doing work, and check the knot survives embroidery at label size.",
+          "checks": {
+            "pass": 25,
+            "warn": 2,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.22
+          }
+        },
+        {
+          "id": "webbing",
+          "title": "Woven loop",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Second board, read cold at 32 px: s5 '.p', a dot and a lowercase p, the same reading as the old s1 - struck (different letter). s6 a turned awareness ribbon (a loop with two crossed tails), then a map pin or a slanted Q - struck (cliché; exactly the ribbon outline the first review warned against). s7 '-e', a dash and a lowercase e - struck (different letter). The crossing still never becomes the focal point; any single strap that loops and crosses itself lands on a glyph (p, e, Q) or the ribbon. Two boards have not produced a legible, ownable hook, so drop this direction. The weave and strap material can live on as a secondary pattern or label texture under the stitch concept, not as the symbol.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "86d8cc58-7c04-44c8-b08b-e2e59e20b101"
+}

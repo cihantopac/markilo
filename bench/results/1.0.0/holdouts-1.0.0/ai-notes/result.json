@@ -1,0 +1,246 @@
+{
+  "scenario": "ai-notes",
+  "attempt": 1,
+  "holdout": true,
+  "title": "AI assistant",
+  "kind": "saas",
+  "brief": {
+    "ask": "Create a brand identity for Quorvo, the meeting assistant in this folder.",
+    "owner": "Owner preferences: calm, competent and human; for remote teams who are tired of meetings. No sparkles, stars, brains, robots, chat bubbles, waveforms or gradient blobs. Web app, a desktop app icon (macOS, Windows) and social."
+  },
+  "markilo": "0.5.0-rc.1",
+  "plugin": {
+    "version": "0.5.0-rc.1",
+    "commit": "560ecfc"
+  },
+  "ranAt": "2026-10-31T22:32:33.515Z",
+  "minutes": 24.87,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 8.388318500000004,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 30212,
+    "output": 192494,
+    "cacheRead": 14016727,
+    "cacheWrite": 775745
+  },
+  "turns": 13,
+  "subagents": 22,
+  "claim": {
+    "passed": [
+      "knot"
+    ],
+    "finalized": "knot",
+    "notes": "Only knot passed the gate (narrowly, with a recurring question-mark reading) after two rounds; it was finalized with an accepted insufficient-evidence originality risk, and the Quorvo/Qorvo name conflict needs legal review."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "quorvo",
+      "name": "Quorvo",
+      "role": "master",
+      "locked": false,
+      "ideas": {
+        "total": 19,
+        "kept": 6,
+        "struck": 13,
+        "sources": 5
+      },
+      "concepts": [
+        {
+          "id": "circled",
+          "title": "Circled",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.08,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 5,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 6,
+            "balance": 5,
+            "craft": 5,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 4
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 6,
+            "craft": 5,
+            "versatility": 4
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "the word quorvo with two hand-circled clay o's",
+            "a refresh/reload arrow glyph in each o",
+            "the icon reads VO / v0 (Vercel's AI product) - unfortunate: a loading or retry spinner"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 a spiral / swirl, snail shell or loading spinner; s2 an enso brush circle (zen cliche, stock-shape 0.74); s3 a plain lowercase q in a rounded sans, generic and would collide with knot's q; s4 'vo' with the o as an open pen loop: the end of the word, the circling gesture inside it; s5 a circled V, the vegan label. Struck s1 (spiral), s2 (enso), s3 (stock q, too close to knot), s5 (vegan mark). Pick s4 because the concept is wordmark-led: the circle earns its place inside 'quorvo' as the final o, not as a standalone icon. Development move: set the whole word in a calm humanist lowercase and draw only the final o as the hand-made circling stroke, closing nearly shut with a small overshoot so it reads as o first, gesture second; the icon then is that loop cropped from the word, tested hard against spiral/@/spinner readings. Do not reintroduce a q; that is knot's territory.",
+          "checks": {
+            "pass": 20,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.285
+          }
+        },
+        {
+          "id": "handoff",
+          "title": "Handoff",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.46,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 5,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 7
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a lowercase n fused to a v (the letters rv, or a stylised N)",
+            "Greek nu / an N monogram for a brand starting with N",
+            "a stock geometric-sans wordmark with one ligature - unfortunate: 'RV' or an N-brand, i.e. the icon names a letter that is not in the brand's initial"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 a stock flat-roof rv ligature, invisible in the word below 64 px (generic, not ownable); s2 an r whose arm turns down into the v in one stroke, the only sketch where a stranger sees a single continuous gesture; s3 a crude overlap, rv collides into an lv/N shape (struck); s4 the swollen arc makes rv read as an n with an angled leg, so the word reads quonvo at 16-32 px (struck, different letter). Pick s2, conditionally: in compare.png the word still reads as a stock geometric sans with a barely-there join, about 5 on distinctiveness and memorability. The one move: make the r-to-v turn the single signature gesture of the word, drawn as a visibly hand-made, slightly heavier continuous stroke with a clear notch where the r arm meets the v so it never closes into an n, and carry that same curve quality into o, u, q so the word stops looking like a default sans. Risk: a bare rv icon reads as RV (camper); the icon must be the joined stroke itself, not the two letters.",
+          "checks": {
+            "pass": 15,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.361
+          }
+        },
+        {
+          "id": "knot",
+          "title": "Knot",
+          "status": "approved",
+          "lead": "symbol",
+          "reviews": 2,
+          "critic": 6.23,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 5,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 6,
+            "typography": 6,
+            "color": 8,
+            "cultural-fit": 6,
+            "timelessness": 7,
+            "premium-perception": 6,
+            "versatility": 5
+          },
+          "present": true,
+          "blind": {
+            "distinctiveness": 6,
+            "memorability": 6,
+            "brand-fit": 7,
+            "craft": 6,
+            "versatility": 5
+          },
+          "looks": 2,
+          "gate": true,
+          "readsAs": [
+            "a lowercase q drawn as a looped cord with the stem passing under",
+            "a shepherd's crook or cane with a curled tail",
+            "a rotated question mark or a 9 (unfortunate: at 16 px a smudged '?' or pig's-tail squiggle)"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 two stacked glyphs, an 'a' over a script hook (Bengali/Devanagari-like), 16px a blot; s2 'a' stacked on a 'G'/'6', two letters not one q; s3 'q' over 'p', a ligature 'qp'; s4 one loop whose stroke crosses its stem and flicks out: a looped q / script letter, the only one where the string IS the letter. Struck s1-s3: the knot hangs below as a second letter, so the word-level read is two characters. Keep s4. Risks: at 16px it reads as a script glyph (ơ / Bengali vowel) or a pin, and the knot is only a cross, not a tie. Development move: make the crossing read as string over string (visible over/under gap, slight hand-made taper, loose end with a soft curl) and keep the bowl generous and open so it stays a calm q, not a foreign letterform. Keep away from circled's open pen loop: knot owns the crossing, not the circling.",
+          "checks": {
+            "pass": 15,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.261
+          }
+        },
+        {
+          "id": "pushed-in",
+          "title": "Pushed in",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s6 a hat brim with a crown, or a sunrise over a sagging horizon; 16 px a dash with a dot. s7 a bump in a line: a pulse/waveform blip or a speed bump (brief bans waveforms); 16 px a tilde. s8 a hat (bowler/sombrero) or sun on a horizon; 16 px same. s9 an eyebrow over a closed eye / sleepy emoji face, two rounded bars (brief bans pills echoing note lines). No sketch reads as a table or a chair; the chair-from-behind idea needs a viewpoint the stranger never takes, so a rework of the same move will keep reading as hat, sunrise or face. Different move: drop the furniture metaphor; find a form whose first reading is itself (e.g. a hand-made enclosure or a handed-over object) rather than a scene that needs a caption.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": "knot",
+      "exported": 155,
+      "byGroup": {
+        "logos": 54,
+        "web": 11,
+        "macos": 14,
+        "windows": 60,
+        "social": 11,
+        "tokens": 3,
+        "guidelines": 2
+      },
+      "success": true
+    }
+  ],
+  "sessionId": "899bf445-ad3b-4f97-b7a0-73adbd35a2e8"
+}

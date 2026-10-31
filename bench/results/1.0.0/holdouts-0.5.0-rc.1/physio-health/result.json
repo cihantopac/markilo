@@ -1,0 +1,318 @@
+{
+  "scenario": "physio-health",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Health app",
+  "kind": "health",
+  "brief": {
+    "ask": "Create a brand identity for Kinetra, the physiotherapy app in this folder.",
+    "owner": "Owner preferences: reassuring, active and professional, never clinical-cold or sporty-aggressive; for adults recovering from injury and their physiotherapists. No crosses, hearts, stick figures, spines or bones. App icons for iOS and Android, web, and a mark clinics can print."
+  },
+  "markilo": "0.5.0-rc.1",
+  "plugin": {
+    "version": "0.5.0-rc.1",
+    "commit": "a7194d4"
+  },
+  "ranAt": "2026-10-31T22:15:18.877Z",
+  "minutes": 29.79,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 9.589066600000008,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 56763,
+    "output": 305752,
+    "cacheRead": 18760772,
+    "cacheWrite": 936419
+  },
+  "turns": 7,
+  "subagents": 22,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "All seven concepts across two rounds of directions were rejected (three failed the critic's quality gate, four never got past sketch review), so nothing was finalized, exported, installed or put in a gallery."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "kinetra",
+      "name": "Kinetra",
+      "role": "master",
+      "locked": false,
+      "ideas": null,
+      "concepts": [
+        {
+          "id": "band",
+          "title": "The Band",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s6 a party blower / noisemaker (spiral unrolling into a straight tip) or a snail, festive-toy rather than recovery, and the coil/tail merge in one colour; s7 a hamburger menu / stacked bars / server rack, UI icon, struck; s8 a walking cane or shepherd's crook (also a lowercase r), an unfortunate reading for injured adults. Strap tension does not read in any of them: a flat filled stroke has no visible stretch. Second board with no survivor; the band-as-silhouette idea is exhausted. Different move if pursued: show tension through what the band does to a space, e.g. a closed loop pulled into a lens/teardrop by one taut point (asymmetric, counter-led), or retire the concept.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "guided",
+          "title": "Guided Stroke",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.54,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 5,
+            "color": 6,
+            "cultural-fit": 5,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 7
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "'Tr' two-letter monogram in a rounded square, like an Adobe app icon (Lr/Pr family)",
+            "'kineTra' with a capital T dropped into lowercase",
+            "TR country code / a ticker — worst: an Adobe-style software tile, nothing about care or movement"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 a 'tr' ligature in a stock geometric sans - common joined-crossbar trick, and 'tr' alone means nothing as an app icon; s2 a C with a dot = copyright sign / record button / eye-camera cliche (struck); s3 'n-e' with a hyphen - reads as different text (struck); s4 'tra' with joined bars - legible, quiet, the only one where 'handrail' could come through. Picked s4 with real risk: as drawn it is a stock Plus Jakarta wordmark with a commonplace t-r crossbar join, which will not separate Kinetra from Kinetix/Kineto (the brief's main ask) - blind distinctiveness likely 5 unless changed. Must change: (1) make the rail an unmistakable continuous line at one height that visibly carries t-r-a and stops with intent (a softened end, or the warm accent colour), so it reads as support, not a ligature; (2) customise the letterforms around it (t, r terminal, a) so the word is not the stock font; (3) the icon cannot be 'tra' - derive it from the rail itself (e.g. the k or the t with its rail) so it reads at 16 px. Render the full word on the board before development.",
+          "checks": {
+            "pass": 17,
+            "warn": 0,
+            "fail": 0,
+            "info": 0
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.313
+          }
+        },
+        {
+          "id": "held",
+          "title": "Held Upright",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.31,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 5,
+            "typography": 4,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 5,
+            "versatility": 6
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "lowercase k with a J-hook or fish hook hanging off it (reads 'kJ' / 'ks')",
+            "a smiling face in profile",
+            "a crook-handled cane — worst: in the wordmark the symbol is read as 'k' + 'inetra' with the hook as a stray 's', and a cane is a disability/frailty cue for a recovery audience"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 a K with a semicircle - also a lever on a fulcrum / seesaw; s2 a K or 'lb' with a bracket, gap-notched; s3 a K built from a stem, a stick and a pill - generic geometric split K; s4 a friendly lowercase k whose leg curls into a cradle under the arm - the only one where 'support under the lift' is visible before reading the caption; s5 a K with a quarter-circle leg, also reads as 'b'/pac-man. s1-s3 and s5 are the initial with a split (round notch between stem and arm) - the common monogram device, struck. Picked s4 because the leg-to-cradle is a structural redraw, not a cut, and it has warmth. Risks to fix: (1) remove the round notch gap between stem and arm - that gap is what makes it read as another split-K; let the arm grow from the stem; (2) make the cradle genuinely hold the arm (its end close under the arm's end, like a hand under an elbow) so the idea reads cold; (3) stem + raised amber arm can read as a person pictogram (forbidden) - keep it a letter by stroke weights and proportion; (4) the arm's upward diagonal must stay calm, not a speed slant. Expect a monogram distinctiveness ceiling unless the cradle becomes the memorable part.",
+          "checks": {
+            "pass": 17,
+            "warn": 0,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.36
+          }
+        },
+        {
+          "id": "poise",
+          "title": "Poise",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s6 a power socket / coin slot / tipped battery (stock shape 82%); s7 an eye in a pie slice or a radar fan, Eye-of-Providence feel, struck; s8 a tilted squircle with a minus/toggle pill, reads as a UI button and as a capsule (clinical), not a level; s9 a disc with a sliced-off cap, a cut circle (stock 80%) that reads as a bowl with lid or a hat. None reads as self-righting: a static tilt without a visible rocker base and low centre of mass just looks crooked. Second board with no survivor. Different move if pursued: draw the rocker itself, one shape with an unmistakable rounded bottom (roly-poly/egg-on-arc profile) tipped and casting no separate part, with the weight shown by a thick base vs thin top; otherwise retire.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "range",
+          "title": "Regained Range",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.69,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 6,
+            "distinctiveness": 6,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 5,
+            "typography": 6,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 5
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 6,
+            "memorability": 5,
+            "brand-fit": 6,
+            "craft": 5,
+            "versatility": 5
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a boomerang or chevron with an arc floating above it",
+            "an open cupped hand holding a slice of something (taco/melon)",
+            "an angle-measure symbol (angle with arc) — worst: a lumpy hand/food blob at icon size, or a pointed shoe"
+          ],
+          "sketchPick": "s7",
+          "sketchNotes": "Reads as: s6 a lazy checkmark / tick made of two pills (cliche, struck); s7 a jointed limb - elbow or knee opened past 90 with an amber pin at the joint, secondary readings robot arm / desk lamp; s8 a checkmark with an extra stroke, three capsules too busy at 16 px (struck); s9 a boot or sock shape with a piece snapped off - in a physio app the break reads as fracture (struck). Pick s7: the only one whose first reading is the idea (a joint opening), legible at 16 px, warm. Risks: it drifts mechanical (robot arm, Pixar lamp, hydraulic hinge) and the pin-in-ring is close to generic. Develop: make the limbs taper or swell organically so they read as body not hardware; make the opening angle unmistakably past 90 (around 120-135) so it reads as range gained, not an L; integrate the amber pin into the joint (e.g. the amber is the inner curve of the bend) rather than a bolted ring; avoid any bone-end knobs (forbidden). One-colour test: the pin must survive without amber.",
+          "checks": {
+            "pass": 16,
+            "warn": 2,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.396
+          }
+        },
+        {
+          "id": "softserif",
+          "title": "Kinetra in Hand",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.31,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 6,
+            "typography": 5,
+            "color": 4,
+            "cultural-fit": 5,
+            "timelessness": 5,
+            "premium-perception": 7,
+            "versatility": 5
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 6,
+            "craft": 7,
+            "versatility": 5
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a Recoleta/Cooper-style soft serif wordmark in plum with an e-t ligature",
+            "the Latin/French word 'et' ('and') in a rounded square app tile",
+            "'ET' as in the extraterrestrial or a stray two-letter abbreviation that is not the brand's initial"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 a lowercase e with an odd tilted crossbar; in the word, 'Kinetra' with a bar that looks like a ligature tail into the t or a rendering glitch. s2 struck: in the full word the shortened n reads as an r with a blob — 'Kiretra' — a different letter. Keep s1 but the detail is currently too timid to be seen and too accidental to look intentional. Fix: make the e's bar a deliberate reach that leaves the bowl and joins the t's crossbar (one e-t gesture = reaching toward the next step), drawn in Fraunces' own contrast and terminal logic, visible at header size. Risks: a lone lowercase e with an exiting bar echoes Internet Explorer and is not the initial — the app icon should be the e-t pair or a K, not a standalone e. The Fraunces word itself carries the warmth; the redrawn letter must earn distinctiveness or this is a stock-font wordmark (≤5).",
+          "checks": {
+            "pass": 25,
+            "warn": 2,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.446
+          }
+        },
+        {
+          "id": "steps",
+          "title": "First Stairs",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s6 a step-function line chart / pipe with a ball - the dot beside a bent stroke also flirts with a stick-figure head (forbidden); s7 two overlapping rounded squares = Venn / duplicate-copy UI icon (struck); s8 a rounded block with a round notch and dot = camera or toggle UI glyph, stock similarity 64% (struck); s9 a sliced disc with the half offset = sunset / the cut-shape monogram device (struck). None worth developing: the step-up idea keeps collapsing into either UI geometry or a generic progress glyph, and after two boards that is a signal about the idea, not the drawing. Different move if retried: drop the stair/slab geometry entirely and draw the step through the body's contact - e.g. a single soft foot-like form whose sole lifts onto a ledge, or retire the concept in favour of range.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "4709e9d5-5938-47cf-8e4b-1778978ce9e9"
+}

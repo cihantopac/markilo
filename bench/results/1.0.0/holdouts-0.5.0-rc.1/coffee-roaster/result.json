@@ -1,0 +1,318 @@
+{
+  "scenario": "coffee-roaster",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Coffee roaster",
+  "kind": "consumer",
+  "brief": {
+    "ask": "Create a brand identity for Emberwick, the coffee roaster whose website is in this folder.",
+    "owner": "Owner preferences: warm, crafted and quietly confident, not rustic or hipster; for people who care where their coffee comes from. No coffee beans, cups, steam, mountains or flames drawn literally. Web shop, bag labels and stickers, social, and a mark that works stamped in one colour."
+  },
+  "markilo": "0.5.0-rc.1",
+  "plugin": {
+    "version": "0.5.0-rc.1",
+    "commit": "a7194d4"
+  },
+  "ranAt": "2026-10-31T22:15:18.879Z",
+  "minutes": 24.81,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 6.625608199999998,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 59901,
+    "output": 209808,
+    "cacheRead": 11373874,
+    "cacheWrite": 664725
+  },
+  "turns": 8,
+  "subagents": 16,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Seven directions over two rounds (4 developed and verified with 0 measured fails) all failed or were dropped at the critic's quality gate (best: impression, blind avg 6.2, read as §), so nothing was finalized or exported."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "emberwick",
+      "name": "Emberwick",
+      "role": "master",
+      "locked": false,
+      "ideas": null,
+      "concepts": [
+        {
+          "id": "crossed-w",
+          "title": "Crossed w",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a W monogram with a diamond hole (sporty/automotive badge); s2 'Wi' with a diamond tittle, the round-1 dot-on-i trick again; s3 a W with a tall pointed middle, still a W; s4 an app-icon tile with a W, UI geometry; s5 two offset Vs, a stepped copy of the initial. All five are the name's initial with an overlap/cut/offset device, and the sharp sheared angles read corporate-sporty, not warm or crafted. The 'ember' hole reads as a plain rhombus. Do not develop; drop the W-monogram route rather than rework it.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "direct-line",
+          "title": "Direct line",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 an awareness ribbon (or a lasso / pin), with a ball on the end; s2 a striped bug or bee, or a ball of yarn (an insect is a bad reading for a food brand); s3 a spiral in a disc, a snail shell or a 9/6 in a circle, stock shape 77%. All struck: cliché ribbon, unfortunate insect, stock spiral. A looped thread does not say 'direct relationship with eight farms' to a stranger. Different move: drop the thread-loop. If traceability stays the idea, express it as one straight, unbroken line from origin to bag that ends in a specific mark (e.g. a single rule with eight ticks/impressions behind a solid stop, built like a printer's rule), or merge the idea into the stamp/roast-date label system rather than the symbol.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "eight",
+          "title": "Eight",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.15,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 6,
+            "balance": 6,
+            "craft": 6,
+            "typography": 6,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 4,
+            "craft": 6,
+            "versatility": 6
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a brick wall",
+            "a chocolate bar or waffle",
+            "an app-grid or keypad icon"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 a dotted selection/crop frame, UI; s2 a keypad or tile grid, pattern not mark; s3 a cluster of drop/petal shapes like a dice face or ornament, the most mark-like; s4 a loading spinner, struck. Keep s3: a 3-2-3 rhythm that stamps well and has its own silhouette. Risks: reads as dice/braille or generic dot pattern, and the half-round drops edge toward beans or petals; nobody will count eight farms. In development: give the eight units one decisive printer's-ornament shape (a fleuron or quad-like sort) so the cluster reads as set type, tighten spacing so the whole reads as one lozenge at 16 px rather than eight dots, and avoid any bean/drop reading.",
+          "checks": {
+            "pass": 16,
+            "warn": 0,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.247
+          }
+        },
+        {
+          "id": "ember-dot",
+          "title": "Ember dot",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.85,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 5,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 6,
+            "color": 6,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 6,
+            "craft": 6,
+            "versatility": 7
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a lowercase serif i with a chunky tilted dot",
+            "an info (i) icon",
+            "a coal or rock on a stem (unfortunate: the help/info button)"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 a serif i with a red dot (the 'i' info icon; colour-dot-over-i is a stock wordmark trick); s2 a heavy e with a red spot in its eye, the spot is lost at 16 px; s3 a k with a red blob stuck in its crook, arbitrary; s4 a slant-topped i with a coal sitting just off the cut, the only one where the dot has a reason (trimmed wick); s5 a slab 1 under a red life-ring/donut. Struck s1, s5 (info icon / numeral 1 plus ring). Keep s4: the slanted wick cut and the coal. Main risk: a standalone i still reads as the info glyph, so develop it inside the Emberwick wordmark (Fraunces-like serif, the wick i carries the coal) and use the cut stem plus coal as the icon only after it is ownable there. Make the coal a deliberate, single-colour-stampable shape (not a random pebble), tie its angle to the cut, keep no hairlines, and check that the coal does not read as a flame or a blood drop.",
+          "checks": {
+            "pass": 20,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.193
+          }
+        },
+        {
+          "id": "impression",
+          "title": "Impression",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 6.69,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 6,
+            "distinctiveness": 5,
+            "memorability": 6,
+            "simplicity": 8,
+            "balance": 8,
+            "craft": 7,
+            "typography": 7,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 7,
+            "premium-perception": 7,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 6,
+            "brand-fit": 6,
+            "craft": 7,
+            "versatility": 7
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "the section sign (§)",
+            "a lowercase e stacked on an upside-down e",
+            "a figure 8 or swash g"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 an 'e' stacked on a '6', then a symmetric ornamental glyph like a section sign; s2 'e6' on a keycap/slab; s3 'e9' with a UI tile; s4 an e over a 6 merging into a figure-eight. Keep s1: warm heavy serif e, one solid shape, on-brief printworks idea, stamps cleanly with no hairlines, unlike anything at Square Mile/Origin/Workshop. Main risk is the 'e6' (chess move / number) reading. In development: make it read as one glyph, not two characters: true point symmetry with a shared joining bar or ink bridge, lower half clearly the pressed print (e.g. heavier, inked-in counter or slightly spread as an impression), and kill the 6-like tail of the lower terminal. Test against &, § and 8 at 16 px.",
+          "checks": {
+            "pass": 14,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.245
+          }
+        },
+        {
+          "id": "sort",
+          "title": "The sort",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.08,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 6,
+            "balance": 6,
+            "craft": 5,
+            "typography": 4,
+            "color": 5,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 5
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 5,
+            "versatility": 5
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a rubber stamp with an e on it",
+            "a perfume bottle or kitchen weight",
+            "an approve/stamp UI icon (unfortunate: office paperwork tool)"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 an e on a book/app tile (bottom groove reads as page edges); s2 an e in a bracket frame, a UI/app glyph, weak at 16 px; s3 an e on a podium or shelf; s4 a rubber hand stamp with an e on its face (second reading: a perfume bottle or jar); s5 an e tile with its bar run out of the edge (initial with a cut). Struck s1, s2 (initial in a box), s5 (cut monogram), s3 (podium). Keep s4: it is the only one that draws the brand's own differentiator, the printworks stamp that marks the bags. Risks: an initial-in-a-shape is generic, and the knob-and-neck silhouette drifts to bottle/jar. In development, make the stamp body unmistakable (proportion of handle to base, maybe the face shown mid-impression or the e mirrored like a real stamp face) and give the e a custom, ownable cut, not a stock serif. Must survive one-colour rubber stamping.",
+          "checks": {
+            "pass": 14,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.292
+          }
+        },
+        {
+          "id": "warm-house",
+          "title": "Warm house",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a fireplace or bread/pizza oven with a glow (also a gravestone or mouse hole); s2 a keyhole or a figure/candle under an arch; s3 an oven or fireplace on a shelf; s4 the letters n and l, or a bar chart. All struck: the glowing arch reads as an oven/fireplace, a back door to the banned flames, and the arched doorway is the most worn café/bakery trope of the decade; s4 reads as letters/bars. Different move: if 'welcome' matters, get it from the printworks, not a doorway; e.g. the shop's warmth as a lit window drawn as a printed block/impression, or abandon the house idea and fold warmth into colour and type.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "fe638060-b331-45d6-9742-b9a7701b9c20"
+}

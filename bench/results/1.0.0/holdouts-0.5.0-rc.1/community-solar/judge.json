@@ -1,0 +1,282 @@
+[
+  {
+    "brand": "sunvale",
+    "concept": "sv-between",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "sun setting in a valley between two rounded hills or standing stones",
+        "two tilted tombstones with an orange disc between them",
+        "two leaning figures sharing a sun, or an abstract lowercase 'i' shape"
+      ],
+      "distinctiveness": 6,
+      "memorability": 6,
+      "brandFit": 6,
+      "craft": 5.5,
+      "versatility": 6.8,
+      "presentAsIs": false,
+      "why": "The sun-in-the-vale idea suits the name, and plum with amber avoids the corporate-green look, but the tilted round-topped dark slabs read strongly as gravestones, which works against an optimistic, trustworthy co-op; the odd nick on the smaller slab's shoulder also looks unresolved.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6,
+          6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6.4,
+          5.8
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3275749
+  },
+  {
+    "brand": "sunvale",
+    "concept": "sv-commons",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "market-stall awning or shop canopy",
+        "small stool or table with a scalloped skirt",
+        "a shopfront or bakery icon"
+      ],
+      "distinctiveness": 4.5,
+      "memorability": 4.8,
+      "brandFit": 3.8,
+      "craft": 5.5,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "The scalloped awning is tidy, warm and holds up well at small sizes and in one colour, but it reads as a retail market stall or shopfront icon rather than neighbours co-owning solar roofs, so it says nothing about energy, roofs or shared ownership and looks like a stock shop glyph.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.8,
+          4.6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.2,
+          5
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3222252
+  },
+  {
+    "brand": "sunvale",
+    "concept": "sv-sterm",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "chunky warm serif 'Sunvale' with an orange sun-dot on the S",
+        "the letter S with a rising sun or ball behind it",
+        "friendly, retro-leaning local co-op or food brand"
+      ],
+      "distinctiveness": 5.5,
+      "memorability": 6.3,
+      "brandFit": 6.8,
+      "craft": 5.8,
+      "versatility": 6.3,
+      "presentAsIs": false,
+      "why": "The aubergine-and-amber soft serif feels optimistic and clearly not corporate-green, but the disc on a letter is a familiar move. In black and white versions the disc merges into the S as a blob, and in the wordmark it leaves an awkward gap between S and u that reads as 'S unvale'.",
+      "votes": "2/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.8,
+          5.6
+        ]
+      },
+      "sonnet": {
+        "yes": 2,
+        "looks": 2,
+        "scores": [
+          6.6,
+          6.4
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3501425
+  },
+  {
+    "brand": "sunvale",
+    "concept": "sv-sundial",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "the numeral 4 or a stylised letter A",
+        "a sailboat sail with a boom",
+        "a sundial gnomon casting a shadow"
+      ],
+      "distinctiveness": 6,
+      "memorability": 5.5,
+      "brandFit": 5,
+      "craft": 5.8,
+      "versatility": 6.3,
+      "presentAsIs": false,
+      "why": "The sundial is a clever way to show the sun without rays, and the plum and amber colours are pleasantly not corporate-green, but at a glance the mark reads first as a '4' or a sail, nothing in it suggests neighbours co-owning roofs, and the white keyline with its rounded corner looks heavy and slightly awkward against the thin shadow blade.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6,
+          5.4
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.6,
+          5.8
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.322827
+  },
+  {
+    "brand": "sunvale",
+    "concept": "sv-token",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "generic user/profile avatar (head and shoulders)",
+        "sun dropping into a cupped valley or bowl",
+        "camera or webcam icon"
+      ],
+      "distinctiveness": 4.8,
+      "memorability": 5.3,
+      "brandFit": 5.5,
+      "craft": 6.3,
+      "versatility": 7.3,
+      "presentAsIs": false,
+      "why": "The sun-in-a-valley idea suits the Sunvale name and holds up from 16px to 256px and in one colour, but the shape reads first as a stock user-avatar or camera glyph, which will cause real confusion as a members' app icon and leaves little that Sunvale can own.",
+      "votes": "1/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.8,
+          5.4
+        ]
+      },
+      "sonnet": {
+        "yes": 1,
+        "looks": 2,
+        "scores": [
+          6.4,
+          5.6
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.32169699999999996
+  },
+  {
+    "brand": "sunvale",
+    "concept": "sv-vale",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a swoosh curling around a dot, like a sun in a valley",
+        "a snail or tadpole shape",
+        "an ear or a sideways question mark"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5.3,
+      "brandFit": 4.5,
+      "craft": 5,
+      "versatility": 5,
+      "presentAsIs": false,
+      "why": "The plum and gold colours avoid the corporate-green look, but the swoosh-and-dot is a generic shape that reads as a snail or ear rather than neighbours co-owning solar, and the kinked joint where the hook meets the tail weakens the craft.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5,
+          4.2
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.4,
+          5.2
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3210952
+  },
+  {
+    "brand": "sunvale",
+    "concept": "sv-word",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "warm lowercase serif wordmark with a u–n ligature",
+        "the letters 'un' (a negative prefix, or French for 'one')",
+        "generic editorial or bookshop type in coffee brown"
+      ],
+      "distinctiveness": 5,
+      "memorability": 4.8,
+      "brandFit": 5.3,
+      "craft": 5.3,
+      "versatility": 4.3,
+      "presentAsIs": false,
+      "why": "The brown serif wordmark feels warm and avoids corporate green, but the u–n ligature is too subtle to be ownable and leaves a rough notch at the baseline join, and the 'un' icon cut from it doesn't point to Sunvale, reads as a negative prefix and carries no idea of shared roofs or co-ownership.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.4,
+          4.2
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.6,
+          5.4
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3511578
+  }
+]

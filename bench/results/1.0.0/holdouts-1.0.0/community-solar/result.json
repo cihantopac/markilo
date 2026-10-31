@@ -1,0 +1,287 @@
+{
+  "scenario": "community-solar",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Energy cooperative",
+  "kind": "nonprofit",
+  "brief": {
+    "ask": "Create a brand identity for Sunvale, the community energy cooperative in this folder.",
+    "owner": "Owner preferences: optimistic, local and trustworthy, not corporate-green; for neighbours who co-own solar roofs. No suns with rays, leaves, lightning bolts, houses or plugs. Web, a members' app icon (iOS, Android), social, and print for flyers."
+  },
+  "markilo": "0.5.0-rc.1",
+  "plugin": {
+    "version": "0.5.0-rc.1",
+    "commit": "560ecfc"
+  },
+  "ranAt": "2026-10-31T22:32:33.525Z",
+  "minutes": 27.63,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 8.1132499,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 27932,
+    "output": 221249,
+    "cacheRead": 14357724,
+    "cacheWrite": 774718
+  },
+  "turns": 8,
+  "subagents": 16,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "No concept passed after two rounds (held-light 6.2, many-suns 5.2, sun-s 4.4, sunk-u 5.0, daylight-ring dropped at sketch review), so nothing was finalized, exported, installed or added to the gallery."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "sunvale",
+      "name": "Sunvale",
+      "role": "master",
+      "locked": false,
+      "ideas": {
+        "total": 20,
+        "kept": 6,
+        "struck": 14,
+        "sources": 5
+      },
+      "concepts": [
+        {
+          "id": "daylight-ring",
+          "title": "Daylight Ring",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 letter O / donut; s2 same O, off-centre counter invisible at 16 px; s3 C-clip / omega / ring with a slot (horseshoe-ish), the only non-O but reads as a hardware clip; s4 squircle washer / app-icon donut; s5 thick O, counter shift unreadable. Every sketch is an O or a ring with weight shifted (stock-shape 74-81%); the noon-crown weight is a typographic nuance a stranger never sees. Different move: drop the ring. Find a form only Sunvale has, e.g. the sun as a shape that a valley/horizon actively holds or shares (two forms meeting), or let the wordmark carry the idea; no closed circle as the whole mark.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "held-light",
+          "title": "Held Light",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 6.38,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 6,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 7,
+            "craft": 7,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 7
+          },
+          "present": true,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 6,
+            "brand-fit": 6,
+            "craft": 7,
+            "versatility": 7
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a V cradling a dot / a person with arms raised cheering",
+            "a funnel or cup holding a ball",
+            "a down-pointing chevron with a bead"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 a stick figure cheering, arms up (orange head on a V body); s2 the same figure with arms spread, or a sunset over a valley; s3 a coin or ball sunk in a funnel, a sun held in a valley; s4 a ball in a lopsided V, the hairline arm vanishes at 16 px; s5 a head and shoulders, a user-avatar icon (strike). Strike s1, s2 and s5 because they read as a person or an avatar. Pick s3: it is the only one where the disc sits below the arm tips, so the V closes around the sun and the head-on-shoulders reading weakens. Risks: the funnel, coin-slot or 'insert coin' reading, and the sunset-over-valley cliché. In develop, keep the disc fully inside the V with a generous gap, keep the arms heavy enough to hold at 16 px, and test it in the word so the v reads first as the letter. Never let the disc rise above the arm tips.",
+          "checks": {
+            "pass": 20,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.297
+          }
+        },
+        {
+          "id": "many-suns",
+          "title": "Many Make One",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.31,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 3,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 5,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 6,
+            "brand-fit": 5,
+            "craft": 5,
+            "versatility": 5
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a wifi / broadcast signal icon in a disc",
+            "a snail shell or ear",
+            "an eclipsing planet with rings"
+          ],
+          "sketchPick": "s5",
+          "sketchNotes": "Reads as: s3 a four-petal flower or clover in a disc, at 16 px a four-hole button; s4 a basketball or tennis ball, the seams (strike); s5 bubbles rising inside an orange ball, close to a cell dividing or an eclipse sequence. Strike s4 for the ball cliche. s3 is generic, with a symmetric cluster of circles (the people-in-a-circle community cliche). Pick s5: the diagonal gives it direction and it is the least like a stock glyph. Its stock-shape score (75%) is high, though, and at 16 px the overlapping shares merge into a blob. Risks: soda bubbles or frogspawn, and that 'many suns' is not read at all. In develop, cut clean gaps between the shares so each disc stays whole, use fewer and larger shares (3 at most), and make the size steps clear. If it still reads as bubbles, drop the direction.",
+          "checks": {
+            "pass": 16,
+            "warn": 0,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.341
+          }
+        },
+        {
+          "id": "sun-s",
+          "title": "Sun Above, Vale Below",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 4,
+            "typography": 5,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 5
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 5,
+            "craft": 4,
+            "versatility": 5
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a head over a squiggle - a user/person glyph",
+            "the bottom half of an S or a 3 with a ball on top",
+            "a lowercase i with a curled tail (or a script glyph)"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 a ball dropped onto a hook, a mirrored j or the tail of a 5; s2 a sun over a smile or swoosh, the sunrise-over-horizon cliche (strike); s3 the numeral 6 at 16 px (strike); s4 the numeral 5 or a reversed c with a dot, and sun and hook overlap (strike); s5 a head on shoulders, a user-avatar or snowman (strike). Pick s1: it is the only one that does not read as a numeral, a face or an avatar, and it has tension (the sun balanced on the hook's shoulder). Its weakness is that it does not read as an S yet. It looks like the lower half of a 5 or j. In develop, give the hook a clear reverse swing so the spine of the S is legible, keep a visible gap between disc and hook, and check that it does not tip into a 5 or ? at 16 px.",
+          "checks": {
+            "pass": 17,
+            "warn": 0,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.392
+          }
+        },
+        {
+          "id": "sunk-u",
+          "title": "Sun in the Word",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.62,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 5,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 5,
+            "versatility": 5
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a heavy bold 'sunvale' with one orange filled u, like a bowl or horseshoe magnet",
+            "symbol: a notched block with a smile bar beneath, a cartoon face or robot/mask",
+            "a tooth or a toilet seen head-on (unfortunate)"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 'sun' with an orange shield/pocket for the u; s2 'sun', the square-footed u reads as a tab or bucket; s3 'Su' with a shield, security-badge feel; s4 'un' with an orange folder/tab block, the icon says 'un' (negation) not sun; s5 'sun', u taller and sinking, closest to a sun but drops to 81% at 16 px. Pick s1: best balance of word reading and the dropped orange u. Main risk: the flat-top half-disc is dome-down, so strangers read shield/badge/bucket/tooth, not a sun; a dome-down form also hints at a smile. Must-do in develop: keep it a u in the full 'sunvale' word (no square foot), push the sink below baseline as in s5 so it reads deliberate, test whether a hairline horizon at x-height or a slightly fuller disc reads 'sun setting into the vale' rather than a shield; the standalone icon must not be 'su'/'un' plus a shield, find a cut that survives at 16 px.",
+          "checks": {
+            "pass": 18,
+            "warn": 1,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.421
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "6668da94-bdb6-408d-9865-f3e7c9a9ea0d"
+}

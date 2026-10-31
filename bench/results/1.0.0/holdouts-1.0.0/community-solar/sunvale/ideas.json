@@ -1,0 +1,269 @@
+{
+  "schema": "markilo/ideas@1",
+  "ideas": [
+    {
+      "id": "i1",
+      "hook": "A full round disc sitting low in the deep notch of a single broad V, like the sun settled into a valley",
+      "means": "Sun + vale: the name drawn literally, the sun held by the land",
+      "source": "name",
+      "addedAt": "2026-10-31T22:34:42.947Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a ball resting in a broad V; risk down-chevron with dot or ice-cream cone if the V is thin",
+        "rank": 3,
+        "at": "2026-10-31T22:35:53.370Z"
+      },
+      "concepts": [
+        "held-light"
+      ]
+    },
+    {
+      "id": "i2",
+      "hook": "A roof pitch turned upside down so the roof becomes a cradle, holding a warm disc in its fold",
+      "means": "The roofs we share hold our sun; the roof as something that carries, not covers",
+      "source": "product",
+      "addedAt": "2026-10-31T22:34:43.091Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a down chevron/V holding a dot - same drawing as i1, the roof is invisible",
+        "at": "2026-10-31T22:35:53.603Z"
+      }
+    },
+    {
+      "id": "i3",
+      "hook": "One big disc assembled from several smaller discs of different sizes packed tightly together, no gaps on the outline",
+      "means": "Many neighbours' shares make one sun; one member, one vote",
+      "source": "product",
+      "addedAt": "2026-10-31T22:35:06.561Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a round pebble-packed disc of many dots, like a seed head or bubbles; risk grapes/cells",
+        "rank": 2,
+        "at": "2026-10-31T22:35:53.253Z"
+      },
+      "concepts": [
+        "many-suns"
+      ]
+    },
+    {
+      "id": "i4",
+      "hook": "A row of three low, differently pitched roof slopes seen edge-on, each lit along its top edge in warm colour",
+      "means": "The school, the library and the warehouse: real local roofs side by side",
+      "source": "product",
+      "addedAt": "2026-10-31T22:35:06.690Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a factory sawtooth roof / row of house roofs",
+        "at": "2026-10-31T22:35:53.723Z"
+      }
+    },
+    {
+      "id": "i5",
+      "hook": "A folded ballot slip half-way into a round slot that is itself a sun-coloured disc",
+      "means": "Your vote goes into the sun you own",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:35:06.810Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a ballot-box / voting icon - the product's own object",
+        "at": "2026-10-31T22:35:53.845Z"
+      }
+    },
+    {
+      "id": "i6",
+      "hook": "Two rounded shoulders leaning toward each other with a warm disc held between them, like two neighbours carrying something together",
+      "means": "Co-ownership as a shared carry between neighbours",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:35:06.935Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "two figures holding a ball - community/teamwork clip art",
+        "at": "2026-10-31T22:35:53.968Z"
+      }
+    },
+    {
+      "id": "i7",
+      "hook": "Lowercase wordmark 'sunvale' in which the v is drawn as a wide soft valley and a solid round dot rests in its crook instead of above any letter",
+      "means": "The vale in the name literally holds the sun; the word carries the idea",
+      "source": "type",
+      "addedAt": "2026-10-31T22:35:07.061Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "the word sunvale with a solid dot sitting in a wide soft v - a ball cradled in the word",
+        "rank": 1,
+        "at": "2026-10-31T22:35:53.131Z"
+      },
+      "concepts": [
+        "held-light"
+      ]
+    },
+    {
+      "id": "i8",
+      "hook": "A wordmark where the u of 'sun' and the v of 'vale' are drawn as the same cupped shape, one rounded and one pointed, like a sunrise bowl and a valley",
+      "means": "Sun and vale rhyme visually inside the word",
+      "source": "type",
+      "addedAt": "2026-10-31T22:35:07.185Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a plain sunvale wordmark - the u/v rhyme has no visible form at 32 px",
+        "at": "2026-10-31T22:35:54.090Z"
+      }
+    },
+    {
+      "id": "i9",
+      "hook": "A disc cut into horizontal bands that step down at the bottom like terraced fields in a valley",
+      "means": "Sunlight falling on a shaped, cultivated local landscape",
+      "source": "name",
+      "addedAt": "2026-10-31T22:35:07.317Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a striped retro synthwave sunset - cliche",
+        "at": "2026-10-31T22:35:54.217Z"
+      }
+    },
+    {
+      "id": "i10",
+      "hook": "A patchwork quilt square of four warm patches of slightly different sizes, stitched with visible gaps",
+      "means": "A neighbourhood stitched together from many small contributions",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:35:07.442Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "four-pane square - the Microsoft Windows logo",
+        "at": "2026-10-31T22:35:54.340Z"
+      }
+    },
+    {
+      "id": "i11",
+      "hook": "A half-risen disc whose lower edge is a gently wavy horizon made of rooftops' rhythm, not houses — just an undulating line",
+      "means": "Morning over our town",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:35:07.583Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "sun rising over wavy hills - category cliche",
+        "at": "2026-10-31T22:35:54.466Z"
+      }
+    },
+    {
+      "id": "i12",
+      "hook": "Concentric arcs spreading outward from one small solid disc, like ripples in a pond from a dropped pebble",
+      "means": "One roof's energy spreading into the neighbourhood and to households in need",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:35:07.745Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "wifi / broadcast signal icon",
+        "at": "2026-10-31T22:35:54.590Z"
+      }
+    },
+    {
+      "id": "i13",
+      "hook": "A round disc with a single wedge-shaped share cut out and lifted slightly away, like one slice of a cake handed to you",
+      "means": "Your share of the sun, handed over",
+      "source": "product",
+      "addedAt": "2026-10-31T22:35:07.873Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "pie chart / Pac-Man",
+        "at": "2026-10-31T22:35:54.713Z"
+      }
+    },
+    {
+      "id": "i14",
+      "hook": "A warm serif lowercase 's' whose upper bowl is a filled sun disc and lower bowl an open valley curve",
+      "means": "Sun above, vale below, in the initial",
+      "source": "name",
+      "addedAt": "2026-10-31T22:35:08.004Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a lowercase s with a solid upper bowl - an s holding a ball",
+        "rank": 4,
+        "at": "2026-10-31T22:35:53.485Z"
+      },
+      "concepts": [
+        "sun-s"
+      ]
+    },
+    {
+      "id": "i15",
+      "hook": "A two-line stacked wordmark 'sun' over 'vale' in a heavy rounded face where the right stem of the n and the left arm of the v are one shared stroke, so the two words lock together into one block",
+      "means": "Two halves of the name, like neighbours, literally share a part; co-ownership drawn in the type",
+      "source": "type",
+      "addedAt": "2026-10-31T22:50:47.523Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a stacked two-line text block; the shared n/v stroke spans two lines and is invisible at 32 px, and dies at 16 px",
+        "at": "2026-10-31T22:51:23.459Z"
+      }
+    },
+    {
+      "id": "i16",
+      "hook": "A half-disc standing on its flat edge, split by two vertical gaps into three slices of clearly different widths — a sun made of shares on one shared horizon",
+      "means": "Different households' shares together make one rising sun; the flat edge is the common ground",
+      "source": "product",
+      "addedAt": "2026-10-31T22:50:47.659Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a sliced setting sun on a horizon - the striped-sunset cliche turned vertical; also a bar chart in a dome",
+        "at": "2026-10-31T22:51:23.614Z"
+      }
+    },
+    {
+      "id": "i17",
+      "hook": "Lowercase 'sunvale' in a heavy soft face where the u is drawn as a solid warm half-disc, flat side up, like a sun sinking into the word",
+      "means": "The sun settles into the vale inside the name itself; no dot, no extra element",
+      "source": "name",
+      "addedAt": "2026-10-31T22:50:47.781Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "the word sunvale whose u is a solid warm half-bowl - a sun sunk into the word; risks: reads as one swapped letter in a stock sans (scored 5 last round) or a smile; needs a drawn face and the bowl must still read as u",
+        "rank": 2,
+        "at": "2026-10-31T22:51:23.309Z"
+      },
+      "concepts": [
+        "sunk-u"
+      ]
+    },
+    {
+      "id": "i18",
+      "hook": "A disc formed by two thick C-shaped halves of different weights hooking into each other at top and bottom, like two hands clasped around a shared warm centre",
+      "means": "Two neighbours holding one thing together; the sun is the space they share",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:50:47.899Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "two interlocking C hooks - a sync/refresh loop or chain-link icon",
+        "at": "2026-10-31T22:51:23.768Z"
+      }
+    },
+    {
+      "id": "i19",
+      "hook": "A wordmark in a warm, sturdy lowercase whose every round counter (u, n, a, e) is the same tall arched opening, like the row of arched windows on a town library or school",
+      "means": "The co-op lives on civic roofs everyone knows; one treatment through every letter",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:50:48.018Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a plain sturdy lowercase wordmark; arched counters are a typeface trait, the library-window meaning has no visible form",
+        "at": "2026-10-31T22:51:23.931Z"
+      }
+    },
+    {
+      "id": "i20",
+      "hook": "A thick ring whose band swells smoothly from hairline at the bottom to very heavy at the top, like a day's sunlight curve wrapped into a circle",
+      "means": "Live production of every roof: the daily arc of light, owned and watched",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:50:48.137Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a thick ring heavy at the top thinning to a hairline at the bottom - a weighted O, sun riding high; risks: inverted crescent/eclipse or loading spinner if the swell is too even",
+        "rank": 1,
+        "at": "2026-10-31T22:51:23.177Z"
+      },
+      "concepts": [
+        "daylight-ring"
+      ]
+    }
+  ]
+}

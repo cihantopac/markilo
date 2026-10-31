@@ -1,0 +1,293 @@
+{
+  "schema": "markilo/ideas@1",
+  "ideas": [
+    {
+      "id": "i1",
+      "hook": "the lowercase word emberwick where the i is a thin, gently bent wick and its dot a rounded, smouldering coal set slightly apart",
+      "means": "the name drawn inside its own letters: wick + ember, the slow glow of roasting rather than a flame",
+      "source": "name",
+      "addedAt": "2026-10-31T22:33:35.306Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "the word emberwick with a candle-like i and a warm dot; the dotted-i swap is a common wordmark trick, needs a very specific wick shape",
+        "rank": 4,
+        "at": "2026-10-31T22:34:29.719Z"
+      },
+      "concepts": [
+        "wickmark"
+      ]
+    },
+    {
+      "id": "i2",
+      "hook": "a capital W drawn as two plaited strands that cross and re-cross, like a braided cotton wick",
+      "means": "craft and patience; many strands (eight farms) twisted into one supply",
+      "source": "name",
+      "addedAt": "2026-10-31T22:33:37.168Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a woven/braided W; risk of rope or challah reading (rustic) if the plait is drawn loosely",
+        "rank": 3,
+        "at": "2026-10-31T22:34:28.307Z"
+      },
+      "concepts": [
+        "plait"
+      ]
+    },
+    {
+      "id": "i3",
+      "hook": "a metal type sort seen from above: a softened rectangle with a mirror-reversed lowercase e raised in its face",
+      "means": "the printworks the roastery lives in; the brand as something you press and stamp",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:33:38.991Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a rounded slug with a mirror-reversed e: a printer's type sort, reads stamp-like, ownable via the printworks; risk of generic app-tile if the sort body is just a rounded square",
+        "rank": 1,
+        "at": "2026-10-31T22:34:25.761Z"
+      },
+      "concepts": [
+        "sort"
+      ]
+    },
+    {
+      "id": "i4",
+      "hook": "eight short tapered strokes of different lengths converging on one solid round core, like threads gathered into a knot",
+      "means": "eight farms traced directly to one roastery",
+      "source": "product",
+      "addedAt": "2026-10-31T22:33:40.729Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a sunburst / asterisk starburst, stock radial cliché",
+        "at": "2026-10-31T22:34:30.782Z"
+      }
+    },
+    {
+      "id": "i5",
+      "hook": "a pebble-like rounded coal shape with one irregular hairline crack glowing through it in the warm colour",
+      "means": "an ember after the flame has gone: heat held quietly, the roast's inner warmth",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:33:42.791Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a coffee bean: rounded oval with a crack line through it, the banned product object",
+        "at": "2026-10-31T22:34:31.971Z"
+      }
+    },
+    {
+      "id": "i6",
+      "hook": "a pitched-roof house outline whose doorway is filled by one round glowing coal",
+      "means": "wick = Old English wic, a dwelling: a hearth-home for coffee",
+      "source": "name",
+      "addedAt": "2026-10-31T22:33:44.802Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a home/house UI icon",
+        "at": "2026-10-31T22:34:32.907Z"
+      }
+    },
+    {
+      "id": "i7",
+      "hook": "a round roast-date stamp: a thick ring with a gap at the top, a single short tick marking where the date sits",
+      "means": "roasted and shipped within 48 hours; the stamp that goes on every bag",
+      "source": "product",
+      "addedAt": "2026-10-31T22:33:46.594Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a power button / timer / loading ring UI glyph",
+        "at": "2026-10-31T22:34:33.912Z"
+      }
+    },
+    {
+      "id": "i8",
+      "hook": "the word Emberwick in a high-contrast warm serif where c and k are joined into one printer's ligature by a single shared curl",
+      "means": "a crafted, editorial voice; the printworks' type case",
+      "source": "type",
+      "addedAt": "2026-10-31T22:33:48.761Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "Emberwick in a warm editorial serif with a distinctive ck ligature; the ligature must carry the avatar alone",
+        "rank": 2,
+        "at": "2026-10-31T22:34:27.160Z"
+      },
+      "concepts": [
+        "ligature"
+      ]
+    },
+    {
+      "id": "i9",
+      "hook": "a solid circle whose lower edge is printed slightly heavier and offset, like an ink impression that bit unevenly into paper",
+      "means": "pressed by hand; small batches, each a little different",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:33:50.652Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a plain dot with a drop shadow; no specific form",
+        "at": "2026-10-31T22:34:34.914Z"
+      }
+    },
+    {
+      "id": "i10",
+      "hook": "three stacked horizontal bars that grow thicker downward, the bottom one glowing warm, forming the arms of a capital E",
+      "means": "heat building through the roast toward the glowing bed of embers",
+      "source": "name",
+      "addedAt": "2026-10-31T22:33:52.752Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a hamburger menu icon / E built from stacked bars (initial with a cut)",
+        "at": "2026-10-31T22:34:36.031Z"
+      }
+    },
+    {
+      "id": "i11",
+      "hook": "a lowercase e and w sharing one stroke: the e's crossbar runs out and becomes the first stroke of the w, like a single drawn thread",
+      "means": "one continuous line from farm to roaster to cup; traceability as an unbroken line",
+      "source": "type",
+      "addedAt": "2026-10-31T22:33:54.758Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "the word 'ew' (disgust) for a food brand; a generic script monogram",
+        "at": "2026-10-31T22:34:37.106Z"
+      }
+    },
+    {
+      "id": "i12",
+      "hook": "a shipping tag shape with a punched hole, its body a warm solid with a small reversed initial",
+      "means": "every bag labelled with its farm; provenance you can hold",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:33:56.600Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a price/shipping tag UI icon with an initial",
+        "at": "2026-10-31T22:34:38.096Z"
+      }
+    },
+    {
+      "id": "i13",
+      "hook": "two nested soft rounded shapes, a dark crust around an off-centre warm core, like a coal broken open",
+      "means": "the glow inside: quiet confidence, heat that is held not shown",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:33:58.705Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a fried egg or an eye: off-centre core in a soft blob",
+        "at": "2026-10-31T22:34:39.253Z"
+      }
+    },
+    {
+      "id": "i14",
+      "hook": "a slow spiral of one tapered stroke turning twice, thick outside and thinning to a point at the centre, like a coil of wick",
+      "means": "the slow turn of the roasting drum and the coiled wick: patience",
+      "source": "product",
+      "addedAt": "2026-10-31T22:34:00.769Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a generic spiral / loading swirl / snail shell",
+        "at": "2026-10-31T22:34:40.158Z"
+      }
+    },
+    {
+      "id": "i15",
+      "hook": "a solid disc printed as a halftone: dots large and merged on the lower left, shrinking to tiny dots at the upper right, like a coal's glow reproduced on a printing press",
+      "means": "ember warmth rendered in the printworks' own technique; heat fading out",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:46:26.072Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a halftone gradient ball, the stock print-effect sphere; the dots vanish at 32 px and leave a plain blob",
+        "at": "2026-10-31T22:47:05.904Z"
+      }
+    },
+    {
+      "id": "i16",
+      "hook": "a printer's manicule (the old pointing-hand ornament ☞) drawn in a few heavy, simplified strokes, its fingertip ending in a small glowing round coal",
+      "means": "pointing to the source: traceability; the printworks' typographic heritage",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:46:26.365Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a pointing-hand cursor / pointing emoji (link UI glyph); the coal reads as a fingertip blob",
+        "at": "2026-10-31T22:47:06.043Z"
+      }
+    },
+    {
+      "id": "i17",
+      "hook": "the word Emberwick fully legible in a warm, sturdy serif, every letter intact, with the counters of e, b and e filled solid copper like glowing coals inside the type",
+      "means": "embers glowing inside the word itself; warmth held within, not shown off",
+      "source": "type",
+      "addedAt": "2026-10-31T22:46:26.633Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "the word Emberwick intact with small solid coals sitting in the e, b, e counters; must keep a clear gap around each coal so one-colour print does not clog into blobs, and the avatar e-with-coal must not read as an eye",
+        "rank": 1,
+        "at": "2026-10-31T22:47:06.217Z"
+      },
+      "concepts": [
+        "counters"
+      ]
+    },
+    {
+      "id": "i18",
+      "hook": "a printer's asterism (three small six-pointed stars in a triangle ⁂) where each star is a soft, rounded spark, the top one copper",
+      "means": "the typesetter's section mark: a pause, a new chapter; small sparks from the roast",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:46:26.886Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "three sparkles in a triangle: the AI sparkle / star-rating icon",
+        "at": "2026-10-31T22:47:06.435Z"
+      }
+    },
+    {
+      "id": "i19",
+      "hook": "two overlapping discs slightly out of register, ink brown and copper, their overlap a darker lens — the slip of a two-colour print run",
+      "means": "the printworks and the roast: two passes, one impression; small-batch imperfection",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:46:27.115Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "two overlapping circles: a Venn diagram / the Mastercard logo; overlap is lost in one colour",
+        "at": "2026-10-31T22:47:06.591Z"
+      }
+    },
+    {
+      "id": "i20",
+      "hook": "a wide rounded lozenge, the classic printer's diamond ornament, softened and cut by one thin horizontal glowing seam across its middle",
+      "means": "a coal split open showing its glow, drawn as a type ornament",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:46:27.339Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a rounded oval split by a line: a coffee bean (banned object) or a pill/eye",
+        "at": "2026-10-31T22:47:06.762Z"
+      }
+    },
+    {
+      "id": "i21",
+      "hook": "the word Emberwick set in capitals in a crisp serif, with the W cut as a deep ink-trap ligature where its two inner strokes meet and glow copper in the trap",
+      "means": "printworks craft in the type itself; a small ember at the heart of the name",
+      "source": "type",
+      "addedAt": "2026-10-31T22:46:27.576Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "EMBERWICK in crisp serif capitals with a small warm spot in the W's central notch; word stays whole, but the avatar W alone risks a stock serif monogram, so the trap must be big and specific",
+        "rank": 2,
+        "at": "2026-10-31T22:47:06.937Z"
+      },
+      "concepts": [
+        "inktrap"
+      ]
+    },
+    {
+      "id": "i22",
+      "hook": "an eight-pointed rosette of soft, rounded petals like a printer's fleuron, one petal copper and the rest ink",
+      "means": "eight farms, one of them in this bag; the traceable single origin",
+      "source": "product",
+      "addedAt": "2026-10-31T22:46:27.831Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a daisy / flower icon or pinwheel; the one-copper-petal idea dies in one-colour stamping",
+        "at": "2026-10-31T22:47:07.119Z"
+      }
+    }
+  ]
+}

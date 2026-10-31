@@ -1,0 +1,122 @@
+[
+  {
+    "brand": "quorvo",
+    "concept": "circled",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a lowercase grotesk wordmark with two terracotta o's drawn as looping refresh/undo arrows",
+        "a cycle or 'loop back' symbol, possibly hinting at recurring meetings",
+        "a 'vo' monogram that reads as a syllable rather than as Quorvo"
+      ],
+      "distinctiveness": 5.3,
+      "memorability": 5.3,
+      "brandFit": 5.8,
+      "craft": 4.5,
+      "versatility": 4.5,
+      "presentAsIs": false,
+      "why": "The warm terracotta and calm grotesk suit the brief, but the lumpy, blobby terminals on the looped o's look crude, repeating the device twice weakens it, and a 'vo' icon taken from the end of the name, whose loop detail disappears below 32px, makes a weak app icon with no tie to the Q.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.8,
+          5
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.8,
+          5.6
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3512328
+  },
+  {
+    "brand": "quorvo",
+    "concept": "handoff",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "geometric lowercase sans wordmark with a joined 'rv' ligature",
+        "the icon reads as 'nv' or 'rv' letters, or maybe a stylised 'N'",
+        "a warm terracotta tech brand, calm but generic"
+      ],
+      "distinctiveness": 5.3,
+      "memorability": 5,
+      "brandFit": 5.8,
+      "craft": 5.5,
+      "versatility": 5.5,
+      "presentAsIs": false,
+      "why": "The r–v ligature is the only ownable idea, and it is too quiet in the wordmark; cut out as an icon, the fragment reads as stray letters rather than a symbol, and the awkward notch where the r's shoulder ends plus the small jag at the top of the v show it is not finished yet.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.4,
+          4.6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.6,
+          6
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.35102360000000005
+  },
+  {
+    "brand": "quorvo",
+    "concept": "knot",
+    "final": true,
+    "judge": {
+      "readsAs": [
+        "a lowercase q tied as a loop of rope",
+        "a cane, or a hook with a decorative curl",
+        "a calligraphic swash or ampersand-like flourish"
+      ],
+      "distinctiveness": 6.5,
+      "memorability": 6,
+      "brandFit": 5.5,
+      "craft": 5.3,
+      "versatility": 5.3,
+      "presentAsIs": false,
+      "why": "The over-under knot q is a warm, ownable idea that suits a calm, human brand, but the ornate curl clashes with the plain geometric sans, the broken descender turns into an unreadable squiggle at 16–24px, and swapping the symbol in as the wordmark's q makes the logotype look uneven, so it needs refinement before an app icon or favicon will work.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.6,
+          5.6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.6,
+          6
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.35456119999999997
+  }
+]

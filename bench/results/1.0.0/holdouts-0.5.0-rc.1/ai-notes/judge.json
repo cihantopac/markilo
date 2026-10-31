@@ -1,0 +1,82 @@
+[
+  {
+    "brand": "quorvo",
+    "concept": "door-ajar",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "an open door with a wedge of warm light spilling through the gap",
+        "a stylized letter R or abstract Q-less monogram built from a bracket and a wedge",
+        "a doorway/exit sign suggesting leaving a meeting"
+      ],
+      "distinctiveness": 6,
+      "memorability": 6,
+      "brandFit": 6,
+      "craft": 7,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The door-ajar metaphor with a wedge of warm light is calm, human and fits teams tired of meetings while avoiding the banned clichés, but it reads more like an 'R' than anything tied to Quorvo, it's only moderately ownable, and the light wedge is so heavy that it fights the frame for attention.",
+      "votes": "2/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6.6,
+          6.2
+        ]
+      },
+      "sonnet": {
+        "yes": 2,
+        "looks": 2,
+        "scores": [
+          6.4,
+          6.4
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.318492
+  },
+  {
+    "brand": "quorvo",
+    "concept": "underline",
+    "final": true,
+    "judge": {
+      "readsAs": [
+        "a serif lowercase 'q' whose tail swings into an underline, like a signed note",
+        "'q_' or 'qL', close to a text cursor or terminal prompt at small sizes",
+        "a calm, bookish editorial wordmark rather than a tech logo"
+      ],
+      "distinctiveness": 6.3,
+      "memorability": 6.5,
+      "brandFit": 7,
+      "craft": 6,
+      "versatility": 5,
+      "presentAsIs": false,
+      "why": "The serif wordmark with an underline swash feels calm and human and avoids every banned cliché, but the q-tail flourish is a common typographic move, the joint where the stem bends into the underline looks heavy, and the wide, lopsided symbol fits poorly in a square app icon and reads as 'q_' at 16–24px.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.8,
+          6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6.4,
+          6.4
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.34989629999999994
+  }
+]

@@ -168,7 +168,7 @@ async function subjectCard(s: Subject, opts: { review?: boolean } = {}): Promise
       ? `<span class="pill ${avg >= 7 ? 'good' : avg >= 6 ? 'warn' : 'bad'}" title="Critic average (judgment, 0–10)">critic ${avg}</span>`
       : '',
     gate && gate.status !== 'not-reviewed'
-      ? `<span class="pill ${gate.status === 'passed' ? 'good' : 'bad'}" title="${escapeAttr(gate.status === 'passed' ? 'Passed the critic gate' : gate.reasons.join('; '))}">${gate.status === 'passed' ? 'gate passed' : gate.status === 'undecided' ? 'awaiting second looks' : 'gate not passed'}</span>`
+      ? `<span class="pill ${gate.status === 'passed' ? 'good' : 'bad'}" title="${escapeAttr(gate.status === 'passed' ? (gate.looks ? "Passed on the majority of cold looks after a first look on the edge of the bar. In Markilo's 1.0 validation an independent judge panel rejected both such passes: treat it as worth showing, not finished." : 'Passed the critic gate') : gate.reasons.join('; '))}">${gate.status === 'passed' ? (gate.looks ? `passed at the edge (${gate.looks.passed} of ${gate.looks.of} looks)` : 'gate passed') : gate.status === 'undecided' ? 'awaiting second looks' : 'gate not passed'}</span>`
       : '',
     gate?.calibration === 'unmeasured'
       ? `<span class="pill warn" title="${escapeAttr(`Reviewed by ${gate.reviewer}; the gate was calibrated on Claude Opus, so how well it predicts an independent judge on this model is not measured.`)}">reviewer not calibrated</span>`

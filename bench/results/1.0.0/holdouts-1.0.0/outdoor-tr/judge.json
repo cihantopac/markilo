@@ -1,0 +1,202 @@
+[
+  {
+    "brand": "gocebe",
+    "concept": "dikis",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a rounded geometric lowercase sans wordmark in rust red with oversized hexagonal diacritics",
+        "an ö symbol that reads like a surprised face with eyebrows, or a cartoon character",
+        "the diacritics read as rivets or leather patches, not stitches"
+      ],
+      "distinctiveness": 5.5,
+      "memorability": 5.8,
+      "brandFit": 5,
+      "craft": 5.8,
+      "versatility": 6.3,
+      "presentAsIs": false,
+      "why": "The ö and ç are kept correct and the bold, chunky forms will embroider and scale well, but the base typeface is generic, the 'stitch' idea never shows up in the detached hexagonal marks, the floating ç cedilla looks clumsy, and the standalone ö reads as a goofy face rather than a durable, free-spirited outdoor brand.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.8,
+          5.2
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.8,
+          5.8
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.35418039999999995
+  },
+  {
+    "brand": "gocebe",
+    "concept": "dugum",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a tied rope or cord knot",
+        "a loose interlaced 'ç/ö' or 'G' monogram",
+        "a stylised hook or snake coiling"
+      ],
+      "distinctiveness": 5.8,
+      "memorability": 5.3,
+      "brandFit": 6,
+      "craft": 4.3,
+      "versatility": 5,
+      "presentAsIs": false,
+      "why": "The rope-knot idea suits a durable, nomadic outdoor brand and avoids the banned clichés, but the over-and-under crossings are hard to follow, the cut strand ends look unfinished and uneven, the angled top-right end reads almost like an arrowhead, and the mark turns into a blob at 16–24px, which also makes it a weak fit for embroidery.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.2,
+          5
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.6,
+          5.2
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3286382
+  },
+  {
+    "brand": "gocebe",
+    "concept": "heybe",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a pair of eyeglasses or goggles",
+        "a saddlebag (heybe) with two pouches and kilim diamonds",
+        "an old telephone receiver or a bull's head/mask"
+      ],
+      "distinctiveness": 5.5,
+      "memorability": 5.5,
+      "brandFit": 4.3,
+      "craft": 5.8,
+      "versatility": 6.5,
+      "presentAsIs": false,
+      "why": "The heybe saddlebag with kilim diamonds is a smart, ownable Turkish nomad idea that sits well in embroidery and at small sizes, but the silhouette reads first as spectacles, and the lumpy, uneven pouch outlines and abrupt strap joints weaken both the meaning and the craft.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6.2,
+          5.6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.4,
+          4.8
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3197982
+  },
+  {
+    "brand": "gocebe",
+    "concept": "iplik",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a monoline letter ç whose cedilla is drawn out into a looping tail",
+        "a C sitting on top of a lowercase b or the number 6",
+        "a hook or a loose piece of thread"
+      ],
+      "distinctiveness": 5.8,
+      "memorability": 5.8,
+      "brandFit": 5.3,
+      "craft": 5,
+      "versatility": 6.5,
+      "presentAsIs": false,
+      "why": "Building the mark from the ç is a smart way to show Turkish roots, and it would embroider cleanly, but the joint between the C and its tail is awkward, the notched end of the tail looks unresolved, and the mark reads as 'Cb' or '6' instead of anything rugged or nomadic, so it needs more work before it can stand for the brand.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.4,
+          6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.6,
+          5.6
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.323807
+  },
+  {
+    "brand": "gocebe",
+    "concept": "kordon",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a geometric lowercase 'a' with a separate S-shaped hook below, like 'a6' or an ampersand",
+        "a loose cord or rope loop hanging off the g",
+        "a generic geometric-sans tech wordmark with one quirky letter"
+      ],
+      "distinctiveness": 6.3,
+      "memorability": 5.8,
+      "brandFit": 5.5,
+      "craft": 5.8,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "The ö and ç are correct and the cord-loop g is a reasonable idea, but cutting the descender off makes the g read as 'a' plus a stray squiggle, the oversized tail throws the word off balance, the rest is a cold, widely spaced generic geometric sans with odd e-bar stubs, and the result says tech startup more than durable, grounded Turkish travel gear.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.8,
+          6.2
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6.2,
+          6.2
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3634981
+  }
+]

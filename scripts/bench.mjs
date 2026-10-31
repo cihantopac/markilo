@@ -8,7 +8,7 @@
 //                                        [--plugin <dir> | --installed] [--scenarios <dir>] [--work <dir>]
 //   node scripts/bench.mjs judge [<dir>] [--model <alias>] [--times <n>]  (majority of n looks per concept)
 //                                        [--panel opus:3,sonnet:3]  (several judge models; majority of all looks)
-//   node scripts/bench.mjs report [<dir>]
+//   node scripts/bench.mjs report [<dir>] [--title <text>]
 //   node scripts/bench.mjs refresh <id> <run folder>  (re-measure a kept run folder; cost and tokens are kept)
 //   node scripts/bench.mjs measure <workspace>      (the same metrics for any Markilo workspace)
 //
@@ -626,7 +626,7 @@ function report(out) {
   const between = both.filter(
     (p) => majority(p.panel[panelModels[0]]) === majority(p.panel[panelModels[1]]),
   ).length;
-  const md = `# Markilo ${measured} benchmark${runModel !== 'default' ? ` (--model ${runModel})` : ''}
+  const md = `# ${opts.title ?? `Markilo ${measured} benchmark`}${runModel !== 'default' ? ` (--model ${runModel})` : ''}
 
 ${runs.length} end-to-end run${runs.length === 1 ? '' : 's'} of the installed plugin in headless Claude Code, with the product owner unavailable (Markilo
 takes its own recommended answers). Scenario briefs and fixture projects are in \`bench/scenarios/\`; run them with

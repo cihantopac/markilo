@@ -1,0 +1,50 @@
+{
+  "schema": "markilo/kit@1",
+  "brand": "quorvo",
+  "name": "Quorvo",
+  "concept": "underline",
+  "locked": false,
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "symbolSmall": "symbol-small.svg",
+    "lockupHorizontal": "lockup-horizontal.svg",
+    "lockupStacked": "lockup-stacked.svg",
+    "lockupCompact": "lockup-compact.svg"
+  },
+  "palette": {
+    "primary": "#213a3a",
+    "accent": "#d39a3a",
+    "ink": "#1b2222",
+    "paper": "#f7f3ec",
+    "dark": "#070f0f"
+  },
+  "typography": {
+    "fontId": "fraunces",
+    "weight": 500,
+    "family": "Fraunces",
+    "license": "OFL-1.1"
+  },
+  "tagline": "Meeting notes that write themselves.",
+  "notes": [
+    "The q's tail is the identity: never remove it, extend it to the last o, or redraw it as a straight rule.",
+    "Use the deep green (#213a3a) as the single brand colour; amber is a UI accent only, never inside the mark."
+  ],
+  "approvedAt": "2026-10-31T22:41:18.771Z",
+  "originality": {
+    "verdict": "insufficient-evidence",
+    "confidence": "low",
+    "acceptedRisk": true,
+    "report": "../reports/originality-underline.md",
+    "evidence": {
+      "visual": "5 brand(s) from 10 reference file(s): 5 direct competitor, 0 category/form-family; sources 5 official, 0 app store, 0 logo catalog, 0 unverified",
+      "registry": "no registry searches logged for \"Quorvo\"",
+      "registryCoverage": "none"
+    }
+  },
+  "gate": {
+    "status": "passed",
+    "average": 6.2,
+    "reasons": []
+  }
+}

@@ -1,0 +1,277 @@
+{
+  "schema": "markilo/ideas@1",
+  "ideas": [
+    {
+      "id": "i1",
+      "hook": "a lowercase ç whose cedilla is a loose thread end, curling once like a thread just pulled through cloth",
+      "means": "the repair promise lives inside the name's own Turkish letter",
+      "source": "name",
+      "addedAt": "2026-10-31T22:35:56.197Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a lowercase ç whose tail curls off like a loose thread end; risk it reads as a plain c with a squiggle",
+        "rank": 2,
+        "at": "2026-10-31T22:36:48.418Z"
+      },
+      "concepts": [
+        "iplik"
+      ]
+    },
+    {
+      "id": "i2",
+      "hook": "the word göçebe in a sturdy slab serif with the cedilla running on as a dashed running-stitch underline beneath the whole word",
+      "means": "a seam that holds the brand together; built to be mended",
+      "source": "type",
+      "addedAt": "2026-10-31T22:35:57.961Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a word over a dashed 'cut here' line; the stitched-underline cliché of every handmade brand",
+        "at": "2026-10-31T22:36:51.225Z"
+      }
+    },
+    {
+      "id": "i3",
+      "hook": "the two umlaut dots of ö drawn as two small cross-stitches (bar-tacks) above a heavy round o",
+      "means": "reinforced where it matters, like the stress points of a pack",
+      "source": "name",
+      "addedAt": "2026-10-31T22:35:59.836Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a round face with two X eyes: the dead-face emoji",
+        "at": "2026-10-31T22:36:52.298Z"
+      }
+    },
+    {
+      "id": "i4",
+      "hook": "a square darning patch: three warp strands and three weft strands woven over-under, one corner strand left long",
+      "means": "visible mending; the repair is the beauty",
+      "source": "product",
+      "addedAt": "2026-10-31T22:36:01.465Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a grid / hash / basket-weave square; the visible-mending cliché",
+        "at": "2026-10-31T22:36:53.410Z"
+      }
+    },
+    {
+      "id": "i5",
+      "hook": "a camp pot seen from the side, its two lug handles sitting on top as the two dots of an ö",
+      "means": "the kitchen kit and the name's letter are one object",
+      "source": "product",
+      "addedAt": "2026-10-31T22:36:03.116Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a cooking pot (the product's own object), or a smiley face",
+        "at": "2026-10-31T22:36:54.428Z"
+      }
+    },
+    {
+      "id": "i6",
+      "hook": "a kilim 'su yolu' border: a band of interlocking stepped hooks like a woven Anatolian rug edge",
+      "means": "Turkish weaving heritage; nomads carried their rugs",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:36:04.817Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a Greek key / generic ethnic stepped border, a pattern not a mark",
+        "at": "2026-10-31T22:36:55.539Z"
+      }
+    },
+    {
+      "id": "i7",
+      "hook": "a pack's ladder-lock strap buckle seen flat, with the strap looped through it in one continuous band",
+      "means": "adjustable, carried, made to last",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:36:06.448Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a belt buckle / ladder glyph; the product's own hardware drawn plainly",
+        "at": "2026-10-31T22:36:56.686Z"
+      }
+    },
+    {
+      "id": "i8",
+      "hook": "a round cloth patch sewn on slightly askew, its edge a ring of short running stitches, nothing inside",
+      "means": "a patch on a well-travelled pack; the brand is the repair",
+      "source": "product",
+      "addedAt": "2026-10-31T22:36:08.161Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "an empty dashed circle: a UI placeholder/loading ring or a blank badge",
+        "at": "2026-10-31T22:36:57.934Z"
+      }
+    },
+    {
+      "id": "i9",
+      "hook": "a single unbroken thread line that wanders loosely and ties itself into the letter g",
+      "means": "free-spirited journey, one thread, the initial of göçebe",
+      "source": "name",
+      "addedAt": "2026-10-31T22:36:09.928Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a scribbled script g; the one-line-drawing cliché with no specific form",
+        "at": "2026-10-31T22:36:59.022Z"
+      }
+    },
+    {
+      "id": "i10",
+      "hook": "a hiker's two footprints seen from above as the dots of the ö, the o below like a sun on the road",
+      "means": "walking, the nomad's step",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:36:11.583Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "footprints and a sun; the hiking-category cliché",
+        "at": "2026-10-31T22:37:00.180Z"
+      }
+    },
+    {
+      "id": "i11",
+      "hook": "a heavy rounded rectangle like a woven label with one corner folded back, showing the stitched seam line",
+      "means": "the product tag itself is the logo; made, labelled, sewn",
+      "source": "product",
+      "addedAt": "2026-10-31T22:36:13.405Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a document with a folded corner; the product's own label drawn plainly",
+        "at": "2026-10-31T22:37:01.359Z"
+      }
+    },
+    {
+      "id": "i12",
+      "hook": "three filled circles of decreasing size in a slow curved line, like a caravan of stones seen far off",
+      "means": "moving on in a group, rhythm of a long journey",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:36:15.147Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "three dots: a loading ellipsis or bubbles",
+        "at": "2026-10-31T22:37:02.411Z"
+      }
+    },
+    {
+      "id": "i13",
+      "hook": "the whole word göçebe in a soft, heavy rounded sans where the ö's dots and the ç's cedilla are the same short thick stitch-dash, three marks that read as stitching",
+      "means": "the Turkish letters are the craft detail; durable, warm, legible in Europe",
+      "source": "type",
+      "addedAt": "2026-10-31T22:36:17.536Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "the word göçebe, heavy and soft, with three identical thick dashes for dots and cedilla that read as stitches",
+        "rank": 1,
+        "at": "2026-10-31T22:36:47.131Z"
+      },
+      "concepts": [
+        "dikis"
+      ]
+    },
+    {
+      "id": "i14",
+      "hook": "a knotted cord: a thick rope tied in a single overhand knot whose loop forms an o",
+      "means": "tied down, grounded, holds under load",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:36:19.231Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a thick rope tied in one knot; risk of pretzel or generic outdoor rope, the o-loop must lead",
+        "rank": 3,
+        "at": "2026-10-31T22:36:49.869Z"
+      },
+      "concepts": [
+        "dugum"
+      ]
+    },
+    {
+      "id": "i15",
+      "hook": "a bedroll / rolled blanket seen end-on as a tight spiral, tied with one strap",
+      "means": "carried home on your back; nomad's bedding",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:36:20.657Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a spiral: cinnamon roll, snail or hypnosis swirl",
+        "at": "2026-10-31T22:37:03.519Z"
+      }
+    },
+    {
+      "id": "i16",
+      "hook": "the word GÖÇEBE in heavy capitals built entirely from horizontal weft bands with hairline-free gaps, like letters woven into a label selvedge; the Ö dots and Ç cedilla are solid, unwoven knots of colour",
+      "means": "the label is woven, not printed; the Turkish marks are the knots that hold it",
+      "source": "type",
+      "addedAt": "2026-10-31T22:50:29.448Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "capitals built from horizontal stripes: the IBM / 80s scanline-type cliché, with two blobs on top",
+        "at": "2026-10-31T22:50:59.118Z"
+      }
+    },
+    {
+      "id": "i17",
+      "hook": "a heybe: two square woven pockets hanging either side of one broad band, the Anatolian nomad's saddlebag seen flat",
+      "means": "the original Turkish travel pack; carried for generations",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:50:29.565Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a broad band with a square pouch hanging at each end: a saddlebag/heybe; risk it reads as a dumbbell, balance scale or a plain Π, so the woven pockets and the drape over a back must lead",
+        "rank": 1,
+        "at": "2026-10-31T22:50:59.251Z"
+      },
+      "concepts": [
+        "heybe"
+      ]
+    },
+    {
+      "id": "i18",
+      "hook": "a lowercase ö whose round counter is darned shut with three thick horizontal weft bars, the umlaut dots left plain",
+      "means": "a hole mended, not replaced; the repair sits inside the Turkish letter",
+      "source": "product",
+      "addedAt": "2026-10-31T22:50:29.685Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a circle with three horizontal lines under two dots: a hamburger-menu icon or a striped-mouth face; again a lone letter symbol",
+        "at": "2026-10-31T22:50:59.378Z"
+      }
+    },
+    {
+      "id": "i19",
+      "hook": "the word göçebe drawn as one thick round cord laid on cloth, every letter a single monoline loop with soft round ends, the ö dots and ç cedilla short cut ends of the same cord",
+      "means": "couched cord embroidery; one material, hand-laid, the whole word is made like the gear",
+      "source": "type",
+      "addedAt": "2026-10-31T22:50:29.806Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "the word göçebe in a thick rounded cord, dots and cedilla as cut cord ends; risk it reads as a generic monoline neon/app wordmark unless the cord's thickness, laid turns and cut ends feel hand-made",
+        "rank": 2,
+        "at": "2026-10-31T22:50:59.498Z"
+      },
+      "concepts": [
+        "kordon"
+      ]
+    },
+    {
+      "id": "i20",
+      "hook": "three flat river stones balanced in a short, slightly crooked stack, each a different soft oval",
+      "means": "a trail cairn: hikers mark the way for the next walker; grounded yet on the move",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:50:29.924Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a stack of balanced stones: the hiking cairn / zen-spa cliché",
+        "at": "2026-10-31T22:50:59.616Z"
+      }
+    },
+    {
+      "id": "i21",
+      "hook": "a heavy rounded-square wooden print block (yazma kalıbı) face, its relief a single bold ç cut in negative with the grain edges slightly rough",
+      "means": "Anatolian hand block-printing; Turkish craft stamped onto every product",
+      "source": "name",
+      "addedAt": "2026-10-31T22:50:30.042Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a rounded-square tile with a reversed-out c: an app icon / letter avatar; the print block will not read at 32 px",
+        "at": "2026-10-31T22:50:59.735Z"
+      }
+    }
+  ]
+}

@@ -1,0 +1,320 @@
+{
+  "scenario": "outdoor-tr",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Outdoor gear (Turkish name)",
+  "kind": "consumer",
+  "brief": {
+    "ask": "Create a brand identity for Göçebe, the outdoor and travel gear shop in this folder.",
+    "owner": "Owner preferences: durable, free-spirited and grounded, Turkish at heart but ready for Europe; for hikers and long-distance travellers. The wordmark must keep the Turkish letters ö and ç correct. No mountains, tents, compasses, trees or arrows. Web shop, product tags, social, and an embroidered or woven label version."
+  },
+  "markilo": "0.5.0-rc.1",
+  "plugin": {
+    "version": "0.5.0-rc.1",
+    "commit": "560ecfc"
+  },
+  "ranAt": "2026-10-31T22:32:33.514Z",
+  "minutes": 31.72,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 9.4599169,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 99225,
+    "output": 278231,
+    "cacheRead": 17367956,
+    "cacheWrite": 907949
+  },
+  "turns": 9,
+  "subagents": 17,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "All five concepts across two rounds (dikis, iplik, dugum, heybe, kordon) passed verify but failed the critic's blind gate with next=reject (best blind average 5.6), so nothing was finalized, exported or installed and no gallery was built."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "gocebe",
+      "name": "Göçebe",
+      "role": "master",
+      "locked": false,
+      "ideas": {
+        "total": 21,
+        "kept": 5,
+        "struck": 16,
+        "sources": 5
+      },
+      "concepts": [
+        {
+          "id": "dikis",
+          "title": "Dikiş",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.62,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 7,
+            "craft": 6,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 4,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 4,
+            "craft": 6,
+            "versatility": 6
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a startled cartoon face with eyebrows (owl/emoji)",
+            "a bold geometric ö",
+            "a bagel or donut with two sprinkles. Unfortunate: a shocked/angry face emoji"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 a Turkish ö with chunky dots (stitch is second, faintly); s2 the word-pair öç, but the lone bar under c reads as an underline, not a cedilla; s3 Hungarian ő (diagonal pair) - struck, brief fault; s4 ő plus a slashed c - struck, same fault; s5 a surprised face / robot eyes before ö - struck. Keep s1: correct ö, survives 16 px, embroiderable. Risks: the bars are just rounded dots, nothing yet says stitch - give them thread logic (slight taper, a needle-hole gap where they would pierce, satin-stitch direction) without tilting them; keep them level always. Develop in the full GÖÇEBE/göçebe word so the ç cedilla speaks the same stitch language as a real hook, not a floating bar. Watch the face reading at avatar size.",
+          "checks": {
+            "pass": 16,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.276
+          }
+        },
+        {
+          "id": "dugum",
+          "title": "Düğüm",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.15,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 6,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 5,
+            "balance": 5,
+            "craft": 5,
+            "typography": 4,
+            "color": 7,
+            "cultural-fit": 5,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 4
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 5,
+            "versatility": 5
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a steaming bowl / hot-spring sign",
+            "interlaced rings or a Celtic-style knot",
+            "a coiled snake. Unfortunate: the onsen/hot-food steam symbol - reads like a restaurant or spa"
+          ],
+          "sketchPick": "s5",
+          "sketchNotes": "Reads as: s1 triskelion / Celtic triquetra - struck (known symbol); s2 triskelion / fidget spinner - struck; s3 trefoil knot / squid - struck, same triquetra family; s4 triskelion with a tail - struck; s5 a heavy tied knot / pretzel. Only s5 breaks the three-fold symmetry that makes the rest read as Celtic/Trinity knot, so it is the pick, narrowly. Risks: pretzel reading; rope knots are common outdoor imagery, so ownability rests on making it a specific tied cord (asymmetric ends, one cut end clearly longer, cord thickness reading as webbing/cord). Never let it drift back toward rotational symmetry. The flame-like pointed cut ends should become blunt cut ends. Weakest of the three concepts.",
+          "checks": {
+            "pass": 14,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.249
+          }
+        },
+        {
+          "id": "heybe",
+          "title": "Heybe",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 6,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 6,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 6,
+            "typography": 7,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 6,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 6
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a domino/eye mask or pair of goggles",
+            "a bra (unfortunate for an apparel brand)",
+            "an old telephone handset / balance scale, with playing-card diamonds"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 headphones (struck); s2 headphones / barbell with weight plates (struck); s3 a two-pocket bag or satchel with kilim lozenges - closest to a heybe; s4 a shopping bag or handbag icon (struck: product object drawn plainly); s5 a plug on a cable / hanging scale (struck). Pick s3, but its risk is a generic handbag or luggage icon. Any high arch over the band reads as a headphone band - keep the band low and flat, more a draped strip than a handle. Push the kilim weave so it reads as cloth, not a box: give the pockets a soft sag at the bottom, make the lozenge pattern carry the identity (and work as embroidery), and make the two pockets clearly a pair hanging from one band, not two blocks touching. Check it does not read as a camera, binoculars or a briefcase at 16 px.",
+          "checks": {
+            "pass": 15,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.229
+          }
+        },
+        {
+          "id": "iplik",
+          "title": "İplik",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 6.08,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 7,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 6
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a stethoscope",
+            "a C with a curled tail (ç cedilla flourish)",
+            "a fish hook or shepherd's crook. Unfortunate: a stethoscope - reads as a health/clinic brand"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 'co' / a c with a ring on its tail (at 16 px the loop closes into an o); s2 a c with a gold ring or earring hook; s3 a calligraphic ç with a hanging hook; s4 a loading spinner - struck (UI glyph). Keep s3: first reading is ç, the cedilla-as-slack idea is closest, one strand, embroiderable as a single satin line. Risks: it reads more as script ç / question-mark hook than thread - the loose end must clearly be a cut thread end (blunt cut, slight fray or finer end), and the loop should read as slack, not a knob. Avoid it turning into a fishhook. Check it beside the wordmark so the ç here and in the word match.",
+          "checks": {
+            "pass": 16,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.226
+          }
+        },
+        {
+          "id": "kordon",
+          "title": "Kordon",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 4.69,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 3,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 5,
+            "typography": 4,
+            "color": 6,
+            "cultural-fit": 4,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 4,
+            "craft": 5,
+            "versatility": 6
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a lowercase g with its descender cut off (split-g monogram)",
+            "a hook or S-hook / carabiner",
+            "a geometric-sans fintech or app logo"
+          ],
+          "sketchPick": "s5",
+          "sketchNotes": "Reads as: word-a 'göçebe' in a rounded, slightly wobbly monoline - reads fully as the name, but as a friendly children's/comic face rather than cord, and the square ö dots fight the round strokes; word-b same plus a joined baseline under 'ebe' that reads as a scribbled underline. Icons: s1 'öç' - in Turkish that word means revenge (struck); s2 'eb', a meaningless fragment; s3 ö reads as a startled face again, the round-1 failure (struck); s4 a plain ç in a rounded font, little to own; s5 a g whose tail loops and crosses like a laid cord - the only crop where cord is visible. Pick s5. Must change: make the cord the type's logic everywhere (constant thickness, cut ends, crossings), not wobbly terminals; replace square dots with cut cord lengths or round dots; apply the s2/word-b joining only where the cord truly runs on, not as an underline; keep the g loop from reading as a snake or 8.",
+          "checks": {
+            "pass": 15,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.19
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "ae21cbcf-227a-447a-b96d-9d71987ddf4b"
+}

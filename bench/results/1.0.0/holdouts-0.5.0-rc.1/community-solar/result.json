@@ -1,0 +1,417 @@
+{
+  "scenario": "community-solar",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Energy cooperative",
+  "kind": "nonprofit",
+  "brief": {
+    "ask": "Create a brand identity for Sunvale, the community energy cooperative in this folder.",
+    "owner": "Owner preferences: optimistic, local and trustworthy, not corporate-green; for neighbours who co-own solar roofs. No suns with rays, leaves, lightning bolts, houses or plugs. Web, a members' app icon (iOS, Android), social, and print for flyers."
+  },
+  "markilo": "0.5.0-rc.1",
+  "plugin": {
+    "version": "0.5.0-rc.1",
+    "commit": "a7194d4"
+  },
+  "ranAt": "2026-10-31T22:15:18.880Z",
+  "minutes": 23.53,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 8.142019499999998,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 14098,
+    "output": 231602,
+    "cacheRead": 14259971,
+    "cacheWrite": 799233
+  },
+  "turns": 13,
+  "subagents": 21,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "All seven concepts across two rounds failed the critic's blind gate, so nothing was finalized, exported or installed."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "sunvale",
+      "name": "Sunvale",
+      "role": "master",
+      "locked": false,
+      "ideas": null,
+      "concepts": [
+        {
+          "id": "sv-between",
+          "title": "Between Neighbours",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.77,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 6,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 6,
+            "typography": 4,
+            "color": 7,
+            "cultural-fit": 5,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 6,
+            "memorability": 6,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 7
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "two figures (adult and child) with a ball between them",
+            "two leaning rounded slabs like gravestones",
+            "a broken lowercase n with a dot"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 a keyhole (privacy cliche) / shirt collar; s2 a person bust with an amber head, or two leaning buildings under a sun; s3 a keyhole; s4 a camera icon (UI); s5 a quotation mark at 16 px / bitten tombstones. s1, s3, s4, s5 struck. Pick s2: the asymmetry (tall + small leaning in) is the only version where 'two neighbours' beats 'keyhole'. Risks: single-person avatar reading, and amber sun on navy echoes Energy4All. Move: make the two figures clearly separate and unequal (wider gap, more lean, distinct tops) so it reads as two people, not one coat; place the sun so it is not a head on either; shift the ink off Energy4All navy toward a deep warm ink (aubergine/brown).",
+          "checks": {
+            "pass": 17,
+            "warn": 2,
+            "fail": 0,
+            "info": 4
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.32
+          }
+        },
+        {
+          "id": "sv-commons",
+          "title": "Commons",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.15,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 3,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 6,
+            "typography": 4,
+            "color": 7,
+            "cultural-fit": 5,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 4,
+            "craft": 6,
+            "versatility": 7
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a shop awning / market-stall store icon",
+            "a skirt or tutu",
+            "a little table or stool with a top bar"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as (32 px): s1 a stacked burger/pancake pile, risk of poop-emoji reading, repeats the struck burger; s2 a loading spinner or a sun with segmented rays (owner ban), table not legible; s4 a bitten cookie (cookie-consent icon), stock 0.83; s3 a split dome: mushroom cap / umbrella / parachute first, awning second. Struck s1, s2, s4. Pick s3: only one with no UI or banned reading, warm and civic, the amber centre panel carries 'my share in a shared whole'. Risk: the two drooping outer lobes make it a mushroom or jellyfish, and with no hem it is not yet an awning. Move: give it a market awning's scalloped valance, one continuous scalloped hem across all three panels, with a flatter, wider canopy so it reads as a stall canopy and not a cap; keep panels unequal with the amber centre widest; open real gaps between panels (overlap warning) so it holds in one colour.",
+          "checks": {
+            "pass": 18,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.337
+          }
+        },
+        {
+          "id": "sv-sterm",
+          "title": "Sun Terminal",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 6.15,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 6,
+            "distinctiveness": 5,
+            "memorability": 6,
+            "simplicity": 8,
+            "balance": 5,
+            "craft": 6,
+            "typography": 7,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 5
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 6,
+            "brand-fit": 6,
+            "craft": 6,
+            "versatility": 5
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a heavy serif S with an orange ball at its top-right",
+            "an S app icon carrying an unread-notification badge",
+            "a bouncing ball / juggling S"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as (32 px): s1 S with an amber dot floating at its shoulder (i-dot/typo risk again); s2 a fat plum serif S whose top terminal IS an amber ball, a ball-terminal sun; s3 S with a sun and a dark half-dome below, reads as two stray marks / an S between punctuation; s4 a small lowercase s with an orange dot, weakest, generic; s5 S with a dot tucked in the bowl, reads as a smudge at 16 px. Pick s2: the only one where the sun is part of the letter rather than a dot beside it, which is what keeps it from the round-1 'dot over a letter reads as a typo' failure; strongest 16 px (0.95). Risk: initial + orange dot is a common monogram trope, so ownability depends entirely on the join. Move: make the arc visibly flow into the sun (no gap, no crescent knockout), sun noticeably larger than a normal ball terminal so it reads as a deliberate sun, and keep the high-contrast warm serif. Wordmark: draft B 'Sunvale' is legible and clearly not a rounded-lowercase coop wordmark; tighten 'Su' spacing and check the sun doesn't collide with the u at 32 px.",
+          "checks": {
+            "pass": 17,
+            "warn": 2,
+            "fail": 0,
+            "info": 4
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.334
+          }
+        },
+        {
+          "id": "sv-sundial",
+          "title": "Sundial",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.69,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 6,
+            "typography": 7,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 4,
+            "craft": 6,
+            "versatility": 6
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "the numeral 4 in a circle",
+            "a sailboat sail and boom (yacht club badge)",
+            "a compass needle or clock hand"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as (32 px): s1 a pie chart with a wedge missing and a slanted amber '4'/'A' in it; s3 a clock or compass face with an amber blade and a white needle hand; s4 the same pie-chart wedge on a disc with a flat base. Nobody reads 'sundial' first: the outlined amber gnomon reads as a leaning letter (A/4) and the wedge cuts read as a chart. Strike s1 and s4 (pie-chart/finance-chart reading). Pick s3, the only one without a cut wedge: the needle shadow at least reads as time. Risks: clock/compass UI icon, gnomon-as-letter. Move: draw the gnomon as an unmistakable right-triangle fin standing on the shadow line (vertical edge, no rounded white outline), shadow as one long tapered band from its foot, so the pair reads 'object casting a shadow' before 'clock hand'. If it still reads as a clock at 32 px, drop it.",
+          "checks": {
+            "pass": 17,
+            "warn": 0,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.344
+          }
+        },
+        {
+          "id": "sv-token",
+          "title": "Share Token",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.54,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 5,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 7
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "the generic user/profile avatar icon (head over shoulders)",
+            "a person sitting in a bathtub or hot tub",
+            "a webcam / camera bump"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as (32 px): s1 a bowler/hard hat (struck); s2 an amber ball in a scooped tile, also a head-over-shoulders profile/avatar silhouette; s3 a moustached face (struck); s4 a letter U / horseshoe magnet holding a ball; s5 a Pokeball (struck). Pick s2: the only survivor where the sun sits in a vale rather than spelling a letter (s4 = 'U', wrong letter). Biggest risk: the generic user/avatar icon reading, which would cap distinctiveness and make it look like a default profile picture on a members' app. Move: make the bowl a shallow wide valley (wider than the sun, gentle slopes reaching the tile edges) and drop the sun so it is half-sunk below the rim line, killing the head-and-shoulders silhouette; keep the white gap ring. Candidly the weakest of the three; a tile + ball is close to stock geometry.",
+          "checks": {
+            "pass": 18,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.451
+          }
+        },
+        {
+          "id": "sv-vale",
+          "title": "Vale Line",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 4.85,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 6,
+            "balance": 4,
+            "craft": 5,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 5,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 4
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 4,
+            "craft": 5,
+            "versatility": 4
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a snail or curled worm",
+            "a tadpole/sperm-like squiggle with a dot",
+            "an eye or ear swirl"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 a tadpole / sperm / backwards 6; s2 a curl or snail-like swirl ending in an amber dot; s3 a waving stick creature with one eye, or a fried egg on a wave; s4 a magnifying glass / Q (search icon); s5 a tadpole/sperm (unfortunate). s1, s4, s5 struck; s3 weakest at 16 px (79%). Pick s2: only one where sun and valley are two things, warm rose + amber is on brief and nothing like the category. Risks: snail/curl reading, sperm-like tail, dot merging with line. Move: open a clear gap between line and amber disc, make the left stroke read as a landscape dip (flatter, longer, maybe slight swell) so it is a horizon, not a tail; keep it one confident stroke, no hand-drawn wobble.",
+          "checks": {
+            "pass": 17,
+            "warn": 3,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.25
+          }
+        },
+        {
+          "id": "sv-word",
+          "title": "Joined Hands Wordmark",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.69,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 7,
+            "typography": 6,
+            "color": 4,
+            "cultural-fit": 5,
+            "timelessness": 7,
+            "premium-perception": 6,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 7,
+            "versatility": 7
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "the letters 'un'",
+            "a serif 'm' variant or 'UN' monogram",
+            "the negation prefix un- (undo, un-plugged)"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 the letters 'un' in a stock serif (nothing changed visibly); s2 a continuous ribbon wave, 'un' or a sideways S; s3 'va' in a stock serif; s4 a horseshoe magnet / U with a sun in a bowl (sunrise cliche); s5 a sunrise inside an e (cliche). s4, s5 struck; s1, s3 not ownable. Pick s2: the only icon with a gesture of its own, holds at 16 px (97%), and the S-like wave hints Sunvale. Risk: it drifts toward the banned generic rounded lowercase look and a sine-wave/UI reading. Move: give the ribbon a deliberate stroke contrast or terminal shape that ties it to a legible, characterful serif wordmark, and make the join in the word visible so the icon is clearly cut from it.",
+          "checks": {
+            "pass": 14,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.348
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "bc766c66-59d3-49d1-98ff-465f8f64b704"
+}

@@ -1,0 +1,254 @@
+{
+  "scenario": "physio-health",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Health app",
+  "kind": "health",
+  "brief": {
+    "ask": "Create a brand identity for Kinetra, the physiotherapy app in this folder.",
+    "owner": "Owner preferences: reassuring, active and professional, never clinical-cold or sporty-aggressive; for adults recovering from injury and their physiotherapists. No crosses, hearts, stick figures, spines or bones. App icons for iOS and Android, web, and a mark clinics can print."
+  },
+  "markilo": "0.5.0-rc.1",
+  "plugin": {
+    "version": "0.5.0-rc.1",
+    "commit": "560ecfc"
+  },
+  "ranAt": "2026-10-31T22:32:33.521Z",
+  "minutes": 20.87,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 7.693853399999999,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 27028,
+    "output": 196783,
+    "cacheRead": 11589851,
+    "cacheWrite": 738162
+  },
+  "turns": 6,
+  "subagents": 20,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Two rounds and five directions (swing, pendulum-k, joined-it, stride, tempo) produced no concept that passed the critic's cold gate, so nothing was finalized, exported, installed or put in a gallery."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "kinetra",
+      "name": "Kinetra",
+      "role": "master",
+      "locked": false,
+      "ideas": {
+        "total": 20,
+        "kept": 7,
+        "struck": 13,
+        "sources": 5
+      },
+      "concepts": [
+        {
+          "id": "joined-it",
+          "title": "Joined it",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.38,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 4,
+            "craft": 6,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 5
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 6,
+            "craft": 6,
+            "versatility": 6
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a geometric-sans 'kinetra' whose i-dot has become a ball at the end of a thrown arc (bouncing-ball tittle)",
+            "the detached icon as a lowercase 'r' or desk lamp",
+            "a little figure bending forward in a stretch (stick-figure/body imagery the brief avoids)"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 word reads cleanly as kinetra with the i's dot thrown up and right in a curve, like a ball in flight (best match to its idea); icon alone at 16 px reads as a lowercase r because the arc grows straight out of the stem. s2 a rainbow/swoosh arc over the word, the generic arc-over-the-name move; struck. s3 word ok, but the k's orange flick is fussy and the ki icon reads as kr; weaker version of s1. s4 an accented i in the word; the icon reads as a matchstick or a flame/leaf (sporty or wellness cliché); struck. s5 tr ligature is invisible below 64 px; the word reads as plain kinetra in a stock sans, so nothing to own. Keep s1. Fixes: (1) open a clear gap between the stem top and the start of the arc, so the arc leaves the i instead of growing out of it like an r shoulder; the measured merge warning confirms the risk; (2) make the flight read as a launch, rising before it falls, with the dot clearly above x-height and not level with the arc's start; (3) taper or thin the arc so the dot carries the weight, not the arc; (4) test the icon as the i plus flight at 16 px against r, and check it never reads as a raised-arm stick figure (owner exclusion); (5) keep the arc inside the word's cap height so the lockup stays compact and reassuring, not sporty.",
+          "checks": {
+            "pass": 18,
+            "warn": 3,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.214
+          }
+        },
+        {
+          "id": "pendulum-k",
+          "title": "Pendulum k",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a rounded k whose leg kicks a ball - a footballer's leg (body imagery, sporty) and a stock k with dot terminal; s2 'I/' or 'l,' - the k split into stem and detached arm, the name's initial with a cut; s3 a checkmark / letter v with a dot (UI check, different letter); s4 a plain rounded K in a stock font, generic monogram. All struck. The pendulum never reads as a pendulum because the k's arm is the only place the bob can sit, and there it becomes a kicking foot or a check. Different move for another pass: drop the letter. Draw the pendulum itself as a non-letter object with a fixed pivot at top (short hanger + one arc of travel + bob at the end of its swing, tilted in one direction) so the read is 'something in controlled motion, guided from a fixed point' (therapist as pivot). Or keep the K for the wordmark only and let the icon be the bob-on-arc. Avoid checkmark and ball-kick silhouettes.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "stride",
+          "title": "Stride",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 two scattered rounded tiles (a window/app-grid fragment); s2 the duplicate/copy icon - two identical rounded squares on a diagonal, a UI glyph; s3 a tombstone with a smaller tombstone - flat-based dome is a gravestone, fatal for a physio audience; s4 a lid popping off a box / unboxing - the only one with motion, but it reads as burst-open, not a reassuring step; s5 two capsules/pills - medication, the clinical cue the brief avoids. Common failure: two disconnected masses floating apart never read as ONE body shifting weight, so the step is invisible and the result is generic geometry (distinctiveness <=4 cold). Different move: make it a single connected form whose silhouette carries the weight shift - e.g. one soft mass with a planted flat heel and a rolled, lifted forward edge (a rocker/foot-roll profile), or two masses joined by a continuous bridge/hinge so load transfer is visible. Keep the warm orange and soft corners; drop the floating-gap composition.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "swing",
+          "title": "Swing",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.92,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 7,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 6,
+            "brand-fit": 6,
+            "craft": 7,
+            "versatility": 7
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a letter K broken into three pieces (stem plus two petal strokes)",
+            "a figure in a lunge or kneeling stride, close to a stick-figure body",
+            "a sprouting leaf or flower opening from a stem. Unfortunate: a person collapsing onto a knee / falling, which for injury recovery is the wrong picture"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 a stick rising out of its own motion trail, but also a fragment of a loading spinner (fading spokes); s2 three loose pills, confetti, no single object; s3 an app tile with an L / spinner cut out (stock 84%) - struck; s4 bars getting taller left to right, a signal-strength / progress-bar glyph - struck (finance-bar and UI reading). Pick s1: the only one with one confident direction of movement and a clear end state (the bar standing). Main risk is the activity-indicator reading: in development make the three bars share one visible pivot point (overlap or touch at the low-left foot, like a metronome/time-lapse of one object) so it reads as ONE bar moving, not spokes; vary length or keep the trail shorter than the final bar; avoid even angle spacing (that is what makes spinners). Keep fat rounded ends and the warm orange; drop the palest bar if it vanishes at 16 px. Watch that it does not read as an L or a check.",
+          "checks": {
+            "pass": 16,
+            "warn": 1,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.322
+          }
+        },
+        {
+          "id": "tempo",
+          "title": "Tempo",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.46,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 5,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 6,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 4,
+            "craft": 6,
+            "versatility": 5
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a metronome (music-app icon)",
+            "a UI slider/fader knob on a track",
+            "at 16-32 px a warning triangle with an exclamation mark -- the unfortunate one for an injury-recovery app"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 a metronome, at once; s2 a pyramid / letter A with a slot, metronome lost; s3 a thin line-icon metronome (UI glyph, struck); s4 a joystick or lever on a V. Pick s1: the clearest first reading, solid body, warm accent on calm purple, outside the navy/teal set. Risks for development: (1) the music-app misreading - the stranger's first thought is a tuner/music app, so the body must feel like a calm, human object (softer radii, broader base, less instrument-like taper), not a piano accessory; (2) the orange arm is a long sharp diagonal close to a sporty slash - shorten it, lower the angle and round the ends; (3) arm and weight merged (16 px 89%) - give the weight its own silhouette with a clear gap, and check the one-colour version, where the cut-out in the body must still carry the arm; (4) the white gap currently forms an ampersand-like squiggle - clean it into one deliberate counter.",
+          "checks": {
+            "pass": 15,
+            "warn": 2,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.362
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "d74fcb67-4610-404d-99c2-0f482169d570"
+}

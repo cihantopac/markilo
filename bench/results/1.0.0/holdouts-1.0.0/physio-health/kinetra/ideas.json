@@ -1,0 +1,267 @@
+{
+  "schema": "markilo/ideas@1",
+  "ideas": [
+    {
+      "id": "i1",
+      "hook": "A row of short rounded dashes curving upward that fuse into one smooth solid stroke at the top",
+      "means": "Counted repetitions add up to fluid, regained movement",
+      "source": "product",
+      "addedAt": "2026-10-31T22:35:24.026Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a dashed arc turning solid: a loading spinner or progress indicator",
+        "at": "2026-10-31T22:36:28.517Z"
+      }
+    },
+    {
+      "id": "i2",
+      "hook": "Three overlapping translucent-looking rounded blades fanned from one pivot, each opened a little further",
+      "means": "Range of motion widening session by session",
+      "source": "product",
+      "addedAt": "2026-10-31T22:35:25.679Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "three overlapping rounded blades fanned from a pivot: a colour-swatch fan or petals; overlap transparency is fragile in one colour",
+        "rank": 4,
+        "at": "2026-10-31T22:36:27.403Z"
+      }
+    },
+    {
+      "id": "i3",
+      "hook": "Two parallel soft ribbons moving in the same wave, one slightly ahead of the other, never touching",
+      "means": "Therapist guiding, patient following — moving together between appointments",
+      "source": "product",
+      "addedAt": "2026-10-31T22:35:27.480Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "two parallel waves: generic water/audio/insurance swoosh, no specific form",
+        "at": "2026-10-31T22:36:29.611Z"
+      }
+    },
+    {
+      "id": "i4",
+      "hook": "A resistance band drawn as one thick rounded loop stretched into a long tilted lozenge, pinched at one end",
+      "means": "The physio's everyday tool, held under gentle tension",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:35:29.331Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a rubber band / paperclip loop: the product's own object and a loop, near Hinge's looping H",
+        "at": "2026-10-31T22:36:30.773Z"
+      }
+    },
+    {
+      "id": "i5",
+      "hook": "A balance cushion seen from the side: a soft dome with a small round weight resting just off-centre, about to roll",
+      "means": "Balance training and the confidence of a steady, active step",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:35:31.233Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a circle resting on a dome: the generic user/person avatar icon (body imagery)",
+        "at": "2026-10-31T22:36:31.933Z"
+      }
+    },
+    {
+      "id": "i6",
+      "hook": "A time-lapse of one rounded bar swinging up: three ghosted positions in lighter-to-darker steps ending upright",
+      "means": "Motion recorded by the camera, rep by rep, ending in a full lift",
+      "source": "product",
+      "addedAt": "2026-10-31T22:35:33.435Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "three rounded bars fanned from one pivot, light to dark, ending upright: a motion-blur swing, possibly a hand fan",
+        "rank": 1,
+        "at": "2026-10-31T22:36:23.493Z"
+      },
+      "concepts": [
+        "swing"
+      ]
+    },
+    {
+      "id": "i7",
+      "hook": "A lowercase k whose two arms are one continuous soft arc swinging out from the stem, like a pendulum mid-swing",
+      "means": "Kinetra's K in motion — kinesis in the initial",
+      "source": "name",
+      "addedAt": "2026-10-31T22:35:35.248Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a lowercase k with one swinging arc for arms; reads as k, risk of generic monogram",
+        "rank": 2,
+        "at": "2026-10-31T22:36:24.709Z"
+      },
+      "concepts": [
+        "pendulum-k"
+      ]
+    },
+    {
+      "id": "i8",
+      "hook": "The word kinetra where the t's crossbar runs on as a gently rising path under the letters r and a",
+      "means": "kine + tra(jectory): the name carries its own recovery path",
+      "source": "name",
+      "addedAt": "2026-10-31T22:35:36.945Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a wordmark with a rising swoosh underline: growth-chart cliché",
+        "at": "2026-10-31T22:36:32.954Z"
+      }
+    },
+    {
+      "id": "i9",
+      "hook": "kinetra in a rounded humanist sans where the i and the t share one stroke, the i's dot set forward like a ball in flight",
+      "means": "A small movement released from the word: active but calm",
+      "source": "type",
+      "addedAt": "2026-10-31T22:35:38.903Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "the word kinetra with an i-t ligature and a dot pushed forward; the displaced i-dot is a common device",
+        "rank": 3,
+        "at": "2026-10-31T22:36:26.056Z"
+      },
+      "concepts": [
+        "joined-it"
+      ]
+    },
+    {
+      "id": "i10",
+      "hook": "kinetra in a warm low-contrast serif-sans hybrid with every stroke ending in a soft forward-leaning terminal, as if the word is walking",
+      "means": "Professional and humane type with forward momentum in every letter",
+      "source": "type",
+      "addedAt": "2026-10-31T22:35:40.961Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "just a typeface choice: forward-leaning terminals are a meaning with no specific form",
+        "at": "2026-10-31T22:36:34.275Z"
+      }
+    },
+    {
+      "id": "i11",
+      "hook": "Three soft pebble shapes stacked off-axis, each nudged further right, forming a balanced lean",
+      "means": "Steady, gradual progress that stays in balance",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:35:42.940Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a stone cairn: spa/wellness cliché",
+        "at": "2026-10-31T22:36:35.301Z"
+      }
+    },
+    {
+      "id": "i12",
+      "hook": "One thick stroke that starts thin and swells as it curls up into a wave crest, with a calm flat base",
+      "means": "Strength returning gradually, carried on a steady base",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:35:44.937Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a surf wave crest: water/surf-brand cliché",
+        "at": "2026-10-31T22:36:36.471Z"
+      }
+    },
+    {
+      "id": "i13",
+      "hook": "A rounded square app tile with a single soft dot travelling along a short open arc, leaving a fading trail of three smaller dots",
+      "means": "A guided movement traced by the camera, with the therapist seeing the trail",
+      "source": "product",
+      "addedAt": "2026-10-31T22:35:46.910Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a dot on an arc with a trail: loading spinner / tracking UI, close to Sword's ring-and-dot",
+        "at": "2026-10-31T22:36:37.710Z"
+      }
+    },
+    {
+      "id": "i14",
+      "hook": "Two rounded half-leaf shapes meeting at an angle like a door being eased open, a gap of light between them",
+      "means": "Opening up again after injury, with support on both sides",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:35:48.916Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a sprout/leaf pair or an open book: wellness cliché",
+        "at": "2026-10-31T22:36:38.859Z"
+      }
+    },
+    {
+      "id": "i15",
+      "hook": "A soft rounded block caught mid-roll, balanced on one rounded corner and leaning forward over a short flat ground line",
+      "means": "Progress one steady step at a time, controlled and balanced",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:47:04.923Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a rounded square tilted on its corner over a line: a box or die tipping over; generic geometry, and 'about to fall' is an unfortunate reading for recovering patients",
+        "rank": 3,
+        "at": "2026-10-31T22:47:34.900Z"
+      }
+    },
+    {
+      "id": "i16",
+      "hook": "A metronome seen from the front: a soft tapered body with its slim arm swung to one side",
+      "means": "Exercises paced and guided, rep by rep, at the patient's own tempo",
+      "source": "audience",
+      "addedAt": "2026-10-31T22:47:05.066Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a tapered body with a slim swung arm: a metronome; risks a gauge needle or a struck-through triangle warning sign, and a music-app reading",
+        "rank": 2,
+        "at": "2026-10-31T22:47:34.744Z"
+      },
+      "concepts": [
+        "tempo"
+      ]
+    },
+    {
+      "id": "i17",
+      "hook": "A plump soft arch like an inchworm mid-step: one rounded end planted, the other lifted and reaching forward",
+      "means": "Recovery as small, steady, patient steps forward",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:47:05.197Z",
+      "review": {
+        "verdict": "keep",
+        "reading": "a plump arch with one end lifted: an inchworm mid-step; risks reading as a lowercase n or a magnet, and childish if drawn cute",
+        "rank": 1,
+        "at": "2026-10-31T22:47:34.602Z"
+      },
+      "concepts": [
+        "stride"
+      ]
+    },
+    {
+      "id": "i18",
+      "hook": "kinetra in a soft lowercase serif (Fraunces) whose k's lower leg sweeps forward and under the i like a step being taken",
+      "means": "A humane, professional word that is already moving forward",
+      "source": "type",
+      "addedAt": "2026-10-31T22:47:05.325Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "the word kinetra with a k leg swashing under the i: a kicking leg (round 1's failure) and a swoosh-underline cliché like struck i8",
+        "at": "2026-10-31T22:47:35.073Z"
+      }
+    },
+    {
+      "id": "i19",
+      "hook": "A tall rounded pill tipped slightly forward, steadied by a smaller pill tucked against its base like a hand's support",
+      "means": "The therapist steadies, the patient moves: support that lets you lean into progress",
+      "source": "product",
+      "addedAt": "2026-10-31T22:47:05.459Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "two capsules leaning together: medication pills (pharmacy cliché), or a leaning figure being held up",
+        "at": "2026-10-31T22:47:35.285Z"
+      }
+    },
+    {
+      "id": "i20",
+      "hook": "One rounded square tile folded along a soft diagonal crease so its top corner lifts up and forward, like a page-free flap opening",
+      "means": "Mobility returning: something stiff starting to bend and open",
+      "source": "abstract",
+      "addedAt": "2026-10-31T22:47:05.583Z",
+      "review": {
+        "verdict": "strike",
+        "reading": "a square with a lifted folded corner: a page curl / dog-ear, the document-object cliché",
+        "at": "2026-10-31T22:47:35.515Z"
+      }
+    }
+  ]
+}

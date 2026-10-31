@@ -1,0 +1,49 @@
+{
+  "schema": "markilo/kit@1",
+  "brand": "quorvo",
+  "name": "Quorvo",
+  "concept": "knot",
+  "locked": false,
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "lockupHorizontal": "lockup-horizontal.svg",
+    "lockupStacked": "lockup-stacked.svg",
+    "lockupCompact": "lockup-compact.svg"
+  },
+  "palette": {
+    "primary": "#1F5A52",
+    "ink": "#1D2321",
+    "paper": "#F6F2EA",
+    "dark": "#080f0e"
+  },
+  "typography": {
+    "fontId": "dm-sans",
+    "weight": 500,
+    "family": "DM Sans",
+    "license": "OFL-1.1",
+    "tracking": 0
+  },
+  "tagline": "Meeting notes that write themselves.",
+  "notes": [
+    "Below 24 px use the symbol alone on a solid tile; the crossing gap must never be filled.",
+    "Use the reversed (white) symbol on dark grounds; deep green #1F5A52 on warm paper #F6F2EA is the primary pairing."
+  ],
+  "approvedAt": "2026-10-31T22:56:40.583Z",
+  "originality": {
+    "verdict": "insufficient-evidence",
+    "confidence": "low",
+    "acceptedRisk": true,
+    "report": "../reports/originality-knot.md",
+    "evidence": {
+      "visual": "5 brand(s) from 10 reference file(s): 5 direct competitor, 0 category/form-family; sources 5 official, 0 app store, 0 logo catalog, 0 unverified",
+      "registry": "no registry searches logged for \"Quorvo\"",
+      "registryCoverage": "none"
+    }
+  },
+  "gate": {
+    "status": "passed",
+    "average": 6,
+    "reasons": []
+  }
+}

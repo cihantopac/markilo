@@ -1,0 +1,162 @@
+[
+  {
+    "brand": "sunvale",
+    "concept": "held-light",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a stick figure with raised arms, the stock 'community/charity' person icon",
+        "an orange sun or ball held in a cupped V, like hands or a valley",
+        "a clean navy-and-orange geometric sans wordmark with one special letter"
+      ],
+      "distinctiveness": 5.5,
+      "memorability": 6,
+      "brandFit": 6,
+      "craft": 6,
+      "versatility": 7.3,
+      "presentAsIs": false,
+      "why": "The held-sun V is a sensible idea that scales cleanly and avoids every banned cliché, but it slips into the generic raised-arms people icon, the angular flat-bottomed v clashes with the soft rounded letters around it, and navy with orange feels more like a utility than a warm neighbourhood co-op.",
+      "votes": "2/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 1,
+        "looks": 2,
+        "scores": [
+          6,
+          6.4
+        ]
+      },
+      "sonnet": {
+        "yes": 1,
+        "looks": 2,
+        "scores": [
+          6,
+          6.2
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3505717
+  },
+  {
+    "brand": "sunvale",
+    "concept": "many-suns",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "orange disc with a signal/broadcast ripple in the corner",
+        "eye or target peeking out of a ball",
+        "sunrise of nested suns"
+      ],
+      "distinctiveness": 5.8,
+      "memorability": 6,
+      "brandFit": 5.5,
+      "craft": 6.3,
+      "versatility": 6.5,
+      "presentAsIs": false,
+      "why": "The warm, solid disc avoids corporate green and holds up in one colour, but the nested arcs read first as a wifi or podcast signal, not shared solar ownership, the cut-off top edge looks unresolved, and the detail turns to mush at 16–24px.",
+      "votes": "1/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.6,
+          6
+        ]
+      },
+      "sonnet": {
+        "yes": 1,
+        "looks": 2,
+        "scores": [
+          6,
+          6.4
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.32111239999999996
+  },
+  {
+    "brand": "sunvale",
+    "concept": "sun-s",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "generic person/user icon (orange head over a navy swoosh body)",
+        "sun setting into a cupped hand or valley curve",
+        "awkward backwards 'S' or '3' glyph"
+      ],
+      "distinctiveness": 4.8,
+      "memorability": 5,
+      "brandFit": 5.5,
+      "craft": 5,
+      "versatility": 6.5,
+      "presentAsIs": false,
+      "why": "The plain disc avoids the banned sun-with-rays cliché and holds up well from 16 px to 256 px, but the dot-over-swoosh shape reads first as the stock 'community/person' clip-art used by countless healthcare and HR brands; the curve doesn't read clearly as an S, and its knobbed, uneven terminals look unresolved rather than ownable.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.8,
+          5.6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.8,
+          5.2
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.33134290000000005
+  },
+  {
+    "brand": "sunvale",
+    "concept": "sunk-u",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a chunky rounded wordmark with one orange letter swapped in as a filled bowl, like a sun sinking into a valley",
+        "the standalone symbol reads as a notched block over a smile curve, like a toilet, a monitor on a stand or a cartoon face",
+        "a friendly startup or delivery-app logotype"
+      ],
+      "distinctiveness": 5.5,
+      "memorability": 5.5,
+      "brandFit": 5.5,
+      "craft": 5.5,
+      "versatility": 5.3,
+      "presentAsIs": false,
+      "why": "The orange sunk-in 'u' gives the wordmark warm, neighbourly charm without corporate-green clichés, but the extracted icon adds a smile bar the wordmark doesn't have, reads as an odd fixture or face rather than sun-in-valley, and fills up into a blob below 32px, so the system isn't app-ready.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.2,
+          5
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6,
+          5.6
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.35109730000000006
+  }
+]

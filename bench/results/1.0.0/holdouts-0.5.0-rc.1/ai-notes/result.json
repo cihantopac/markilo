@@ -1,0 +1,226 @@
+{
+  "scenario": "ai-notes",
+  "attempt": 1,
+  "holdout": true,
+  "title": "AI assistant",
+  "kind": "saas",
+  "brief": {
+    "ask": "Create a brand identity for Quorvo, the meeting assistant in this folder.",
+    "owner": "Owner preferences: calm, competent and human; for remote teams who are tired of meetings. No sparkles, stars, brains, robots, chat bubbles, waveforms or gradient blobs. Web app, a desktop app icon (macOS, Windows) and social."
+  },
+  "markilo": "0.5.0-rc.1",
+  "plugin": {
+    "version": "0.5.0-rc.1",
+    "commit": "a7194d4"
+  },
+  "ranAt": "2026-10-31T22:15:18.879Z",
+  "minutes": 26.7,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 7.6790891999999955,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-opus-5-5",
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5"
+  ],
+  "tokens": {
+    "input": 26599,
+    "output": 234390,
+    "cacheRead": 12433684,
+    "cacheWrite": 695143
+  },
+  "turns": 15,
+  "subagents": 19,
+  "claim": {
+    "passed": [
+      "underline"
+    ],
+    "finalized": "underline",
+    "notes": "Only the wordmark-led underline concept passed the critic's gate (narrowly, blind 6/6/7) out of five directions over two rounds; it was finalized with an accepted insufficient-evidence originality risk, exported for web, macOS, Windows and social, with a dry-run Next.js install plan and gallery built."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "quorvo",
+      "name": "Quorvo",
+      "role": "master",
+      "locked": false,
+      "ideas": null,
+      "concepts": [
+        {
+          "id": "cairn",
+          "title": "Cairn",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s6 a piggy bank or toilet seen from the side, a coin slot / the digit 0 on a shelf; s7 a ghost or round face with an exclamation mark; s8 an egg or pawn above a progress bar with a dot ('0.' / loading); s9 the letter S beside an orange tombstone or door. None reads as a trail blaze: the blaze needs a tree trunk or rock context to be a blaze, and stripped down it becomes a slot or a bar. s9's orange rounded slab is a gravestone, an unfortunate reading for a meeting tool; s6/s7 blob boulders are close to the gradient-blob form the owner banned, and lumpy organics at this size feel unfinished rather than calm. Second round failed to land the waymark; retire the direction.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "door-ajar",
+          "title": "Door ajar",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 2,
+          "critic": 6,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 4,
+            "distinctiveness": 6,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 6,
+            "memorability": 5,
+            "brand-fit": 6,
+            "craft": 6,
+            "versatility": 7
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a Greek capital Gamma or a squared-off r beside a slanted gold block (r + ramp, 'rA')",
+            "a doorstop or ramp wedge standing next to a bracket",
+            "a doorway with light falling through (only third, and only on reflection) -- unfortunate: an exit/leave sign, a cheese wedge"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 the letter N (struck, different letter); s2 an open door in perspective — closest to the idea but reads as the logout/exit UI icon (struck); s3 a desk lamp or a spotlight cone with an L, the door is lost; s4 a slim dark jamb with a wedge of warm light falling from a crack — first reading door-crack light, second a sail; s5 letters (lambda/JL) and a floor-plan symbol, weak at 16 px (85%) and architectural, not human. Keep s4: the light is the mark, amber on slate breaks the category's blue/purple tiles, calm and human. Fix: (1) kill the sail reading — the wedge must start AT the jamb's top along its full height edge, apex touching the crack, not a free-standing triangle; consider a short lintel/head stub so it's a doorway, not a mast; (2) make the jamb-to-wedge gap the deliberate crack, consistent width; (3) give the wedge's floor edge a slight soft taper rather than a hard sharp corner so it reads as light, not a blade/flag; (4) test against flashlight-beam and Fireflies/tl;dv at 16 px. Risk: door+light-wedge is a known stock motif; ownability comes only from the exact jamb/crack proportion.",
+          "checks": {
+            "pass": 17,
+            "warn": 0,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.434
+          }
+        },
+        {
+          "id": "fold",
+          "title": "Fold",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 tally marks or equalizer bars next to a card (finance/tally cliché, 'IIII'); s2 a paperclip or magnet hook / a 'J' — no fold reads; s3 a pause glyph beside a card, or a deck of cards; s4 a loudspeaker/volume UI icon (square + flared trapezoid). No sketch reads as folding or as 'the page that matters'; every one lands on a UI icon or the product's own object (page/card). Struck all. The fold idea needs a visible crease to read at all, and a crease on a rectangle is a folded-page cliché; do not develop this direction further.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "loose-end",
+          "title": "Loose end",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "looks": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s5 the chain-link (hyperlink) UI icon, broken; s6 a pretzel / link icon with a dragged tail; s7 the link icon in a stock green squircle (stock 0.86); s8 link icon / scribbled 'cl'. At 16 px all four collapse to a squiggle. The overhand knot drawn as two interlocking stroked arcs is indistinguishable from the hyperlink glyph, a UI icon, which is struck; the dashed broken ends add a 'broken link' reading, the opposite of the idea. Second round with the same motif: the knot does not read as a knot at icon size. Retire the direction; a rework of this drawing will not clear blind distinctiveness.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "underline",
+          "title": "Underline",
+          "status": "approved",
+          "lead": "wordmark",
+          "reviews": 2,
+          "critic": 6.54,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 6,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 7,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 7,
+            "premium-perception": 6,
+            "versatility": 6
+          },
+          "present": true,
+          "blind": {
+            "distinctiveness": 6,
+            "memorability": 6,
+            "brand-fit": 7,
+            "craft": 6,
+            "versatility": 6
+          },
+          "looks": null,
+          "gate": false,
+          "readsAs": [
+            "a warm serif lowercase word whose q-descender swashes into an underline, like a hand-underlined note",
+            "the symbol alone as 'q_' / 'qL', a lowercase q with a typing-cursor underscore",
+            "a classic display-serif swash tail (the generic 'signature underline' trope). Unfortunate: the standalone q_ reads as a terminal prompt/placeholder or an unfinished letter"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 a lowercase q whose tail turns into an underline (close to the idea; secondary reading q joined to an L); s2 a q on a ski / a tail ending in a tick (checkmark cliché risk); s3 'q.' a letter plus full stop, a common device, the dot drops out at 16 px; s4 a q on a pedestal / stamp handle. Pick s1: the only one where the tail itself becomes the rule, which is exactly what carries into the wordmark. Risks: as an icon it is still an initial-letter glyph in a category full of them, so the drawing must be ownable (do not ship stock Fraunces; draw the bend as one deliberate soft turn with a slight stroke swell, and make the rule long enough that it reads as underline, not as a joined L). In the wordmark, test early that the rule under 'uorvo' does not read as a hyperlink underline or a text-field cursor; stop the rule short of the final o or vary its weight so it reads as a pen stroke. Check Qorvo neighbour.",
+          "checks": {
+            "pass": 22,
+            "warn": 5,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.251
+          }
+        }
+      ],
+      "finalized": "underline",
+      "exported": 155,
+      "byGroup": {
+        "logos": 54,
+        "web": 11,
+        "macos": 14,
+        "windows": 60,
+        "social": 11,
+        "tokens": 3,
+        "guidelines": 2
+      },
+      "success": false
+    }
+  ],
+  "sessionId": "9ff57d65-b85a-412b-9273-fe69894eee85"
+}

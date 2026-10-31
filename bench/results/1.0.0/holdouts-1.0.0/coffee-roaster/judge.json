@@ -1,0 +1,202 @@
+[
+  {
+    "brand": "emberwick",
+    "concept": "counters",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "heavy, warm serif wordmark with a small rust-coloured pebble sitting in the eye of the e",
+        "a glowing coal or ember lodged in the letter",
+        "a rock or gemstone in a letter, which could just as easily be a geology or jewellery brand"
+      ],
+      "distinctiveness": 5.5,
+      "memorability": 5.5,
+      "brandFit": 6.3,
+      "craft": 5.3,
+      "versatility": 6.5,
+      "presentAsIs": false,
+      "why": "The ember-in-the-counter idea is quietly clever and stamps well in one colour, but the irregular polygon looks crude and reads as a stone rather than a glowing coal, the eye of the e is cut flat to fit it, and the stock-feeling heavy serif doesn't make the identity its own.",
+      "votes": "2/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.2,
+          5.4
+        ]
+      },
+      "sonnet": {
+        "yes": 2,
+        "looks": 2,
+        "scores": [
+          6.4,
+          6.2
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3452389
+  },
+  {
+    "brand": "emberwick",
+    "concept": "ligature",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a sturdy bookish serif wordmark with a strange ink-blot where the r and w meet",
+        "melted wax or a dripping join, a loose nod to 'wick'",
+        "a lowercase 'rw' monogram that doesn't match the brand's initials"
+      ],
+      "distinctiveness": 5.5,
+      "memorability": 5,
+      "brandFit": 5.5,
+      "craft": 5,
+      "versatility": 6.5,
+      "presentAsIs": false,
+      "why": "The warm serif suits a quietly confident roaster, but the r–w ligature is a lumpy, blob-like fusion that looks like a rendering fault rather than a deliberate gesture, and an 'rw' symbol is an arbitrary fragment, not a mark people will connect to Emberwick.",
+      "votes": "1/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.8,
+          4.8
+        ]
+      },
+      "sonnet": {
+        "yes": 1,
+        "looks": 2,
+        "scores": [
+          6.2,
+          6.2
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3445485
+  },
+  {
+    "brand": "emberwick",
+    "concept": "plait",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "interlaced W monogram",
+        "V and J letters (or VW) overlapping",
+        "folded ribbon or strap"
+      ],
+      "distinctiveness": 4.8,
+      "memorability": 5.3,
+      "brandFit": 4.3,
+      "craft": 5,
+      "versatility": 6.8,
+      "presentAsIs": false,
+      "why": "It's a woven W with an over-under break that stamps fine in one colour, but the loose top fragment and soft, uneven rounded ends make it look casual and generic, and it can read as 'VJ'; it doesn't feel crafted or quietly confident and says nothing about where the coffee comes from.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.6,
+          5
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          6,
+          5.2
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.3220156
+  },
+  {
+    "brand": "emberwick",
+    "concept": "sort",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "the number 9 on a terracotta tag",
+        "a rotated lowercase e (schwa ə) on a bag label",
+        "a notched coffee-bag or price tag"
+      ],
+      "distinctiveness": 5.5,
+      "memorability": 5.5,
+      "brandFit": 5.3,
+      "craft": 5.8,
+      "versatility": 6.8,
+      "presentAsIs": false,
+      "why": "The warm terracotta, chunky letterform and notched label tag hold up well in one colour and at small sizes, but the 'e' is rotated so it reads first as a '9' or a schwa, which breaks the link to Emberwick and makes the symbol ambiguous rather than ownable.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.6,
+          5.6
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          5.6,
+          6.2
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.32382710000000003
+  },
+  {
+    "brand": "emberwick",
+    "concept": "wickmark",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "the word 'emberwrck': the hooked 'i' reads as an 'r'",
+        "a candy cane or walking-stick hook beside an orange rock chip",
+        "a bent candle wick with an ember"
+      ],
+      "distinctiveness": 5.3,
+      "memorability": 4.8,
+      "brandFit": 4.8,
+      "craft": 3.8,
+      "versatility": 5,
+      "presentAsIs": false,
+      "why": "The wick-and-ember idea is clever, but the heavy rounded hook doesn't match the refined serif and reads as an 'r', the ember is a clumsy polygon placed too far off the stem, and the symbol on its own looks like a candy cane next to a pebble rather than a confident, ownable mark.",
+      "votes": "0/4"
+    },
+    "model": "panel opus:2,sonnet:2",
+    "panel": {
+      "opus": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.4,
+          4
+        ]
+      },
+      "sonnet": {
+        "yes": 0,
+        "looks": 2,
+        "scores": [
+          4.8,
+          5.6
+        ]
+      }
+    },
+    "costUsdApiEquivalent": 0.34740160000000003
+  }
+]
