@@ -19,17 +19,17 @@ are not selected, unsuccessful attempts are recorded, and anything that cannot b
 
 ## 1.0.0 blockers
 
-| #   | Blocker                                                                                                 | Area         | Status                                  |
-| --- | ------------------------------------------------------------------------------------------------------- | ------------ | --------------------------------------- |
-| B1  | `install-assets --group --force` replaced files without a backup; no rollback on partial failure        | Data safety  | **Fixed** (transactional installer)     |
-| B2  | Unattended design quality: too few presentable identities, symbol directions almost never succeed       | Design       | Open                                    |
-| B3  | Gate validation rests on 2 positives and one judge family; no repeated-run variance or human reference  | Evaluation   | Open                                    |
-| B4  | Wordmark engine: 10 bundled faces, limited letter surgery, no measured optical spacing                  | Design       | Open                                    |
-| B5  | Real-project validation (three developer products) not yet done with the current version                | Validation   | Open                                    |
-| B6  | Security review of gallery server, research fetchers, SVG/raster inputs and repo scanner not refreshed  | Security     | Open                                    |
-| B7  | Clean-environment verification of npm/npx, plugin skills and other agents (`agent-setup`) on three OSes | Distribution | Partly (CI covers CLI + plugin install) |
-| B8  | Export claims to re-verify against official specs; X header unverified; Icon Composer layers only       | Exports      | Open                                    |
-| B9  | Gallery: feedback loop, iteration history and final selection need a first-time-user walkthrough        | UX           | Open                                    |
+| #   | Blocker                                                                                                 | Area         | Status                                               |
+| --- | ------------------------------------------------------------------------------------------------------- | ------------ | ---------------------------------------------------- |
+| B1  | `install-assets --group --force` replaced files without a backup; no rollback on partial failure        | Data safety  | **Fixed** (transactional installer)                  |
+| B2  | Unattended design quality: too few presentable identities, symbol directions almost never succeed       | Design       | In progress (see log)                                |
+| B3  | Gate validation rests on 2 positives and one judge family; no repeated-run variance or human reference  | Evaluation   | Tooling done; evaluation runs pending                |
+| B4  | Wordmark engine: 10 bundled faces, limited letter surgery, no measured optical spacing                  | Design       | Partly: 24 faces, letter check; optical spacing open |
+| B5  | Real-project validation (three developer products) not yet done with the current version                | Validation   | Open                                                 |
+| B6  | Security review of gallery server, research fetchers, SVG/raster inputs and repo scanner not refreshed  | Security     | Open                                                 |
+| B7  | Clean-environment verification of npm/npx, plugin skills and other agents (`agent-setup`) on three OSes | Distribution | Partly (CI covers CLI + plugin install)              |
+| B8  | Export claims to re-verify against official specs; X header unverified; Icon Composer layers only       | Exports      | Open                                                 |
+| B9  | Gallery: feedback loop, iteration history and final selection need a first-time-user walkthrough        | UX           | Open                                                 |
 
 ## Plan, in priority order
 
@@ -86,6 +86,23 @@ serve as realistic test subjects. They are test environments, not branding assig
 - No concept from these runs is an approved identity.
 
 ## Progress log
+
+- **2026-10-31 (2)** — Evaluation and design-quality groundwork, each change tested and committed:
+  - Five holdouts sealed unrun at `241af5e` (ai-notes, coffee-roaster, physio-health, outdoor-tr, community-solar).
+  - `bench.mjs`: isolated runs (only Markilo loaded, from a plugin snapshot), `--plugin` for baselines, `--scenarios`
+    for private projects, `--panel opus:3,sonnet:3`, precision/recall with 95 % Wilson intervals. Re-reporting rc.1:
+    precision and recall 2 of 2, interval 34–100 % — the "29 of 29" agreement says little about passes.
+  - Letter legibility check for built wordmarks (counters lost, letters read as others, merged pairs, added elements
+    read as hyphen/accent/full stop). Calibrated on 46 earlier wordmarks: no false block; raster likeness alone found
+    none of the known misreads, the counter test found all three (recorded as an unsuccessful first attempt).
+  - 24 bundled type families with traits; the wordmark board's contrasting faces now follow the brief (it was one
+    fixed list for every brand; no run had ever added a font).
+  - Gate second look: every pass so far sat exactly at the bar and the judge rejected half; edge cases now need the
+    majority of three cold looks by fresh critics. `finalize` refuses unreviewed and undecided concepts.
+  - Real-project diagnostic runs started (three products, isolated copies, 0.5.0-rc.1 + install fix). Caveat: they
+    loaded the live checkout, which changed mid-run, so they are labelled mixed and used for diagnosis only; the
+    benchmark now snapshots the plugin at start.
+  - Security review of the toolchain delegated; findings pending.
 
 - **2026-10-31** — Assessment of 0.5.0-rc.1. B1 fixed: transactional `install-assets` with rollback, `--undo`,
   `--expect`, `unchanged`; smoke test covers expect and undo.
