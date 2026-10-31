@@ -1,0 +1,13 @@
+{
+  "id": "outdoor-tr",
+  "title": "Outdoor gear (Turkish name)",
+  "kind": "consumer",
+  "sector": "outdoor and travel gear",
+  "name": "Göçebe",
+  "holdout": true,
+  "ask": "Create a brand identity for Göçebe, the outdoor and travel gear shop in this folder.",
+  "owner": "Owner preferences: durable, free-spirited and grounded, Turkish at heart but ready for Europe; for hikers and long-distance travellers. The wordmark must keep the Turkish letters ö and ç correct. No mountains, tents, compasses, trees or arrows. Web shop, product tags, social, and an embroidered or woven label version.",
+  "budgetUsd": 20,
+  "sealedAt": "2026-10-31",
+  "sealedBefore": "1.0.0 design changes"
+}

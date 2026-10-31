@@ -1,0 +1,8 @@
+name: sunvale_members
+description: Sunvale members app
+version: 2.0.0
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter

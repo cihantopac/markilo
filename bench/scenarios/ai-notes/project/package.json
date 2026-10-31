@@ -1,0 +1,9 @@
+{
+  "name": "quorvo-web",
+  "private": true,
+  "version": "0.9.0",
+  "dependencies": {
+    "next": "15.2.0",
+    "react": "19.0.0"
+  }
+}

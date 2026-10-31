@@ -4,17 +4,22 @@ End-to-end runs of the installed Markilo plugin on realistic products, to measur
 effort and cost release by release. Each scenario is a fixture project (a README, manifests and screens, no real
 company) plus the owner's preferences:
 
-| Scenario                                                        | Product                                                                                 | What it tests                                                                                       |
-| --------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| [saas-invoicing](scenarios/saas-invoicing)                      | Tallyline — invoicing and cash-flow forecasting for freelancers (Next.js)               | A crowded category (fintech blue and green), web-only deliverables                                  |
-| [mobile-sleep](scenarios/mobile-sleep)                          | Dozeline — wind-down and sleep journal app (Flutter, iOS + Android, EN + TR)            | Clichés to avoid (moons, stars), home-screen legibility, mobile exports                             |
-| [family-workspace](scenarios/family-workspace)                  | Lumenfold — office suite with Docs, Sheets and Sign (monorepo)                          | A master brand and three product icons that belong together                                         |
-| [devtool-cli](scenarios/devtool-cli) (holdout until rc.5)       | Seamline — zero-downtime PostgreSQL migrations, an open-source CLI (Rust, docs site)    | A developer audience, GitHub avatar and README, no category clichés (cylinders, elephants, prompts) |
-| [ecommerce-shop](scenarios/ecommerce-shop) (holdout until rc.5) | Kilnroom — online shop for small-batch ceramics (Laravel, TR + EU)                      | Warm without folksy, labels and stickers, Laravel asset install                                     |
-| [b2b-logistics](scenarios/b2b-logistics) (holdout until rc.7)   | Portwise — freight visibility for mid-size shippers (Django)                            | An enterprise audience, a category full of globes, ships and arrows                                 |
-| [edu-app](scenarios/edu-app) (holdout until rc.7)               | Quillnest — a writing coach for teenagers (Expo, iOS, Android, web)                     | Bold but not childish, app icons, a category full of owls and pencils                               |
-| [feature-flags](scenarios/feature-flags) (holdout)              | Stagewell — feature flags and gradual rollouts, open core (TypeScript SDKs, dashboard)  | A category of toggles and flags; developer audience, VS Code extension icon                         |
-| [secrets-team](scenarios/secrets-team) (holdout)                | Pinehold — secrets and passwords for small teams (Rust CLI, browser extension, desktop) | Padlocks, keys and shields ruled out; warm, not militaristic; app icons                             |
+| Scenario                                                               | Product                                                                                 | What it tests                                                                                       |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| [saas-invoicing](scenarios/saas-invoicing)                             | Tallyline — invoicing and cash-flow forecasting for freelancers (Next.js)               | A crowded category (fintech blue and green), web-only deliverables                                  |
+| [mobile-sleep](scenarios/mobile-sleep)                                 | Dozeline — wind-down and sleep journal app (Flutter, iOS + Android, EN + TR)            | Clichés to avoid (moons, stars), home-screen legibility, mobile exports                             |
+| [family-workspace](scenarios/family-workspace)                         | Lumenfold — office suite with Docs, Sheets and Sign (monorepo)                          | A master brand and three product icons that belong together                                         |
+| [devtool-cli](scenarios/devtool-cli) (holdout until rc.5)              | Seamline — zero-downtime PostgreSQL migrations, an open-source CLI (Rust, docs site)    | A developer audience, GitHub avatar and README, no category clichés (cylinders, elephants, prompts) |
+| [ecommerce-shop](scenarios/ecommerce-shop) (holdout until rc.5)        | Kilnroom — online shop for small-batch ceramics (Laravel, TR + EU)                      | Warm without folksy, labels and stickers, Laravel asset install                                     |
+| [b2b-logistics](scenarios/b2b-logistics) (holdout until rc.7)          | Portwise — freight visibility for mid-size shippers (Django)                            | An enterprise audience, a category full of globes, ships and arrows                                 |
+| [edu-app](scenarios/edu-app) (holdout until rc.7)                      | Quillnest — a writing coach for teenagers (Expo, iOS, Android, web)                     | Bold but not childish, app icons, a category full of owls and pencils                               |
+| [feature-flags](scenarios/feature-flags) (holdout until rc.1 of 0.5.0) | Stagewell — feature flags and gradual rollouts, open core (TypeScript SDKs, dashboard)  | A category of toggles and flags; developer audience, VS Code extension icon                         |
+| [secrets-team](scenarios/secrets-team) (holdout until rc.1 of 0.5.0)   | Pinehold — secrets and passwords for small teams (Rust CLI, browser extension, desktop) | Padlocks, keys and shields ruled out; warm, not militaristic; app icons                             |
+| [ai-notes](scenarios/ai-notes) (sealed holdout)                        | Quorvo — AI meeting notes and follow-ups (Next.js, Electron)                            | The most crowded category of all (sparkles, brains, gradients); desktop icons                       |
+| [coffee-roaster](scenarios/coffee-roaster) (sealed holdout)            | Emberwick — specialty coffee roaster, café and subscription (static site)               | A non-tech, crafted brand; labels, stickers and a one-colour stamp                                  |
+| [physio-health](scenarios/physio-health) (sealed holdout)              | Kinetra — telehealth physiotherapy (Expo, iOS, Android)                                 | Health without crosses or hearts; reassuring, not clinical; app icons                               |
+| [outdoor-tr](scenarios/outdoor-tr) (sealed holdout)                    | Göçebe — outdoor and travel gear (Laravel, TR + EN)                                     | A Turkish name with ö and ç in the wordmark; woven-label reproduction                               |
+| [community-solar](scenarios/community-solar) (sealed holdout)          | Sunvale — community solar cooperative (Flutter members app)                             | The name's own noun (sun) is ruled out; a broad, non-technical audience; print                      |
 
 ## Results
 
@@ -109,6 +114,11 @@ they show whether an improvement generalizes beyond the briefs it was found on. 
 results have shaped a change: the rc.5 holdouts after rc.5, the rc.7 holdouts after rc.7, since their concepts were in
 the rc.8 calibration set. The rc.8 and rc.9 reports still label them holdouts, as they were recorded at run time; by
 this rule they were known briefs. 0.5.0-rc.1 got fresh ones (feature-flags, secrets-team), written before any run.
+
+For 1.0.0, five holdouts were sealed on 2026-10-31 before any 1.0 design change (ai-notes, coffee-roaster,
+physio-health, outdoor-tr, community-solar). They stay unrun until the 1.0 evaluation, where the 0.5.0-rc.1 baseline
+and the release candidate both run on them in the same isolated setup (`--plugin` pointed at each checkout), so the
+comparison is like for like.
 
 ## Run
 

@@ -4,8 +4,9 @@
   "kind": "saas",
   "sector": "secrets and password management",
   "name": "Pinehold",
-  "holdout": true,
+  "holdout": false,
   "ask": "Create a brand identity for Pinehold, the secrets manager for small teams in this folder.",
   "owner": "Owner preferences: trustworthy and warm, never militaristic or paranoid; for small teams who are not security experts. No padlocks, keys, shields, vaults or fingerprints. App icons (macOS, Windows), a browser-extension icon, web and GitHub.",
-  "budgetUsd": 20
+  "budgetUsd": 20,
+  "heldOutUntil": "0.5.0-rc.1"
 }

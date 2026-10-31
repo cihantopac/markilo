@@ -1,0 +1,9 @@
+{
+  "name": "quorvo-desktop",
+  "private": true,
+  "version": "0.9.0",
+  "main": "main.js",
+  "devDependencies": {
+    "electron": "33.0.0"
+  }
+}

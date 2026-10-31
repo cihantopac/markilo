@@ -1,0 +1,13 @@
+{
+  "id": "community-solar",
+  "title": "Energy cooperative",
+  "kind": "nonprofit",
+  "sector": "community solar energy cooperative",
+  "name": "Sunvale",
+  "holdout": true,
+  "ask": "Create a brand identity for Sunvale, the community energy cooperative in this folder.",
+  "owner": "Owner preferences: optimistic, local and trustworthy, not corporate-green; for neighbours who co-own solar roofs. No suns with rays, leaves, lightning bolts, houses or plugs. Web, a members' app icon (iOS, Android), social, and print for flyers.",
+  "budgetUsd": 20,
+  "sealedAt": "2026-10-31",
+  "sealedBefore": "1.0.0 design changes"
+}

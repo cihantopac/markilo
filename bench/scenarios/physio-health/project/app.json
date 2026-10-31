@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "Kinetra",
+    "slug": "kinetra",
+    "ios": {
+      "bundleIdentifier": "health.kinetra.app"
+    },
+    "android": {
+      "package": "health.kinetra.app"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "physio-health",
+  "title": "Health app",
+  "kind": "health",
+  "sector": "telehealth physiotherapy",
+  "name": "Kinetra",
+  "holdout": true,
+  "ask": "Create a brand identity for Kinetra, the physiotherapy app in this folder.",
+  "owner": "Owner preferences: reassuring, active and professional, never clinical-cold or sporty-aggressive; for adults recovering from injury and their physiotherapists. No crosses, hearts, stick figures, spines or bones. App icons for iOS and Android, web, and a mark clinics can print.",
+  "budgetUsd": 20,
+  "sealedAt": "2026-10-31",
+  "sealedBefore": "1.0.0 design changes"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "ai-notes",
+  "title": "AI assistant",
+  "kind": "saas",
+  "sector": "AI meeting notes and follow-ups",
+  "name": "Quorvo",
+  "holdout": true,
+  "ask": "Create a brand identity for Quorvo, the meeting assistant in this folder.",
+  "owner": "Owner preferences: calm, competent and human; for remote teams who are tired of meetings. No sparkles, stars, brains, robots, chat bubbles, waveforms or gradient blobs. Web app, a desktop app icon (macOS, Windows) and social.",
+  "budgetUsd": 20,
+  "sealedAt": "2026-10-31",
+  "sealedBefore": "1.0.0 design changes"
+}

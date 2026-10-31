@@ -1,0 +1,13 @@
+{
+  "id": "coffee-roaster",
+  "title": "Coffee roaster",
+  "kind": "consumer",
+  "sector": "specialty coffee roasting, café and subscription",
+  "name": "Emberwick",
+  "holdout": true,
+  "ask": "Create a brand identity for Emberwick, the coffee roaster whose website is in this folder.",
+  "owner": "Owner preferences: warm, crafted and quietly confident, not rustic or hipster; for people who care where their coffee comes from. No coffee beans, cups, steam, mountains or flames drawn literally. Web shop, bag labels and stickers, social, and a mark that works stamped in one colour.",
+  "budgetUsd": 20,
+  "sealedAt": "2026-10-31",
+  "sealedBefore": "1.0.0 design changes"
+}

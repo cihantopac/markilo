@@ -5,6 +5,7 @@
 //
 //   node scripts/bench.mjs list
 //   node scripts/bench.mjs run <id…|all> [--out <dir>] [--model <alias>] [--budget <usd>] [--repeat <n>]
+//                                        [--plugin <dir> | --installed] [--scenarios <dir>]
 //   node scripts/bench.mjs judge [<dir>] [--model <alias>] [--times <n>]  (majority of n looks per concept)
 //   node scripts/bench.mjs report [<dir>]
 //   node scripts/bench.mjs refresh <id> <run folder>  (re-measure a kept run folder; cost and tokens are kept)
@@ -12,6 +13,12 @@
 //
 // Runs happen in a temporary copy of each scenario's project; only metrics and Markilo's own outputs are kept
 // (never research captures or third-party reference marks). The default <dir> is bench/results/<version>.
+//
+// Runs and judges are isolated from the machine's own Claude Code setup: user settings, plugins and their hooks are
+// not loaded (--setting-sources project,local), only Markilo from --plugin (default: this checkout's plugin/, so a
+// baseline is measured by pointing --plugin at an older checkout). --installed uses the installed plugin instead, as
+// runs before 1.0 did. --scenarios reads scenarios from another folder (private validation projects stay outside
+// this repository).
 import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import {
@@ -28,9 +35,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SCEN = join(root, 'bench', 'scenarios');
 const CLI = join(root, 'plugin', 'dist', 'markilo.mjs');
-const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version;
 const GATE = ['brand-fit', 'distinctiveness', 'memorability'];
 // Same reading as Markilo's gate (src/report/gate.ts): criteria under other spellings count by their canonical name.
 const ALIAS = { semantic: 'semantic-relevance', cultural: 'cultural-fit', premium: 'premium-perception' };
@@ -46,7 +51,8 @@ const argv = process.argv.slice(2);
 const opts = {};
 const positional = [];
 for (let i = 0; i < argv.length; i++) {
-  if (argv[i].startsWith('--')) opts[argv[i].slice(2)] = argv[++i];
+  if (argv[i] === '--installed') opts.installed = true;
+  else if (argv[i].startsWith('--')) opts[argv[i].slice(2)] = argv[++i];
   else positional.push(argv[i]);
 }
 const readJson = (p) => {
@@ -68,6 +74,19 @@ const lastJsonLine = (text) => {
     return null;
   }
 };
+const SCEN = resolve(opts.scenarios ?? join(root, 'bench', 'scenarios'));
+const PLUGIN = resolve(opts.plugin ?? join(root, 'plugin'));
+const installed = opts.installed === true;
+const pluginVersion = readJson(join(PLUGIN, '.claude-plugin', 'plugin.json'))?.version;
+const version = installed
+  ? readJson(join(root, 'package.json')).version
+  : (pluginVersion ?? readJson(join(root, 'package.json')).version);
+const commit = (() => {
+  const r = spawnSync('git', ['-C', PLUGIN, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' });
+  return r.status === 0 ? r.stdout.trim() : null;
+})();
+/** Claude Code flags that load Markilo and nothing else from this machine's setup. */
+const isolation = () => (installed ? [] : ['--setting-sources', 'project,local', '--plugin-dir', PLUGIN]);
 const scenarios = () =>
   readdirSync(SCEN)
     .filter((d) => existsSync(join(SCEN, d, 'scenario.json')))
@@ -76,7 +95,7 @@ const model = opts.model ? ['--model', opts.model] : [];
 const budget = (s) => Number(opts.budget ?? s.budgetUsd ?? 20);
 
 function prompt(s) {
-  return `/markilo ${s.ask}
+  return `/markilo:design ${s.ask}
 
 Benchmark run: the product owner is not available. Do not ask questions and do not wait for answers: wherever the
 workflow would ask the user, take your own recommended answer, record it with \`markilo answers\`, and continue.
@@ -254,6 +273,7 @@ function runOnce(s, out, slot, attempt) {
       '--max-budget-usd',
       String(budget(s)),
       ...model,
+      ...isolation(),
     ],
     {
       cwd: work,
@@ -277,6 +297,7 @@ function runOnce(s, out, slot, attempt) {
     kind: s.kind,
     brief: { ask: s.ask, owner: s.owner },
     markilo: version,
+    plugin: installed ? 'installed' : { version: pluginVersion ?? null, commit },
     ranAt: new Date(started).toISOString(),
     minutes: Math.round((Date.now() - started) / 600) / 100,
     exitCode: r.status,
@@ -382,7 +403,16 @@ function judge(out) {
         for (let k = 0; k < Math.max(1, Number(opts.times ?? 1)); k++) {
           const r = spawnSync(
             'claude',
-            ['-p', '--output-format', 'json', '--allowedTools', 'Read', ...model],
+            [
+              '-p',
+              '--output-format',
+              'json',
+              '--allowedTools',
+              'Read',
+              '--setting-sources',
+              'project,local',
+              ...model,
+            ],
             {
               input: JUDGE(s, b.name, files, final, c.lead === 'wordmark'),
               encoding: 'utf8',
