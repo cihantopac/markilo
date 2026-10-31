@@ -5,7 +5,7 @@
 //
 //   node scripts/bench.mjs list
 //   node scripts/bench.mjs run <id…|all> [--out <dir>] [--model <alias>] [--budget <usd>] [--repeat <n>]
-//                                        [--plugin <dir> | --installed] [--scenarios <dir>]
+//                                        [--plugin <dir> | --installed] [--scenarios <dir>] [--work <dir>]
 //   node scripts/bench.mjs judge [<dir>] [--model <alias>] [--times <n>]  (majority of n looks per concept)
 //                                        [--panel opus:3,sonnet:3]  (several judge models; majority of all looks)
 //   node scripts/bench.mjs report [<dir>]
@@ -91,7 +91,9 @@ const commit = (() => {
 let snapshot;
 const pluginSnapshot = () => {
   if (!snapshot) {
-    snapshot = join(mkdtempSync(join(tmpdir(), 'markilo-bench-plugin-')), 'plugin');
+    const root = opts.work ? resolve(opts.work) : tmpdir();
+    mkdirSync(root, { recursive: true });
+    snapshot = join(mkdtempSync(join(root, 'markilo-bench-plugin-')), 'plugin');
     cpSync(PLUGIN, snapshot, { recursive: true });
   }
   return snapshot;
@@ -293,7 +295,13 @@ function run(ids, out) {
 }
 
 function runOnce(s, out, slot, attempt) {
-  const work = mkdtempSync(join(tmpdir(), `markilo-bench-${s.id}-`));
+  // --work keeps run folders somewhere that survives the OS clearing its temp folder (they hold research captures and
+  // reference marks, so never point it inside this repository).
+  const workRoot = opts.work ? resolve(opts.work) : tmpdir();
+  if (workRoot === root || workRoot.startsWith(`${root}/`))
+    throw new Error('--work must be outside this repository: run folders hold third-party research.');
+  mkdirSync(workRoot, { recursive: true });
+  const work = mkdtempSync(join(workRoot, `markilo-bench-${s.id}-`));
   if (existsSync(join(SCEN, s.id, 'project'))) cpSync(join(SCEN, s.id, 'project'), work, { recursive: true });
   const sessionId = randomUUID();
   const started = Date.now();
