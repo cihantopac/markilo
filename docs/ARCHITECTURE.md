@@ -15,7 +15,7 @@ anything presented as judgment is labeled as judgment.
 ```
 ┌──────────────────────────── Claude Code ─────────────────────────────┐
 │ /markilo  /markilo:design  /markilo:research  /markilo:originality … │
-│        skills/*  ──spawn──▶  agents/* (researcher, analyst, critic)  │
+│        skills/*  ──spawn──▶  agents/* (researcher, designer, critic)  │
 └───────────────┬──────────────────────────────────────────────────────┘
                 │ node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs <command>
 ┌───────────────▼──────────────────────────────────────────────────────┐
@@ -28,10 +28,13 @@ anything presented as judgment is labeled as judgment.
 │          │          │ compose   │ sheets    │ color/a11y│ palette    │
 ├──────────┴──────────┴───────────┴───────────┴───────────┴────────────┤
 │ construct: specs → primitives, booleans, gaps, offsets, repeats,     │
-│ glyphs (geom: Skia PathKit wasm + curve refitting) · scored variants │
+│ glyphs, smooth silhouettes (geom: Skia PathKit wasm + curve refit) · │
+│ scored variants · letter legibility of built wordmarks               │
 ├──────────────────────────────────────────────────────────────────────┤
 │ originality report · quality report · export (web, iOS, Android,     │
 │ macOS, Windows, social, marketing) · ICO/ICNS · gallery · guidelines │
+├──────────────────────────────────────────────────────────────────────┤
+│ install: transactional copy into projects (journal, rollback, undo)  │
 ├──────────────────────────────────────────────────────────────────────┤
 │ core: workspace layout, safe paths, safe writes, schemas, errors     │
 └──────────────────────────────────────────────────────────────────────┘
@@ -45,7 +48,8 @@ anything presented as judgment is labeled as judgment.
 | Works right after plugin install | `plugin/dist/` is a committed single-file bundle + `resvg.wasm` + `pathkit.wasm`; CI checks it is fresh.                                                                                                                        |
 | Windows, macOS, Linux            | Node ≥ 20 only. No shell-outs, no platform binaries, `path` APIs everywhere.                                                                                                                                                    |
 | Low token use                    | Commands print compact JSON summaries; large data goes to files the agent can open on demand.                                                                                                                                   |
-| No hidden network access         | Only `research site` fetches, and only with `--allow-network`. It honours `robots.txt`.                                                                                                                                         |
+| No hidden network access         | Only the research and font commands fetch, and only with `--allow-network`. Site research honours `robots.txt`; every connection is checked against private addresses at connect time, with size and time limits.               |
+| Untrusted SVG never runs         | SVG from research, repositories and locked files is sanitized with an allowlist of drawing elements (case-insensitive, as HTML parses it); the gallery runs only its own nonce'd script under a Content-Security-Policy.        |
 | No silent edits to user projects | All output goes into the brand workspace. `install-assets` is a dry run unless `--apply`. Existing files are never overwritten without `--force`; applying is one transaction with backups and a journal, `--undo` reverses it. |
 | Real vectors                     | Lint fails on embedded raster images, scripts, external references and missing `viewBox`. Wordmarks are converted to outlines.                                                                                                  |
 
@@ -62,6 +66,7 @@ brand/                          # default; override with --workspace
     brief.json                  # strategy brief (goals, audience, constraints, locked assets)
     profile.json                # Brand Intelligence Profile (findings with source + date + status)
     answers.json                # questions already asked and their answers
+    ideas.json                  # idea longlist with the critic's keep/strike readings
     decisions.md                # append-only design decision log
     research/
       references/               # competitor marks gathered for comparison only (never shipped)
@@ -125,7 +130,7 @@ agent after viewing the renders, and are stored separately with written rational
 ## Asset export
 
 `markilo export` turns approved masters into a complete kit. Platform targets and their sizes live in
-`src/export/targets.ts` with the official source for each requirement. The asset manifest records
+`src/export/specs.ts` with the official source for each requirement. The asset manifest records
 every file with purpose, pixel size, SHA-256 and the master it was derived from.
 
 ## Composition
@@ -137,7 +142,7 @@ safe circle (maskable and adaptive icons), so marks with different artboard padd
 
 ## Extending
 
-- New export target: add an entry to `src/export/targets.ts` and a test.
+- New export target: add an entry to `src/export/specs.ts` and a test.
 - New comparator: implement `Comparator` and register it in `src/analyze/similarity.ts`.
 - New font: add it to `scripts/vendor-fonts.mjs` (OFL or equivalent only) and run `npm run fonts`.
 - New skill: add `skills/<name>/SKILL.md`; keep instructions declarative and call the CLI for facts.

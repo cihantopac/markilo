@@ -74,6 +74,29 @@ A criterion is met only with evidence committed under `bench/` or `docs/`.
 | Clean installs (npm, npx, plugin) on macOS, Linux, Windows                                   | All pass                                      | CI: CLI + plugin on Linux   |
 | Real-project validations completed in isolation                                              | 3 of 3                                        | 0 of 3                      |
 
+## Release acceptance (the 15 criteria)
+
+Status is evidence-based; "met" links to the evidence. Quality numbers are filled in from the final holdout
+evaluation, whatever they are.
+
+| #   | Criterion                                                      | Status                 | Evidence                                                                                                           |
+| --- | -------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 1   | Every advertised feature works end to end                      | Met                    | CI (3 OS × Node 20/22), smoke test from an empty folder to installed assets, installed-package smoke               |
+| 2   | The workflow is usable by a new user                           | Met                    | Gallery reviewed in a browser on a real run; empty-review and verdict fixes; ideas, sketches and decisions visible |
+| 3   | Creative quality materially better, independently demonstrated | See holdout evaluation | `bench/results/1.0.0/`                                                                                             |
+| 4   | The gate rejects weak work without suppressing strong work     | See holdout evaluation | Panel agreement on real-project runs: 17 of 17 and 11–12 of 12                                                     |
+| 5   | Fresh scenarios show credible generalization                   | See holdout evaluation | Five holdouts sealed at `241af5e`, run once for baseline and release                                               |
+| 6   | Originality reports disclose the limits of their evidence      | Met                    | `insufficient-evidence` without registry searches or enough references; docs/ORIGINALITY.md                        |
+| 7   | SVG and exports technically valid and visually inspected       | Met                    | 199-file kit checked with iconutil, sizes per platform, hashes, XML/JSON; icons inspected                          |
+| 8   | Locked identities and user files protected                     | Met                    | Transactional install with rollback and `--undo`; lock refuses active content; tests                               |
+| 9   | Real-project tests done safely in isolation                    | Met                    | Three products, disposable copies outside every repository; install/undo on copies left them byte-identical        |
+| 10  | No release-blocking security or data-loss issue                | Met                    | Security review findings fixed and tested (CHANGELOG, Security)                                                    |
+| 11  | CLI, plugin and npm work from clean installations              | Met                    | Packed tarball installed in a clean prefix and smoke-tested; marketplace install in CI                             |
+| 12  | Automated tests and cross-platform CI pass                     | Met                    | 196 tests; CI green on Linux, macOS, Windows                                                                       |
+| 13  | Documentation matches the product                              | In progress            | README, bench README, integrations, outputs                                                                        |
+| 14  | Performance, model usage and limits reported honestly          | In progress            | Cost and minutes per run in every bench report                                                                     |
+| 15  | Nothing incomplete marketed as finished                        | In progress            | Icon Composer `.icon` and X header sizes listed as limits, not features                                            |
+
 ## Real-project validation protocol
 
 Three of the maintainer's own developer products (search intelligence, product experience, release engineering)
