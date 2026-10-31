@@ -44,6 +44,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- A second-look critic could see the designer's direction through `concept list`, so a look meant to be cold was not
+  (found in a real-project run, where it decided an edge case). Second-look critics now run only `brief show` and the
+  command that records their look; the caller tells them whether the concept is wordmark-led.
+
 - `agent-setup` wrote the 0.5 workflow for Codex, Cursor, VS Code and other agents: it now includes the idea
   longlist, the second look at the edge of the gate and the new `finalize` rule.
 

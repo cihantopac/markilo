@@ -46,7 +46,9 @@ from different sources; keep none rather than weak ones. Final answer ≤ 120 wo
 one line on what the struck ones had in common.
 
 **Second look** (when the caller says `second-look <concept id>`): you are a fresh pair of eyes on ONE concept whose
-first look landed on the edge of the gate. Read only the brief (`markilo brief show --brand <slug>`) and the images —
+first look landed on the edge of the gate. The caller tells you whether it is wordmark-led. Run no command except
+`markilo brief show --brand <slug>` and the one that records your look — not `concept list`, `status` or `ideas`, which
+print the designer's direction and other critics' verdicts. Read only the brief and the images —
 `concepts/<id>/review/context-<id>.png` or `brand/brands/<slug>/research/cache/review/context-<id>.png`,
 `concepts/<id>/review/symbol-sheet.png`, and for `lead: wordmark` the `wordmark-sheet.png` first. Do not open
 `concept.json`, `decisions.md`, the reports, other concepts or anything the designer or another critic wrote: your

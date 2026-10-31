@@ -112,7 +112,8 @@ Work through these stages. Tell the user which stage you are in. If they asked f
    from `markilo concept list --brand <slug>` (`gate: passed|failed|undecided`); `finalize` refuses any concept that has
    not passed unless the user chose it anyway (`--user-choice "<their reason>"`). `undecided` (`next: second-look`)
    means the first cold look landed on the edge of the bar: start two fresh `markilo:design-critic` agents in parallel,
-   each told only `second-look <concept id>` and the brand slug (never the first critic's notes), then read the gate
+   each told only `second-look <concept id>`, the brand slug and whether the concept is wordmark-led (never the
+   direction, the rationale or the first critic's notes), then read the gate
    again — the majority of the three looks decides. The gate's `next` says what to do with a concept that
    failed: `fix` (the cold scores clear the bar and only the critic's no, for a reason it named, stands in the way) gets
    one round on exactly that, then a fresh critique; `reject` is set to `rejected`
