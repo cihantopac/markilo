@@ -166,7 +166,7 @@ describe('install-assets', () => {
     installAssets(ws, 'nimbra', 'web', 'public', project, { apply: true, force: false });
     writeFileSync(join(project, 'public', 'favicon.svg'), 'mine');
     const again = installAssets(ws, 'nimbra', 'web', 'public', project, { apply: true, force: false });
-    expect(again.skippedExisting).toContain(join('public', 'favicon.svg'));
+    expect(again.skippedExisting).toContain('public/favicon.svg');
     expect(readFileSync(join(project, 'public', 'favicon.svg'), 'utf8')).toBe('mine');
     expect(() =>
       installAssets(ws, 'nimbra', 'web', '../outside', project, { apply: false, force: false }),
