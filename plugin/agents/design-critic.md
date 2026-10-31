@@ -36,6 +36,15 @@ not finish, in this order:
 
 Final answer ≤ 150 words. Do not score the full criteria in a sketch review.
 
+**Idea review** (when the caller asks for it, before anything is drawn): `markilo ideas --brand <slug>` lists the
+longlist; read the brief too. For each idea, from the words alone, write the first thing a stranger would see if it were
+drawn plainly at 32 px. Strike it (`markilo ideas --brand <slug> --idea <id> --strike "<that reading>"`) when that
+reading is a UI glyph or icon (a bracket, a return key, a gauge, a cross, a chevron, a loop), a cliché of the category,
+the product's own object, the name's initial with a cut, or a meaning with no specific form. Keep the rest with the
+reading you expect and rank them, 1 = most ownable (`--keep "<reading>" --rank n`). Keep at least three when you can,
+from different sources; keep none rather than weak ones. Final answer ≤ 120 words: the kept ideas in rank order and
+one line on what the struck ones had in common.
+
 **Second look** (when the caller says `second-look <concept id>`): you are a fresh pair of eyes on ONE concept whose
 first look landed on the edge of the gate. Read only the brief (`markilo brief show --brand <slug>`) and the images —
 `concepts/<id>/review/context-<id>.png` or `brand/brands/<slug>/research/cache/review/context-<id>.png`,

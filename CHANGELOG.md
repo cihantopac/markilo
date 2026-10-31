@@ -50,6 +50,13 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **Ideas before directions.** `markilo ideas` keeps an idea longlist — at least 12 one-line visual hooks from several
+  sources (product, audience, name, type, abstract) — that a critic strikes or keeps and ranks from the words alone,
+  before anything is drawn; directions are built from the kept ideas and the gallery shows the list with the critic's
+  readings. On three real developer products run with 0.5.0-rc.1, all 18 concepts failed the gate on distinctiveness
+  and memorability, and every symbol direction came from a mechanism metaphor (a round trip, a crossing, a threshold, a
+  keystone) drawn as brackets, crosses, arches or gauges — readings a critic could have predicted from the sentence.
+  The benchmark records how many ideas were written, kept and struck, from how many sources.
 - 14 more bundled OFL type families (24 in all): Bricolage Grotesque, Instrument Serif, Young Serif, DM Serif Display,
   Syne, Unbounded, Archivo, Schibsted Grotesk, Newsreader, Zilla Slab, Space Mono, Atkinson Hyperlegible Next, Alegreya
   Sans and Familjen Grotesk, every weight checked for Turkish and other Latin-extended letters. In every benchmark run

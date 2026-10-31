@@ -9,6 +9,7 @@ import type {
   BrandRole,
   Brief,
   Concept,
+  IdeaLog,
   WorkspaceBrand,
   WorkspaceManifest,
 } from './types.js';
@@ -202,6 +203,11 @@ export class Workspace {
   briefPath = (slug: string) => join(this.brandDir(slug), 'brief.json');
   profilePath = (slug: string) => join(this.brandDir(slug), 'profile.json');
   answersPath = (slug: string) => join(this.brandDir(slug), 'answers.json');
+  ideasPath = (slug: string) => join(this.brandDir(slug), 'ideas.json');
+  ideas(slug: string): IdeaLog {
+    const p = this.ideasPath(slug);
+    return existsSync(p) ? readJson<IdeaLog>(p) : { schema: 'markilo/ideas@1', ideas: [] };
+  }
   decisionsPath = (slug: string) => join(this.brandDir(slug), 'decisions.md');
   referencesDir = (slug: string) => join(this.brandDir(slug), 'research', 'references');
   cacheDir = (slug: string) => join(this.brandDir(slug), 'research', 'cache');

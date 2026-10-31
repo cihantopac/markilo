@@ -851,6 +851,100 @@ export const COMMANDS: CommandSpec[] = [
     },
   },
   {
+    name: 'ideas',
+    summary:
+      'The idea longlist before any direction is drawn: add one-line visual hooks (designer), strike or keep and rank them from the words alone (critic), and list them. Directions are built from the kept ideas.',
+    usage:
+      'ideas --brand <slug> [--add "<what a stranger sees at 32 px>" --means "<what it says>" --source product|audience|name|type|abstract] [--idea <id> (--keep "<reading>" [--rank n] | --strike "<reading>")] [--concept <id> --idea <id>]',
+    options: {
+      ...brandOpt,
+      add: {
+        type: 'string',
+        description: 'Designer: the visual hook, as a stranger would describe it at 32 px',
+      },
+      means: { type: 'string', description: 'Designer: what the hook says about the product' },
+      source: { type: 'string', description: 'product | audience | name | type | abstract' },
+      idea: { type: 'string', description: 'Idea id (i1, i2 …)' },
+      keep: {
+        type: 'string',
+        description: 'Critic: keep it, with the first reading you expect from a stranger',
+      },
+      strike: {
+        type: 'string',
+        description: 'Critic: strike it, with the reading that kills it (a UI glyph, a cliché…)',
+      },
+      rank: { type: 'string', description: 'Critic: rank among the kept ideas (1 = strongest)' },
+      concept: { type: 'string', description: 'Record that this concept was built from --idea' },
+    },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      w.brand(slug);
+      const log = w.ideas(slug);
+      const sources = ['product', 'audience', 'name', 'type', 'abstract'] as const;
+      if (c.str('add')) {
+        const src = (c.str('source') ?? 'product') as (typeof sources)[number];
+        if (!sources.includes(src))
+          throw new MarkiloError('USAGE', `--source must be one of ${sources.join(', ')}.`);
+        if (!c.str('means')) throw new MarkiloError('USAGE', '--add needs --means: what the hook says.');
+        if (log.ideas.length >= 40)
+          throw new MarkiloError('USAGE', 'The longlist holds 40 ideas; strike or reuse before adding more.');
+        log.ideas.push({
+          id: `i${log.ideas.length + 1}`,
+          hook: c.str('add')!.trim(),
+          means: c.str('means')!.trim(),
+          source: src,
+          addedAt: nowIso(),
+        });
+      }
+      const id = c.str('idea');
+      if (id) {
+        const idea = log.ideas.find((x) => x.id === id);
+        if (!idea) throw new MarkiloError('NOT_FOUND', `No idea ${id} in the longlist.`);
+        if (c.str('keep') && c.str('strike'))
+          throw new MarkiloError('USAGE', 'Use --keep or --strike, not both.');
+        if (c.str('keep') || c.str('strike'))
+          idea.review = {
+            verdict: c.str('keep') ? 'keep' : 'strike',
+            reading: (c.str('keep') ?? c.str('strike'))!.trim(),
+            ...(c.str('keep') && c.num('rank') !== undefined ? { rank: c.num('rank')! } : {}),
+            at: nowIso(),
+          };
+        if (c.str('concept')) {
+          w.concept(slug, c.str('concept')!);
+          idea.concepts = [...new Set([...(idea.concepts ?? []), c.str('concept')!])];
+        }
+      }
+      if (c.str('add') || id) writeJson(w.ideasPath(slug), log);
+      const kept = log.ideas
+        .filter((x) => x.review?.verdict === 'keep')
+        .sort((a, b) => (a.review!.rank ?? 99) - (b.review!.rank ?? 99));
+      const unreviewed = log.ideas.filter((x) => !x.review);
+      const bySource = Object.fromEntries(
+        sources.map((s) => [s, log.ideas.filter((x) => x.source === s).length]),
+      );
+      return {
+        ...log,
+        summary: {
+          ideas: log.ideas.length,
+          kept: kept.length,
+          struck: log.ideas.filter((x) => x.review?.verdict === 'strike').length,
+          unreviewed: unreviewed.length,
+          bySource,
+        },
+        next:
+          log.ideas.length < 12
+            ? `Designer: add ideas until the longlist has at least 12 (now ${log.ideas.length}), from several sources.`
+            : unreviewed.length
+              ? `Critic: review ${unreviewed.map((x) => x.id).join(', ')} from the words alone (--keep/--strike).`
+              : `Build directions from the kept ideas, strongest first: ${kept
+                  .slice(0, 5)
+                  .map((x) => x.id)
+                  .join(', ')}.`,
+      };
+    },
+  },
+  {
     name: 'reference add',
     summary:
       'Add a competitor or category reference mark (SVG/PNG/JPEG/ICO) for similarity analysis. Stored git-ignored.',

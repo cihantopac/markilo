@@ -67,7 +67,16 @@ Work through these stages. Tell the user which stage you are in. If they asked f
 3. **Brief** — synthesize `markilo profile show --brand <slug>` into the brief
    (`markilo brief update --brand <slug> --file …`). Ask only what you truly cannot infer — usually 2–5
    questions, asked together, each with your suggested answer.
-4. **Explore** — propose 3–5 genuinely different creative directions (idea, metaphor, form language,
+4. **Ideas, then directions.** Before any direction, write the idea longlist: at least 12 one-line visual hooks with
+   `markilo ideas --brand <slug> --add "<what a stranger sees at 32 px>" --means "<what it says>" --source
+   product|audience|name|type|abstract`, from at least three sources (see "Ideas before directions" in
+   `references/design-principles.md`). Then one `markilo:design-critic` agent in `ideas` mode strikes or keeps each one
+   from the words alone and ranks the kept ones — words are the cheapest place to lose a weak idea. In real-project runs
+   every direction drawn from a mechanism metaphor (a round trip, a crossing, a threshold, a keystone) became a bracket,
+   a cross, an arch or a gauge, and was read as a UI glyph. Build directions from the kept ideas, strongest first, and
+   record which idea each concept comes from (`markilo ideas --brand <slug> --idea <id> --concept <concept id>`). When
+   the user is here, show them the kept ideas before sketching; they often know which one is theirs.
+   **Explore** — propose 3–5 genuinely different creative directions (idea, metaphor, form language,
    type, color, why it fits, risks). Different ideas, not variations of one idea. For each, write the visual hook —
    the one thing the eye catches at 32 px — and what a stranger would see first; at most one direction may draw the product's own object or the name's literal noun (a page for
    documents, a chart for finance, a moon for sleep — see "The product's own object is a cliché too" in

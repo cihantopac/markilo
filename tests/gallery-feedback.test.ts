@@ -80,3 +80,37 @@ describe('gallery feedback', () => {
     expect((await srv.done).saved).toBe(1);
   });
 });
+
+describe('gallery: ideas', () => {
+  it('shows the idea longlist with the critic readings, struck ideas folded away', async () => {
+    const { writeJson } = await import('../src/core/fsx.js');
+    const { ws } = synthBrand();
+    writeJson(ws.ideasPath('nimbra'), {
+      schema: 'markilo/ideas@1',
+      ideas: [
+        {
+          id: 'i1',
+          hook: 'a lamp seen from above',
+          means: 'clarity',
+          source: 'audience',
+          addedAt: '2026-01-01',
+          review: { verdict: 'keep', reading: 'a lampshade from above', rank: 1, at: '2026-01-01' },
+          concepts: ['fold'],
+        },
+        {
+          id: 'i2',
+          hook: 'an arch with a keystone',
+          means: 'reliability',
+          source: 'product',
+          addedAt: '2026-01-01',
+          review: { verdict: 'strike', reading: 'a generic architecture icon', at: '2026-01-01' },
+        },
+      ],
+    });
+    const { path } = await buildGallery(ws);
+    const html = readFileSync(path, 'utf8');
+    expect(html).toContain('Ideas — 1 kept, 1 struck');
+    expect(html).toContain('became fold');
+    expect(html).toContain('Struck before drawing (1)');
+  });
+});

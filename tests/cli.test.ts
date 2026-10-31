@@ -234,3 +234,33 @@ describe('cli (bundled)', () => {
     expect(JSON.parse(run(['shortcut', 'uninstall', '--dir', dir, '--yes'], dir).stdout).applied).toBe(true);
   });
 });
+
+describe('cli: idea longlist', () => {
+  it('records ideas, the critic strikes or keeps them from the words, and says what is next', () => {
+    const cwd = tmp();
+    run(['init'], cwd);
+    run(['brand', 'add', 'Lumen'], cwd);
+    const add = (hook: string, source: string) =>
+      run(['ideas', '--brand', 'lumen', '--add', hook, '--means', 'why it fits', '--source', source], cwd);
+    const first = JSON.parse(add('an arch with a keystone', 'product').stdout);
+    expect(first.summary.ideas).toBe(1);
+    expect(first.next).toMatch(/at least 12/);
+    for (let i = 0; i < 11; i++) add(`hook ${i}`, i % 2 ? 'audience' : 'name');
+    const r = JSON.parse(
+      run(['ideas', '--brand', 'lumen', '--idea', 'i1', '--strike', 'a generic architecture icon'], cwd)
+        .stdout,
+    );
+    expect(r.ideas[0].review).toMatchObject({ verdict: 'strike', reading: 'a generic architecture icon' });
+    expect(r.next).toMatch(/Critic: review i2/);
+    const bad = run(['ideas', '--brand', 'lumen', '--add', 'x', '--means', 'y', '--source', 'vibes'], cwd);
+    expect(bad.status).not.toBe(0);
+    const kept = JSON.parse(
+      run(
+        ['ideas', '--brand', 'lumen', '--idea', 'i2', '--keep', 'a lamp seen from above', '--rank', '1'],
+        cwd,
+      ).stdout,
+    );
+    expect(kept.summary).toMatchObject({ kept: 1, struck: 1, unreviewed: 10 });
+    expect(kept.summary.bySource).toMatchObject({ product: 1, name: 6, audience: 5 });
+  });
+});

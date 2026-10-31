@@ -486,8 +486,9 @@ export async function buildGallery(
     const rejected: string[] = [];
     for (const s of subjects) (s.status === 'rejected' ? rejected : active).push(await subjectCard(s));
     const sketches = b.locked ? [] : sketchCards(ws, b);
+    const ideas = b.locked ? '' : ideasPanel(ws, b.slug);
     sections.push(
-      `<section class="brand"><h2>${escapeText(b.name)} <small>${escapeText(b.role)}${b.locked ? ' · locked' : ''} · ${active.length} to review</small></h2>${sketches.length ? `<h3 class="sub">Sketches — pick one per direction to develop (${sketches.length})</h3><div class="grid wide">${sketches.join('\n')}</div>` : ''}${active.length || !sketches.length ? `<div class="grid">${active.join('\n') || '<p class="empty">No concepts yet.</p>'}</div>` : ''}${rejected.length ? `<details class="rejected-list"><summary>Rejected (${rejected.length})</summary><div class="grid">${rejected.join('\n')}</div></details>` : ''}${exportList}</section>`,
+      `<section class="brand"><h2>${escapeText(b.name)} <small>${escapeText(b.role)}${b.locked ? ' · locked' : ''} · ${active.length} to review</small></h2>${ideas}${sketches.length ? `<h3 class="sub">Sketches — pick one per direction to develop (${sketches.length})</h3><div class="grid wide">${sketches.join('\n')}</div>` : ''}${active.length || !sketches.length ? `<div class="grid">${active.join('\n') || '<p class="empty">No concepts yet.</p>'}</div>` : ''}${rejected.length ? `<details class="rejected-list"><summary>Rejected (${rejected.length})</summary><div class="grid">${rejected.join('\n')}</div></details>` : ''}${exportList}</section>`,
     );
   }
   const family =
@@ -504,6 +505,20 @@ export async function buildGallery(
   return { path, subjects: count };
 }
 
+/** The idea longlist with the critic's readings: why each direction exists, and what was struck before drawing. */
+function ideasPanel(ws: Workspace, slug: string): string {
+  const { ideas } = ws.ideas(slug);
+  if (!ideas.length) return '';
+  const kept = ideas
+    .filter((i) => i.review?.verdict === 'keep')
+    .sort((a, b) => (a.review!.rank ?? 99) - (b.review!.rank ?? 99));
+  const struck = ideas.filter((i) => i.review?.verdict === 'strike');
+  const open = ideas.filter((i) => !i.review);
+  const row = (i: (typeof ideas)[number]) =>
+    `<li><b>${escapeText(i.id)}</b> ${escapeText(i.hook)} <small>— ${escapeText(i.means)} · ${escapeText(i.source)}${i.concepts?.length ? ` · became ${escapeText(i.concepts.join(', '))}` : ''}</small>${i.review ? `<br><small class="reading">Critic: ${escapeText(i.review.reading)}</small>` : ''}</li>`;
+  return `<details class="ideas"${kept.length || open.length ? ' open' : ''}><summary>Ideas — ${kept.length} kept, ${struck.length} struck${open.length ? `, ${open.length} not reviewed` : ''}</summary>${kept.length ? `<ol>${kept.map(row).join('')}</ol>` : ''}${open.length ? `<ul>${open.map(row).join('')}</ul>` : ''}${struck.length ? `<details><summary>Struck before drawing (${struck.length})</summary><ul class="struck">${struck.map(row).join('')}</ul></details>` : ''}</details>`;
+}
+
 function page(title: string, body: string, reviewing: boolean): string {
   // Defence in depth: SVG from research and other people's repositories is sanitized before it is inlined, and the
   // page's own script is the only one allowed to run (a fresh nonce per build), so anything that slipped through
@@ -516,6 +531,7 @@ function page(title: string, body: string, reviewing: boolean): string {
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--ink:#16181d;--muted:#6a7080;--line:#e2e4e9;--good:#127a4a;--warn:#9a6400;--bad:#b42318;--accent:#2563eb}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0d0f13;--card:#16191f;--ink:#e9ebf0;--muted:#9aa1ae;--line:#2a2e37;--accent:#7aa2ff}}
+.ideas{margin:8px 0 16px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card)}.ideas li{margin:6px 0}.ideas .reading{color:var(--muted)}.ideas .struck{opacity:.7}
 :root[data-theme=dark]{--bg:#0d0f13;--card:#16191f;--ink:#e9ebf0;--muted:#9aa1ae;--line:#2a2e37;--accent:#7aa2ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:84px}
 header.top{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--line)}

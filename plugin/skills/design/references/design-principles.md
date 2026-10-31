@@ -35,6 +35,27 @@ a bent arm. Independent judges call it "a common monogram device" every time. A 
 letter becomes something else at first sight (the reading is the idea, not "the letter T"), or when the letterform
 itself is drawn with a character no font has.
 
+## Ideas before directions
+
+Write ideas as what a stranger would see, not as what they mean: "a lamp seen from above, its shade cut into the
+initial" is a hook; "reliability" or "a round trip from audit to fix" is a meaning still looking for a picture. Rules
+for the longlist (`markilo ideas`):
+
+- At least 12 hooks from at least three sources: the product's mechanism, the audience's world (a tool, a gesture, a
+  material they know), the name (its letters, sound, meaning, the parts of a compound name), type (a face and a
+  treatment that carry the brand across the whole word) and abstract character.
+- **Mechanism metaphors drawn with primitives become UI glyphs.** On three real developer products every such
+  direction — a round trip, a crossing point, a threshold, a keystone, an undertrace, a hinge — was drawn as brackets,
+  crosses, arches, gauges or loops, and read as a D, a return key, a headstone, a speedometer. Keep one only if the
+  hook names a specific, unusual form, not the concept.
+- **Compound and meaningful names are the strongest source when they exist**: both identities that passed in the
+  benchmark drew the name's meaning inside its own letters (a q holding a dot like an egg in a nest; an n sheltering a
+  seed for a name that means a held pine). Coined names (no meaning to draw) lean on type: a distinctive face and one
+  treatment that runs through every letter, not one gimmick letter with a coloured accent ("a letter-plus-dot of the
+  generic kind").
+- A coloured block, dot or tab added to one letter is the default move of every wordmark board; critics read it as
+  a cursor, a flag or a full stop. It needs a reason a stranger can see.
+
 ## Form language follows the brief's character
 
 The same idea drawn with the wrong form language fails on brand fit. Decide the form language from the brief's

@@ -113,9 +113,9 @@ Benchmark run: the product owner is not available. Do not ask questions and do n
 workflow would ask the user, take your own recommended answer, record it with \`markilo answers\`, and continue.
 Public web research is approved (send no private data); keep it proportionate (about five competitor brands).
 
-Follow the full design workflow: research the repository and the market, write the brief, choose three creative
-directions, sketch → sketch review → develop the picked sketches → verify → full critique and quality gate (at most two
-rounds). If no concept passes the gate, stop and report that plainly — that is an acceptable result. If one passes,
+Follow the full design workflow as the skill describes it, from research and the brief through the sketch review,
+development, verification and the critic's quality gate (at most two rounds of directions). The same words are used for
+every version, so a baseline and a candidate get the same request. If no concept passes the gate, stop and report that plainly — that is an acceptable result. If one passes,
 finalize the strongest (accept only an insufficient-evidence originality risk), choose the deliverables the product
 needs with \`markilo deliverables\`, export, plan the asset installation with \`markilo install-assets --framework auto\`
 (dry run only) and build the gallery (\`markilo gallery\`, not --serve).
@@ -187,6 +187,16 @@ function measure(ws) {
             : null,
         };
       });
+    // From 1.0: the idea longlist (how many hooks, how many the critic kept, from how many sources).
+    const ideaLog = readJson(join(dir, 'ideas.json'));
+    const ideas = ideaLog
+      ? {
+          total: ideaLog.ideas.length,
+          kept: ideaLog.ideas.filter((i) => i.review?.verdict === 'keep').length,
+          struck: ideaLog.ideas.filter((i) => i.review?.verdict === 'strike').length,
+          sources: [...new Set(ideaLog.ideas.map((i) => i.source))].length,
+        }
+      : null;
     const kit = readJson(join(dir, 'final', 'brand.json'));
     const exp = readJson(join(dir, 'exports', 'asset-manifest.json'));
     const byGroup = {};
@@ -197,6 +207,7 @@ function measure(ws) {
       name: b.name,
       role: b.role ?? null,
       locked: Boolean(kit?.locked),
+      ideas,
       concepts,
       finalized: kit?.concept ?? null,
       exported: exp?.assets?.length ?? 0,
@@ -251,6 +262,8 @@ function collect(work, dest) {
         if (existsSync(join(cdir, f)))
           cpSync(join(cdir, f), join(dest, b.slug, 'concepts', c.id, f.replace('review/', '')));
     }
+    if (existsSync(join(bdir, 'ideas.json')))
+      cpSync(join(bdir, 'ideas.json'), join(dest, b.slug, 'ideas.json'));
     if (existsSync(join(bdir, 'decisions.md')))
       cpSync(join(bdir, 'decisions.md'), join(dest, b.slug, 'decisions.md'));
     if (existsSync(join(bdir, 'exports', 'logos', 'overview.png')))

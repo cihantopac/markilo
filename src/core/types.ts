@@ -107,6 +107,26 @@ export interface Brief {
   notes?: string;
 }
 
+/**
+ * The idea longlist written before any direction is drawn: one line per visual hook, struck or kept by the critic from
+ * the words alone. Cheap to make, cheap to judge, and it keeps the reasons a direction exists on record.
+ */
+export interface IdeaLog {
+  schema: 'markilo/ideas@1';
+  ideas: {
+    id: string;
+    /** What a stranger sees at 32 px, in words, without naming the brand. */
+    hook: string;
+    /** What it means for this product. */
+    means: string;
+    source: 'product' | 'audience' | 'name' | 'type' | 'abstract';
+    review?: { verdict: 'keep' | 'strike'; reading: string; rank?: number; at: string };
+    /** Concept ids built from this idea. */
+    concepts?: string[];
+    addedAt: string;
+  }[];
+}
+
 export interface ConceptPalette {
   primary: string;
   secondary?: string;
