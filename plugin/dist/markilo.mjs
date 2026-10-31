@@ -530,7 +530,11 @@ calibrated on Claude Opus; with another reviewer it says so). Research and desig
 2. Research: \`${n} profile understanding --brand <slug>\` (stated vs inferred facts, unknowns); competitors with
    \`research competitors\` and \`reference add\`; \`reference dedupe\`. Playbook: ${a("research-playbook.md")}.
 3. Brief: \`${n} brief update --brand <slug> --file \u2026\`; ask only what you cannot infer, 2\u20135 questions at once.
-4. Explore: 3\u20135 genuinely different directions (idea, metaphor, form, type, color, risks); at most one built on the
+4. Ideas: at least 12 one-line visual hooks from several sources (\`${n} ideas --brand <slug> --add "<what a stranger
+   sees at 32 px>" --means "\u2026" --source product|audience|name|type|abstract\`); then, as the critic, strike or keep
+   and rank each from the words alone (\`--idea iN --strike|--keep "<reading>" [--rank n]\`). Build directions from the
+   kept ideas. Mechanism metaphors drawn with primitives (brackets, crosses, arches, gauges) read as UI glyphs.
+   Explore: 3\u20135 genuinely different directions (idea, metaphor, form, type, color, risks); at most one built on the
    name's initial, at least one with no letter and no product object, and usually one wordmark-led
    (\`concept new \u2026 --lead wordmark\`: the name from a good typeface with one or two letters changed, the icon cut
    from them \u2014 "Wordmark-led concepts" in ${a("construction.md")}); \`concept new\` for each.
@@ -550,12 +554,14 @@ calibrated on Claude Opus; with another reviewer it says so). Research and desig
    premium-perception, versatility); a measured problem may turn the yes into a no, never the other way. Name your
    model with \`--reviewer <model>\` (the gate was calibrated on Claude Opus; it reports other models as unmeasured).
    Gate: blind brand-fit, distinctiveness and memorability \u2265 6 and yes \u2014 \`${n} concept list\` shows it \u2014 and its
-   \`next\` says what to do: \`fix\` once (only the critic's no is in the way), or \`reject\` and try a new direction
-   instead of reworking (in the benchmark 1 of 34 reworked concepts passed later).
+   \`next\` says what to do: \`fix\` once (only the critic's no is in the way), \`reject\` and try a new direction
+   instead of reworking (in the benchmark 1 of 34 reworked concepts passed later), or \`second-look\` when the first
+   cold look landed on the edge of the bar: two fresh critic passes that see only the brief and the images record
+   \`concept update --look <five scores> --look-present yes|no:reason\`, and the majority of three decides.
 9. Review: \`${n} gallery --serve\` (keep it running in the background; give the user the URL), then
    \`${n} feedback --brand <slug>\` to read their decisions, pins and preference.
 10. Deliver: \`finalize\` (\`--accept-risk\` only when the user accepts an insufficient-evidence verdict; a concept that
-    failed the gate needs \`--user-choice "<the user's reason>"\`),
+    has not passed the gate \u2014 failed, undecided or never reviewed \u2014 needs \`--user-choice "<the user's reason>"\`),
     \`deliverables\`, \`export\`, then \`install-assets --framework auto --brand <slug>\` as a dry run, and \`--apply\` only
     with the user's OK.
 

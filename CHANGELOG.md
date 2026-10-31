@@ -44,6 +44,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- `agent-setup` wrote the 0.5 workflow for Codex, Cursor, VS Code and other agents: it now includes the idea
+  longlist, the second look at the edge of the gate and the new `finalize` rule.
+
 - Gallery: when every concept was rejected it said "No concepts yet." and hid what was tried. It now says that
   nothing passed the gate and why nothing is offered, opens the rejected concepts, and every card that did not pass
   shows the critic's verdict and what a stranger sees first. The Theme button was unreadable in dark mode.

@@ -97,6 +97,9 @@ describe('setup for other coding agents', () => {
     const once = readFileSync(join(dir, 'AGENTS.md'), 'utf8');
     expect(once).toMatch(/^# Project rules\n\nUse pnpm.\n\n<!-- markilo:start -->/);
     expect(once).toContain('markilo.mjs" verify');
+    // The other agents get the same process as the plugin: ideas first, second looks at the edge of the gate.
+    expect(once).toContain('ideas --brand <slug> --add');
+    expect(once).toContain('second-look');
     expect(agentSetup(dir, 'codex', { apply: true }).action).toBe('unchanged');
     expect(readFileSync(join(dir, 'AGENTS.md'), 'utf8').match(/markilo:start/g)).toHaveLength(1);
   });
