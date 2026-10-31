@@ -28,6 +28,7 @@ company) plus the owner's preferences:
 | [0.4.0-rc.7](results/0.4.0-rc.7) (11 runs, 2 new holdouts) | Sonnet 5.5 | 0 of 11         | 2 of 5 developed (Opus judge), both rejected by the gate | 5 / 33                 | 3 of 5                     | 129             | $26.81                |
 | [0.4.0-rc.8](results/0.4.0-rc.8) (9 runs, Opus critic)     | Sonnet 5.5 | 0 of 9          | 0 of 3 (Opus judge)                                      | 3 / 27                 | 3 of 3                     | 105             | $23.79                |
 | [0.4.0-rc.9](results/0.4.0-rc.9) (9 runs)                  | Sonnet 5.5 | 2 of 9          | Portwise 2/4 looks, Dozeline 0/4 (Opus)                  | 22 / 27                | 19 of 22                   | 155             | $37.75                |
+| [0.5.0-rc.1](results/0.5.0-rc.1) (9 runs, 4 new holdout)   | Sonnet 5.5 | 2 of 9          | 2 of 29 (3 looks each, Opus)                             | 29 / 43                | 29 of 29                   | 191             | $42.43                |
 
 What changed, and why:
 
@@ -84,7 +85,22 @@ What changed, and why:
   time: the gate now errs about as often as the judge disagrees with itself. `bench.mjs judge --times N` takes the
   majority of N looks for future runs.
 
-Benchmarking so far (four runs of the three briefs plus judging) cost $33.80 in API-equivalent terms, the rc.5 validation another $33 (runs $29.93, Opus judging $2.61, calibration about $0.66) the rc.7 validation $27.90 (runs $26.81, judging $1.09) the critic calibration about $30 (judging 30 concepts again about $5, rc.8 runs $23.79, judging $1.50) and rc.9 about $48 (runs $37.75, judging $7.28, noise check about $3.30). Each run counts
+- **0.4.0 → 0.5.0-rc.1 (two real projects, then two fresh holdouts).** Markilo was run on two of the author's own
+  open-source tools with 0.4.0: eight directions, six developed, none passed, and the critic was right — the marks
+  were rectangles, circles and polygons that read as UI icons (a camera body, a download arrow, a payments logo),
+  rework rounds polished the same failing idea, and the user saw no sketch. Benchmark logs agreed: 1 of 34 concepts
+  sent back after a failed gate passed later. rc.1 made the gate say `fix` once or `reject`, put the sketch boards in
+  the gallery, added wordmark-led directions (the word built from a real typeface with one letter changed, the icon
+  cut from it) and pinned the designer to Sonnet. Two holdouts were written before any run (a feature-flag service and
+  a team secrets manager, both categories full of pictograms). Result: 2 of 9 runs passed, both wordmark-led
+  (Quillnest; Pinehold on a fresh holdout), and the Opus judge, taking the majority of three looks, agreed with the
+  gate on all 29 concepts — both passes presentable (3/3 and 2/3), every rejected concept rejected. Wordmark-led
+  concepts: 2 of 13 presentable; invented symbols: 0 of 16. One concept used its fix round; directions per run rose
+  from 3 to 4.8. For wordmark-led concepts the judge also sees the word (`wordmark.png`), since the word is the
+  identity. Not added: a "reads as a UI icon" check — on 32 labelled sketches, silhouette similarity to 45 generic UI
+  icons separated them at AUC 0.72 and usually named the wrong icon.
+
+Benchmarking so far (four runs of the three briefs plus judging) cost $33.80 in API-equivalent terms, the rc.5 validation another $33 (runs $29.93, Opus judging $2.61, calibration about $0.66) the rc.7 validation $27.90 (runs $26.81, judging $1.09) the critic calibration about $30 (judging 30 concepts again about $5, rc.8 runs $23.79, judging $1.50) and rc.9 about $48 (runs $37.75, judging $7.28, noise check about $3.30) and 0.5.0-rc.1 about $61 (runs $42.43, Opus judging with three looks per concept $18.16). Each run counts
 against a Claude subscription's usage limits instead of being billed; the costs are what the same tokens would cost
 on the API.
 
@@ -92,7 +108,7 @@ Holdout scenarios were written before the changes they test and were never run w
 they show whether an improvement generalizes beyond the briefs it was found on. A holdout stops being one once its
 results have shaped a change: the rc.5 holdouts after rc.5, the rc.7 holdouts after rc.7, since their concepts were in
 the rc.8 calibration set. The rc.8 and rc.9 reports still label them holdouts, as they were recorded at run time; by
-this rule they were known briefs, and 0.4.0 has no untouched holdout left. The next change gets fresh ones.
+this rule they were known briefs. 0.5.0-rc.1 got fresh ones (feature-flags, secrets-team), written before any run.
 
 ## Run
 

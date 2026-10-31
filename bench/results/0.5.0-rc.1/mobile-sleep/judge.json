@@ -1,0 +1,68 @@
+[
+  {
+    "brand": "dozeline",
+    "concept": "drawn-blind",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a wallet or card holder with a clasp",
+        "a paint can or bucket dripping",
+        "a slanted drawer or envelope with a tab"
+      ],
+      "distinctiveness": 5.3,
+      "memorability": 4.3,
+      "brandFit": 3.7,
+      "craft": 5,
+      "versatility": 4,
+      "presentAsIs": false,
+      "why": "The plum and amber palette is warm and avoids the moon cliché, but the shape reads as a wallet or dripping paint can rather than winding down or a journal, the drip-and-keyhole detail turns to mush at 16–32px, and the dark version drops the plum altogether.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6115362
+  },
+  {
+    "brand": "dozeline",
+    "concept": "last-light",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a lowercase e with a struck-through crossbar, close to a euro sign or a strikethrough glyph",
+        "a sun setting on a horizon line inside the e's counter",
+        "an e-brand or email/browser-style letter icon"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5.3,
+      "brandFit": 6.3,
+      "craft": 6,
+      "versatility": 5.3,
+      "presentAsIs": false,
+      "why": "The idea of the crossbar becoming a horizon with a setting sun is warm and avoids the moon cliché, but on a home screen the sun disappears below 48px, which leaves a generic struck-through e that reads as a euro sign or a browser mark. The wordmark is a plain geometric sans whose only idea sits in the final letter.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.646336
+  },
+  {
+    "brand": "dozeline",
+    "concept": "settling-line",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a ball bouncing down steps",
+        "three magnet or horseshoe arches with a dot",
+        "a stylised descending 'zzz' coming to rest"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 5.7,
+      "craft": 5.3,
+      "versatility": 4,
+      "presentAsIs": false,
+      "why": "The descending arches-to-dot idea avoids the moon cliché and the plum-and-terracotta palette feels warm, but the bouncing rhythm reads energetic rather than settling, the diagonal layout leaves most of the icon square empty, and at 16–32 px it shrinks into indistinct squiggles.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6123976
+  }
+]

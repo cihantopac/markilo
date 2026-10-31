@@ -1,0 +1,68 @@
+[
+  {
+    "brand": "pinehold",
+    "concept": "held-word",
+    "final": true,
+    "judge": {
+      "readsAs": [
+        "an arch or doorway sheltering an orange seed or leaf",
+        "a lowercase n that holds something inside it",
+        "a friendly nature-tech wordmark in pine green and terracotta"
+      ],
+      "distinctiveness": 5.3,
+      "memorability": 6,
+      "brandFit": 6.7,
+      "craft": 6.3,
+      "versatility": 7,
+      "presentAsIs": true,
+      "why": "The arch holding a seed is a warm, non-paranoid idea that fits the brief well, but arch-around-an-object marks are common, the leaf's flat-cut tips look unfinished, the custom n is heavier than the other letters in the wordmark, and the seed nearly disappears at 16px.",
+      "votes": "2/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6503838
+  },
+  {
+    "brand": "pinehold",
+    "concept": "huddle",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "interlaced strands or a braid of ribbons",
+        "a stylized letter R or the letter K",
+        "a DNA helix or a Celtic knot fragment"
+      ],
+      "distinctiveness": 5.3,
+      "memorability": 5,
+      "brandFit": 4.7,
+      "craft": 6,
+      "versatility": 5.3,
+      "presentAsIs": false,
+      "why": "The warm green and terracotta interlace suggests people woven together, but it reads first as an R or K, which is not Pinehold's initial; it has no clear pine or hold idea; its broken strands look fragmented rather than held; and below 24px the shape falls apart into scribbles.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6080218
+  },
+  {
+    "brand": "pinehold",
+    "concept": "scales",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "five-petal flower or blossom",
+        "spinning pinwheel",
+        "swirl logo for a wellness or garden brand"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5.3,
+      "brandFit": 4.3,
+      "craft": 4.3,
+      "versatility": 6.3,
+      "presentAsIs": false,
+      "why": "The warm green and copper pinwheel holds up at small sizes, but it reads as a generic flower with no link to pine or holding, and the petals look lumpy, with uneven notches and odd stubby spurs on the lower ones.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.609845
+  }
+]

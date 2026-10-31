@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Benchmark results for 0.5.0-rc.1 (`bench/results/0.5.0-rc.1/`, nine runs, four on two holdouts written for this
+  round): two runs passed the gate, both wordmark-led (Quillnest; Pinehold on a fresh holdout), and the Opus judge —
+  the majority of three looks per concept — agreed with the gate on all 29 critiqued concepts, both passes
+  presentable. Wordmark-led concepts: 2 of 13 presentable; invented symbols: 0 of 16. The README's showcase now shows
+  these two.
+- The benchmark judge also sees the wordmark of a wordmark-led concept (the word is the identity).
+
 ## [0.5.0-rc.1] - 2026-10-31
 
 Found in two real projects run with 0.4.0: eight directions, six developed, none passed the gate — and the critic

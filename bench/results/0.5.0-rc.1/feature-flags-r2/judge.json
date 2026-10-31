@@ -1,0 +1,68 @@
+[
+  {
+    "brand": "stagewell",
+    "concept": "cohort",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a circle sliced into a grid of cells with one orange cell marked out",
+        "a hash or grid symbol inside a disc, like a window or a manhole cover",
+        "a segmented globe or crosshair"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 6,
+      "versatility": 4,
+      "presentAsIs": false,
+      "why": "The calm sliced-disc grid fits the brief, and the single orange cell nicely suggests a cohort being rolled out, but the cell only makes sense in color: in black or white it disappears into a plain hash-in-a-circle, and at 16–24px the thin gaps clog into a busy texture, so it stays a competent but forgettable grid mark.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.617912
+  },
+  {
+    "brand": "stagewell",
+    "concept": "stagewell-word",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "Clean grotesk wordmark whose t crossbar stretches over the a like a level platform or stage",
+        "A long horizontal stroke that can also read as a strikethrough",
+        "An 'St' monogram that looks like a font sample, not a mark"
+      ],
+      "distinctiveness": 4,
+      "memorability": 4,
+      "brandFit": 6,
+      "craft": 5,
+      "versatility": 5.7,
+      "presentAsIs": false,
+      "why": "The calm, precise sans and the stage-like crossbar fit platform teams, but the crossbar touches the top of the a and can look like a strikethrough, and the 'St' icon drops the long crossbar, so it ends up as a generic two-letter monogram whose rust brown fades on dark backgrounds and that won't hold up as a GitHub avatar or VS Code icon.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6380006
+  },
+  {
+    "brand": "stagewell",
+    "concept": "well",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a square spiral or Greek-key meander",
+        "a maze path that leads in to a centre square",
+        "a stylised lowercase 'b' or 'p' framed in a box"
+      ],
+      "distinctiveness": 4.7,
+      "memorability": 5.3,
+      "brandFit": 6,
+      "craft": 6.7,
+      "versatility": 7.3,
+      "presentAsIs": false,
+      "why": "The disciplined, monoline square path reaching a central square looks calm and precise and holds up from 16px to 256px in every colourway, but square spirals and meanders are a stock tech shape, and the idea of staged progress into a 'well' does not come through strongly enough to be ownable.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6158216
+  }
+]

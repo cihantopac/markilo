@@ -1,0 +1,68 @@
+[
+  {
+    "brand": "stagewell",
+    "concept": "stepped-ll",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "the word 'stagewe' followed by an odd glyph that reads more like a '4' or a Hebrew letter than 'll'",
+        "a stepped zigzag stroke that stands for a staged rollout",
+        "a calm deep-green geometric sans that looks like infrastructure branding"
+      ],
+      "distinctiveness": 5.7,
+      "memorability": 5.3,
+      "brandFit": 6,
+      "craft": 5.3,
+      "versatility": 6,
+      "presentAsIs": false,
+      "why": "Merging 'll' into one step is a smart, on-brief idea for gradual rollout, but in the wordmark it costs legibility: it reads as 'stagewe4'. Its blunt square terminals and thin step also clash with the rounded humanist letters, and on its own the symbol looks like a generic bent bar.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6481406
+  },
+  {
+    "brand": "stagewell",
+    "concept": "stepped-well",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "staircase descending into a rectangular pit or container",
+        "factory or building silhouette beside a U-shaped cutout holding a minus sign",
+        "stepped bar chart or progress meter with a slot"
+      ],
+      "distinctiveness": 5.3,
+      "memorability": 5.3,
+      "brandFit": 6,
+      "craft": 5.7,
+      "versatility": 5.3,
+      "presentAsIs": false,
+      "why": "The stepped descent into a well fits the staged-rollout idea and feels calm and solid, but the wide landscape format fits square avatars badly, the floating orange bar reads as a minus sign or a slot rather than anything meaningful, the corner radii don't match, and below 32px it turns into an unreadable blob.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6115758
+  },
+  {
+    "brand": "stagewell",
+    "concept": "two-wells",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a rounded double-U 'w' with an orange cup or glass in its left bowl",
+        "two connected wells or containers, one partly filled, suggesting partial rollout",
+        "an odd custom glyph that sits apart from a generic geometric-sans wordmark"
+      ],
+      "distinctiveness": 5.3,
+      "memorability": 5,
+      "brandFit": 4.7,
+      "craft": 4.3,
+      "versatility": 5.7,
+      "presentAsIs": false,
+      "why": "The idea of two wells with only one partly filled fits gradual rollout and is easy to own, but there are visible kinks where the straight strokes meet the curves, the tapered orange chip reads as a drink glass and drops out below 32px, the rounded double bowl risks an unintended body-shape reading, and the rest of the wordmark is generic, so it falls short of calm, precise and trustworthy.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6411686
+  }
+]

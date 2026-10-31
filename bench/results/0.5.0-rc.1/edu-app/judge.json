@@ -1,0 +1,90 @@
+[
+  {
+    "brand": "quillnest",
+    "concept": "double-l",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a heavy serif lowercase 'n' or 'Π' with a red dot, like a doorway with a ball inside",
+        "an 'll' ligature that makes the wordmark read as 'quinnest' or 'quiflnest'",
+        "a bookish editorial slab mark, like a literary magazine"
+      ],
+      "distinctiveness": 5.7,
+      "memorability": 5.3,
+      "brandFit": 5.3,
+      "craft": 6,
+      "versatility": 7,
+      "presentAsIs": false,
+      "why": "The chunky, confident serif has the bold, non-childish voice the brief asks for, and the arch with an egg-dot is a clever, quiet nod to the nest, but the joined 'll' makes the name hard to read, the red dot shows up only in the icon and not in the wordmark, and on its own the icon reads as a generic 'n'/Π shape, not something you'd know as Quillnest.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.643055
+  },
+  {
+    "brand": "quillnest",
+    "concept": "loop-nest",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "power/standby button icon",
+        "loading spinner or refresh arrow",
+        "apple or fruit with a stem"
+      ],
+      "distinctiveness": 3.3,
+      "memorability": 4.3,
+      "brandFit": 3.7,
+      "craft": 5,
+      "versatility": 6.3,
+      "presentAsIs": false,
+      "why": "The open ring with an offset accent stroke reads first as a generic power or loading UI glyph rather than a nest or a writing mark, and its uneven, lumpy stroke weight and awkward taper make it look unfinished rather than intentionally bold.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6066196
+  },
+  {
+    "brand": "quillnest",
+    "concept": "next-step",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "cursive handwritten letter l with an upswing",
+        "a check-mark-like stroke ending upward",
+        "a looping ribbon or signature flourish"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5.7,
+      "brandFit": 6,
+      "craft": 6.7,
+      "versatility": 6.7,
+      "presentAsIs": false,
+      "why": "The energetic single-stroke cursive loop feels encouraging and works in mono, but it reads as a generic handwritten 'l' or check flourish with no link to Quill or nest, the stroke is too thin to work as an app icon below 32px, and the asymmetric diagonal sits awkwardly in a square.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6041491999999999
+  },
+  {
+    "brand": "quillnest",
+    "concept": "q-cradle",
+    "final": true,
+    "judge": {
+      "readsAs": [
+        "a smiling face built from a q, with the orange dot as a nose or tongue",
+        "a nest cradling an egg, made from the q's descender",
+        "a lowercase q whose long tail sweeps under 'nest' in the lockup"
+      ],
+      "distinctiveness": 6,
+      "memorability": 6.7,
+      "brandFit": 6,
+      "craft": 6.7,
+      "versatility": 6.3,
+      "presentAsIs": true,
+      "why": "The q's tail that sweeps under the word and cradles an orange egg is a clever, ownable idea, and the lockup is confident, but cut out on its own the symbol reads first as a cute smiley that edges toward childish for teens, and the egg nearly disappears at 16–24px.",
+      "votes": "3/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6535347999999999
+  }
+]

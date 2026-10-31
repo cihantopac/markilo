@@ -1,0 +1,305 @@
+{
+  "scenario": "secrets-team",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Team security app",
+  "kind": "saas",
+  "brief": {
+    "ask": "Create a brand identity for Pinehold, the secrets manager for small teams in this folder.",
+    "owner": "Owner preferences: trustworthy and warm, never militaristic or paranoid; for small teams who are not security experts. No padlocks, keys, shields, vaults or fingerprints. App icons (macOS, Windows), a browser-extension icon, web and GitHub."
+  },
+  "markilo": "0.5.0-rc.1",
+  "ranAt": "2026-10-31T16:58:24.121Z",
+  "minutes": 23.06,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 5.642428100000005,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 27704,
+    "output": 194972,
+    "cacheRead": 12288726,
+    "cacheWrite": 687979
+  },
+  "turns": 2,
+  "subagents": 18,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Beş konseptin hiçbiri iki turda kalite kapısını geçmedi (en iyi kör ortalama 5,8; marka uyumu ≤5), bu yüzden finalize, export, install-assets ve gallery çalıştırılmadı."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "pinehold",
+      "name": "Pinehold",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "cradle",
+          "title": "Cradle",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.77,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 5,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 6,
+            "balance": 6,
+            "craft": 6,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 6,
+            "memorability": 6,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "a little figure with raised arms sitting in a bowl or hot tub",
+            "a waving or flailing (drowning) person",
+            "a wifi/sound-wave signal from the trailing arc"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 a dot between two unequal arcs, loading spinner / power-button family, faintly a figure with arms; s2 a stocky bucket or robot face with a ball in it, sticker-like, stock 0.66; s3 (•) broadcast/live/radio signal UI icon - strike; s4 an eye over a smile, a face - brief bans eye/smile - strike; s5 a ring around a dot, target / @ / record - brief bans target - strike. Pick s1 for its asymmetry, the only sketch where holding is a gesture and not a frame. Risks: at 16 px it collapses to spinner/power icon and Doppler-like dot-in-arcs. Must change: give the arms the weight and terminals of hands or forearms (thicker at the root, rounded palms turned in, the short arm clearly beneath and lifting), make the dot sit in them rather than float centred, break the circular symmetry so no stranger reads a progress ring. If it still reads as UI after that, kill it.",
+          "checks": {
+            "pass": 15,
+            "warn": 1,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.312
+          }
+        },
+        {
+          "id": "joined",
+          "title": "Joined",
+          "status": "verified",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.62,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 6,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 5,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "the letters Jh or Uh, a person's initials",
+            "a fish hook joined to an h",
+            "the wordmark reads 'pin hold' / 'pinchold' because the e has lost its eye (unfortunate: 'uh', a hesitation, for a trust product)"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 'eh' in a stock grotesk with a stray underscore at the baseline (looks like a rendering glitch); s2 'e-h' with a slash through it, a typo or error; s3 '6h' or 'Gh', a different letter, struck; s4 'pi', the math constant or Raspberry Pi, struck as an icon. Pick s1 only because it is the one sketch with an idea (a shared floor) that is not a misreading. Major risks: as a standalone icon 'eh' reads as a shrug, which is wrong for a trust brand, so the icon must not be 'eh' alone. Make it work inside the full word 'pinehold'. Draw the join as a real, deliberate baseline stroke of equal weight that flows from the e terminal into the h stem, not a bolted-on bar. Move off the stock grotesk and give the word its own warm, humanist cut, or this stays at 5. Very weak overall: this direction is unlikely to clear distinctiveness 6.",
+          "checks": {
+            "pass": 14,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.283
+          }
+        },
+        {
+          "id": "overlap",
+          "title": "Overlap",
+          "status": "verified",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.46,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 4,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 6,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 4,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "an eye or almond-shaped hole punched in a rounded blob",
+            "a speech bubble / guitar pick with a leaf cut-out",
+            "a fish or bitten shape facing right (unfortunate: a watching eye, surveillance, for a secrets product)"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 a rounded square with a '0' or 'D' punched in, half a letter and close to the pathfinder 'exclude' icon; s2 the boolean-exclude or link toolbar icon, a UI icon, struck despite the designer ranking it first; s3 an orange or peach with a seed, and the pointed amber lens risks reading as a flame again (the previous failure), plus the highest stock similarity at 0.71; s4 two soft forms crossing with a pointed, leaf-like hollow, the least generic of the four. Pick s4. Keep: the pointed corners and the leaf or needle hollow, which is the only pine cue and the ownable part. Fix: make the two forms clearly unequal and leaning, so the silhouette stops reading as a tooth or molar or as a squircle Venn. Sharpen the hollow so it reads as a shared lens, not a drop or flame. Single colour, no amber fill. Check at 16 px that the hollow survives. Risk: generic overlapping-blob geometry.",
+          "checks": {
+            "pass": 15,
+            "warn": 1,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.473
+          }
+        },
+        {
+          "id": "seed-o",
+          "title": "Seed O",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.62,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 6,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 5,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 5,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 6,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "a flame in a cup (chalice / torch / candle)",
+            "a seed or sprout in a U",
+            "a drop of oil in a cradle (fuel brand)"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 a leaf or quill inside an O/zero, eco-leaf-in-ring cliche, the dark dot reads as a match head or tadpole; s3 a vertical cat's eye / almond pupil between brackets, then ( | ) code parentheses, then a seed held; s4 an egg with sergeant rank chevrons, a crest/badge - militaristic and near the forbidden badge geometry, struck. Keep s3: brackets-as-hands holding one amber thing is the only sketch where 'hold' is the structure, and ( ) quietly speaks to the CLI/dev audience. Risks to fix: (1) the eye/pupil reading - break the almond symmetry: give the seed an actual samara form (round seed at the base, asymmetric wing tapering up and slightly turned), so it stops being a slit pupil; (2) avoid an almond/vulva silhouette - open the brackets wider and keep a clear gap so the seed does not nest flush; (3) make the brackets read as cupped hands not just parens - thicker at the base, curling inward at the bottom, tips thinner; (4) no letter is fine, do not force an O. Check 16 px after the change: the seed must still read as a seed, not a line.",
+          "checks": {
+            "pass": 17,
+            "warn": 2,
+            "fail": 0,
+            "info": 4
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.352
+          }
+        },
+        {
+          "id": "tiers",
+          "title": "Tiers",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 4.08,
+          "scores": {
+            "brand-fit": 3,
+            "semantic-relevance": 3,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 5,
+            "balance": 5,
+            "craft": 3,
+            "typography": 5,
+            "color": 6,
+            "cultural-fit": 4,
+            "timelessness": 5,
+            "premium-perception": 3,
+            "versatility": 3
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 3,
+            "craft": 4,
+            "versatility": 4
+          },
+          "gate": false,
+          "readsAs": [
+            "a carrot or pineapple top",
+            "a torch or spiky crown on a pedestal",
+            "a trident / spearheads"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 a badminton shuttlecock, then a carrot/radish (orange band + green tops + the drip below), then a hand/fork - the pine fascicle does not come through; s2 a diamond/pixel pattern or a W crown, generic tiling, smudges at 16 px (0.80), struck as UI geometry; s3 a tied wheat sheaf or bundle of scallions, then an asterisk/hourglass. Keep s3: the single band holding many needles is the clearest 'shared responsibility, held together' image on either board, it is symmetric and ownable, and at 16 px it collapses to an asterisk, a happy echo of masked password characters. Risks to fix: (1) wheat/bakery/agriculture reading and a faint fasces (bundled rods = militaristic, forbidden tone) reading - make the needles thin, tapered, pointed and paired the way pine needles grow from a sheath, not rounded sticks; (2) make the top and bottom halves differ (longer fanned needles up, short stub sheath down) so it reads botanical, not an hourglass; (3) the amber band should look like a soft wrap/tie, not a hard bar - rounded, slightly thicker; (4) keep the needle count low (3 up, 2-3 down) so 16 px stays clean. If it still reads as wheat after this, this concept should stop.",
+          "checks": {
+            "pass": 26,
+            "warn": 4,
+            "fail": 3,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.261
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "d043db99-1d78-49de-bcbf-4833fbe2ce24"
+}

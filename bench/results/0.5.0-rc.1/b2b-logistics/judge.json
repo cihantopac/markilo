@@ -1,0 +1,46 @@
+[
+  {
+    "brand": "portwise",
+    "concept": "arch",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a heavy rounded lowercase w monogram, close to an omega",
+        "a monoline geometric wordmark with a slightly retro 1970s–80s display feel",
+        "arch or doorway shapes in the p and o, a loose nod to 'port'"
+      ],
+      "distinctiveness": 5.7,
+      "memorability": 5,
+      "brandFit": 5,
+      "craft": 5,
+      "versatility": 6.3,
+      "presentAsIs": false,
+      "why": "The dark green is calm and enterprise-safe, and the symbol holds up down to 16px, but the arch-shaped o reads almost like an 'n' ('pnrtwise'), the quirky retro letterforms feel less dependable than the brief asks, the heavy w in the symbol does not match the thin wordmark it is said to be cut from, and a rounded w on its own is a common shape that is hard to own and can read as an omega or a cheeky silhouette.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6640088
+  },
+  {
+    "brand": "portwise",
+    "concept": "wordmark",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "plain lowercase grotesk wordmark with an r–t crossbar ligature",
+        "the icon reads as a U-shaped cup or shield on a stem, not clearly a p",
+        "calm, enterprise-safe SaaS green"
+      ],
+      "distinctiveness": 4,
+      "memorability": 4,
+      "brandFit": 6,
+      "craft": 5.3,
+      "versatility": 6.7,
+      "presentAsIs": false,
+      "why": "The wordmark is calm and fits procurement, but its only move is a faint r–t ligature in a stock grotesk, and the open-topped square p icon is not cut from the wordmark's round p, so the two do not read as one system and neither is ownable.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6482808
+  }
+]

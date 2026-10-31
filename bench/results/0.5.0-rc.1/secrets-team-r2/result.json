@@ -1,0 +1,215 @@
+{
+  "scenario": "secrets-team",
+  "attempt": 2,
+  "holdout": true,
+  "title": "Team security app",
+  "kind": "saas",
+  "brief": {
+    "ask": "Create a brand identity for Pinehold, the secrets manager for small teams in this folder.",
+    "owner": "Owner preferences: trustworthy and warm, never militaristic or paranoid; for small teams who are not security experts. No padlocks, keys, shields, vaults or fingerprints. App icons (macOS, Windows), a browser-extension icon, web and GitHub."
+  },
+  "markilo": "0.5.0-rc.1",
+  "ranAt": "2026-10-31T17:21:27.719Z",
+  "minutes": 13.6,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 3.372232999999999,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 42582,
+    "output": 118418,
+    "cacheRead": 6851615,
+    "cacheWrite": 429246
+  },
+  "turns": 9,
+  "subagents": 11,
+  "claim": {
+    "passed": [
+      "held-word"
+    ],
+    "finalized": "held-word",
+    "notes": "Only held-word (n-arch sheltering a seed) passed the gate at 6.4 average; huddle and scales were rejected, originality is insufficient-evidence (accepted) because no trademark registry was searched."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "pinehold",
+      "name": "Pinehold",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "held-word",
+          "title": "Held Word",
+          "status": "approved",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 6.54,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 7,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 7
+          },
+          "present": true,
+          "blind": {
+            "distinctiveness": 6,
+            "memorability": 6,
+            "brand-fit": 7,
+            "craft": 6,
+            "versatility": 7
+          },
+          "gate": true,
+          "readsAs": [
+            "an arch or shelter holding a seed",
+            "a lowercase n with a leaf inside",
+            "a greenhouse / eco 'home + leaf' badge — unfortunate: a tomb niche or mouse hole"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 a keyhole (forbidden) or an avocado/power button; s2 a plain typeset d with a dot, a letter of no particular brand; s3 a lowercase n or an archway/doorway with a ball under it; s4 a split O around a dot = power/record button or an eye, and a cut letter. s1 and s4 struck. s3 picked, narrowly: the arch-over-seed carries shelter/home warmth without any lock imagery. Risks: as drawn it is a stock geometric-sans n plus a dot (generic, 'mouse hole' misreading), and n is not the brand's initial so it relies on the wordmark. Fix: draw the arch as a custom, warmer form (a roofline or bough with a gentle pine-like peak or taper rather than a typeset n), relate its stroke to the wordmark's n, and give the seed a less dot-like shape so the pair reads as shelter, not punctuation.",
+          "checks": {
+            "pass": 19,
+            "warn": 2,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.338
+          }
+        },
+        {
+          "id": "huddle",
+          "title": "Huddle",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 4.77,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 3,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 6,
+            "balance": 5,
+            "craft": 5,
+            "typography": 4,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 4,
+            "craft": 5,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "a braided strand or Celtic knot",
+            "a stylised letter A / R / lambda",
+            "tongs or tweezers — unfortunate: a crossed-out or broken R glyph"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 a braid / twisted rope (matches its idea), secondary readings challah, zipper or chain; s2 a generic leaf sprig, lotus or candle flame. The needles read as leaves, it is a wellness or spa cliché, and nothing about it is ownable in secrets tooling; s3 a layered cake, rubber stamp or user-avatar UI icon. The pine does not read and it looks like a toy ring stacker. Struck s2 and s3. Keep s1: a braid means several hands making one strong thing, it is warm, and the category has nothing like it (no padlock or shield). Fix: it is too chopped. Six or more small fragments turn to noise at 16 px. Cut to 2-3 big crossings with 3 continuous strands so the twist reads at 16 px. Make the gaps even and keep the stroke weight consistent. Keep one warm strand you can trace all the way through, rather than scattered orange bits. Make the silhouette a tighter vertical so it is not read as a zipper or DNA. Do not let the terminals fray into hair.",
+          "checks": {
+            "pass": 16,
+            "warn": 2,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.299
+          }
+        },
+        {
+          "id": "scales",
+          "title": "Scales",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.15,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 6,
+            "simplicity": 6,
+            "balance": 6,
+            "craft": 5,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 3,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 6,
+            "brand-fit": 5,
+            "craft": 5,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "the Hong Kong bauhinia flower (flag emblem)",
+            "a pinwheel or fan",
+            "a five-petal flower — unfortunate: a political/regional emblem for an international software product"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 a tomato/cherry with leaves, or a heart with a ball (no link to holding); s2 a rounded pinwheel/swirl around a seed, a stylised S-knot; s3 a fan blade/propeller pinwheel flower (cliche); s4 a rainbow/sunrise in an app tile (stock tile 82%); s5 a raised-arms person figure or inverted wifi (cliche). s2 is the only one with an ownable, closed-but-open protective structure and it survives 16 px. Risks: four-fold rotational pinwheels are a crowded generic-tech device and currently read as L-brackets, not scales. Fix: make the units unmistakably pinecone scales (tapered, slightly pointed tips, visible over-under tuck), break perfect 90-degree symmetry a little so it feels grown not engineered, keep the terracotta seed small, and check it does not read as a recycling or Bitwarden-style blue-tech mark.",
+          "checks": {
+            "pass": 16,
+            "warn": 2,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.342
+          }
+        }
+      ],
+      "finalized": "held-word",
+      "exported": 155,
+      "byGroup": {
+        "logos": 54,
+        "web": 11,
+        "macos": 14,
+        "windows": 60,
+        "social": 11,
+        "tokens": 3,
+        "guidelines": 2
+      },
+      "success": true
+    }
+  ],
+  "sessionId": "150c3220-5e1b-4541-b7a8-6ba8b2a4c10c"
+}

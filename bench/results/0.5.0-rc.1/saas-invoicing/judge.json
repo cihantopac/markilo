@@ -1,0 +1,68 @@
+[
+  {
+    "brand": "tallyline",
+    "concept": "a-gate",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a cursive looped letter l sitting on a baseline",
+        "an awareness ribbon or a pen signature flourish",
+        "a serif wordmark with one handwritten letter swapped in"
+      ],
+      "distinctiveness": 5.3,
+      "memorability": 5.7,
+      "brandFit": 5.7,
+      "craft": 3,
+      "versatility": 4.7,
+      "presentAsIs": false,
+      "why": "The deep plum and the friendly loop suit a calm tool for freelancers that avoids fintech blue and green, but the loop has visible lumps where strokes join at its top and crossing, it reads close to an awareness ribbon, and in the wordmark the monoline loop clashes with the serif letters and leaves a blobby join into the y.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6388704000000001
+  },
+  {
+    "brand": "tallyline",
+    "concept": "b-stones",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "three overlapping stepping stones or pebbles growing toward the lower right",
+        "a moon-phase or eclipse sequence ending in a full terracotta disc",
+        "footprints or a caterpillar, a loose nod to growing totals"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 5.7,
+      "craft": 5,
+      "versatility": 4,
+      "presentAsIs": false,
+      "why": "The warm terracotta and espresso palette avoids fintech blue and green and feels calm, but the three bitten ellipses read as moon phases or pebbles with no clear link to tallies, invoices or cash flow; the off-center wide shape leaves much of the square empty, and it shrinks to a blur of specks at 16–24px.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6085864
+  },
+  {
+    "brand": "tallyline",
+    "concept": "c-horizon-t",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a rising S-curve line leveling into a flat bar, like a growth curve plateauing",
+        "a swash or brushstroke underline",
+        "an abstract italic T or a hockey-stick shape"
+      ],
+      "distinctiveness": 4.7,
+      "memorability": 4,
+      "brandFit": 5,
+      "craft": 5,
+      "versatility": 3,
+      "presentAsIs": false,
+      "why": "The warm brown tone avoids fintech blue-green and the curve-into-line suggests cash flow leveling out, but the wide, thin mark disappears at favicon sizes, the T is hard to read, and it looks more like a decorative swash than an ownable symbol.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.61101
+  }
+]

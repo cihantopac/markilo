@@ -1,0 +1,47 @@
+{
+  "schema": "markilo/kit@1",
+  "brand": "quillnest",
+  "name": "Quillnest",
+  "concept": "q-cradle",
+  "locked": false,
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "symbolSmall": "symbol-small.svg",
+    "lockupHorizontal": "lockup-horizontal.svg",
+    "lockupStacked": "lockup-stacked.svg",
+    "lockupCompact": "lockup-compact.svg"
+  },
+  "palette": {
+    "primary": "#233A8F",
+    "secondary": "#FF6B4A",
+    "accent": "#FFD9B8",
+    "ink": "#141B45",
+    "paper": "#FBF4EA",
+    "dark": "#0b0d13"
+  },
+  "typography": {
+    "fontId": "fraunces",
+    "weight": 700,
+    "family": "Fraunces",
+    "license": "OFL-1.1"
+  },
+  "tagline": "Your words, held.",
+  "approvedAt": "2026-10-31T17:57:16.360Z",
+  "originality": {
+    "verdict": "insufficient-evidence",
+    "confidence": "low",
+    "acceptedRisk": true,
+    "report": "../reports/originality-q-cradle.md",
+    "evidence": {
+      "visual": "5 brand(s) from 6 reference file(s): 5 direct competitor, 0 category/form-family; sources 4 official, 0 app store, 0 logo catalog, 1 unverified",
+      "registry": "no registry searches logged for \"Quillnest\"",
+      "registryCoverage": "none"
+    }
+  },
+  "gate": {
+    "status": "passed",
+    "average": 5.8,
+    "reasons": []
+  }
+}

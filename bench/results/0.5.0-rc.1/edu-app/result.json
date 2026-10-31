@@ -1,0 +1,298 @@
+{
+  "scenario": "edu-app",
+  "attempt": 1,
+  "holdout": false,
+  "title": "Learning app",
+  "kind": "education",
+  "brief": {
+    "ask": "Create a brand identity for Quillnest, the writing app in this folder.",
+    "owner": "Owner preferences: encouraging and a little bold, for 13–17 year-olds, never childish or school-like. No owls, no pencils or quills drawn literally, no lightbulbs, no speech bubbles. App icon for iOS and Android plus a web version."
+  },
+  "markilo": "0.5.0-rc.1",
+  "ranAt": "2026-10-31T17:34:51.355Z",
+  "minutes": 22.98,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 5.855609200000002,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 55577,
+    "output": 202884,
+    "cacheRead": 13697784,
+    "cacheWrite": 702814
+  },
+  "turns": 9,
+  "subagents": 17,
+  "claim": {
+    "passed": [
+      "q-cradle"
+    ],
+    "finalized": "q-cradle",
+    "notes": "Only q-cradle passed the gate (round 2, blind avg 5.8); it may read as a sideways smiley, and trademark registers were not searched (insufficient-evidence risk accepted)."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "quillnest",
+      "name": "Quillnest",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "double-l",
+          "title": "Double L",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.77,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 6,
+            "typography": 5,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 7,
+            "premium-perception": 6,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "a serif lowercase n",
+            "a doorway or arch with a dot / keyhole",
+            "a torii-like gate or pi sign"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 a letter U / horseshoe magnet with a dot (wrong letter); s2 a lowercase e with a slot, the counter cut open (letter-with-a-cut device); s3 a pilcrow, the Word 'show formatting' toolbar icon, also reads q1/91; s4 an arch or doorway with a coral light, a birdhouse entry hole, a lowercase n. s4 is the only one whose first reading is near its idea (an entrance, a nest box) and it fits bold-not-childish. Risks: an upside-down U magnet, a generic arch/portal (Airbnb-adjacent door language), and a tombstone silhouette if the feet close up. Fix: keep the feet open and slab-flagged so it stays typographic, make the coral dot sit as a light/egg low in the opening rather than centred like a nostril, give the arch a distinctive shoulder from the wordmark's n (asymmetry, a flag where the l's join) so it can only come from 'quillnest'. The develop pass must show the ll-to-n link in the word, or it is just an arch. (Reviewer: claude-opus-5-5)",
+          "checks": {
+            "pass": 17,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.436
+          }
+        },
+        {
+          "id": "loop-nest",
+          "title": "Loop Nest",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 4.69,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 3,
+            "distinctiveness": 3,
+            "memorability": 4,
+            "simplicity": 8,
+            "balance": 5,
+            "craft": 5,
+            "typography": 4,
+            "color": 6,
+            "cultural-fit": 4,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 3,
+            "memorability": 4,
+            "brand-fit": 4,
+            "craft": 5,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "a loading spinner / refresh icon",
+            "an apple or cherry with a stem",
+            "a power-button or letter C/G ring"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 a handlebar moustache or goggles (unfortunate, and 0.87 at 16 px); s2 a spiral / snail shell / cinnamon roll, the swirl cliche; s3 a rainbow or upturned wifi signal, childish and UI; s4 a heavy ring with two curls at the top: an O written by hand, a bagel, or an apple with a dimple. s4 survives and is closest to its idea (one written stroke, a pen-lift opening), with the best 16 px read (0.95). Biggest risk: the apple reading, which is the teacher's apple, exactly the school cliche the brief bans; second risk is a plain ring/bagel. Fix: make it unmistakably one written stroke, with a tapered pen entry and a heavier exit, the two curls unequal (one tucked in, one lifting up and out in coral as the encouraging flick), and the opening wider and off-centre so it reads as a gap, not a fruit dimple. Keep the deep plum; avoid symmetry. (Reviewer: claude-opus-5-5)",
+          "checks": {
+            "pass": 16,
+            "warn": 3,
+            "fail": 0,
+            "info": 4
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.258
+          }
+        },
+        {
+          "id": "next-step",
+          "title": "Next Step",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.77,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 5,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 4,
+            "color": 6,
+            "cultural-fit": 7,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 6,
+            "craft": 6,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "a handwritten cursive lowercase l",
+            "a signature flourish or loose cursive e",
+            "a looped ribbon / swoosh"
+          ],
+          "sketchPick": "s9",
+          "sketchNotes": "Reads as: s6 a signature scribble / cursive w, and at 16 px a teacher's tick-swoosh (grading = school-like, struck); s7 the text-align-left plus text-cursor UI icon, near a hamburger menu (struck: UI icon, the product's own object drawn plainly); s8 an up-chevron / caret / letter A without a bar on an underline (struck: generic chevron, the proofreader's mark drawn plainly, school-like red-pen). s9 a single pen line looping into a tall cursive l: the only one with gesture and some ownability, and the l is in the name (Quill). Risks to fix in development: (1) the crossed loop reads as an awareness ribbon and the litre sign; make the loop asymmetric and taller, do not let the strokes cross in a symmetric X; (2) the 'next step' idea is weak, the line must visibly end higher than it starts (the exit stroke rising past the loop's base, not dropping back to baseline); (3) avoid a generic signature flourish: give the stroke a deliberate, ownable rhythm (consistent bold weight, one sharp turn or a distinctive terminal), not a doodle; (4) test the loop's counter stays open at 16 px in a tile; (5) keep it a line of writing, never a pen nib or quill tip at the end. (Reviewer: claude-opus-5-5)",
+          "checks": {
+            "pass": 16,
+            "warn": 0,
+            "fail": 0,
+            "info": 1
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.199
+          }
+        },
+        {
+          "id": "pieces",
+          "title": "Pieces",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a peeled sticker / folded page corner (document cliché); s2 toddler shape-sorter blocks (childish, against the brief); s3 a striped candy or flag, a block sliced on a slant (cut device); s4 an app-grid/widget or Microsoft-style tile cluster (UI icon). None reads as a collection of finished writing; abstract rounded shapes in candy colors read as a toy or a UI glyph. Different move: make the collection specific to writing without drawing paper: e.g. a stack of three bold spines/slabs of different heights leaning together as a shelf of one's own work, drawn with zine-like tension (one tilted, one taller), in cobalt and tangerine only; or fold the collection into the name (nest) so the cluster has a reason to be a cluster.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "q-cradle",
+          "title": "Q Cradle",
+          "status": "approved",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 6,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 6,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 6,
+            "typography": 7,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 5
+          },
+          "present": true,
+          "blind": {
+            "distinctiveness": 6,
+            "memorability": 6,
+            "brand-fit": 6,
+            "craft": 6,
+            "versatility": 5
+          },
+          "gate": true,
+          "readsAs": [
+            "a lowercase 'qu' ligature",
+            "a q beside a sideways smiley (dot eye over a smile curve)",
+            "a little figure or egg held in a hammock/cradle — unfortunate: an emoji-like winking face, nudging it toward kid-app"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 a heavy lowercase q whose tail turns up into a cup holding a coral dot (also risks 'qu'/'au'); s2 a q plus a separate coral J (stem cut off, the cut device, struck); s3 a plain geometric q with a hooked descender, a letter not an idea; s4 a bold serif q with a swash tail, reads as typographic flourish not cradle; wm stacked quill/nest in a serif, the name reads clearly at header size, but the q tail only hooks and does not hold anything. Keep s1: the only sketch where the cradle visibly holds something, which is the nest. Fixes: redraw it in the wordmark's Fraunces weight and contrast so symbol and word are one family (s4's bowl and serif with s1's cup); make the cup wider and shallower so it reads as a cradle, not a u, killing the 'qu'/'au' reading; set the coral egg fully inside the cup, slightly oval, big enough to survive 16 px; avoid any gap between stem and cup. In wm, make the q cradle actually sit under/hold the start of 'nest' and test the word on one line too; the wordmark is header-only, the app icon is the symbol.",
+          "checks": {
+            "pass": 30,
+            "warn": 1,
+            "fail": 0,
+            "info": 5
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.201
+          }
+        },
+        {
+          "id": "swipe",
+          "title": "The Swipe",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a hamburger/sandwich (dark bun, cheese slice) or a label band on a box; s2 a list/menu UI icon with a sticky note; s3 a burger with cheese and tomato; s4 a dark tile split by a slash (the cut device, generic); s5 a yellow E/plug shape on a block. None reads as a highlighter marking good writing; the dark block reads as a container or a bun, never as text. Different move: drop the block. Make the swipe itself the mark: one hand-drawn chisel-marker stroke with a real felt-tip end (flat, angled start, dry-brush tail), on paper, with the stroke shape owning the silhouette; or let the swipe cross a single bold word-shape that is clearly type, not bars.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": "q-cradle",
+      "exported": 105,
+      "byGroup": {
+        "logos": 54,
+        "web": 11,
+        "ios": 6,
+        "android": 29,
+        "tokens": 3,
+        "guidelines": 2
+      },
+      "success": true
+    }
+  ],
+  "sessionId": "79960b34-380b-4a09-ba45-0352ca42eb5c"
+}

@@ -310,9 +310,10 @@ const JUDGE = (
   name,
   files,
   final,
+  wordLed,
 ) => `You are an independent, demanding identity-design judge. You have not seen any rationale or score.
 Brief: ${s.ask} ${s.owner}
-Open these images with the Read tool: ${files.join(', ')} — ${final ? `the approved identity for ${name}` : `a logo concept for ${name}`}.
+Open these images with the Read tool: ${files.join(', ')} — ${final ? `the approved identity for ${name}` : `a logo concept for ${name}`}${wordLed ? ' (wordmark-led: the word is the identity and the icon is cut from it, so judge them together)' : ''}.
 Answer with ONE line of JSON and nothing else, every value in English whatever language you usually answer in:
 {"readsAs":["first impression","second","third"],"distinctiveness":0-10,"memorability":0-10,"brandFit":0-10,"craft":0-10,"versatility":0-10,"presentAsIs":true|false,"why":"one sentence"}
 Calibration: 3 = clip art or a stock shape, 5 = competent but forgettable, 7 = strong and ownable, 9 = category-defining.`;
@@ -344,6 +345,20 @@ function judge(out) {
         ]);
         spawnSync(process.execPath, [CLI, 'render', symbol, '-o', join(imgs, 'sizes.png'), '--sheet']);
         const lockup = join(out, id, b.slug, 'final', 'lockup-horizontal.svg');
+        // From 0.5.0-rc.1: a wordmark-led concept is its word, so the judge sees the word too.
+        const wordLed = c.lead === 'wordmark' && existsSync(join(cdir, 'wordmark.svg'));
+        if (wordLed && !(final && existsSync(lockup)))
+          spawnSync(process.execPath, [
+            CLI,
+            'render',
+            join(cdir, 'wordmark.svg'),
+            '-o',
+            join(imgs, 'wordmark.png'),
+            '--width',
+            '1200',
+            '--bg',
+            '#ffffff',
+          ]);
         if (final && existsSync(lockup))
           spawnSync(process.execPath, [
             CLI,
@@ -369,7 +384,7 @@ function judge(out) {
             'claude',
             ['-p', '--output-format', 'json', '--allowedTools', 'Read', ...model],
             {
-              input: JUDGE(s, b.name, files, final),
+              input: JUDGE(s, b.name, files, final, c.lead === 'wordmark'),
               encoding: 'utf8',
               cwd: imgs,
               maxBuffer: 16 * 1024 * 1024,

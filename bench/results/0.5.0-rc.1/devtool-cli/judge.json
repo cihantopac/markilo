@@ -1,0 +1,68 @@
+[
+  {
+    "brand": "seamline",
+    "concept": "handover",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "two parallel lines jogging sideways, like a lane-shift road sign",
+        "a seam or offset joint where two tracks are handed over",
+        "a stylised double S / pair of cables"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5.3,
+      "brandFit": 6,
+      "craft": 7,
+      "versatility": 7.3,
+      "presentAsIs": false,
+      "why": "A clean, monoline-precise mark that holds up down to 16px and suits a developer tool, but the parallel offset-line motif sits close to generic lane-shift and git-branch imagery, and the doubled angular strokes can faintly suggest rune-like zigzags, so it is solid rather than ownable.",
+      "votes": "1/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6119074
+  },
+  {
+    "brand": "seamline",
+    "concept": "stitchplan",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a dashed sewing stitch crossed by one perpendicular tack",
+        "a 'cut here' perforation line or a chain of pills",
+        "a Morse-code or progress-dash pattern"
+      ],
+      "distinctiveness": 5.3,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 6,
+      "versatility": 4.3,
+      "presentAsIs": false,
+      "why": "The seam-and-cross-stitch idea fits the name and stays clear of terminal clichés, but the diagonal of loose pills leaves the corners empty, so it fills an avatar poorly and breaks up into scattered specks at 16–24px. The dark bar sits too far from the dashes to read as one deliberate stitch.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6180555999999999
+  },
+  {
+    "brand": "seamline",
+    "concept": "wordcraft",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "an 'Li' ligature joined at the baseline",
+        "a squared U or cup shape with a dash",
+        "the lithium element symbol or 'LI' initials"
+      ],
+      "distinctiveness": 5,
+      "memorability": 5,
+      "brandFit": 5.7,
+      "craft": 4,
+      "versatility": 6.3,
+      "presentAsIs": false,
+      "why": "Joining the l and i along the baseline is a reasonable idea, but the joined shape has thinner, rigid strokes that clash with the rounded grotesque letters around it, and its wide offset dot looks like a mistake; as an avatar it reads as 'Li' or a cup, not as a seam.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6343246
+  }
+]

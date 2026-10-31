@@ -1,0 +1,205 @@
+{
+  "scenario": "mobile-sleep",
+  "attempt": 1,
+  "holdout": false,
+  "title": "Mobile app",
+  "kind": "mobile",
+  "brief": {
+    "ask": "Create a brand identity for Dozeline, the iOS and Android wind-down and sleep journal app in this folder.",
+    "owner": "Owner preferences: calm, warm, not clinical, no moons or stars cliché. The app icon must be recognisable on a home screen at small sizes. English and Turkish markets."
+  },
+  "markilo": "0.5.0-rc.1",
+  "ranAt": "2026-10-31T17:35:03.798Z",
+  "minutes": 15.88,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 4.2017797,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 29207,
+    "output": 130507,
+    "cacheRead": 9460803,
+    "cacheWrite": 522886
+  },
+  "turns": 3,
+  "subagents": 13,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "All three concepts (last-light, drawn-blind, settling-line) failed the critic quality gate after two rounds, so no concept was finalized, exported or installed."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "dozeline",
+      "name": "Dozeline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "drawn-blind",
+          "title": "Half-drawn blind",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.31,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 6,
+            "typography": 5,
+            "color": 6,
+            "cultural-fit": 5,
+            "timelessness": 6,
+            "premium-perception": 4,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 4,
+            "craft": 6,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "wallet or purse with a snap tab",
+            "lidded box / bread bin / lunchbox",
+            "dripping paint tin or tote bag"
+          ],
+          "sketchPick": "s9",
+          "sketchNotes": "Reads as: s3 battery/filling glass or door; s4 mailbox/door with keyhole; s5 three battery levels or signal steps; s6 treasure chest or lunchbox with a latch (lid + hasp + ring); s7 the same chest with a stepped lid, stepped hem is a cut device and muddy at 16 px; s8 paint roller / towel rail / UI slider (stacked pills, cord merged into the bar); s9 a lid tilted open or a sticky note at first, then a blind - the only one where the slant gives motion and the light wedge reads as light. Keep s9: the askew hem and the wedge of warm light are the ownable part. Fix: (1) remove the light halo ring around the pull - that ring plus a short stem is what makes s6-s9 read as a chest hasp/padlock; use a thin longer cord and a smaller pull hanging free, below or past the hem; (2) push the tilt a bit steeper and let the light wedge be clearly the brighter, warmer element so the read is 'light shrinking', not 'lid ajar'; (3) consider a slim roller/headrail lip at the top or slab running past the field edges so it says blind, not box; (4) check 16 px: the pull must not collapse into a dot that reads as a keyhole. If the chest/lid read survives these changes, drop the concept.",
+          "checks": {
+            "pass": 17,
+            "warn": 0,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.44
+          }
+        },
+        {
+          "id": "last-light",
+          "title": "Last light wordmark",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 6,
+            "typography": 4,
+            "color": 6,
+            "cultural-fit": 4,
+            "timelessness": 6,
+            "premium-perception": 4,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 4,
+            "craft": 6,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "euro sign (an e struck through by a bar)",
+            "a sunset half-disc on a horizon inside an e",
+            "a strikethrough/delete on the final e of the wordmark"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 the letters li or an info icon (i with dot), candle not seen; s2 a sunset over water / hamburger icon (struck: sunset cliché, same family as moon/stars); s3 signal-strength or volume bars (struck: UI icon); s4 a lowercase e with a dot above, a little like a face or a winking emoji. s4 is the strongest survivor and fits the wordmark lead: the open ring and horizon crossbar give it a calligraphic warmth and the ember sits where a lit window would. Risks: the plain open-ring e is close to generic e-marks (Internet Explorer family), the dot plus ring can read as a face, and the horizon/ember story is not visible to a stranger yet. Fix: make the crossbar read as a horizon (extend it past the bowl, let the ring below fade or thin so the line is the hero), push the ember lower toward the line so it reads as last light settling, and draw the e so it belongs to the wordmark's letterforms rather than a stock geometric ring. s1 is a fallback only if paired with the wordmark.",
+          "checks": {
+            "pass": 17,
+            "warn": 3,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.403
+          }
+        },
+        {
+          "id": "settling-line",
+          "title": "Settling line",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 2,
+          "critic": 5.69,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 5,
+            "distinctiveness": 6,
+            "memorability": 6,
+            "simplicity": 7,
+            "balance": 6,
+            "craft": 5,
+            "typography": 4,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 6,
+            "memorability": 6,
+            "brand-fit": 6,
+            "craft": 5,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "a ball bouncing down to rest",
+            "three elbow-macaroni or horseshoe shapes stepping down a stair",
+            "a question mark built of arcs (unfortunate: 'loading/thinking' or a pasta brand)"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 a cursive lowercase m trailing into a flat line, or a bouncing ball's path coming to rest; s2 a question mark (struck); s3 the numeral 2 / a paperclip-like S (struck, different letter); s4 a tilde or sine wave plus a dot, generic wave (struck). Keep s1: the shrinking hops landing on a flat rest is the only sketch whose first reading (motion slowing to stillness) is the idea itself, it is handmade-feeling and avoids moon/stars/ECG. Risks: reads as letter m (no m in the name) or an inchworm; the 16 px render is a faint squiggle. Fix: make the decay unmistakable (clearer step-down of hop heights, longer flat rest so stillness is the resolution), thicken the stroke for the home-screen tile, consider the warm ember dot at the rest point for a focal accent, and avoid any spike that could drift toward a heartbeat/ECG line.",
+          "checks": {
+            "pass": 34,
+            "warn": 2,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.166
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "4f0d3ea8-fc09-4c65-a4ae-5e7fa31cb684"
+}

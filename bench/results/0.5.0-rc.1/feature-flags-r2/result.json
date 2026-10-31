@@ -1,0 +1,239 @@
+{
+  "scenario": "feature-flags",
+  "attempt": 2,
+  "holdout": true,
+  "title": "Developer platform",
+  "kind": "devtool",
+  "brief": {
+    "ask": "Create a brand identity for Stagewell, the feature-flag and gradual-rollout service in this folder.",
+    "owner": "Owner preferences: calm, precise and trustworthy for platform teams who ship to millions of users; not playful. No toggles, switches, flags, rockets or traffic lights. Web app, docs site, GitHub avatar and a VS Code extension icon."
+  },
+  "markilo": "0.5.0-rc.1",
+  "ranAt": "2026-10-31T17:34:41.985Z",
+  "minutes": 25.29,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 5.2213671,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-haiku-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 13785,
+    "output": 180423,
+    "cacheRead": 11482759,
+    "cacheWrite": 637419
+  },
+  "turns": 3,
+  "subagents": 16,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Five concepts across two rounds (steps, handover, well, stagewell-word, cohort) were all rejected by the critic's gate or sketch review, so nothing was finalized, exported or installed."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "stagewell",
+      "name": "Stagewell",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "cohort",
+          "title": "Cohort Field",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.08,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 6,
+            "balance": 6,
+            "craft": 6,
+            "typography": 4,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 5,
+            "versatility": 5
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 5
+          },
+          "gate": false,
+          "readsAs": [
+            "a hash/grid sign cut into a circle (window grille, drain grate)",
+            "a crosshair or round cross-hatched waffle",
+            "a 3x3 window with one orange LED bar like a status indicator. Unfortunate: a manhole/drain cover or a Slack-style hashtag"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 scattered dots of mixed size, dice or dot-matrix noise, the no-repeat sampling idea is invisible and it smears at 16 px (0.80); s2 a disc cut into a 3x3 field, a waffle or window grille in a circle, one copper cell at the edge reads as the share taken out; s3 a bento/gallery layout UI icon (big tile + small tiles) — the same reason a prior concept was rejected; s4 the app-launcher / keypad 3x3 grid with a dot, a UI icon. Pick s2: the only one that is not a UI grid, native to the GitHub circle crop, and population-with-one-cohort reads in one glance. Risks: hash/tic-tac-toe, waffle, globe or manhole cover; it already drifts toward Statsig (0.45). Fixes: make the cuts thinner and the disc dominant so it reads as one solid object, not a # over a ball; make the cohort cell legible without colour (nudge it outward a hair along its radius, or leave it as a gap) so it survives monochrome and 16 px; keep cut spacing equal and the disc silhouette clean; one radius family; keep slate + copper, no blue/violet.",
+          "checks": {
+            "pass": 17,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.335
+          }
+        },
+        {
+          "id": "handover",
+          "title": "Handover",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a toggle switch in the on position (rounded frame with a knob at the right; forbidden by the brief), also a battery or record icon; s2 a rounded square cut by a slash, a stock sliced-square/prohibition shape, closest to Unleash; s3 the copy/duplicate UI icon (two offset squares), the XOR-overlap hole is a Pathfinder default; s4 a chain link / hyperlink UI icon, secondarily the letters G-S or C-5. Every version of two offset squares lands on a UI icon, and the woven over-under hook named in the direction never reads at 16 px. End this direction: the overlap-of-two-containers metaphor is exhausted. If handover is retried, it needs a non-square form, e.g. one continuous stroke whose weight transfers from one path to another, not two shapes touching.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "stagewell-word",
+          "title": "Stagewell, drawn",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 4.69,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 3,
+            "distinctiveness": 3,
+            "memorability": 4,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 5,
+            "typography": 4,
+            "color": 5,
+            "cultural-fit": 5,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 3,
+            "memorability": 4,
+            "brand-fit": 5,
+            "craft": 5,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "the word Stagewell in a friendly geometric sans with a long t-crossbar running into the a",
+            "an 'St' typed in a stock (mono-ish) font, like a periodic-table tile",
+            "the abbreviation 'St' for Street/Saint (unfortunate: icon looks like a file-type or language badge in VS Code, terracotta reads coffee/craft brand rather than infrastructure)"
+          ],
+          "sketchPick": "s7",
+          "sketchNotes": "Reads as: s5 a lowercase g with a misregistered, smeared head - looks like a rendering fault, the 'filled stage' idea does not read, and g is a mid-word letter with no claim to stand alone; s6 an S sliced into three stepped pieces - the name's initial with a cut, struck; s7 the letters 'ta' joined by one long crossbar, a clean ligature - closest to its caption. Keep s7: the shared t-a roofline is the one stage-edge detail that reads as a letter join, not a number or chart. Fix: (1) judge it inside the full Stagewell setting - the ligature only earns its keep as a quiet detail in the word, so set the whole name in the calm humanist face and make the roofline the only intervention; (2) 'ta' alone is British slang for thanks and meaningless in a circle crop - do not ship 'ta' as the icon; derive the avatar from the word (e.g. the S plus the roofline stub, or the full word at app size) and test it at 16 px; (3) shared-crossbar ligatures are a common type move, so the roofline needs its own proportion (length, step height) to be ownable; (4) the current crossbar overshoot past the a looks unresolved - end it with intent.",
+          "checks": {
+            "pass": 14,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.3
+          }
+        },
+        {
+          "id": "steps",
+          "title": "Widening Steps",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s4 Pac-Man with a jagged mouth (also flagged review-risk vs the Statsig icon); s5 a loading spinner / progress ring, or a C inside a ring - a UI status icon; s6 a staircase in a circle, the generic 'stairs/progress' pictogram, a split disc at 85% stock-circle similarity and review-risk vs the Unleash icon. All struck: UI icon, known-logo proximity, and stairs-in-circle is the product's own metaphor drawn plainly. Two rounds have now shown that 'widening steps' collapses to bar chart, pyramid, staircase or progress ring whatever the container. End this direction; the stage idea is better carried by the wordmark.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "well",
+          "title": "Stepped Well",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.54,
+          "scores": {
+            "brand-fit": 6,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 6,
+            "craft": 6,
+            "typography": 3,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 7
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 6,
+            "craft": 6,
+            "versatility": 7
+          },
+          "gate": false,
+          "readsAs": [
+            "a Greek-key / square-spiral meander fragment",
+            "a lowercase 'lb' or 'b' boxed in a frame",
+            "a picture-in-picture / window-layout UI icon (unfortunate: reads as an editor layout or 'insert image' button inside VS Code)"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 nested rounded squares sinking to a corner (nested-copy cliche, struck); s2 nested L walls, 76% stock similarity (struck); s3 a stop/record media button in a circle (UI icon, struck); s4 a square spiral, Greek-key / labyrinth fragment, then a stair winding down into a well. Keep s4: one continuous path, survives 16 px, closest to the idea. Risks to fix: (1) meander/maze reading - make the off-centre end and the step rhythm unmistakably a descending stair, not an even Greek key; (2) 'spiralling down' can read as descent/trap for a deploy tool - consider orienting so the path reads as staged progression outward; (3) check the circle crop keeps the outer turn intact; avoid equal-gap mechanical look, give it one deliberate irregularity it can own.",
+          "checks": {
+            "pass": 15,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.33
+          }
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "048e7048-c576-4e27-87bd-0d3b67f57116"
+}

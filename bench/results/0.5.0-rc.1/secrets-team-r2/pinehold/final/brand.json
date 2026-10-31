@@ -1,0 +1,40 @@
+{
+  "schema": "markilo/kit@1",
+  "brand": "pinehold",
+  "name": "Pinehold",
+  "concept": "held-word",
+  "locked": false,
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "lockupHorizontal": "lockup-horizontal.svg",
+    "lockupStacked": "lockup-stacked.svg",
+    "lockupCompact": "lockup-compact.svg"
+  },
+  "palette": {
+    "primary": "#2f5d46",
+    "secondary": "#efe7d8",
+    "accent": "#c06a45",
+    "ink": "#111814",
+    "paper": "#ffffff",
+    "dark": "#090f0c"
+  },
+  "tagline": "Secrets, kept close.",
+  "approvedAt": "2026-10-31T17:34:35.995Z",
+  "originality": {
+    "verdict": "insufficient-evidence",
+    "confidence": "low",
+    "acceptedRisk": true,
+    "report": "../reports/originality-held-word.md",
+    "evidence": {
+      "visual": "5 brand(s) from 9 reference file(s): 5 direct competitor, 0 category/form-family; sources 5 official, 0 app store, 0 logo catalog, 0 unverified",
+      "registry": "no registry searches logged for \"Pinehold\"",
+      "registryCoverage": "none"
+    }
+  },
+  "gate": {
+    "status": "passed",
+    "average": 6.4,
+    "reasons": []
+  }
+}

@@ -1,0 +1,255 @@
+{
+  "scenario": "saas-invoicing",
+  "attempt": 1,
+  "holdout": false,
+  "title": "Independent SaaS",
+  "kind": "saas",
+  "brief": {
+    "ask": "Create a brand identity for Tallyline, the invoicing and cash-flow forecasting product in this folder.",
+    "owner": "Owner preferences: calm and trustworthy, friendly to freelancers, not the generic fintech blue-and-green. Web app only."
+  },
+  "markilo": "0.5.0-rc.1",
+  "ranAt": "2026-10-31T17:59:59.229Z",
+  "minutes": 17.24,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 4.5640751,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 506,
+    "output": 152395,
+    "cacheRead": 9605453,
+    "cacheWrite": 591739
+  },
+  "turns": 4,
+  "subagents": 16,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "All six concepts across two rounds were rejected (three failed the blind critic gate in round 1, three got 'none' at sketch review in round 2), so nothing was finalized, exported or put in a gallery."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "tallyline",
+      "name": "Tallyline",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "a-gate",
+          "title": "Five-bar gate",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.69,
+          "scores": {
+            "brand-fit": 7,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 4,
+            "typography": 6,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 6,
+            "premium-perception": 6,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 6,
+            "brand-fit": 7,
+            "craft": 5,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "a cursive lowercase l loop on a baseline",
+            "a signature flourish or pen stroke",
+            "a looped ribbon / hair tie (worst case: a scribbled 'l' in a 'T' brand)"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s2 a plain n over an underscore (stock sans plus a bar, nothing ownable; the gate never shows); s3 a cursive l rising off a baseline, a signature flourish, which is its idea; s4 a y with an underline, and the tail does not actually join the rule, so the idea is not drawn; s5 'e-' as in e-mail or e-invoice, a minus sign, a cliche for invoicing. Struck s2, s4, s5. Keep s3: one continuous stroke where the ledger line turns into the letter, signature-like, calm, and it suits signing an invoice. Risks to fix: the closed script loop reads as the litre/ell symbol and as an awareness ribbon. Open or tilt the loop, give the stroke a drawn, slightly uneven pen character rather than a uniform monoline, and let the baseline run on clearly to the right so the line-into-letter move reads. Check that it still says l at 16 px and is not just a squiggle.",
+          "checks": {
+            "pass": 14,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.259
+          }
+        },
+        {
+          "id": "b-stones",
+          "title": "Stepping stones",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 5.23,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 5,
+            "memorability": 5,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 6,
+            "typography": 4,
+            "color": 7,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 5
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 5,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 5
+          },
+          "gate": false,
+          "readsAs": [
+            "toes of a footprint / paw",
+            "moon phases or an eclipse sequence",
+            "a caterpillar or comet trail (worst case: toes)"
+          ],
+          "sketchPick": "s5",
+          "sketchNotes": "Reads as: s1 a rising bubble chart / growth scatter (struck: the brief bans ascending charts); s2 a rainbow, target or wifi arcs, nested copies (struck); s3 bubbles rising / a loading-dot sequence (struck); s4 lily pads or floating ellipses, closest to stepping stones but dissolves into specks at 16 px (struck); s5 overlapping discs: first reading a partial eclipse or moon phases, second something coming toward you. s5 survives: bold, holds at 16 px, calm and warm. Risks: eclipse/moon reading (a sleep-app cliche), stock-shape 0.56 overlapping-circles look (Mastercard-style), and the diagonal climb still hints at growth-up-and-right. Fix: make the discs read as stones, not planets: slightly flattened, irregular pebble outlines with a weight; lay the sequence more horizontally (a path toward you, not a climb); keep the clean gaps and the single clay stone in front; test it next to Wave and Xero circles on the home screen.",
+          "checks": {
+            "pass": 20,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.356
+          }
+        },
+        {
+          "id": "c-horizon-t",
+          "title": "Horizon T",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 4.77,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 3,
+            "distinctiveness": 4,
+            "memorability": 5,
+            "simplicity": 8,
+            "balance": 4,
+            "craft": 6,
+            "typography": 4,
+            "color": 6,
+            "cultural-fit": 5,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 4
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 4,
+            "craft": 6,
+            "versatility": 4
+          },
+          "gate": false,
+          "readsAs": [
+            "a stepped-up line or rising chart (the ascending chart the brief bans, never a T)",
+            "a hockey stick or pipe elbow",
+            "a ski-jump ramp"
+          ],
+          "sketchPick": "s3",
+          "sketchNotes": "Reads as: s1 two offset bars, like a UI align or layers icon, and a stepped stack; s2 a pyramid or tent under a bar, banned by the brief; s3 one rising-then-level curve, a sigmoid or ramp settling flat, close to its idea; s4 a loaf or bunker dome under a bar, a stock shape; s5 the same offset-bar stack as s1 (a stepped copy). Struck s1, s2, s4, s5. Keep s3, the only gesture with character, and it holds best at 16 px. Risks: (1) a rising chart line is finance's own object, and the plateau can read as growth stalling, which is wrong for a business tool; (2) at a glance it is a tilde, a slide or an S. Fix: make the level run clearly the hero (longer, ending on a deliberate terminal), keep the climb short so it reads as arriving at a horizon, not as a revenue chart, and give the stroke a distinctive ending (a tapered or cut terminal) so it is ownable rather than a generic easing curve.",
+          "checks": {
+            "pass": 24,
+            "warn": 3,
+            "fail": 0,
+            "info": 3
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.259
+          }
+        },
+        {
+          "id": "d-double-rule",
+          "title": "Double rule t",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a t underlined twice (plain letter+underline); s2 a t sliced into bands (initial with a cut); s3 a currency sign - Turkish lira / tenge-like t with two bars, a money-symbol read the brief bans; s4 a document/page with a t and rule lines (the product's own object); s5 blackletter 'tt' / t split by a slit (initial with a cut). Every sketch is the initial t plus rules or cuts; the double-rule idea never leaves the letter. Different move: drop the t entirely and make the double rule itself the object - e.g. two rules that close like a calm horizon or a folded/settled shape with its own silhouette, or let the double rule live only in the wordmark ('Tallyline' set on a double underline is fine typography) and give the icon a non-letter idea.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "e-pair",
+          "title": "Fitted pair",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 two interlocking L-blocks / Tetris-style step fit (stock geometry, stockShape 0.86); s2 a jigsaw tongue-and-socket (puzzle cliche); s3 a crop/resize or layers UI icon (L-frame with square); s4 a pause button (two pills), Harvest similarity flagged for review. All four are two rounded rectangles in a stock arrangement; none carries 'client and freelancer agree' to a stranger, and the clay is close to Harvest orange at small sizes. Different move: express the agreement through a specific human/document gesture rather than interlocking blocks - e.g. two strokes that meet as a single handshake-like line or countersign mark - and keep the clay toward terracotta/brown, away from #fa5d00.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "f-fading-ticks",
+          "title": "Fading ticks",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a battery/progress bar or pause+toggle; s2 a bulleted list UI icon; s3 an app-grid/menu icon or dice; s4 tally marks turning into an audio-level/loading dots column - tally marks are the product's own object for a brand literally named Tally(line), and the solid-to-dotted bars read as a chart/progress indicator the brief warns against. s4 is the only one with a hint of ownability (solid becoming dotted = known becoming forecast), but its first reading is still bars/equalizer. Different move: carry 'known hardens, forecast stays open' in a single continuous line or form (one stroke that goes from solid to dashed along a calm curve, or a single shape half filled, half outlined) instead of a row of bars.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "9a058105-d796-4375-b14b-7235b8efef1e"
+}

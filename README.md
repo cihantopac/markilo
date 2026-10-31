@@ -76,56 +76,60 @@ registry search has been done yet; the guidelines say so.</sub>
 
 ## Measured quality
 
-Markilo is benchmarked end to end with nobody steering, on seven realistic products (an independent SaaS, a mobile
-app, a multi-product family, a developer tool, an online shop, a B2B platform and a learning app). Four of them were
-**holdouts** for a while: written before the changes they test and never used for tuning until those results were
-in. The plugin researches, writes the brief, designs, critiques, and finalizes only what passes its own gate. Blind
-judges then rate every critiqued concept from the brief and the images alone. Every run, image and score is in
-[bench/](bench).
+Markilo is benchmarked end to end with nobody steering, on nine realistic products (an independent SaaS, a mobile
+app, a multi-product family, a developer tool, an online shop, a B2B platform, a learning app, a feature-flag service
+and a team secrets manager). Six of them were **holdouts** for a while: written before the changes they test and
+never used for tuning until those results were in. The plugin researches, writes the brief, designs, critiques, and
+finalizes only what passes its own gate. Blind judges then rate every critiqued concept from the brief and the images
+alone. Every run, image and score is in [bench/](bench).
 
-| Version          | Runs                | Passed the gate | Opus 5.5 judge would present (of concepts it judged) | Time per run | Cost per run (API equivalent) |
-| ---------------- | ------------------- | --------------- | ---------------------------------------------------- | ------------ | ----------------------------- |
-| 0.4.0-rc.1       | 3                   | 0               | —                                                    | 11–21 min    | $2.61–3.67                    |
-| 0.4.0-rc.2       | 3                   | 1               | —                                                    | 8–15 min     | $1.60–2.68                    |
-| 0.4.0-rc.3       | 3                   | 2               | 0 of 2 (the two that passed)                         | 14–24 min    | $3.15–4.37                    |
-| 0.4.0-rc.5       | 9 (6 on holdouts)   | 2               | 0 of 12                                              | 10–19 min    | $2.29–4.41                    |
-| 0.4.0-rc.7       | 11 (2 new holdouts) | 0               | 2 of 5 — both rejected by the gate                   | 6–16 min     | $1.66–3.30                    |
-| 0.4.0-rc.8       | 9                   | 0               | 0 of 3 — the recalibrated gate agreed on all 3       | 8–18 min     | $1.91–3.48                    |
-| **0.4.0** (rc.9) | **9**               | **2**           | **Portwise 2 of 4 looks, Dozeline 0 of 4**           | 14–28 min    | $3.00–7.13                    |
+| Version        | Runs                      | Passed the gate | Opus 5.5 judge would present (of concepts it judged) | Time per run | Cost per run (API equivalent) |
+| -------------- | ------------------------- | --------------- | ---------------------------------------------------- | ------------ | ----------------------------- |
+| 0.4.0-rc.1     | 3                         | 0               | —                                                    | 11–21 min    | $2.61–3.67                    |
+| 0.4.0-rc.2     | 3                         | 1               | —                                                    | 8–15 min     | $1.60–2.68                    |
+| 0.4.0-rc.3     | 3                         | 2               | 0 of 2 (the two that passed)                         | 14–24 min    | $3.15–4.37                    |
+| 0.4.0-rc.5     | 9 (6 on holdouts)         | 2               | 0 of 12                                              | 10–19 min    | $2.29–4.41                    |
+| 0.4.0-rc.7     | 11 (2 new holdouts)       | 0               | 2 of 5 — both rejected by the gate                   | 6–16 min     | $1.66–3.30                    |
+| 0.4.0-rc.8     | 9                         | 0               | 0 of 3 — the recalibrated gate agreed on all 3       | 8–18 min     | $1.91–3.48                    |
+| 0.4.0 (rc.9)   | 9                         | 2               | Portwise 2 of 4 looks, Dozeline 0 of 4               | 14–28 min    | $3.00–7.13                    |
+| **0.5.0-rc.1** | **9 (4 on new holdouts)** | **2**           | **2 of 29, the two that passed (3/3 and 2/3 looks)** | 14–36 min    | $3.37–5.86                    |
 
 What this shows, plainly:
 
-- **Unattended, Markilo rarely reaches its own gate** — 4 of the 38 validation runs since rc.5, 1 of 8 on briefs that
-  were still untouched holdouts when they ran. rc.3's two of three did not hold up on new briefs.
-- **Markilo's best unattended work sits on the line of "presentable".** rc.9 (sketch review that only strikes clear
-  failures, a calibrated cold-look gate on Opus) developed 22 of 27 directions and passed two identities. A strict
-  judge looked at each borderline mark four times: Portwise was presentable in two of four looks, Dozeline in none.
-  At this level a single judgment flips about half the time, so the gate now errs about as often as the judge
-  disagrees with itself; what is left is making better marks, not tuning the gate.
+- **Unattended, Markilo still rarely reaches its own gate** — 6 of the 47 validation runs since rc.5, 2 of 12 on
+  briefs that were still untouched holdouts when they ran.
+- **For the first time, what passes is what a strict judge would present.** In 0.5.0-rc.1 the gate and the Opus judge
+  (the majority of three looks per concept) agreed on all 29 critiqued concepts, and both identities that passed —
+  Quillnest, and Pinehold on a brief written for this round — were presentable to the judge. In 0.4.0 the two that
+  passed split it 2 of 4 and 0 of 4.
+- **Words beat invented symbols.** Both passes were wordmark-led: the name drawn from a real typeface with one letter
+  changed, the icon cut from it (2 of 13 judged presentable; invented symbols 0 of 16). Symbols assembled from
+  rectangles, circles and polygons keep reading as UI icons or objects — a power button, a wallet, an eye.
+- **Reworking a failed idea does not work, so Markilo stopped doing it.** Of 34 concepts sent back after a failed gate
+  in earlier rounds, one passed later, after three rounds. The gate now says `fix` once or `reject`; in rc.1 one
+  concept got a fix round, and the budget went to more directions instead (43, up from 27).
 - **How the gate got here was measured.** The critic's scores given after reading the rationale barely tracked the
-  strict judge (Spearman 0.20 on 32 concepts), a cold look did much better (0.51); the gate now rests on the cold
-  look. A sketch review that bet on the finished score stopped 24 of 27 directions; one that strikes only clear
-  failures lets the gate decide.
-- **It does not ship weak work.** Across all runs the gate and the judges agreed on 48 of 57 critiqued concepts, and
-  most disagreements were marks the judge itself splits on. When nothing passes, Markilo says so and nothing is finalized or exported.
+  strict judge (Spearman 0.20 on 32 concepts), a cold look did much better (0.51); the gate rests on the cold look.
+  Across all runs the gate and the judges agreed on 77 of 86 critiqued concepts. When nothing passes, Markilo says
+  so and nothing is finalized or exported.
 - **What moved the needle was measured, not guessed.** Hairline gaps came from Markilo's own guide; clichés reached
   development because the sketch review picked the best of weak boards; the name's initial with a cut became the
   default move once objects were ruled out; same-colour layers left seams. Each was found in the runs and fixed in
   the plugin. The model was not the bottleneck (Opus 5.5 as designer did no better on the SaaS brief).
 
-Markilo is built to work with you: you pick directions, react in the gallery and decide. Unattended runs measure
-the floor. Two of them, as exported (fictional products, no human edits):
+Markilo is built to work with you: you pick the sketch to develop, react in the gallery and decide. Unattended runs
+measure the floor. The two that passed in 0.5.0-rc.1, as exported (fictional products, no human edits):
 
 <table>
   <tr>
-    <td><img src="bench/results/0.4.0-rc.3/saas-invoicing/tallyline/overview.png" alt="Tallyline logo files made by Markilo unattended"></td>
-    <td><img src="bench/results/0.4.0-rc.3/mobile-sleep/dozeline/overview.png" alt="Dozeline logo files made by Markilo unattended"></td>
+    <td><img src="bench/results/0.5.0-rc.1/edu-app/quillnest/overview.png" alt="Quillnest logo files made by Markilo unattended"></td>
+    <td><img src="bench/results/0.5.0-rc.1/secrets-team-r2/pinehold/overview.png" alt="Pinehold logo files made by Markilo unattended"></td>
   </tr>
   <tr>
-    <td><sub>Tallyline (invoicing SaaS): critic 6.8, passed the gate; Sonnet judge 6.4 "present", Opus judge 6.2 "not as is"
-    — the T reads as a figure kicking a ball.</sub></td>
-    <td><sub>Dozeline (sleep app): critic 6.8, passed the gate; Sonnet judge 6.8 "present", Opus judge 5.8 "not as is" — the
-    arch motif is common.</sub></td>
+    <td><sub>Quillnest (writing coach for teenagers): passed the gate; Opus judge "present" in 3 of 3 looks, 6.3 — "a
+    smiling face built from a q, with the orange dot as a nose".</sub></td>
+    <td><sub>Pinehold (secrets manager for small teams, a fresh holdout): passed the gate; Opus judge "present" in 2 of 3
+    looks, 6.3 — "an arch or doorway sheltering an orange seed".</sub></td>
   </tr>
 </table>
 

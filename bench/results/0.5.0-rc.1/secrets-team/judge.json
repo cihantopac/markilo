@@ -1,0 +1,112 @@
+[
+  {
+    "brand": "pinehold",
+    "concept": "cradle",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a blob figure with arms raised, cheering or surrendering, inside a bowl",
+        "a sun or head setting into a cradle, with a wifi-like signal arc",
+        "a squid or octopus mascot"
+      ],
+      "distinctiveness": 5.3,
+      "memorability": 5,
+      "brandFit": 3.7,
+      "craft": 4.7,
+      "versatility": 4.3,
+      "presentAsIs": false,
+      "why": "The terracotta color and rounded forms are warm, but nothing says pine or holding something safe, the raised-arms figure can read as 'hands up' surrender, the loose signal arc makes the silhouette unbalanced, and it turns into an unclear smudge at 16–24 px.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6091181999999999
+  },
+  {
+    "brand": "pinehold",
+    "concept": "joined",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "the letters 'Jh' or 'uh': a hook joined to a serif h",
+        "a warm, bookish serif wordmark where the e's tail swoops under to cradle the h",
+        "an editorial or publishing brand rather than software"
+      ],
+      "distinctiveness": 5.7,
+      "memorability": 5,
+      "brandFit": 6,
+      "craft": 5,
+      "versatility": 4.7,
+      "presentAsIs": false,
+      "why": "The ligature from e to h is a warm, fitting 'holding' gesture inside the wordmark, but cut out as an icon it reads as 'Jh', gives no hint of pine or Pinehold, sits off-balance in the square, and the e's bottom curve has a visible kink where it meets the h.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6358324
+  },
+  {
+    "brand": "pinehold",
+    "concept": "overlap",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "an eye or watching lens",
+        "two overlapping leaf or petal tiles",
+        "a fish or bird head"
+      ],
+      "distinctiveness": 5,
+      "memorability": 4.3,
+      "brandFit": 4,
+      "craft": 5.3,
+      "versatility": 5.3,
+      "presentAsIs": false,
+      "why": "The warm rust color and the overlap of two shapes that suggests teamwork help, but the knocked-out lens reads first as a watching eye, which pushes toward the paranoid tone the brief rules out; nothing in it suggests 'pine' or 'hold'; the rotated, lopsided pair of shapes looks unresolved; and at 16–24 px the counter shrinks to a small blob.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6072208
+  },
+  {
+    "brand": "pinehold",
+    "concept": "seed-o",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a flame or match held in cupped green hands",
+        "a candle or a sprout in a bowl",
+        "a pin or sewing needle in a horseshoe"
+      ],
+      "distinctiveness": 4,
+      "memorability": 5,
+      "brandFit": 4.7,
+      "craft": 3.7,
+      "versatility": 5.7,
+      "presentAsIs": false,
+      "why": "The warm green-and-amber palette fits the brief, but the amber shape looks more like a flame than a pine needle, the U has a lumpy notch at the bottom, the ball-and-leaf joint is clumsy, the leaf cuts awkwardly through the 'o' of an otherwise generic sans wordmark, and the icon's cupped U shape doesn't come from any letter in the word.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6454126
+  },
+  {
+    "brand": "pinehold",
+    "concept": "tiers",
+    "final": false,
+    "judge": {
+      "readsAs": [
+        "a crown or trident of spikes above a bar",
+        "a bundle of grass or carrot top tied with a band",
+        "a torch or award ribbon"
+      ],
+      "distinctiveness": 4.7,
+      "memorability": 4,
+      "brandFit": 3,
+      "craft": 4.3,
+      "versatility": 4.3,
+      "presentAsIs": false,
+      "why": "The fragmented spiky pieces read as a crown, trident or carrot top rather than a pine, the sharp points feel aggressive instead of warm, and the three parts don't hold together as one mark.",
+      "votes": "0/3"
+    },
+    "model": "claude-opus-5-5",
+    "costUsdApiEquivalent": 0.6059808
+  }
+]

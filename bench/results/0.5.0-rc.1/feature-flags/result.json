@@ -1,0 +1,238 @@
+{
+  "scenario": "feature-flags",
+  "attempt": 1,
+  "holdout": true,
+  "title": "Developer platform",
+  "kind": "devtool",
+  "brief": {
+    "ask": "Create a brand identity for Stagewell, the feature-flag and gradual-rollout service in this folder.",
+    "owner": "Owner preferences: calm, precise and trustworthy for platform teams who ship to millions of users; not playful. No toggles, switches, flags, rockets or traffic lights. Web app, docs site, GitHub avatar and a VS Code extension icon."
+  },
+  "markilo": "0.5.0-rc.1",
+  "ranAt": "2026-10-31T16:58:23.969Z",
+  "minutes": 36.3,
+  "exitCode": 0,
+  "isError": false,
+  "stopReason": "success",
+  "costUsdApiEquivalent": 5.4932212,
+  "budgetUsd": 20,
+  "model": "default",
+  "models": [
+    "claude-sonnet-5-5",
+    "claude-opus-5-5"
+  ],
+  "tokens": {
+    "input": 582,
+    "output": 176125,
+    "cacheRead": 15487049,
+    "cacheWrite": 615546
+  },
+  "turns": 1,
+  "subagents": 16,
+  "claim": {
+    "passed": [],
+    "finalized": null,
+    "notes": "Five concepts across two rounds all failed the critic gate (blind averages 4.2, 4.2 and 5.2; two others were struck at sketch review), so nothing was finalized, exported or gallery-built."
+  },
+  "workspace": true,
+  "family": null,
+  "brands": [
+    {
+      "slug": "stagewell",
+      "name": "Stagewell",
+      "role": "master",
+      "locked": false,
+      "concepts": [
+        {
+          "id": "guarded-block",
+          "title": "Guarded Block",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a square in code brackets [■] - camera focus box / code editor icon; struck. s2 a battery on its side (tall body bracket, square, small terminal nub) or a plug - battery was an earlier failure; struck. s3 a letter C / box with a drawer sliding out - reads as an export or eject UI icon and a different letter; struck. s4 [ ] brackets with a square pushing through a broken right bracket - still the code/viewfinder icon, plus a cut-bracket device, and at 16 px it reads '[:' ; struck. Every variant collapses to brackets, and square brackets around anything are UI/code geometry for this audience. Different move: drop brackets entirely. Express 'guarded release' as one closed, calm form - e.g. a solid block partly enclosed by a single continuous wall with one deliberate opening (a sheltered interior counter, not a frame), or merge the effort into two-wells (contained, held safely). Avoid stairs, fills that read as gauges, rings and frames.",
+          "checks": null,
+          "originality": null
+        },
+        {
+          "id": "stepped-ll",
+          "title": "Stepped Double-l",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 4.54,
+          "scores": {
+            "brand-fit": 3,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 8,
+            "balance": 5,
+            "craft": 5,
+            "typography": 3,
+            "color": 5,
+            "cultural-fit": 4,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 5
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 3,
+            "craft": 5,
+            "versatility": 5
+          },
+          "gate": false,
+          "readsAs": [
+            "the word 'stagewe' followed by a stray glyph (a 4, an h or a Cyrillic ch)",
+            "a Z-shaped stair bracket or Tetris-like step piece",
+            "a Hebrew or Armenian letter -- worst case the audience reads the product name as misspelled or truncated"
+          ],
+          "sketchPick": "s2",
+          "sketchNotes": "Reads as: s1 two offset bars / broken glyph (offset-cut device); s2 a single stair stroke descending, second read lightning bolt at 16 px; s3 pause button (struck, UI icon); s4 a block split by a jogging seam, reads as broken H (cut device). Pick s2: one continuous stroke with a landing is the only sketch that says stages without a cut. Fix: kill the lightning-bolt reading (landing must be clearly horizontal and longer, ends square, no diagonal feel at 16 px); give it a distinctive proportion or terminal so it is not a generic stair glyph; consider a non-green accent to separate from a plain teal tile; test on dark and in a tab.",
+          "checks": {
+            "pass": 15,
+            "warn": 0,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.319
+          }
+        },
+        {
+          "id": "stepped-well",
+          "title": "Stepped Well",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": 1,
+          "critic": 4.62,
+          "scores": {
+            "brand-fit": 4,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 6,
+            "balance": 4,
+            "craft": 5,
+            "typography": 4,
+            "color": 6,
+            "cultural-fit": 6,
+            "timelessness": 5,
+            "premium-perception": 4,
+            "versatility": 4
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 4,
+            "brand-fit": 4,
+            "craft": 5,
+            "versatility": 4
+          },
+          "gate": false,
+          "readsAs": [
+            "a descending stair/bar chart falling into a cup",
+            "a low-battery or fill-level indicator with an orange bar",
+            "a factory or building silhouette -- worst case a declining-metrics chart for a product whose job is protecting error rates"
+          ],
+          "sketchPick": "s1",
+          "sketchNotes": "Reads as: s1 stairs descending into a pool/vessel in section, with a lit floor slab - closest to the idea; s2 a hamburger menu / text-align / letter E icon, struck (UI icon); s3 a black ball with a stepped slot, reads as a coin bank or Pac-Man-like bite, mushy at 16 px; s4 a letter U / magnet / molar tooth, struck (different letter). Pick s1. Keep: side-on section, uneven terraces, amber on the lowest floor. Fix: (1) the outer frame reads as a U or a bin - thicken and square the right wall so it reads as solid ground, not a container; (2) the left-only stair risks 'swimming pool ladder' and descending bar chart - make treads deep and few (3), uneven rise, and vary the right wall so the void is a cut into ground; (3) the amber slab currently sits like a progress bar/water line - give it a gap from the walls (tool warns block and lit overlap and merge in one colour) and make it a tread, not a stripe; (4) keep amber small, no dot.",
+          "checks": {
+            "pass": 17,
+            "warn": 1,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.425
+          }
+        },
+        {
+          "id": "two-wells",
+          "title": "Two Wells",
+          "status": "rejected",
+          "lead": "wordmark",
+          "reviews": 1,
+          "critic": 5.31,
+          "scores": {
+            "brand-fit": 5,
+            "semantic-relevance": 4,
+            "distinctiveness": 4,
+            "memorability": 4,
+            "simplicity": 7,
+            "balance": 5,
+            "craft": 6,
+            "typography": 6,
+            "color": 6,
+            "cultural-fit": 5,
+            "timelessness": 6,
+            "premium-perception": 5,
+            "versatility": 6
+          },
+          "present": false,
+          "blind": {
+            "distinctiveness": 4,
+            "memorability": 5,
+            "brand-fit": 5,
+            "craft": 6,
+            "versatility": 6
+          },
+          "gate": false,
+          "readsAs": [
+            "a lowercase W monogram (two U cups joined)",
+            "a shot glass or pint of beer dropped into a cup",
+            "a molar tooth / two rounded bowls"
+          ],
+          "sketchPick": "s4",
+          "sketchNotes": "Reads as: s1 a rounded W with slightly uneven valleys - the depth difference reads as wobbly type, not two wells; idea invisible. s2 a snaking stroke / sine wave or 'lu' - wave reading and not an instant w in the word; struck. s3 a W with one trough clipped - reads as a cut letter, flat troughs feel mechanical, idea invisible. s4 a W with amber liquid standing in the left valley - the only sketch where 'well' (something held, safely contained) is legible at first look; pick. Fixes: (1) the amber must read as liquid with a flat level surface well below the valley's top, not as a filled U - right now the fill traces the whole bottom curve and can read as a separate orange 'u' or a gauge/battery level (earlier failure); (2) leave a clear gap between fill and stroke so one-color versions survive (designer warning); (3) keep the w otherwise identical to the wordmark's other letters - test 'stagewell' set in full at 16 px and 24 px and confirm it reads instantly, not 'stageUwell' or a highlighted letter gimmick; (4) drop the unequal-depth asymmetry unless it reads as intent; (5) standalone icon must not look like a cup, a heart or a generic 'W with dot'. Risk: single-letter-with-accent-colour is a common wordmark device; the fill shape must be ownable.",
+          "checks": {
+            "pass": 19,
+            "warn": 2,
+            "fail": 0,
+            "info": 2
+          },
+          "originality": {
+            "verdict": "insufficient-evidence",
+            "confidence": "low",
+            "topVisual": 0.279
+          }
+        },
+        {
+          "id": "widening-field",
+          "title": "Widening Field",
+          "status": "rejected",
+          "lead": "symbol",
+          "reviews": null,
+          "critic": null,
+          "scores": {},
+          "present": null,
+          "blind": null,
+          "gate": false,
+          "readsAs": [],
+          "sketchPick": null,
+          "sketchNotes": "Reads as: s1 a wifi/signal quarter-fan (radiating arcs from a corner), struck; s2 a volume/speaker or megaphone icon (small tip, taller slanted bars), also an ascending bar chart, struck; s3 a folding hand fan / bar-chart of growing blades from a pivot, struck. All three are still a radiating-from-a-point fan; the 'widening' metaphor keeps landing on signal and sound icons. A rework of the fan will not pass. If this concept continues, abandon the radial origin entirely: try widening expressed as a single solid plane (e.g. a parallelogram/trapezoid slab whose top edge steps out in uneven increments, no gaps between bands, no point of origin), or retire the concept in favour of stepped-well.",
+          "checks": null,
+          "originality": null
+        }
+      ],
+      "finalized": null,
+      "exported": 0,
+      "byGroup": {},
+      "success": false
+    }
+  ],
+  "sessionId": "c8673a5d-fedc-4ddc-bc5e-bb40c3d816ba"
+}
