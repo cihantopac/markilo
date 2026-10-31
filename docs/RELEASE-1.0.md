@@ -19,17 +19,17 @@ are not selected, unsuccessful attempts are recorded, and anything that cannot b
 
 ## 1.0.0 blockers
 
-| #   | Blocker                                                                                                 | Area         | Status                                               |
-| --- | ------------------------------------------------------------------------------------------------------- | ------------ | ---------------------------------------------------- |
-| B1  | `install-assets --group --force` replaced files without a backup; no rollback on partial failure        | Data safety  | **Fixed** (transactional installer)                  |
-| B2  | Unattended design quality: too few presentable identities, symbol directions almost never succeed       | Design       | In progress (see log)                                |
-| B3  | Gate validation rests on 2 positives and one judge family; no repeated-run variance or human reference  | Evaluation   | Tooling done; evaluation runs pending                |
-| B4  | Wordmark engine: 10 bundled faces, limited letter surgery, no measured optical spacing                  | Design       | Partly: 24 faces, letter check; optical spacing open |
-| B5  | Real-project validation (three developer products) not yet done with the current version                | Validation   | Open                                                 |
-| B6  | Security review of gallery server, research fetchers, SVG/raster inputs and repo scanner not refreshed  | Security     | Open                                                 |
-| B7  | Clean-environment verification of npm/npx, plugin skills and other agents (`agent-setup`) on three OSes | Distribution | Partly (CI covers CLI + plugin install)              |
-| B8  | Export claims to re-verify against official specs; X header unverified; Icon Composer layers only       | Exports      | Open                                                 |
-| B9  | Gallery: feedback loop, iteration history and final selection need a first-time-user walkthrough        | UX           | Open                                                 |
+| #   | Blocker                                                                                                 | Area         | Status                                                   |
+| --- | ------------------------------------------------------------------------------------------------------- | ------------ | -------------------------------------------------------- |
+| B1  | `install-assets --group --force` replaced files without a backup; no rollback on partial failure        | Data safety  | Fixed                                                    |
+| B2  | Unattended design quality: too few presentable identities, symbol directions almost never succeed       | Design       | Not resolved (measured; reported)                        |
+| B3  | Gate validation rests on 2 positives and one judge family; no repeated-run variance or human reference  | Evaluation   | Done: panel, intervals, sealed holdouts                  |
+| B4  | Wordmark engine: 10 bundled faces, limited letter surgery, no measured optical spacing                  | Design       | Done: 24 faces, letter check (optical spacing not added) |
+| B5  | Real-project validation (three developer products) not yet done with the current version                | Validation   | Done (isolated)                                          |
+| B6  | Security review of gallery server, research fetchers, SVG/raster inputs and repo scanner not refreshed  | Security     | Done: findings fixed and tested                          |
+| B7  | Clean-environment verification of npm/npx, plugin skills and other agents (`agent-setup`) on three OSes | Distribution | Done: clean npm + marketplace install                    |
+| B8  | Export claims to re-verify against official specs; X header unverified; Icon Composer layers only       | Exports      | Done: kit validated; two limits documented               |
+| B9  | Gallery: feedback loop, iteration history and final selection need a first-time-user walkthrough        | UX           | Done: browser review, fixes                              |
 
 ## Plan, in priority order
 
@@ -76,26 +76,26 @@ A criterion is met only with evidence committed under `bench/` or `docs/`.
 
 ## Release acceptance (the 15 criteria)
 
-Status is evidence-based; "met" links to the evidence. Quality numbers are filled in from the final holdout
-evaluation, whatever they are.
+Status is evidence-based. Released as 1.0.0 on the maintainer's decision (2026-11-01) with criterion 3 not met and
+criterion 4 partly met, both reported in the README, the changelog and the benchmark rather than hidden.
 
-| #   | Criterion                                                      | Status                 | Evidence                                                                                                           |
-| --- | -------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| 1   | Every advertised feature works end to end                      | Met                    | CI (3 OS × Node 20/22), smoke test from an empty folder to installed assets, installed-package smoke               |
-| 2   | The workflow is usable by a new user                           | Met                    | Gallery reviewed in a browser on a real run; empty-review and verdict fixes; ideas, sketches and decisions visible |
-| 3   | Creative quality materially better, independently demonstrated | See holdout evaluation | `bench/results/1.0.0/`                                                                                             |
-| 4   | The gate rejects weak work without suppressing strong work     | See holdout evaluation | Panel agreement on real-project runs: 17 of 17 and 11–12 of 12                                                     |
-| 5   | Fresh scenarios show credible generalization                   | See holdout evaluation | Five holdouts sealed at `241af5e`, run once for baseline and release                                               |
-| 6   | Originality reports disclose the limits of their evidence      | Met                    | `insufficient-evidence` without registry searches or enough references; docs/ORIGINALITY.md                        |
-| 7   | SVG and exports technically valid and visually inspected       | Met                    | 199-file kit checked with iconutil, sizes per platform, hashes, XML/JSON; icons inspected                          |
-| 8   | Locked identities and user files protected                     | Met                    | Transactional install with rollback and `--undo`; lock refuses active content; tests                               |
-| 9   | Real-project tests done safely in isolation                    | Met                    | Three products, disposable copies outside every repository; install/undo on copies left them byte-identical        |
-| 10  | No release-blocking security or data-loss issue                | Met                    | Security review findings fixed and tested (CHANGELOG, Security)                                                    |
-| 11  | CLI, plugin and npm work from clean installations              | Met                    | Packed tarball installed in a clean prefix and smoke-tested; marketplace install in CI                             |
-| 12  | Automated tests and cross-platform CI pass                     | Met                    | 196 tests; CI green on Linux, macOS, Windows                                                                       |
-| 13  | Documentation matches the product                              | In progress            | README, bench README, integrations, outputs                                                                        |
-| 14  | Performance, model usage and limits reported honestly          | In progress            | Cost and minutes per run in every bench report                                                                     |
-| 15  | Nothing incomplete marketed as finished                        | In progress            | Icon Composer `.icon` and X header sizes listed as limits, not features                                            |
+| #   | Criterion                                                      | Status      | Evidence                                                                                                                                                |
+| --- | -------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Every advertised feature works end to end                      | Met         | CI (3 OS × Node 20/22), smoke test from an empty folder to installed assets, installed-package smoke                                                    |
+| 2   | The workflow is usable by a new user                           | Met         | Gallery reviewed in a browser on a real run; empty-review and verdict fixes; ideas, sketches and decisions visible                                      |
+| 3   | Creative quality materially better, independently demonstrated | **Not met** | Panel would present 0 of 43 concepts made by 1.0 versions and 0 of 21 by 0.5.0-rc.1 on the sealed holdouts: no measurable gain (`bench/results/1.0.0/`) |
+| 4   | The gate rejects weak work without suppressing strong work     | Partly      | No strong work suppressed (the panel presented none of the 79 rejected concepts); 2 false passes, both at the edge, now labelled "passed at the edge"   |
+| 5   | Fresh scenarios show credible generalization                   | Measured    | Five sealed holdouts and three real tools, run once each: the floor generalizes, a quality gain does not                                                |
+| 6   | Originality reports disclose the limits of their evidence      | Met         | `insufficient-evidence` without registry searches or enough references; docs/ORIGINALITY.md                                                             |
+| 7   | SVG and exports technically valid and visually inspected       | Met         | 199-file kit checked with iconutil, sizes per platform, hashes, XML/JSON; icons inspected                                                               |
+| 8   | Locked identities and user files protected                     | Met         | Transactional install with rollback and `--undo`; lock refuses active content; tests                                                                    |
+| 9   | Real-project tests done safely in isolation                    | Met         | Three products, disposable copies outside every repository; install/undo on copies left them byte-identical                                             |
+| 10  | No release-blocking security or data-loss issue                | Met         | Security review findings fixed and tested (CHANGELOG, Security)                                                                                         |
+| 11  | CLI, plugin and npm work from clean installations              | Met         | Packed tarball installed in a clean prefix and smoke-tested; marketplace install in CI                                                                  |
+| 12  | Automated tests and cross-platform CI pass                     | Met         | 196 tests; CI green on Linux, macOS, Windows                                                                                                            |
+| 13  | Documentation matches the product                              | Met         | README, ARCHITECTURE, INTEGRATIONS, bench README and the 1.0 reports updated with this release                                                          |
+| 14  | Performance, model usage and limits reported honestly          | Met         | Minutes and API-equivalent cost per run in every report; the judge models named; limits in README                                                       |
+| 15  | Nothing incomplete marketed as finished                        | Met         | Icon Composer `.icon` and X header sizes listed as limits; unattended quality reported as not achieved                                                  |
 
 ## Security review (2026-10-31)
 
@@ -139,6 +139,12 @@ serve as realistic test subjects. They are test environments, not branding assig
 - No concept from these runs is an approved identity.
 
 ## Progress log
+
+- **2026-11-01** — Decision to stop experimenting and release (maintainer). Opus designer judged: its one gate pass was
+  false, no presentable concept, ~50 % higher cost → the designer stays on Sonnet. Second-look blindness hole fixed.
+  Sealed-holdout evaluation run once: 0.5.0-rc.1 0 of 5, 1.0.0 1 of 5 (a false pass); panel 0 of 21 and 0 of 20.
+  Install tested on copies of the three real projects (apply + undo, byte-identical). Security review, export
+  validation and the acceptance table written; versions set to 1.0.0.
 
 - **2026-10-31 (3)** — Real-project diagnosis and the first design experiments (results kept private; aggregates only):
   - Baseline (0.5.0-rc.1 + install fix) on three real developer products: 0 of 3 runs passed; 18 concepts, blind

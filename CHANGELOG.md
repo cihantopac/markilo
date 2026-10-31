@@ -6,6 +6,34 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-01
+
+Markilo leaves beta. 1.0 makes everything around the design trustworthy — your files, untrusted input, the critique
+process and the evidence — and reports plainly what it did not achieve: independently judged design quality did not
+improve over 0.5.0-rc.1. On five briefs sealed before any 1.0 change and on three real developer tools, a blind panel
+(Opus and Sonnet) would present none of the 1.0 concepts (0 of 43), as it would none of the baseline's; both 1.0 gate
+passes were edge passes the panel rejected. Unattended, Markilo reliably refuses weak work; it does not yet reliably
+make strong work. Use it as a studio you steer. Evidence: `bench/results/1.0.0/`, `docs/RELEASE-1.0.md`.
+
+### Breaking
+
+- `finalize` refuses any concept that has not passed the gate — failed, undecided or never reviewed — unless the user
+  chose it (`--user-choice`). It used to refuse only failed ones.
+- The gate has a new status, `undecided` (`next: second-look`), for a first look on the edge of the bar.
+- `install-assets --group` reports paths with forward slashes on every OS (as `--framework` always did), and returns
+  `planId`, `unchanged` and `journal`.
+- `lock` refuses SVGs with scripts, event handlers, foreign content or external references.
+- New error codes: `STALE_PLAN`, `IO`.
+- The sanitizer drops every element that is not an SVG drawing element (it used to drop a list of known bad ones).
+
+### Benchmark
+
+- Isolated runs (only Markilo loaded, from a snapshot of `--plugin`), `--scenarios` for private projects, `--work`
+  for run folders outside the OS temp folder, a judge panel (`--panel opus:2,sonnet:2`), gate precision and recall with
+  95 % Wilson intervals, idea counts per run, `report --title`.
+- Five holdouts sealed at `241af5e`; the 1.0.0 evaluation in `bench/results/1.0.0/`, including an anonymized
+  real-project report.
+
 ### Changed
 
 - **The gate takes a second look at the edge of the bar.** Every concept that passed the gate in the benchmark
@@ -563,7 +591,9 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 - Self-contained HTML Brand Preview Gallery with mockups and a feedback export.
 - Locked identities that are reproduced byte-for-byte and never redesigned.
 
-[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.7...HEAD
+[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v1.0.0...HEAD
+[1.0.0]: https://github.com/cihantopac/markilo/compare/markilo--v0.4.0...markilo--v1.0.0
+[0.4.0]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.7...markilo--v0.4.0
 [0.3.0-beta.7]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.6...markilo--v0.3.0-beta.7
 [0.3.0-beta.6]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.5...markilo--v0.3.0-beta.6
 [0.3.0-beta.5]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.4...markilo--v0.3.0-beta.5
