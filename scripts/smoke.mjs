@@ -128,16 +128,36 @@ try {
     JSON.stringify({ name: 'site', dependencies: { next: '15.0.0' } }),
   );
   mkdirSync(join(site, 'app'));
+  let planId = '';
   step(
     'install-assets (plan)',
     ['install-assets', '--brand', 'smoke-test', '--framework', 'auto', '--project', site],
-    (o) => o.framework === 'next' && !o.applied,
+    (o) => {
+      planId = o.planId;
+      return o.framework === 'next' && !o.applied && typeof planId === 'string';
+    },
   );
   step(
     'install-assets (apply)',
-    ['install-assets', '--brand', 'smoke-test', '--framework', 'auto', '--project', site, '--apply'],
+    [
+      'install-assets',
+      '--brand',
+      'smoke-test',
+      '--framework',
+      'auto',
+      '--project',
+      site,
+      '--apply',
+      '--expect',
+      planId,
+    ],
     () =>
       ['app/favicon.ico', 'app/icon.svg', 'app/opengraph-image.png'].every((f) => existsSync(join(site, f))),
+  );
+  step(
+    'install-assets (undo)',
+    ['install-assets', '--undo', '--project', site, '--apply'],
+    (o) => o.applied && o.removed.length > 0 && !existsSync(join(site, 'app', 'icon.svg')),
   );
   console.log(`Smoke test passed with ${cli}`);
 } finally {

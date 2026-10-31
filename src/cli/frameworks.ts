@@ -1,14 +1,14 @@
-import { copyFileSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { MarkiloError } from '../core/errors.js';
-import { nowIso } from '../core/fsx.js';
-import { portableRelative, resolveInsideReal } from '../core/paths.js';
+import { portableRelative } from '../core/paths.js';
 import type { Workspace } from '../core/workspace.js';
+import { applyInstall, checkPlanId, type InstallAction, installAction, installPlanId } from './install.js';
 
 /**
  * Installs exported assets where each framework expects them (Next.js metadata files, Laravel's public/, Flutter's
  * Android, iOS and web folders). Always a plan first; files are written only with apply, never overwritten without
- * force, and overwritten files are backed up under .markilo-backup/ first.
+ * force, as one transaction with backups and a journal (see install.ts).
  */
 
 export const FRAMEWORKS = ['next', 'laravel', 'flutter', 'static'] as const;
@@ -17,7 +17,7 @@ export type Framework = (typeof FRAMEWORKS)[number];
 export interface InstallStep {
   from: string;
   to: string;
-  action: 'create' | 'overwrite' | 'skip-existing' | 'missing-export';
+  action: InstallAction | 'missing-export';
 }
 
 export interface FrameworkPlan {
@@ -27,8 +27,11 @@ export interface FrameworkPlan {
   /** Code to add by hand (head tags, metadata), shown, never written into the user's source files. */
   snippet?: string;
   notes: string[];
+  /** Pass back with --expect so the apply refuses if the project changed after this plan. */
+  planId: string;
   applied: boolean;
   backup?: string;
+  journal?: string;
 }
 
 const readJsonSafe = (p: string): Record<string, unknown> | undefined => {
@@ -165,7 +168,7 @@ export function planFrameworkInstall(
   ws: Workspace,
   brand: string,
   project: string,
-  opts: { framework?: Framework; into?: string; apply?: boolean; force?: boolean } = {},
+  opts: { framework?: Framework; into?: string; apply?: boolean; force?: boolean; expect?: string } = {},
 ): FrameworkPlan {
   const exportsDir = ws.exportsDir(brand);
   if (!existsSync(exportsDir))
@@ -177,14 +180,10 @@ export function planFrameworkInstall(
   const detected = opts.framework ? { framework: opts.framework, by: 'chosen' } : detectFramework(project);
   const { map, notes, snippet } = mapping(detected.framework, exportsDir, project, opts.into);
   const steps: InstallStep[] = map.map(([from, to]) => {
-    const target = resolveInsideReal(project, to);
-    const action: InstallStep['action'] = !existsSync(join(exportsDir, from))
+    const source = join(exportsDir, from);
+    const action: InstallStep['action'] = !existsSync(source)
       ? 'missing-export'
-      : existsSync(target)
-        ? opts.force
-          ? 'overwrite'
-          : 'skip-existing'
-        : 'create';
+      : installAction(project, { source, to }, !!opts.force);
     return { from, to, action };
   });
   const plan: FrameworkPlan = {
@@ -193,30 +192,24 @@ export function planFrameworkInstall(
     steps,
     ...(snippet ? { snippet } : {}),
     notes,
+    planId: installPlanId(project, steps),
     applied: false,
   };
   if (steps.some((s) => s.action === 'skip-existing'))
     notes.push('Existing files are kept. Re-run with --force to replace them (they are backed up first).');
   if (!opts.apply) return plan;
 
-  const stamp = nowIso().replace(/[:.]/g, '-');
-  const backupRoot = join(project, '.markilo-backup', stamp);
-  for (const s of steps) {
-    if (s.action !== 'create' && s.action !== 'overwrite') continue;
-    const target = resolveInsideReal(project, s.to);
-    if (existsSync(target)) {
-      if (lstatSync(target).isSymbolicLink())
-        throw new MarkiloError('UNSAFE_PATH', `Refusing to overwrite a symbolic link: ${s.to}`);
-      const backup = join(backupRoot, s.to);
-      mkdirSync(dirname(backup), { recursive: true });
-      copyFileSync(target, backup);
-      plan.backup = portableRelative(project, backupRoot);
-    }
-    mkdirSync(dirname(target), { recursive: true });
-    copyFileSync(join(exportsDir, s.from), target);
-  }
+  checkPlanId(project, steps, opts.expect);
+  const writes = steps
+    .filter((s) => s.action === 'create' || s.action === 'overwrite')
+    .map((s) => ({ source: join(exportsDir, s.from), to: s.to }));
+  const r = applyInstall(project, writes);
   plan.applied = true;
-  if (plan.backup)
-    notes.push(`Replaced files were backed up to ${plan.backup}/ (add .markilo-backup/ to .gitignore).`);
+  plan.journal = r.journal;
+  if (r.backup) {
+    plan.backup = r.backup;
+    notes.push(`Replaced files were backed up to ${r.backup}/ (add .markilo-backup/ to .gitignore).`);
+  }
+  notes.push('Undo this installation with `markilo install-assets --undo --apply`.');
   return plan;
 }

@@ -39,15 +39,15 @@ anything presented as judgment is labeled as judgment.
 
 ## Design constraints
 
-| Constraint                       | How it is met                                                                                                                                     |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| No servers, no paid APIs         | Pure CLI. Rendering uses `@resvg/resvg-wasm`, path geometry uses Skia's `pathkit-wasm` (no native builds).                                        |
-| Works right after plugin install | `plugin/dist/` is a committed single-file bundle + `resvg.wasm` + `pathkit.wasm`; CI checks it is fresh.                                          |
-| Windows, macOS, Linux            | Node ≥ 20 only. No shell-outs, no platform binaries, `path` APIs everywhere.                                                                      |
-| Low token use                    | Commands print compact JSON summaries; large data goes to files the agent can open on demand.                                                     |
-| No hidden network access         | Only `research site` fetches, and only with `--allow-network`. It honours `robots.txt`.                                                           |
-| No silent edits to user projects | All output goes into the brand workspace. `install-assets` is a dry run unless `--apply`. Existing files are never overwritten without `--force`. |
-| Real vectors                     | Lint fails on embedded raster images, scripts, external references and missing `viewBox`. Wordmarks are converted to outlines.                    |
+| Constraint                       | How it is met                                                                                                                                                                                                                   |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| No servers, no paid APIs         | Pure CLI. Rendering uses `@resvg/resvg-wasm`, path geometry uses Skia's `pathkit-wasm` (no native builds).                                                                                                                      |
+| Works right after plugin install | `plugin/dist/` is a committed single-file bundle + `resvg.wasm` + `pathkit.wasm`; CI checks it is fresh.                                                                                                                        |
+| Windows, macOS, Linux            | Node ≥ 20 only. No shell-outs, no platform binaries, `path` APIs everywhere.                                                                                                                                                    |
+| Low token use                    | Commands print compact JSON summaries; large data goes to files the agent can open on demand.                                                                                                                                   |
+| No hidden network access         | Only `research site` fetches, and only with `--allow-network`. It honours `robots.txt`.                                                                                                                                         |
+| No silent edits to user projects | All output goes into the brand workspace. `install-assets` is a dry run unless `--apply`. Existing files are never overwritten without `--force`; applying is one transaction with backups and a journal, `--undo` reverses it. |
+| Real vectors                     | Lint fails on embedded raster images, scripts, external references and missing `viewBox`. Wordmarks are converted to outlines.                                                                                                  |
 
 ## The brand workspace
 

@@ -72,8 +72,12 @@ node tools/markilo/plugin/dist/markilo.mjs agent-setup --target codex --cli "nod
 
 `install-assets --framework auto` detects the project (pubspec.yaml → Flutter, composer.json with laravel/framework →
 Laravel, package.json with next → Next.js, otherwise static) and places every exported file where that framework
-expects it. It is a plan until `--apply`; existing files are kept unless `--force`, and replaced files are copied to
-`.markilo-backup/<time>/` first.
+expects it. It is a plan until `--apply`; existing files are kept unless `--force`, files already identical are left
+alone, and replaced files are copied to `.markilo-backup/<time>/` first. Applying is one transaction: each file is
+written through a temp file and a rename, a journal records every change, and a failure halfway puts every file back.
+Pass the dry run's `planId` with `--expect` and the apply refuses if anything in the project changed since the plan
+was shown. `install-assets --undo` reverses the last installation (a dry run until `--apply`); files you edited after
+the installation are kept, never deleted or restored over.
 
 | Framework            | Where files go                                                                                                                                    | What you add by hand                                                                                           |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -85,5 +89,6 @@ expects it. It is a plan until `--apply`; existing files are kept unless `--forc
 
 ```bash
 node plugin/dist/markilo.mjs install-assets --brand acme --framework auto --project ../acme-app
-node plugin/dist/markilo.mjs install-assets --brand acme --framework auto --project ../acme-app --apply
+node plugin/dist/markilo.mjs install-assets --brand acme --framework auto --project ../acme-app --apply --expect <planId>
+node plugin/dist/markilo.mjs install-assets --undo --project ../acme-app --apply
 ```

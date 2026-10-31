@@ -1,21 +1,13 @@
-import {
-  copyFileSync,
-  existsSync,
-  lstatSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  rmSync,
-  statSync,
-} from 'node:fs';
+import { existsSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import { MarkiloError } from '../core/errors.js';
 import { isDir, writeFileSafe } from '../core/fsx.js';
-import { resolveInsideReal } from '../core/paths.js';
+import { portableRelative, resolveInsideReal } from '../core/paths.js';
 import type { Workspace } from '../core/workspace.js';
 import { fontsDir, listFonts } from '../design/fonts.js';
 import { ensureRenderer } from '../render/resvg.js';
+import { applyInstall, checkPlanId, type InstallAction, installAction, installPlanId } from './install.js';
 
 const SHORTCUT_MARKER = '<!-- managed-by: markilo shortcut -->';
 
@@ -87,7 +79,7 @@ export function installAssets(
   group: string,
   into: string,
   cwd: string,
-  opts: { apply: boolean; force: boolean },
+  opts: { apply: boolean; force: boolean; expect?: string },
 ) {
   const src = join(ws.exportsDir(brand), group);
   if (!isDir(src))
@@ -97,43 +89,51 @@ export function installAssets(
       `Run "markilo export --brand ${brand} --only ${group}" first.`,
     );
   const dest = resolveInsideReal(cwd, into);
-  const plan: { from: string; to: string; action: 'create' | 'overwrite' | 'skip-existing' }[] = [];
+  const plan: { from: string; to: string; action: InstallAction }[] = [];
   const walk = (dir: string) => {
     for (const f of readdirSync(dir)) {
       const full = join(dir, f);
       if (statSync(full).isDirectory()) walk(full);
       else {
-        const to = join(dest, relative(src, full));
+        const to = portableRelative(cwd, join(dest, relative(src, full)));
         plan.push({
-          from: relative(ws.root, full),
-          to: relative(cwd, to),
-          action: existsSync(to) ? (opts.force ? 'overwrite' : 'skip-existing') : 'create',
+          from: portableRelative(ws.root, full),
+          to,
+          action: installAction(cwd, { source: full, to }, opts.force),
         });
       }
     }
   };
   walk(src);
+  const planId = installPlanId(cwd, plan);
+  let applied: ReturnType<typeof applyInstall> | undefined;
   if (opts.apply) {
-    for (const p of plan) {
-      if (p.action === 'skip-existing') continue;
-      const to = resolve(cwd, p.to);
-      mkdirSync(dirname(to), { recursive: true });
-      if (existsSync(to) && lstatSync(to).isSymbolicLink()) {
-        throw new MarkiloError('UNSAFE_PATH', `Refusing to overwrite a symbolic link: ${p.to}`);
-      }
-      copyFileSync(resolve(ws.root, p.from), to);
-    }
+    checkPlanId(cwd, plan, opts.expect);
+    applied = applyInstall(
+      cwd,
+      plan
+        .filter((p) => p.action === 'create' || p.action === 'overwrite')
+        .map((p) => ({ source: resolve(ws.root, p.from), to: p.to })),
+    );
   }
   return {
     applied: opts.apply,
-    destination: relative(cwd, dest) || '.',
+    destination: portableRelative(cwd, dest) || '.',
+    planId,
     create: plan.filter((p) => p.action === 'create').length,
     overwrite: plan.filter((p) => p.action === 'overwrite').length,
+    unchanged: plan.filter((p) => p.action === 'unchanged').length,
     skippedExisting: plan.filter((p) => p.action === 'skip-existing').map((p) => p.to),
     files: plan,
-    ...(opts.apply
-      ? {}
-      : { note: 'Dry run: nothing was copied. Re-run with --apply after the user approves.' }),
+    ...(applied?.backup ? { backup: applied.backup } : {}),
+    ...(applied
+      ? {
+          journal: applied.journal,
+          note: 'Undo this installation with `markilo install-assets --undo --apply`.',
+        }
+      : {
+          note: `Dry run: nothing was copied. Re-run with --apply --expect ${planId} after the user approves.`,
+        }),
   };
 }
 

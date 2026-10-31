@@ -75,6 +75,7 @@ import { sanitizeSvg } from '../svg/sanitize.js';
 import { type AgentTarget, agentSetup, ROLE_IDS, type Role } from './agents.js';
 import type { CommandSpec, RunContext } from './args.js';
 import { FRAMEWORKS, type Framework, planFrameworkInstall } from './frameworks.js';
+import { rollbackInstall } from './install.js';
 import { doctor, installAssets, shortcut } from './system.js';
 
 declare const __MARKILO_VERSION__: string;
@@ -1614,9 +1615,9 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'install-assets',
     summary:
-      'Put exported assets into your project. With --framework (next, laravel, flutter, static, or auto to detect) every file goes where that framework expects it; without it, one export group is copied into --into. Dry run unless --apply; never overwrites without --force (replaced files are backed up).',
+      'Put exported assets into your project. With --framework (next, laravel, flutter, static, or auto to detect) every file goes where that framework expects it; without it, one export group is copied into --into. Dry run unless --apply; never overwrites without --force. Applying is one transaction: replaced files are backed up, a failure puts everything back, and --undo reverses the last installation (files edited since are kept).',
     usage:
-      'install-assets --brand <slug> (--framework auto|next|laravel|flutter|static | --group web --into <dir>) [--project <dir>] [--apply] [--force]',
+      'install-assets --brand <slug> (--framework auto|next|laravel|flutter|static | --group web --into <dir>) [--project <dir>] [--apply [--expect <planId>]] [--force] | install-assets --undo [--project <dir>] [--apply]',
     options: {
       project: {
         type: 'string',
@@ -1631,10 +1632,21 @@ export const COMMANDS: CommandSpec[] = [
       },
       apply: { type: 'boolean', description: 'Actually copy' },
       force: { type: 'boolean', description: 'Overwrite existing files (backed up first)' },
+      expect: {
+        type: 'string',
+        description:
+          "The dry run's planId: refuse to apply if the project changed since the user saw the plan",
+      },
+      undo: {
+        type: 'boolean',
+        description: 'Reverse the last installation (dry run unless --apply; files edited since are kept)',
+      },
     },
     async run(c) {
       const projectDir = c.str('project') ? file(c, c.str('project')!) : c.cwd;
       if (!isDir(projectDir)) throw new MarkiloError('NOT_FOUND', `Project folder not found: ${projectDir}`);
+      if (c.bool('undo')) return rollbackInstall(projectDir, { apply: c.bool('apply') });
+      const expect = c.str('expect');
       const fw = c.str('framework');
       if (fw) {
         if (fw !== 'auto' && !(FRAMEWORKS as readonly string[]).includes(fw))
@@ -1644,11 +1656,13 @@ export const COMMANDS: CommandSpec[] = [
           ...(c.str('into') ? { into: c.str('into')! } : {}),
           apply: c.bool('apply'),
           force: c.bool('force'),
+          ...(expect ? { expect } : {}),
         });
       }
       return installAssets(ws(c), c.req('brand'), c.req('group'), c.req('into'), projectDir, {
         apply: c.bool('apply'),
         force: c.bool('force'),
+        ...(expect ? { expect } : {}),
       });
     },
   },

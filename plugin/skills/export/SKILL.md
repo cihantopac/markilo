@@ -29,8 +29,10 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 6. To place assets in the user's project, plan first: `markilo install-assets --brand <slug> --framework auto
    [--project <dir>]`. It detects Next.js, Laravel, Flutter or a static site and lists where each file goes and what
    (if anything) the user must add by hand (a head snippet). Show the plan; only with the user's OK re-run with
-   `--apply` (and `--force` only if they want existing icons replaced — those are backed up to `.markilo-backup/`).
-   Do not edit their source files; give them the snippet instead.
+   `--apply --expect <planId>` (the dry run's `planId`: the apply refuses if the project changed after the user saw
+   the plan), and `--force` only if they want existing icons replaced — those are backed up to `.markilo-backup/`.
+   Applying is all-or-nothing; `markilo install-assets --undo [--project <dir>]` previews reversing it, `--apply`
+   does it (files the user edited since are kept). Do not edit their source files; give them the snippet instead.
 7. Tell the user where everything is (`exports/`, `asset-manifest.json`, `guidelines/index.html`), that more groups
    can be added any time (`markilo deliverables --add ios` then `markilo export`), and mention that
    X (Twitter) header sizes could not be verified against x.com documentation.

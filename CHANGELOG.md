@@ -6,7 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- `install-assets --group … --into … --force` replaced existing files without backing them up, although the docs said
+  they were backed up. Both install modes now share one transactional installer: replaced files are backed up first,
+  each file is written through a temp file and a rename, and a failure halfway puts every file back.
+
 ### Added
+
+- `install-assets --undo` reverses the last installation from its journal (dry run unless `--apply`); files edited
+  after the installation are kept, never deleted or restored over.
+- `install-assets` returns a `planId`; `--apply --expect <planId>` refuses to apply when the project changed after
+  the dry run (`STALE_PLAN`). Files already identical to the export are reported `unchanged` and left alone.
 
 - Benchmark results for 0.5.0-rc.1 (`bench/results/0.5.0-rc.1/`, nine runs, four on two holdouts written for this
   round): two runs passed the gate, both wordmark-led (Quillnest; Pinehold on a fresh holdout), and the Opus judge —

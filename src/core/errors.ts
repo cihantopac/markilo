@@ -12,6 +12,8 @@ export type ErrorCode =
   | 'ROBOTS_DISALLOWED'
   | 'LOCKED'
   | 'NO_WORKSPACE'
+  | 'STALE_PLAN'
+  | 'IO'
   | 'INTERNAL';
 
 export class MarkiloError extends Error {

@@ -17,7 +17,8 @@
 - **External services.** Web searches and fetches done by Claude (WebSearch/WebFetch) are governed by your Claude Code
   settings. Markilo's skills ask before searching with private or unreleased names.
 - **Your project.** Markilo writes outside `brand/` only through `install-assets --apply` (never overwriting existing
-  files unless you pass `--force`, and backing them up to `.markilo-backup/` first) and `agent-setup --apply` (one
+  files unless you pass `--force`, backing them up to `.markilo-backup/` first, rolling back on failure, and reversible
+  with `install-assets --undo`) and `agent-setup --apply` (one
   instruction file for another coding agent; it names paths on your computer unless you pass `--cli` and
   `--references`, so check it before committing). The optional `/markilo` shortcut writes one file to
   `~/.claude/skills/markilo/` only with `--yes`.
