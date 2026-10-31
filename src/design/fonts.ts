@@ -14,6 +14,8 @@ export interface FontFamilyInfo {
   commercialUse: string;
   source: string;
   weights: number[];
+  /** Character words (warm, technical, editorial…) matched against a brief's personality to pick faces. */
+  traits?: string[];
   files: Record<string, string[]>;
   /** Where the font came from: the plugin bundle or a workspace's fonts/ folder (added with `markilo fonts add`). */
   origin?: 'bundled' | 'workspace';

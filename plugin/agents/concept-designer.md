@@ -71,7 +71,8 @@ Steps:
    the board, pick the face whose character matches the symbol's (its curves, its weight, its corners), and commit it
    with `markilo wordmarks --brand <slug> --concept <id> --pick wN` (writes `wordmark.svg` and the typography). Use
    `--locale tr` for Turkish names. Choose the typeface for the brand's character, not by default: `markilo fonts`
-   lists what is available; if none
+   lists 24 bundled families with their traits (warm, editorial, industrial, accessible…) — match them to the brief's
+   personality; the board's contrasting faces are already picked that way. If none
    fits and the caller says network use is approved, `markilo fonts search <style> --allow-network` and
    `markilo fonts add <id> --allow-network` give you ~1,800 open-licensed families. Edit letters when the idea calls
    for it (a signature cut, ligature or terminal) — build them with a `glyph` spec and `"role": "wordmark"` so the

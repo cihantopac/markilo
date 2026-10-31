@@ -1868,7 +1868,23 @@ export const COMMANDS: CommandSpec[] = [
       const symbolFile = concept.files.symbol ? w.conceptFile(brand, id, concept.files.symbol) : undefined;
       const { candidates, board } = await exploreWordmarks({
         text: c.str('text') ?? w.brand(brand).name,
-        fonts: fonts.length ? fonts : defaultFonts(concept.typography?.fontId),
+        fonts: fonts.length
+          ? fonts
+          : defaultFonts(
+              concept.typography?.fontId,
+              4,
+              (() => {
+                const brief = w.brief(brand);
+                return [
+                  ...(brief?.positioning?.personality ?? []),
+                  ...(brief?.positioning?.values ?? []),
+                  brief?.positioning?.tone ?? '',
+                  brief?.product?.category ?? '',
+                  concept.direction,
+                ];
+              })(),
+              brand,
+            ),
         weights: nums('weights', [concept.typography?.weight ?? 600]),
         tracking: nums('tracking', [0]),
         color: concept.palette.ink ?? '#16181d',
@@ -2484,11 +2500,12 @@ export const COMMANDS: CommandSpec[] = [
       'List available fonts: bundled SIL OFL families plus any added to the workspace with "fonts add" (outlined logos carry no font obligations).',
     usage: 'fonts',
     async run() {
-      return listFonts().map(({ id, family, category, role, weights, license, origin }) => ({
+      return listFonts().map(({ id, family, category, role, traits, weights, license, origin }) => ({
         id,
         family,
         category,
         role,
+        ...(traits ? { traits } : {}),
         weights,
         license,
         origin,

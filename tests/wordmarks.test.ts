@@ -84,3 +84,19 @@ describe('wordmark exploration', () => {
     expect(JSON.parse(bad.stderr).error.message).toMatch(/--lead must be symbol or wordmark/);
   }, 60_000);
 });
+
+describe('faces for the wordmark board', () => {
+  it('starts from the concept face and picks contrasting faces that fit the brief', async () => {
+    const { defaultFonts } = await import('../src/design/wordmarks.js');
+    const { fontInfo } = await import('../src/design/fonts.js');
+    const warm = defaultFonts('inter', 4, ['warm', 'crafted', 'quietly confident'], 'emberwick');
+    expect(warm[0]).toBe('inter');
+    expect(new Set(warm).size).toBe(4);
+    expect(warm.some((f) => ['fraunces', 'young-serif', 'alegreya-sans'].includes(f))).toBe(true);
+    expect(warm.some((f) => fontInfo(f).category === 'monospace')).toBe(false);
+    const dev = defaultFonts(undefined, 4, ['precise', 'developer'], 'searvex');
+    expect(fontInfo(dev[0]!).category).not.toBe('monospace');
+    // Same words, different brands: not one fixed board for everyone.
+    expect(defaultFonts(undefined, 4, [], 'alpha')).not.toEqual(defaultFonts(undefined, 4, [], 'beta'));
+  });
+});

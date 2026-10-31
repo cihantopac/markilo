@@ -83,3 +83,22 @@ describe('optimized compositions', () => {
     expect(softIoU(a, b)).toBeGreaterThan(0.99);
   });
 });
+
+describe('bundled typefaces', () => {
+  it('every bundled face draws Turkish and other Latin-extended letters, with traits for the board', async () => {
+    const { listFonts, loadBundledFace } = await import('../src/design/fonts.js');
+    const bundled = listFonts().filter((f) => f.origin !== 'workspace');
+    expect(bundled.length).toBeGreaterThanOrEqual(24);
+    for (const f of bundled) {
+      expect(f.traits?.length, f.id).toBeGreaterThan(2);
+      for (const w of f.weights) {
+        const face = loadBundledFace(f.id, w);
+        for (const ch of 'ğüşıöçİĞÜŞÖÇéñåøłž')
+          expect(
+            face.faces.some((x) => x.hasGlyphForCodePoint(ch.codePointAt(0)!)),
+            `${f.id} ${w} ${ch}`,
+          ).toBe(true);
+      }
+    }
+  });
+});

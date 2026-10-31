@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
+  brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
+  display, slab, serif; monospace last). It used to be one fixed list — Inter, Fraunces, Sora, Space Grotesk — for
+  every brand.
+
 ### Fixed
 
 - `install-assets --group … --into … --force` replaced existing files without backing them up, although the docs said
@@ -14,6 +21,12 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- 14 more bundled OFL type families (24 in all): Bricolage Grotesque, Instrument Serif, Young Serif, DM Serif Display,
+  Syne, Unbounded, Archivo, Schibsted Grotesk, Newsreader, Zilla Slab, Space Mono, Atkinson Hyperlegible Next, Alegreya
+  Sans and Familjen Grotesk, every weight checked for Turkish and other Latin-extended letters. In every benchmark run
+  so far, designers used only the bundled faces (no run ever added one), mostly three geometric sans and one serif;
+  judges kept calling the words "a stock font sample". Each family now carries traits (warm, editorial, industrial,
+  accessible…) shown by `markilo fonts`.
 - Letter legibility for built wordmarks: `construct`, `sketches` and `verify` measure each changed letter against the
   font's own alphabet. A letter that now looks more like another letter makes a sketch not `ready`; a letter that
   lost its counter (an e without its eye) or two letters merged into one shape is a note for the designer and the
@@ -66,6 +79,13 @@ rounds polished the same failing idea; the user saw nothing until the end.
   calibrated on it (Opus: measured; any other: "reviewer not calibrated" in the gate, `concept list` and the gallery).
 - Markilo is on npm (`npm install -g markilo`, `npx markilo`), from 0.4.0. The package installs no dependencies
   (everything is bundled) and `prepublishOnly` runs CI and the smoke test.
+
+### Changed
+
+- The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
+  brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
+  display, slab, serif; monospace last). It used to be one fixed list — Inter, Fraunces, Sora, Space Grotesk — for
+  every brand.
 
 ### Fixed
 
@@ -160,6 +180,13 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
   unknown criteria are refused with the list.
 - The brief's `constraints.colors` accepts colour directions in words as well as hex values.
 
+### Changed
+
+- The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
+  brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
+  display, slab, serif; monospace last). It used to be one fixed list — Inter, Fraunces, Sora, Space Grotesk — for
+  every brand.
+
 ### Fixed
 
 - Same-colour layers that touch are merged into one shape instead of leaving a hairline seam; `construct` says so.
@@ -176,6 +203,13 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 
 ## [0.3.0-beta.7] - 2026-10-30
 
+### Changed
+
+- The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
+  brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
+  display, slab, serif; monospace last). It used to be one fixed list — Inter, Fraunces, Sora, Space Grotesk — for
+  every brand.
+
 ### Fixed
 
 - Workspaces git-ignore every `research/` capture folder (third-party logos and pages), and older workspaces get the
@@ -188,12 +222,26 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 
 ## [0.3.0-beta.6] - 2026-10-30
 
+### Changed
+
+- The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
+  brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
+  display, slab, serif; monospace last). It used to be one fixed list — Inter, Fraunces, Sora, Space Grotesk — for
+  every brand.
+
 ### Fixed
 
 - Privacy: research profiles no longer store absolute local paths (they leaked the user name and folder layout when a
   workspace was committed); paths are kept relative to the project, and `profile tidy` rewrites older profiles.
 
 ## [0.3.0-beta.5] - 2026-10-30
+
+### Changed
+
+- The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
+  brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
+  display, slab, serif; monospace last). It used to be one fixed list — Inter, Fraunces, Sora, Space Grotesk — for
+  every brand.
 
 ### Fixed
 
@@ -205,6 +253,13 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 
 ## [0.3.0-beta.4] - 2026-10-30
 
+### Changed
+
+- The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
+  brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
+  display, slab, serif; monospace last). It used to be one fixed list — Inter, Fraunces, Sora, Space Grotesk — for
+  every brand.
+
 ### Fixed
 
 - Lockups place the symbol by its ink rather than its artboard, so the artboard margin no longer widens the gap or
@@ -215,6 +270,13 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 - `finalize --note "<usage rule>"` (repeatable): usage rules decided at approval appear in the guidelines.
 
 ## [0.3.0-beta.3] - 2026-10-30
+
+### Changed
+
+- The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
+  brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
+  display, slab, serif; monospace last). It used to be one fixed list — Inter, Fraunces, Sora, Space Grotesk — for
+  every brand.
 
 ### Fixed
 
@@ -229,6 +291,13 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 - `lockup --brand --concept` composes a concept's own symbol and wordmark.
 
 ## [0.3.0-beta.2] - 2026-10-30
+
+### Changed
+
+- The wordmark board's contrasting faces come from the brief: families are scored by how their traits match the
+  brief's personality, values and tone, and each pick is a different kind of face (grotesque, geometric, humanist,
+  display, slab, serif; monospace last). It used to be one fixed list — Inter, Fraunces, Sora, Space Grotesk — for
+  every brand.
 
 ### Fixed
 

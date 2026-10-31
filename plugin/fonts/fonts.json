@@ -18,6 +18,13 @@
         700,
         800
       ],
+      "traits": [
+        "neutral",
+        "precise",
+        "modern",
+        "calm",
+        "technical"
+      ],
       "files": {
         "400": [
           "inter/inter-latin-400-normal.woff",
@@ -57,6 +64,12 @@
         700,
         800
       ],
+      "traits": [
+        "friendly",
+        "modern",
+        "clean",
+        "approachable"
+      ],
       "files": {
         "400": [
           "manrope/manrope-latin-400-normal.woff",
@@ -95,6 +108,12 @@
         600,
         700
       ],
+      "traits": [
+        "technical",
+        "quirky",
+        "developer",
+        "modern"
+      ],
       "files": {
         "400": [
           "space-grotesk/space-grotesk-latin-400-normal.woff",
@@ -129,6 +148,12 @@
         600,
         700,
         800
+      ],
+      "traits": [
+        "wide",
+        "technical",
+        "confident",
+        "modern"
       ],
       "files": {
         "400": [
@@ -169,6 +194,12 @@
         700,
         800
       ],
+      "traits": [
+        "clean",
+        "compact",
+        "neutral",
+        "modern"
+      ],
       "files": {
         "400": [
           "dm-sans/dm-sans-latin-400-normal.woff",
@@ -207,6 +238,12 @@
         600,
         700,
         800
+      ],
+      "traits": [
+        "rounded",
+        "friendly",
+        "approachable",
+        "playful"
       ],
       "files": {
         "400": [
@@ -247,6 +284,12 @@
         700,
         800
       ],
+      "traits": [
+        "contemporary",
+        "open",
+        "friendly",
+        "clean"
+      ],
       "files": {
         "400": [
           "plus-jakarta-sans/plus-jakarta-sans-latin-400-normal.woff",
@@ -286,6 +329,13 @@
         700,
         800
       ],
+      "traits": [
+        "warm",
+        "editorial",
+        "crafted",
+        "characterful",
+        "soft"
+      ],
       "files": {
         "400": [
           "fraunces/fraunces-latin-400-normal.woff",
@@ -324,6 +374,12 @@
         600,
         700
       ],
+      "traits": [
+        "institutional",
+        "trustworthy",
+        "rational",
+        "calm"
+      ],
       "files": {
         "400": [
           "ibm-plex-serif/ibm-plex-serif-latin-400-normal.woff",
@@ -359,6 +415,12 @@
         700,
         800
       ],
+      "traits": [
+        "developer",
+        "technical",
+        "precise",
+        "code"
+      ],
       "files": {
         "400": [
           "jetbrains-mono/jetbrains-mono-latin-400-normal.woff",
@@ -379,6 +441,572 @@
         "800": [
           "jetbrains-mono/jetbrains-mono-latin-800-normal.woff",
           "jetbrains-mono/jetbrains-mono-latin-ext-800-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "bricolage-grotesque",
+      "family": "Bricolage Grotesque",
+      "category": "sans-serif",
+      "role": "expressive grotesque with ink traps and lively joins; contemporary, bold",
+      "license": "OFL-1.1",
+      "licenseFile": "bricolage-grotesque/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/bricolage-grotesque@5.3.0 (Google Fonts v9)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "traits": [
+        "bold",
+        "expressive",
+        "contemporary",
+        "energetic",
+        "characterful"
+      ],
+      "files": {
+        "400": [
+          "bricolage-grotesque/bricolage-grotesque-latin-400-normal.woff",
+          "bricolage-grotesque/bricolage-grotesque-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "bricolage-grotesque/bricolage-grotesque-latin-500-normal.woff",
+          "bricolage-grotesque/bricolage-grotesque-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "bricolage-grotesque/bricolage-grotesque-latin-600-normal.woff",
+          "bricolage-grotesque/bricolage-grotesque-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "bricolage-grotesque/bricolage-grotesque-latin-700-normal.woff",
+          "bricolage-grotesque/bricolage-grotesque-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "bricolage-grotesque/bricolage-grotesque-latin-800-normal.woff",
+          "bricolage-grotesque/bricolage-grotesque-latin-ext-800-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "instrument-serif",
+      "family": "Instrument Serif",
+      "category": "serif",
+      "role": "condensed display serif; elegant, editorial, quiet confidence",
+      "license": "OFL-1.1",
+      "licenseFile": "instrument-serif/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/instrument-serif@5.3.0 (Google Fonts v5)",
+      "weights": [
+        400
+      ],
+      "traits": [
+        "elegant",
+        "editorial",
+        "condensed",
+        "refined",
+        "quiet"
+      ],
+      "files": {
+        "400": [
+          "instrument-serif/instrument-serif-latin-400-normal.woff",
+          "instrument-serif/instrument-serif-latin-ext-400-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "young-serif",
+      "family": "Young Serif",
+      "category": "serif",
+      "role": "sturdy old-style display serif; warm, crafted, friendly",
+      "license": "OFL-1.1",
+      "licenseFile": "young-serif/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/young-serif@5.3.0 (Google Fonts v2)",
+      "weights": [
+        400
+      ],
+      "traits": [
+        "warm",
+        "crafted",
+        "friendly",
+        "sturdy",
+        "human"
+      ],
+      "files": {
+        "400": [
+          "young-serif/young-serif-latin-400-normal.woff",
+          "young-serif/young-serif-latin-ext-400-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "dm-serif-display",
+      "family": "DM Serif Display",
+      "category": "serif",
+      "role": "high-contrast display serif; premium, classic",
+      "license": "OFL-1.1",
+      "licenseFile": "dm-serif-display/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/dm-serif-display@5.3.0 (Google Fonts v17)",
+      "weights": [
+        400
+      ],
+      "traits": [
+        "premium",
+        "classic",
+        "elegant",
+        "contrast"
+      ],
+      "files": {
+        "400": [
+          "dm-serif-display/dm-serif-display-latin-400-normal.woff",
+          "dm-serif-display/dm-serif-display-latin-ext-400-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "syne",
+      "family": "Syne",
+      "category": "sans-serif",
+      "role": "eccentric display sans that widens with weight; artistic, bold",
+      "license": "OFL-1.1",
+      "licenseFile": "syne/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/syne@5.3.0 (Google Fonts v24)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "traits": [
+        "artistic",
+        "eccentric",
+        "bold",
+        "wide",
+        "expressive"
+      ],
+      "files": {
+        "400": [
+          "syne/syne-latin-400-normal.woff",
+          "syne/syne-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "syne/syne-latin-500-normal.woff",
+          "syne/syne-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "syne/syne-latin-600-normal.woff",
+          "syne/syne-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "syne/syne-latin-700-normal.woff",
+          "syne/syne-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "syne/syne-latin-800-normal.woff",
+          "syne/syne-latin-ext-800-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "unbounded",
+      "family": "Unbounded",
+      "category": "sans-serif",
+      "role": "wide rounded display sans; confident, futuristic",
+      "license": "OFL-1.1",
+      "licenseFile": "unbounded/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/unbounded@5.3.0 (Google Fonts v12)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "traits": [
+        "wide",
+        "rounded",
+        "confident",
+        "futuristic",
+        "bold"
+      ],
+      "files": {
+        "400": [
+          "unbounded/unbounded-latin-400-normal.woff",
+          "unbounded/unbounded-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "unbounded/unbounded-latin-500-normal.woff",
+          "unbounded/unbounded-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "unbounded/unbounded-latin-600-normal.woff",
+          "unbounded/unbounded-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "unbounded/unbounded-latin-700-normal.woff",
+          "unbounded/unbounded-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "unbounded/unbounded-latin-800-normal.woff",
+          "unbounded/unbounded-latin-ext-800-normal.woff"
+        ],
+        "900": [
+          "unbounded/unbounded-latin-900-normal.woff",
+          "unbounded/unbounded-latin-ext-900-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "archivo",
+      "family": "Archivo",
+      "category": "sans-serif",
+      "role": "grotesque with an industrial build; sturdy, no-nonsense",
+      "license": "OFL-1.1",
+      "licenseFile": "archivo/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/archivo@5.3.0 (Google Fonts v25)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "traits": [
+        "industrial",
+        "sturdy",
+        "rugged",
+        "durable",
+        "no-nonsense"
+      ],
+      "files": {
+        "400": [
+          "archivo/archivo-latin-400-normal.woff",
+          "archivo/archivo-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "archivo/archivo-latin-500-normal.woff",
+          "archivo/archivo-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "archivo/archivo-latin-600-normal.woff",
+          "archivo/archivo-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "archivo/archivo-latin-700-normal.woff",
+          "archivo/archivo-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "archivo/archivo-latin-800-normal.woff",
+          "archivo/archivo-latin-ext-800-normal.woff"
+        ],
+        "900": [
+          "archivo/archivo-latin-900-normal.woff",
+          "archivo/archivo-latin-ext-900-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "schibsted-grotesk",
+      "family": "Schibsted Grotesk",
+      "category": "sans-serif",
+      "role": "editorial grotesque; newsy, credible, direct",
+      "license": "OFL-1.1",
+      "licenseFile": "schibsted-grotesk/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/schibsted-grotesk@5.3.0 (Google Fonts v7)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "traits": [
+        "editorial",
+        "credible",
+        "direct",
+        "precise",
+        "trustworthy"
+      ],
+      "files": {
+        "400": [
+          "schibsted-grotesk/schibsted-grotesk-latin-400-normal.woff",
+          "schibsted-grotesk/schibsted-grotesk-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "schibsted-grotesk/schibsted-grotesk-latin-500-normal.woff",
+          "schibsted-grotesk/schibsted-grotesk-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "schibsted-grotesk/schibsted-grotesk-latin-600-normal.woff",
+          "schibsted-grotesk/schibsted-grotesk-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "schibsted-grotesk/schibsted-grotesk-latin-700-normal.woff",
+          "schibsted-grotesk/schibsted-grotesk-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "schibsted-grotesk/schibsted-grotesk-latin-800-normal.woff",
+          "schibsted-grotesk/schibsted-grotesk-latin-ext-800-normal.woff"
+        ],
+        "900": [
+          "schibsted-grotesk/schibsted-grotesk-latin-900-normal.woff",
+          "schibsted-grotesk/schibsted-grotesk-latin-ext-900-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "newsreader",
+      "family": "Newsreader",
+      "category": "serif",
+      "role": "text serif with optical character; thoughtful, literary",
+      "license": "OFL-1.1",
+      "licenseFile": "newsreader/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/newsreader@5.3.0 (Google Fonts v26)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "traits": [
+        "literary",
+        "thoughtful",
+        "trustworthy",
+        "calm",
+        "human"
+      ],
+      "files": {
+        "400": [
+          "newsreader/newsreader-latin-400-normal.woff",
+          "newsreader/newsreader-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "newsreader/newsreader-latin-500-normal.woff",
+          "newsreader/newsreader-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "newsreader/newsreader-latin-600-normal.woff",
+          "newsreader/newsreader-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "newsreader/newsreader-latin-700-normal.woff",
+          "newsreader/newsreader-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "newsreader/newsreader-latin-800-normal.woff",
+          "newsreader/newsreader-latin-ext-800-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "zilla-slab",
+      "family": "Zilla Slab",
+      "category": "serif",
+      "role": "slab serif with flat brackets; dependable, straightforward",
+      "license": "OFL-1.1",
+      "licenseFile": "zilla-slab/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/zilla-slab@5.3.0 (Google Fonts v12)",
+      "weights": [
+        400,
+        500,
+        600,
+        700
+      ],
+      "traits": [
+        "dependable",
+        "sturdy",
+        "straightforward",
+        "rugged",
+        "grounded"
+      ],
+      "files": {
+        "400": [
+          "zilla-slab/zilla-slab-latin-400-normal.woff",
+          "zilla-slab/zilla-slab-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "zilla-slab/zilla-slab-latin-500-normal.woff",
+          "zilla-slab/zilla-slab-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "zilla-slab/zilla-slab-latin-600-normal.woff",
+          "zilla-slab/zilla-slab-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "zilla-slab/zilla-slab-latin-700-normal.woff",
+          "zilla-slab/zilla-slab-latin-ext-700-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "space-mono",
+      "family": "Space Mono",
+      "category": "monospace",
+      "role": "geometric monospace with retro character",
+      "license": "OFL-1.1",
+      "licenseFile": "space-mono/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/space-mono@5.3.0 (Google Fonts v17)",
+      "weights": [
+        400,
+        700
+      ],
+      "traits": [
+        "retro",
+        "technical",
+        "quirky",
+        "developer"
+      ],
+      "files": {
+        "400": [
+          "space-mono/space-mono-latin-400-normal.woff",
+          "space-mono/space-mono-latin-ext-400-normal.woff"
+        ],
+        "700": [
+          "space-mono/space-mono-latin-700-normal.woff",
+          "space-mono/space-mono-latin-ext-700-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "atkinson-hyperlegible-next",
+      "family": "Atkinson Hyperlegible Next",
+      "category": "sans-serif",
+      "role": "humanist sans designed for low-vision legibility; clear, caring",
+      "license": "OFL-1.1",
+      "licenseFile": "atkinson-hyperlegible-next/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/atkinson-hyperlegible-next@5.3.0 (Google Fonts v7)",
+      "weights": [
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "traits": [
+        "accessible",
+        "clear",
+        "caring",
+        "human",
+        "reassuring"
+      ],
+      "files": {
+        "400": [
+          "atkinson-hyperlegible-next/atkinson-hyperlegible-next-latin-400-normal.woff",
+          "atkinson-hyperlegible-next/atkinson-hyperlegible-next-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "atkinson-hyperlegible-next/atkinson-hyperlegible-next-latin-500-normal.woff",
+          "atkinson-hyperlegible-next/atkinson-hyperlegible-next-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "atkinson-hyperlegible-next/atkinson-hyperlegible-next-latin-600-normal.woff",
+          "atkinson-hyperlegible-next/atkinson-hyperlegible-next-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "atkinson-hyperlegible-next/atkinson-hyperlegible-next-latin-700-normal.woff",
+          "atkinson-hyperlegible-next/atkinson-hyperlegible-next-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "atkinson-hyperlegible-next/atkinson-hyperlegible-next-latin-800-normal.woff",
+          "atkinson-hyperlegible-next/atkinson-hyperlegible-next-latin-ext-800-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "alegreya-sans",
+      "family": "Alegreya Sans",
+      "category": "sans-serif",
+      "role": "humanist sans with calligraphic rhythm; organic, warm",
+      "license": "OFL-1.1",
+      "licenseFile": "alegreya-sans/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/alegreya-sans@5.3.0 (Google Fonts v28)",
+      "weights": [
+        400,
+        500,
+        700,
+        800
+      ],
+      "traits": [
+        "humanist",
+        "organic",
+        "warm",
+        "crafted",
+        "calm"
+      ],
+      "files": {
+        "400": [
+          "alegreya-sans/alegreya-sans-latin-400-normal.woff",
+          "alegreya-sans/alegreya-sans-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "alegreya-sans/alegreya-sans-latin-500-normal.woff",
+          "alegreya-sans/alegreya-sans-latin-ext-500-normal.woff"
+        ],
+        "700": [
+          "alegreya-sans/alegreya-sans-latin-700-normal.woff",
+          "alegreya-sans/alegreya-sans-latin-ext-700-normal.woff"
+        ],
+        "800": [
+          "alegreya-sans/alegreya-sans-latin-800-normal.woff",
+          "alegreya-sans/alegreya-sans-latin-ext-800-normal.woff"
+        ]
+      }
+    },
+    {
+      "id": "familjen-grotesk",
+      "family": "Familjen Grotesk",
+      "category": "sans-serif",
+      "role": "grotesque with sharp, idiosyncratic details; confident, distinctive",
+      "license": "OFL-1.1",
+      "licenseFile": "familjen-grotesk/OFL.txt",
+      "commercialUse": "Allowed under SIL OFL 1.1 (fonts may not be sold by themselves; outlined logos are unrestricted).",
+      "source": "@fontsource/familjen-grotesk@5.3.0 (Google Fonts v11)",
+      "weights": [
+        400,
+        500,
+        600,
+        700
+      ],
+      "traits": [
+        "distinctive",
+        "confident",
+        "sharp",
+        "characterful"
+      ],
+      "files": {
+        "400": [
+          "familjen-grotesk/familjen-grotesk-latin-400-normal.woff",
+          "familjen-grotesk/familjen-grotesk-latin-ext-400-normal.woff"
+        ],
+        "500": [
+          "familjen-grotesk/familjen-grotesk-latin-500-normal.woff",
+          "familjen-grotesk/familjen-grotesk-latin-ext-500-normal.woff"
+        ],
+        "600": [
+          "familjen-grotesk/familjen-grotesk-latin-600-normal.woff",
+          "familjen-grotesk/familjen-grotesk-latin-ext-600-normal.woff"
+        ],
+        "700": [
+          "familjen-grotesk/familjen-grotesk-latin-700-normal.woff",
+          "familjen-grotesk/familjen-grotesk-latin-ext-700-normal.woff"
         ]
       }
     }

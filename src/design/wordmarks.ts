@@ -24,11 +24,87 @@ export interface WordmarkCandidate {
   failing: string[];
 }
 
-/** The concept's face first, then contrasting bundled faces (grotesque, serif, geometric, technical). */
-export function defaultFonts(conceptFont?: string, count = 4): string[] {
-  const known = new Set(listFonts().map((f) => f.id));
-  const order = [conceptFont, 'inter', 'fraunces', 'sora', 'space-grotesk', 'manrope', 'ibm-plex-serif'];
-  return [...new Set(order.filter((f): f is string => !!f && known.has(f)))].slice(0, count);
+// Brief words that mean the same thing as a trait. A brief says "reliable"; a face is "dependable".
+const KIN: Record<string, string[]> = {
+  trustworthy: ['trustworthy', 'credible', 'dependable', 'institutional', 'reassuring', 'calm'],
+  reliable: ['dependable', 'trustworthy', 'sturdy'],
+  rigorous: ['precise', 'rational', 'technical'],
+  precise: ['precise', 'technical', 'rational', 'sharp'],
+  technical: ['technical', 'developer', 'precise'],
+  developer: ['developer', 'technical', 'code'],
+  warm: ['warm', 'human', 'friendly', 'crafted', 'soft'],
+  human: ['human', 'humanist', 'caring', 'warm'],
+  friendly: ['friendly', 'approachable', 'rounded', 'warm'],
+  calm: ['calm', 'quiet', 'refined'],
+  quiet: ['quiet', 'calm', 'refined'],
+  bold: ['bold', 'confident', 'energetic', 'expressive'],
+  confident: ['confident', 'bold', 'direct', 'distinctive'],
+  playful: ['playful', 'quirky', 'rounded', 'friendly'],
+  premium: ['premium', 'elegant', 'refined', 'classic'],
+  elegant: ['elegant', 'refined', 'premium'],
+  crafted: ['crafted', 'organic', 'warm', 'characterful'],
+  handmade: ['crafted', 'organic', 'warm'],
+  durable: ['durable', 'sturdy', 'rugged', 'industrial'],
+  rugged: ['rugged', 'sturdy', 'industrial', 'grounded'],
+  grounded: ['grounded', 'sturdy', 'dependable'],
+  modern: ['modern', 'contemporary', 'clean'],
+  innovative: ['contemporary', 'futuristic', 'expressive'],
+  optimistic: ['friendly', 'energetic', 'open', 'rounded'],
+  reassuring: ['reassuring', 'caring', 'calm', 'clear'],
+  professional: ['credible', 'precise', 'neutral', 'trustworthy'],
+  editorial: ['editorial', 'literary', 'credible'],
+  insightful: ['thoughtful', 'literary', 'editorial'],
+  local: ['human', 'friendly', 'grounded'],
+  accessible: ['accessible', 'clear', 'open'],
+  encouraging: ['friendly', 'energetic', 'warm'],
+};
+
+/** The kind of face, finer than Google's category: geometric, grotesque, humanist, display, slab, serif, mono. */
+function style(f: { category: string; role: string }): string {
+  if (f.category === 'monospace') return 'mono';
+  const r = f.role.toLowerCase();
+  for (const k of ['slab', 'display', 'humanist', 'grotesque', 'geometric'])
+    if (r.includes(k)) return k === 'display' && f.category === 'serif' ? 'display-serif' : k;
+  return f.category;
+}
+
+function hash(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+  return h >>> 0;
+}
+
+/**
+ * The concept's face first, then contrasting faces chosen for the brief: each family is scored by how many of its
+ * traits match the brief's words (personality, values, tone), and the board takes the best of a different category
+ * each time (sans, serif, display, monospace), so the faces differ from each other and fit the brand. Ties break by
+ * the brand, not alphabetically, so two brands with the same words do not get the same board.
+ */
+export function defaultFonts(conceptFont?: string, count = 4, words: string[] = [], seed = ''): string[] {
+  const fonts = listFonts();
+  const known = new Set(fonts.map((f) => f.id));
+  const tokens = new Set(
+    words.flatMap((w) => w.toLowerCase().split(/[^a-z]+/)).flatMap((t) => (t ? [t, ...(KIN[t] ?? [])] : [])),
+  );
+  const coding = ['developer', 'technical', 'code'].some((t) => tokens.has(t));
+  const scored = fonts
+    .filter((f) => f.id !== conceptFont && (coding || f.category !== 'monospace'))
+    .map((f) => ({ f, score: (f.traits ?? []).filter((t) => tokens.has(t)).length }))
+    .sort((a, b) => b.score - a.score || hash(seed + a.f.id) - hash(seed + b.f.id));
+  const picks: string[] = conceptFont && known.has(conceptFont) ? [conceptFont] : [];
+  const used = new Set(picks.map((id) => style(fontInfo(id))));
+  for (const { f } of scored) {
+    if (picks.length >= count) break;
+    // A monospace face is the developer-tool cliché: offered last, never as the lead contrast.
+    if (used.has(style(f)) || (style(f) === 'mono' && picks.length < count - 1)) continue;
+    picks.push(f.id);
+    used.add(style(f));
+  }
+  for (const { f } of scored) {
+    if (picks.length >= count) break;
+    if (!picks.includes(f.id)) picks.push(f.id);
+  }
+  return picks;
 }
 
 /** The weight the family has that is closest to the one asked for. */
