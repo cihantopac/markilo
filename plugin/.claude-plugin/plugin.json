@@ -1,7 +1,7 @@
 {
   "name": "markilo",
   "displayName": "Markilo",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Brand identity studio: researches your product, draws three original SVG identities for you to compare and choose from, checks originality, and exports a complete asset kit (web, iOS, Android, macOS, Windows, social, tokens, guidelines).",
   "author": {
     "name": "Cihan Topa\u00e7",

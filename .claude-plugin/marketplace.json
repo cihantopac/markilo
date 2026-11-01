@@ -10,7 +10,7 @@
       "name": "markilo",
       "source": "./plugin",
       "description": "Three original SVG identities to compare and choose from, originality checks and a complete asset kit.",
-      "version": "1.1.2",
+      "version": "1.1.3",
       "category": "design",
       "tags": ["brand", "logo", "svg", "icons", "design"]
     }

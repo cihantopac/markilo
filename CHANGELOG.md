@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-11-01
+
+Republishes 1.1.2 to npm. Its content is identical to 1.1.2.
+
+### Fixed
+
+- npm: `markilo@1.1.2` could not be published. The registry answered `409 Conflict — Cannot publish over previously
+  staged version "1.1.2"` while showing no such version and no staged entry (npm/cli#9889). 1.1.2 remains on GitHub
+  as tagged; npm goes from 1.1.1 to 1.1.3.
+
 ## [1.1.2] - 2026-11-01
 
 Visual polish and presentation. No change to how Markilo designs, verifies or exports artwork: the logo files of a kit
@@ -703,7 +713,8 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 - Self-contained HTML Brand Preview Gallery with mockups and a feedback export.
 - Locked identities that are reproduced byte-for-byte and never redesigned.
 
-[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v1.1.2...HEAD
+[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v1.1.3...HEAD
+[1.1.3]: https://github.com/cihantopac/markilo/compare/markilo--v1.1.2...markilo--v1.1.3
 [1.1.2]: https://github.com/cihantopac/markilo/compare/markilo--v1.1.1...markilo--v1.1.2
 [1.1.1]: https://github.com/cihantopac/markilo/compare/markilo--v1.1.0...markilo--v1.1.1
 [1.1.0]: https://github.com/cihantopac/markilo/compare/markilo--v1.0.0...markilo--v1.1.0
