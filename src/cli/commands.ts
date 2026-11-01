@@ -6,6 +6,7 @@ import { checkLetters, letterAdvice } from '../analyze/letters.js';
 import { loadMark, sampleFromSvg } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
 import { compareMarks, genericity } from '../analyze/similarity.js';
+import { TYPESET_LIMIT, typesetLikeness, wordmarkFont } from '../analyze/typeset.js';
 import { type ConstructionSpec, compileSpec, constructionSvg, memberOf } from '../construct/compile.js';
 import {
   type Reference,
@@ -1784,6 +1785,7 @@ export const COMMANDS: CommandSpec[] = [
           : undefined;
       const inputs: ProposalInput[] = [];
       const missing: string[] = [];
+      const typeset: Record<string, number> = {};
       const files: string[] = [];
       for (const [i, cpt] of picked.entries()) {
         const symbol = read(cpt, cpt.files.symbol);
@@ -1796,6 +1798,17 @@ export const COMMANDS: CommandSpec[] = [
         if (!symbol) missing.push(`${cpt.id}: no compact icon (symbol.svg)`);
         if (!cpt.pitch?.strengths.length || !cpt.pitch?.weaknesses.length)
           missing.push(`${cpt.id}: no strengths/weaknesses (concept update --idea --strengths --weaknesses)`);
+        if (wordmark) {
+          const font = wordmarkFont(wordmark, cpt.typography);
+          const t = font && (await typesetLikeness(wordmark, font, w.brand(slug).name));
+          if (t) {
+            typeset[cpt.id] = t.likeness;
+            if (t.likeness >= TYPESET_LIMIT)
+              missing.push(
+                `${cpt.id}: the wordmark is ${font!.id} ${font!.weight} as set (likeness ${t.likeness}) — design the word, not only its colour, spacing or a dot`,
+              );
+          }
+        }
         const lockup = read(cpt, cpt.files.lockupHorizontal);
         const small = read(cpt, cpt.files.small);
         const input: ProposalInput = {
@@ -1826,6 +1839,8 @@ export const COMMANDS: CommandSpec[] = [
         proposals: picked.map((x) => x.id),
         board: board ?? null,
         files,
+        /** How closely each wordmark matches its typeface set plainly (1 = untouched). */
+        typeset,
         missing,
         next: missing.length
           ? 'Complete what is missing, then render again.'

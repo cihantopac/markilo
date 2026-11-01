@@ -78,8 +78,8 @@ Run: \`${m} <command>\` (JSON output; \`${m} help\` lists every command; details
 ## Who does what
 ${
   usesSubagents(target)
-    ? `Run the design work in ${n('designer')} — one run creates a round's three proposals, another develops the one the
-user chooses — and the final critique in ${n('critic')}, each in its own context. Research runs in ${n('researcher')}
+    ? `Run the design work in ${n('designer')} — one run per proposal of a round (three in parallel), then one that develops
+the proposal the user chooses — and the final critique in ${n('critic')}, each in its own context. Research runs in ${n('researcher')}
 only for a broad brief. Give each sub-agent the brand slug, the concept id, the stage and what the user decided.`
     : `Run the final critique as a separate, deliberately critical pass — ideally a fresh chat that reads images —
 starting with a cold look at the rendered sheets, before reading the rationale.`
@@ -110,9 +110,11 @@ reads images. The user, not the critic, decides which concept to develop and app
    with network approval (\`research competitors\`). Brief: \`${m} brief update --brand <slug> --file …\` with the
    stance (what the identity should feel like and must not). Ask at most three questions, plus an optional one for
    references the user likes or dislikes (\`reference add --category inspiration|dislike|existing\`).
-2. Explore: exactly three genuinely different proposals in one designer run (\`concept new … --round 1\`, at least
-   one \`--lead wordmark\`), each with \`wordmark.svg\`, a compact icon \`symbol.svg\`, and
-   \`concept update --idea … --strengths … --weaknesses …\`; then \`${m} proposals --brand <slug>\`. How to design them:
+2. Explore: write three directions that differ in kind (stance, what leads, lettering, the move you see in these
+   letters, icon, colour), then one designer run per direction (\`concept new … --round 1\`, at least one
+   \`--lead wordmark\`), each with \`wordmark.svg\`, a compact icon \`symbol.svg\`, and
+   \`concept update --idea … --strengths … --weaknesses …\`; then \`${m} proposals --brand <slug>\` (a word whose
+   \`typeset\` likeness is 0.95 or more is still its typeface as set: design it). How to design them:
    ${ref('design-principles.md')} (freeform SVG and custom letterforms are first-class; construction specs are an
    optional tool: ${ref('construction.md')}). No critic at this stage.
 3. Choose: \`${m} gallery --serve\` (keep it running in the background; give the user the URL), then

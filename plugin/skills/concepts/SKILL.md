@@ -17,11 +17,14 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    concept work for locked brands. `markilo cost --brand <slug>`: at `status: over`, ask before spending more.
 2. Round number: 1, or the next one after a round the user rejected (`markilo status`). After two rounds the user
    rejected, ask for direction instead; a third round needs `--directed "<their words>"`.
-3. One `markilo:concept-designer` agent in `explore` mode: brand slug, round, brief summary and stance, what to avoid,
-   existing interface colours, the user's references (paths and what they said), and the user's feedback on earlier
-   rounds. It creates three proposals and renders `markilo proposals --brand <slug>`. Record its usage:
-   `markilo cost --brand <slug> --phase explore --tokens <n> --minutes <m>`.
-4. `Read` `proposals/round-<n>.png`. If two proposals are the same idea or one has a drafting error, send only that
-   one back once with the fix. No critic at this stage.
+3. Write the three directions yourself (stance, what leads, typeface class or lettering approach, the move you see in
+   these letters, icon idea, colour — different in kind; at least one wordmark-led), then start three
+   `markilo:concept-designer` agents in parallel, one per direction, in `explore <concept id>` mode with the round,
+   the direction, the brief summary, what to avoid, existing interface colours, the user's references and their
+   feedback on earlier rounds. Record their usage: `markilo cost --brand <slug> --phase explore --tokens <n> --minutes
+   <m>`.
+4. `markilo proposals --brand <slug>` and `Read` `proposals/round-<n>.png`. Send back once only a proposal that
+   `missing` flags (a word still its typeface as set, no icon, no pitch) or that has a drafting error. No critic at
+   this stage.
 5. Open the gallery (gallery skill) and present the three: per proposal one sentence on the idea, one strength, one
    risk; ask the user to select, change, combine or reject all three. Do not develop anything before they choose.

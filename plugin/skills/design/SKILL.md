@@ -73,15 +73,20 @@ what is already in the workspace. `markilo status` says where the work stands an
 
 ### B. Explore: exactly three proposals
 
-One `markilo:concept-designer` agent in `explore` mode creates all three proposals of the round in one run
-(`concept new … --round 1`). Give it: the brand slug, the brief summary and stance, what to avoid, the existing
-interface colours, the user's references (paths and what they said about them), and the round's feedback if any. It
-designs three genuinely different directions (`references/design-principles.md` → "Three proposals"), each with the
-name, an icon, an idea sentence, strengths and weaknesses, and renders `markilo proposals --brand <slug>`.
-
-When it returns, record its usage (`--phase explore`), then `Read` `proposals/round-<n>.png` yourself. If two proposals
-are the same idea, or one has an obvious drafting error (a misread letter, a broken path), send that one proposal back
-once with the specific fix. Do not run a critic here: the user is the judge of the round.
+1. **Write the three directions yourself** — you hold the brief. For each, in a few lines: the stance; what leads
+   (word or symbol); the typeface class or lettering approach; the move you see in _these_ letters (look at the name:
+   which pairs could join, which counters, terminals or rounds repeat, where the rhythm is); the icon idea; colour.
+   They must differ in kind (`references/design-principles.md` → "Three proposals"); at least one is wordmark-led
+   unless the brief says otherwise. In a later round, start from what the user rejected and why.
+2. **Start three `markilo:concept-designer` agents in parallel**, one per direction, each in `explore <concept id>`
+   mode with `--round <n>`, its direction, the brief summary, what to avoid, the existing interface colours and the
+   user's references (paths and what they said). One agent per proposal is deliberate: in Markilo 1.1's first
+   validation a single agent drawing all three spent about eight tool calls on each and returned two untouched
+   typefaces.
+3. When they return, record their usage (`--phase explore`), run `markilo proposals --brand <slug>` and `Read`
+   `proposals/round-<n>.png`. `missing` lists anything a proposal still lacks — a word that is still its typeface as
+   set (`typeset` ≥ 0.95), a missing icon or pitch. Send only that proposal back once, with the specific fix. Do not run
+   a critic here: the user is the judge of the round.
 
 ### C. The user chooses
 

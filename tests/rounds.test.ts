@@ -128,6 +128,9 @@ describe('exploration rounds', () => {
     expect(r.proposals).toEqual(['p1', 'p2', 'p3']);
     expect(existsSync(r.board)).toBe(true);
     expect(r.files).toHaveLength(3);
+    // The words are Fraunces as set: proposals says so, so the designer keeps designing.
+    expect(r.typeset.p1).toBeGreaterThanOrEqual(0.95);
+    expect(r.missing.filter((m: string) => m.includes('fraunces 600 as set'))).toHaveLength(3);
     // p2 and p3 have no strengths or weaknesses yet; p1 has its pitch.
     expect(r.missing.filter((m: string) => m.includes('strengths'))).toHaveLength(2);
     const shown = ok(['concept', 'show', '--brand', 'tidepool', '--concept', 'p1'], cwd);
@@ -161,6 +164,67 @@ describe('exploration rounds', () => {
     expect(f.requests[0]).toBe('reject all of round 1 for tidepool: Too corporate; try something warmer');
     expect(f.applied).toContain('tidepool round 1 → rejected');
     expect(ok(['status'], cwd).brands[0].stage).toBe('next round');
+  }, 60_000);
+});
+
+describe('typeset likeness', () => {
+  it('tells a typeface as set from a word with a treatment through its letters', async () => {
+    const { typesetLikeness } = await import('../src/analyze/typeset.js');
+    const cwd = tmp();
+    const plain = join(cwd, 'plain.svg');
+    ok(
+      [
+        'wordmark',
+        '--text',
+        'relivaro',
+        '--font',
+        'sora',
+        '--weight',
+        '600',
+        '--tracking',
+        '15',
+        '-o',
+        plain,
+      ],
+      cwd,
+    );
+    const spec = join(cwd, 'cut.json');
+    writeFileSync(
+      spec,
+      JSON.stringify({
+        role: 'wordmark',
+        layers: [
+          {
+            fill: '#111111',
+            shape: {
+              subtract: [
+                {
+                  glyph: {
+                    text: 'relivaro',
+                    font: 'sora',
+                    weight: 600,
+                    height: 180,
+                    at: [20, 300],
+                    tracking: 10,
+                  },
+                },
+                { rect: { x: 0, y: 230, w: 1400, h: 14, rotate: -12 } },
+              ],
+            },
+          },
+        ],
+      }),
+    );
+    ok(['construct', spec, '-o', join(cwd, 'cut.svg')], cwd);
+    const font = { id: 'sora', weight: 600 };
+    const untouched = await typesetLikeness(readFileSync(plain, 'utf8'), font, 'Relivaro');
+    const cut = await typesetLikeness(readFileSync(join(cwd, 'cut.svg'), 'utf8'), font, 'Relivaro');
+    expect(untouched!.likeness).toBeGreaterThanOrEqual(0.98);
+    expect(cut!.likeness).toBeLessThan(0.92);
+    expect(
+      (await typesetLikeness(readFileSync(plain, 'utf8'), { id: 'fraunces', weight: 600 }, 'Relivaro'))!
+        .likeness,
+    ).toBeLessThan(0.7);
   }, 60_000);
 });
 

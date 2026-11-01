@@ -44,3 +44,16 @@ is added until a proposal shows a real gap that custom lettering cannot fill.
 
 | Date | Product | Round | Result | Cost (measured) | Minutes | Owner's verdict |
 | ---- | ------- | ----- | ------ | --------------- | ------- | --------------- |
+| 2026-11-01 | Relivaro | 1 (one designer for all three) | 3 proposals; 2 words untouched typefaces (likeness 0.99), 1 a stock face with a square i-dot (0.985); icons: stacked bars, "li", underlined R. Not shown as final: the process was corrected first | $1.61 | 4.9 | — |
+
+Corrections after round 1 (before showing the owner anything):
+
+- `markilo proposals` measures how close each word still is to its typeface set plainly (`typeset`, 1 = untouched;
+  ≥ 0.95 is listed in `missing`). Calibrated on round 1: untouched and dotted words 0.985–0.995, a cut through every
+  letter 0.895, another grotesque 0.79, a serif 0.51.
+- The main session writes the three directions, including the move it sees in the name's letters; one designer per
+  proposal draws it (three in parallel). Reason: the single designer spent about eight tool calls per proposal.
+- The designer sets the word plainly first as a baseline, compares against it, and is not done while `typeset` ≥ 0.95.
+- Plugin-side cost records are a lower bound: an agent's reported tokens do not include the orchestrating session.
+  Round 1 recorded $0.29 against $1.61 measured by Claude Code. The bench's measured cost is the reference.
+
