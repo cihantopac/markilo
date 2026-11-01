@@ -89,7 +89,9 @@ chosen — a word narrowed into a different face, round stones flattened into pi
    underline): the chosen icon refined, and one or two alternatives that carry the same idea further — combine it with
    an idea the user pointed at, or make one product truth visible in it (in Markilo 1.1's validation the accepted icon was a cairn of
    stones whose top stone is only an outline: the unverified step made visible). A lone letter or initial is the
-   weakest icon; in the same validation every letter icon (an r, an R, an "r.") was read as generic. Save them as
+   weakest icon; in the same validation every letter icon (an r, an R, an "r.") was read as generic. **At least one
+   option is not a letter at all** — on the second validated product all three options were letters again (V, V, e),
+   and the critic tied the chosen V to another brand's V. Save them as
    `symbol-a.svg`, `symbol-b.svg` (`symbol-c.svg`), render them side by side at 16–256 px on light and dark
    (`markilo render symbol-a.svg symbol-b.svg … --compare -o review/icon-options.png`), and make your recommendation
    `symbol.svg`.

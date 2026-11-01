@@ -1496,7 +1496,7 @@ export const COMMANDS: CommandSpec[] = [
         w.logDecision(
           slug,
           'Critique',
-          `${cur.id}: ${answer}Gate ${gate.status}${gate.average !== undefined ? ` (average ${gate.average})` : ''}${gate.reasons.length ? `: ${gate.reasons.join('; ')}` : ''}${gate.next && gate.next !== 'present' ? ` Next: ${gate.next}.` : ''}${gate.reviewer ? ` Reviewer: ${gate.reviewer}${gate.calibration === 'unmeasured' ? ' (gate not calibrated on this model)' : ''}.` : ''}`,
+          `${cur.id}: ${answer}Critic's scores (advice — the user decides): ${gate.status === 'passed' ? 'above the bar' : gate.status === 'undecided' ? 'on the edge of the bar' : 'below the bar'}${gate.average !== undefined ? `, average ${gate.average}` : ''}${gate.reasons.length && gate.status !== 'passed' ? ` (${gate.reasons.join('; ')})` : ''}.${gate.reviewer ? ` Reviewer: ${gate.reviewer}${gate.calibration === 'unmeasured' ? ' (gate not calibrated on this model)' : ''}.` : ''}`,
         );
       }
       if ((next.looks?.length ?? 0) > (cur.looks?.length ?? 0)) {
