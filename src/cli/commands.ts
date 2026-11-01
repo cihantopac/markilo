@@ -34,6 +34,7 @@ import { addFont, searchFonts } from '../design/font-catalog.js';
 import { fontInfo, listFonts, loadBundledFace, loadFontFile } from '../design/fonts.js';
 import { composeLockup } from '../design/lockup.js';
 import { generatePalette } from '../design/palette.js';
+import { AUTONOMOUS_ROUNDS, checkRound, ROUND_SIZE, rounds } from '../design/rounds.js';
 import { wordmarkSvg } from '../design/wordmark.js';
 import { defaultFonts, exploreWordmarks } from '../design/wordmarks.js';
 import { GROUP_INFO, resolveDeliverables, suggestDeliverables } from '../export/deliverables.js';
@@ -45,8 +46,18 @@ import { buildGallery } from '../gallery/gallery.js';
 import { serveGallery } from '../gallery/serve.js';
 import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarity.js';
 import { suggestNiceClasses, trademarkSearchPlan } from '../name/trademark.js';
+import { type ProposalInput, renderProposal, renderRoundBoard } from '../render/proposal.js';
 import { renderPng } from '../render/resvg.js';
 import { renderCompareSheet, renderReviewSheet } from '../render/sheet.js';
+import {
+  costSummary,
+  DEFAULT_BUDGET_USD,
+  DEFAULT_RATE,
+  PHASES,
+  phaseOf,
+  readCost,
+  writeCost,
+} from '../report/cost.js';
 import { BLIND_CRITERIA, criterionOf, gateOf, requireCriterion } from '../report/gate.js';
 import { buildOriginalityReport, readReferences } from '../report/originality.js';
 import { verifyConcept } from '../report/quality.js';
@@ -56,6 +67,7 @@ import {
   addReference,
   competitorsFromBrief,
   findDuplicateReferences,
+  REFERENCE_CATEGORIES,
   type ReferenceCategory,
   removeReferences,
   researchCompetitor,
@@ -183,25 +195,39 @@ export const COMMANDS: CommandSpec[] = [
         const approved = existsSync(join(w.finalDir(b.slug), 'brand.json'));
         const exported = existsSync(join(w.exportsDir(b.slug), 'asset-manifest.json'));
         const sources = w.profile(b.slug).sources.length;
+        const live = concepts.filter((x) => x.status !== 'rejected');
+        const latest = rounds(concepts).at(-1);
+        const proposed = latest?.concepts.some((x) =>
+          existsSync(w.conceptFile(b.slug, x.id, join('review', 'proposal.png'))),
+        );
+        // The user owns the choice: proposals wait for them whatever a critic thought; a kept one is refined.
         const stage = b.locked
           ? 'locked'
           : exported
             ? 'delivered'
             : approved
               ? 'export'
-              : gates.includes('passed')
-                ? 'review'
-                : concepts.length
-                  ? 'design'
-                  : sources
-                    ? 'brief and directions'
-                    : 'research';
+              : live.some((x) => x.status === 'shortlisted')
+                ? 'refine'
+                : (proposed && latest!.concepts.some((x) => x.status !== 'rejected')) ||
+                    gates.includes('passed')
+                  ? 'review'
+                  : latest?.concepts.every((x) => x.status === 'rejected')
+                    ? latest.round >= AUTONOMOUS_ROUNDS
+                      ? 'ask for direction'
+                      : 'next round'
+                    : concepts.length
+                      ? 'design'
+                      : sources
+                        ? 'brief and directions'
+                        : 'research';
         return {
           slug: b.slug,
           name: b.name,
           role: b.role,
           stage,
           concepts: concepts.length,
+          round: latest?.round ?? null,
           passedGate: gates.filter((g) => g === 'passed').length,
           approved,
           exported,
@@ -211,8 +237,11 @@ export const COMMANDS: CommandSpec[] = [
       const NEXT: Record<string, string> = {
         research: `markilo research repo <path> --brand ${first?.slug}`,
         'brief and directions': `markilo brief update --brand ${first?.slug} --file brief.json`,
-        design: `markilo concept list --brand ${first?.slug}`,
+        design: `markilo proposals --brand ${first?.slug}`,
         review: 'markilo gallery --serve',
+        refine: `markilo feedback --brand ${first?.slug}`,
+        'next round': `markilo feedback --brand ${first?.slug} (then three new proposals, --round ${(first?.round ?? 0) + 1})`,
+        'ask for direction': `Ask the user for a direction; a new round needs --directed "<their words>".`,
         export: `markilo export --brand ${first?.slug}`,
       };
       return {
@@ -949,13 +978,17 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Add a competitor or category reference mark (SVG/PNG/JPEG/ICO) for similarity analysis. Stored git-ignored.',
     usage:
-      'reference add --brand <slug> --file <path> --name <brand name> --source <url or note> [--category <text>] [--retrieved <ISO date>]',
+      'reference add --brand <slug> --file <path> --name <brand name> --source <url or note> [--category direct|indirect|category|form-family|inspiration|dislike|existing] [--notes <what the user likes or dislikes in it>] [--retrieved <ISO date>]',
     options: {
       ...brandOpt,
-      file: { type: 'string', description: 'Logo file' },
-      name: { type: 'string', description: 'Whose mark this is' },
+      file: { type: 'string', description: 'Logo, screenshot, mood board or sketch' },
+      name: { type: 'string', description: 'Whose mark this is, or what the image is' },
       source: { type: 'string', description: 'Where it came from' },
-      category: { type: 'string', description: 'Direct / indirect / category example' },
+      category: {
+        type: 'string',
+        description:
+          'direct, indirect, category or form-family (competitors); inspiration, dislike or existing (the user’s own references)',
+      },
       retrieved: { type: 'string', description: 'Retrieval date' },
       notes: { type: 'string', description: 'Notes' },
     },
@@ -967,12 +1000,19 @@ export const COMMANDS: CommandSpec[] = [
       const ext = extname(src).toLowerCase().replace('.jpeg', '.jpg');
       if (!['.svg', '.png', '.jpg', '.ico'].includes(ext))
         throw new MarkiloError('INVALID_INPUT', 'References must be SVG, PNG, JPEG or ICO.');
+      const category = c.str('category');
+      if (category && !REFERENCE_CATEGORIES.includes(category as ReferenceCategory))
+        throw new MarkiloError(
+          'USAGE',
+          `Unknown --category "${category}".`,
+          `Use one of: ${REFERENCE_CATEGORIES.join(', ')}.`,
+        );
       const r = await addReference(w, slug, {
         name: c.req('name'),
         source: c.req('source'),
         bytes: readFileSync(src),
         ext: ext as '.svg',
-        ...(c.str('category') ? { category: c.str('category') as ReferenceCategory } : {}),
+        ...(category ? { category: category as ReferenceCategory } : {}),
         ...(c.str('retrieved') ? { retrievedAt: new Date(c.str('retrieved')!).toISOString() } : {}),
         ...(c.str('notes') ? { notes: c.str('notes')! } : {}),
       });
@@ -1075,14 +1115,22 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Create a concept folder and concept.json. Then write symbol.svg (and optionally wordmark.svg) into it.',
     usage:
-      'concept new --brand <slug> --id <id> --title <title> --direction <direction> --rationale <why> --semantics a,b,c --primary <#hex> [--secondary --accent --ink --paper] [--font <id> --weight <n>] [--lead symbol|wordmark]',
+      'concept new --brand <slug> --id <id> --title <title> --direction <direction> --rationale <why> --semantics a,b,c --primary <#hex> [--secondary --accent --ink --paper] [--font <id> --weight <n>] [--lead symbol|wordmark] [--round <n> [--directed "<the user\'s direction>"]]',
     options: {
       ...brandOpt,
       id: { type: 'string', description: 'Concept id (slug)' },
       lead: {
         type: 'string',
         description:
-          'symbol (default) or wordmark: the identity is a word drawn from a typeface with one or two letters changed',
+          'symbol (default) or wordmark: the word itself is the identity, with a compact icon derived from it',
+      },
+      round: {
+        type: 'string',
+        description: `Exploration round (1, 2, …): at most ${ROUND_SIZE} proposals per round`,
+      },
+      directed: {
+        type: 'string',
+        description: `The user's direction, required for a round beyond ${AUTONOMOUS_ROUNDS}`,
       },
       title: { type: 'string', description: 'Concept name' },
       direction: { type: 'string', description: 'Creative direction in one line' },
@@ -1115,11 +1163,15 @@ export const COMMANDS: CommandSpec[] = [
       const lead = c.str('lead');
       if (lead && lead !== 'symbol' && lead !== 'wordmark')
         throw new MarkiloError('USAGE', '--lead must be symbol or wordmark.');
+      const round = c.str('round') ? c.num('round')! : undefined;
+      if (round !== undefined) checkRound(w, slug, round, c.str('directed'));
       const concept: Concept = {
         schema: 'markilo/concept@1',
         id,
         brand: slug,
         ...(lead === 'wordmark' ? { lead } : {}),
+        ...(round !== undefined ? { round } : {}),
+        ...(round !== undefined && c.str('directed') ? { directed: c.str('directed')! } : {}),
         title: c.req('title'),
         direction: c.req('direction'),
         rationale: c.req('rationale'),
@@ -1200,7 +1252,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1262,6 +1314,9 @@ export const COMMANDS: CommandSpec[] = [
       title: { type: 'string', description: 'Concept title' },
       direction: { type: 'string', description: 'Direction (the idea in one sentence)' },
       rationale: { type: 'string', description: 'Why it fits the brand' },
+      idea: { type: 'string', description: 'Proposal: the idea in one short sentence, for the user' },
+      strengths: { type: 'string', description: 'Proposal: key strengths, separated by ";"' },
+      weaknesses: { type: 'string', description: 'Proposal: honest risks and weaknesses, separated by ";"' },
     },
     async run(c) {
       const w = ws(c);
@@ -1301,6 +1356,19 @@ export const COMMANDS: CommandSpec[] = [
       }
       if (c.str('construction')) next.construction = c.str('construction')!;
       for (const k of ['title', 'direction', 'rationale'] as const) if (c.str(k)) next[k] = c.str(k)!;
+      if (c.str('idea') || c.str('strengths') || c.str('weaknesses')) {
+        const items = (v?: string) =>
+          (v ?? '')
+            .split(';')
+            .map((x) => x.trim())
+            .filter(Boolean)
+            .slice(0, 4);
+        next.pitch = {
+          idea: c.str('idea')?.trim() ?? cur.pitch?.idea ?? cur.direction,
+          strengths: c.str('strengths') ? items(c.str('strengths')) : (cur.pitch?.strengths ?? []),
+          weaknesses: c.str('weaknesses') ? items(c.str('weaknesses')) : (cur.pitch?.weaknesses ?? []),
+        };
+      }
       if (c.str('reads-as'))
         next.readsAs = c
           .str('reads-as')!
@@ -1498,7 +1566,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Approve a concept: freeze optimized masters, generate lockups (horizontal, stacked, compact) and brand.json.',
     usage:
-      'finalize --brand <slug> --concept <id> [--tagline <text>] [--note <usage rule>]... [--accept-risk] [--user-choice <why>] [--force]',
+      'finalize --brand <slug> --concept <id> --user-choice "<the user\'s words>" [--tagline <text>] [--note <usage rule>]... [--accept-risk] [--force]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1515,7 +1583,8 @@ export const COMMANDS: CommandSpec[] = [
       },
       'user-choice': {
         type: 'string',
-        description: "The user's reason for approving a concept that did not pass the critic gate",
+        description:
+          "Required: the user's own words choosing this concept (a critic's pass alone never finalizes)",
       },
       force: { type: 'boolean', description: 'Replace an existing approved kit' },
     },
@@ -1684,9 +1753,145 @@ export const COMMANDS: CommandSpec[] = [
     },
   },
   {
+    name: 'proposals',
+    summary:
+      "Render a round's proposals for the user's decision: concepts/<id>/review/proposal.png each (the identity on its paper and reversed, the icon as app tile, avatar, 32 and 16 px) and proposals/round-<n>.png side by side.",
+    usage: 'proposals --brand <slug> [--round <n>] [--concepts a,b,c]',
+    options: {
+      ...brandOpt,
+      round: { type: 'string', description: 'Round to render (default: the latest)' },
+      concepts: { type: 'string', description: 'Concept ids instead of a round (comma-separated)' },
+    },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      const all = w.concepts(slug);
+      const ids = c.list('concepts');
+      const byRound = rounds(all);
+      const round = c.str('round') ? c.num('round')! : byRound.at(-1)?.round;
+      const picked = ids.length
+        ? ids.map((id) => w.concept(slug, id))
+        : (byRound.find((r) => r.round === round)?.concepts ?? []);
+      if (!picked.length)
+        throw new MarkiloError(
+          'NOT_FOUND',
+          'No proposals to render.',
+          'Create the concepts with --round <n> (concept new), or name them with --concepts.',
+        );
+      const read = (cpt: Concept, rel?: string) =>
+        rel && existsSync(w.conceptFile(slug, cpt.id, rel))
+          ? readText(w.conceptFile(slug, cpt.id, rel))
+          : undefined;
+      const inputs: ProposalInput[] = [];
+      const missing: string[] = [];
+      const files: string[] = [];
+      for (const [i, cpt] of picked.entries()) {
+        const symbol = read(cpt, cpt.files.symbol);
+        const wordmark = read(cpt, cpt.files.wordmark);
+        if (!symbol && !wordmark) {
+          missing.push(`${cpt.id}: no symbol.svg or wordmark.svg yet`);
+          continue;
+        }
+        if (!wordmark) missing.push(`${cpt.id}: no wordmark (the name is not shown)`);
+        if (!symbol) missing.push(`${cpt.id}: no compact icon (symbol.svg)`);
+        if (!cpt.pitch?.strengths.length || !cpt.pitch?.weaknesses.length)
+          missing.push(`${cpt.id}: no strengths/weaknesses (concept update --idea --strengths --weaknesses)`);
+        const lockup = read(cpt, cpt.files.lockupHorizontal);
+        const small = read(cpt, cpt.files.small);
+        const input: ProposalInput = {
+          title: cpt.title,
+          caption: `${cpt.round !== undefined ? `Round ${cpt.round} · ` : ''}${String.fromCharCode(65 + i)} · ${cpt.lead === 'wordmark' ? 'wordmark-led' : 'symbol-led'}`,
+          idea: cpt.pitch?.idea ?? cpt.direction,
+          lead: cpt.lead === 'wordmark' ? 'wordmark' : 'symbol',
+          ...(symbol ? { symbol } : {}),
+          ...(wordmark ? { wordmark } : {}),
+          ...(lockup ? { lockup } : {}),
+          ...(small ? { small } : {}),
+          paper: cpt.palette.paper ?? '#ffffff',
+          ...(cpt.palette.ink ? { ink: cpt.palette.ink } : {}),
+          primary: cpt.palette.primary,
+        };
+        inputs.push(input);
+        const out = w.conceptFile(slug, cpt.id, join('review', 'proposal.png'));
+        writeGenerated(out, await renderProposal(input));
+        files.push(out);
+      }
+      const board =
+        inputs.length > 1
+          ? join(w.brandDir(slug), 'proposals', `round-${ids.length ? 'custom' : round}.png`)
+          : undefined;
+      if (board) writeGenerated(board, await renderRoundBoard(inputs));
+      return {
+        round: ids.length ? null : round,
+        proposals: picked.map((x) => x.id),
+        board: board ?? null,
+        files,
+        missing,
+        next: missing.length
+          ? 'Complete what is missing, then render again.'
+          : `Read the board, then open the gallery (markilo gallery --serve) for the user's decision.`,
+      };
+    },
+  },
+  {
+    name: 'cost',
+    summary:
+      'Track what the creative work cost per phase (understand, explore, refine, verify, export) against a budget. Without options: the summary; status "over" means stop paid work and ask.',
+    usage:
+      'cost --brand <slug> [--phase <p> (--tokens <n> | --usd <x>) [--minutes <m>] [--rate <usd per M tokens>] [--note <text>]] [--budget <usd>]',
+    options: {
+      ...brandOpt,
+      phase: { type: 'string', description: `Phase: ${PHASES.join(', ')}` },
+      tokens: { type: 'string', description: 'Tokens the step used (e.g. a subagent’s reported total)' },
+      usd: { type: 'string', description: 'Measured cost in USD, when known' },
+      minutes: { type: 'string', description: 'Wall-clock minutes' },
+      rate: {
+        type: 'string',
+        description: `USD per million tokens for the estimate (default ${DEFAULT_RATE}, measured on Markilo 1.0 runs)`,
+      },
+      note: { type: 'string', description: 'What the step was' },
+      budget: { type: 'string', description: `Budget in USD (default ${DEFAULT_BUDGET_USD})` },
+    },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      w.brand(slug);
+      const log = readCost(w, slug);
+      if (c.str('budget')) {
+        const b = c.num('budget')!;
+        if (!(b > 0)) throw new MarkiloError('USAGE', '--budget must be a positive number of dollars.');
+        log.budgetUsd = b;
+      }
+      if (c.str('phase')) {
+        if (!c.str('tokens') && !c.str('usd'))
+          throw new MarkiloError('USAGE', 'Record --tokens or --usd with --phase.');
+        const n = (k: string) => {
+          const v = c.num(k);
+          if (v !== undefined && !(v >= 0)) throw new MarkiloError('USAGE', `--${k} must be 0 or more.`);
+          return v;
+        };
+        const tokens = n('tokens');
+        const usd = n('usd');
+        const minutes = n('minutes');
+        const rate = n('rate');
+        log.entries.push({
+          phase: phaseOf(c.str('phase')!),
+          at: nowIso(),
+          ...(tokens !== undefined ? { tokens } : {}),
+          ...(usd !== undefined ? { usd } : {}),
+          ...(minutes !== undefined ? { minutes } : {}),
+          ...(rate !== undefined ? { rate } : {}),
+          ...(c.str('note') ? { note: c.str('note')!.slice(0, 200) } : {}),
+        });
+      }
+      if (c.str('budget') || c.str('phase')) writeCost(w, slug, log);
+      return costSummary(log);
+    },
+  },
+  {
     name: 'feedback',
     summary:
-      'Read the decisions saved from the gallery (sketch picks, keep/refine/drop, revision tags, notes, pinned spots, preferred concept); --import a downloaded file; --apply records sketch picks and marks dropped concepts rejected and kept ones shortlisted.',
+      'Read the decisions saved from the gallery (select/change/drop, combine, reject a whole round, revision tags, notes, pinned spots, preferred concept); --import a downloaded file; --apply marks selected concepts shortlisted and dropped or round-rejected ones rejected.',
     usage: 'feedback [--brand <slug>] [--import <markilo-feedback.json>] [--apply]',
     options: {
       ...brandOpt,
@@ -1751,11 +1956,20 @@ export const COMMANDS: CommandSpec[] = [
           w.saveConcept({ ...cur, status: d.decision === 'drop' ? 'rejected' : 'shortlisted' });
           applied.push(`${d.brand}/${d.concept} → ${d.decision === 'drop' ? 'rejected' : 'shortlisted'}`);
         }
+      const rejectAll = (f.rejectAll ?? []).filter((r) => !brand || r.brand === brand);
+      if (c.bool('apply'))
+        for (const r of rejectAll) {
+          for (const cpt of w.concepts(r.brand).filter((x) => x.round === r.round && x.status !== 'approved'))
+            if (cpt.status !== 'rejected') w.saveConcept({ ...cpt, status: 'rejected' });
+          w.logDecision(r.brand, 'Round rejected (user)', `Round ${r.round}${r.note ? ` — ${r.note}` : ''}`);
+          applied.push(`${r.brand} round ${r.round} → rejected`);
+        }
       return {
         savedAt: f.savedAt,
         decisions,
         preferred: f.preferred,
-        requests: feedbackRequests({ ...f, decisions }),
+        ...(rejectAll.length ? { rejectAll } : {}),
+        requests: feedbackRequests({ ...f, decisions, rejectAll }),
         ...(c.bool('apply') ? { applied } : {}),
       };
     },

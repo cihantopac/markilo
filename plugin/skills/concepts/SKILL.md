@@ -1,35 +1,27 @@
 ---
 
 name: concepts
-description: Markilo creative exploration and concept design — turn a brief into 3–5 genuinely different creative directions and original, verified SVG logo concepts (symbol + outlined wordmark). Use when the user wants logo concepts or design directions for a brand that already has research or a brief.
+description: Markilo exploration — turn a brief into exactly three genuinely different, visually developed identity proposals (wordmark, compact icon, idea, strengths and weaknesses, light and dark previews) for the user to choose from. Use when the user wants logo concepts or design directions for a brand that already has research or a brief.
 argument-hint: "[brand slug and any direction notes]"
 allowed-tools: Bash(node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" *) Bash(node ${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs *) Read Write Edit Glob Grep
 ---
 
-# Markilo · Explore and design concepts
+# Markilo · Three proposals
 
 Request: $ARGUMENTS
 
-Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts. Read `${CLAUDE_PLUGIN_ROOT}/skills/design/references/design-principles.md` and `${CLAUDE_PLUGIN_ROOT}/skills/design/references/svg-authoring.md`.
+Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts. Read `${CLAUDE_PLUGIN_ROOT}/skills/design/references/design-principles.md`.
 
 1. `markilo brief show --brand <slug>` and `markilo profile show --brand <slug>`. If the brief is thin, run the
-   research skill first or ask the user. Refuse concept work for locked brands.
-2. Write 3–5 directions (idea sentence, metaphor, form language, typeface from `markilo fonts`, palette, why it fits,
-   risks, and what a stranger would see first). At most one may draw the product's own object or the name's literal
-   noun, and only with a named transformation ("The product's own object is a cliché too" in design-principles.md);
-   at most one may be built on the name's initial, and at least one must have no letter and no object. Name each
-   direction's form language from the brief's adjectives. Share them briefly; proceed with the ones the user prefers (or all, if they said "just go").
-3. Sketch first: for each direction, a `markilo:concept-designer` agent in `sketch` mode (brand slug, concept id,
-   direction text, brief summary, palette, typeface), in parallel. Then one `markilo:design-critic` agent does a
-   **sketch review** of every board and records `--sketch-pick <id|none>`. Directions with `none` get one more sketch
-   pass with the critic's suggested move and a second review, or are dropped; never override a `none` yourself. Then a concept-designer in `develop <sketch id>` mode
-   finishes each picked sketch.
-4. After the agents finish: `markilo diversity --brand <slug>`. Merge or replace directions that are too similar.
-5. Ask the `markilo:design-critic` agent to review all concepts (it reads the review sheets and records judgment).
-   Apply the quality gate: the critic's blind brand-fit, distinctiveness and memorability each ≥ 6 and its "would a
-   senior designer present this?" is yes (`markilo concept list` shows `gate` per concept). A failed concept's `next`
-   decides: `fix` goes back to a concept-designer once with exactly what the critic named; `reject` is set to `rejected`
-   so the gallery hides it — reworking a failed idea almost never works (1 of 34 in the benchmark). If fewer than two
-   pass, tell the user plainly and propose new directions instead of showing weak work.
-6. `markilo gallery` and present: per concept, two lines (idea + measured strengths/risks) and the gallery path.
-   Ask the user which to refine.
+   research skill first or ask the user (at most three questions, plus the optional one about references). Refuse
+   concept work for locked brands. `markilo cost --brand <slug>`: at `status: over`, ask before spending more.
+2. Round number: 1, or the next one after a round the user rejected (`markilo status`). After two rounds the user
+   rejected, ask for direction instead; a third round needs `--directed "<their words>"`.
+3. One `markilo:concept-designer` agent in `explore` mode: brand slug, round, brief summary and stance, what to avoid,
+   existing interface colours, the user's references (paths and what they said), and the user's feedback on earlier
+   rounds. It creates three proposals and renders `markilo proposals --brand <slug>`. Record its usage:
+   `markilo cost --brand <slug> --phase explore --tokens <n> --minutes <m>`.
+4. `Read` `proposals/round-<n>.png`. If two proposals are the same idea or one has a drafting error, send only that
+   one back once with the fix. No critic at this stage.
+5. Open the gallery (gallery skill) and present the three: per proposal one sentence on the idea, one strength, one
+   risk; ask the user to select, change, combine or reject all three. Do not develop anything before they choose.

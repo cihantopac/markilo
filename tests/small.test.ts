@@ -29,7 +29,10 @@ describe('small-size symbol', () => {
     writeFileSync(join(cdir, 'symbol-small.svg'), mark('fold-n'));
     expect((await checks()).find((c) => c.id === 'small:same-mark')?.status).toBe('pass');
 
-    const kit = await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true });
+    const kit = await finalizeConcept(ws, 'nimbra', 'fold', {
+      acceptRisk: true,
+      userChoice: 'Chosen in a test.',
+    });
     expect(kit.files.symbolSmall).toBe('symbol-small.svg');
     const result = await exportBrand(ws, 'nimbra', { groups: ['web'] });
     const fav = result.assets.find((a) => a.path === 'web/favicon.svg');

@@ -34,8 +34,7 @@ export const ROLES = {
   critic: {
     source: 'design-critic',
     claude: 'opus',
-    needs:
-      'image input and a fresh context; your strongest model, at high reasoning effort (the gate was calibrated on Claude Opus and reports other reviewers as not calibrated)',
+    needs: 'image input and a fresh context; your strongest model, at high reasoning effort',
   },
 } as const;
 export type Role = keyof typeof ROLES;
@@ -79,68 +78,53 @@ Run: \`${m} <command>\` (JSON output; \`${m} help\` lists every command; details
 ## Who does what
 ${
   usesSubagents(target)
-    ? `Run three steps in Markilo's sub-agents, each in its own context: research in ${n('researcher')}; each direction's
-sketches, and later its development, in one ${n('designer')} per direction; the sketch review and every critique in
-${n('critic')}. Never critique in your own context or a designer's: the critic judges cold, before it reads the
-rationale. Give each sub-agent the brand slug, the concept id, the stage and what the user decided.`
-    : `Run the sketch review and every critique as a separate, deliberately critical pass — ideally a fresh chat on your
-strongest model that reads images — starting with a blind look at the context sheet, before reading the rationale.`
+    ? `Run the design work in ${n('designer')} — one run creates a round's three proposals, another develops the one the
+user chooses — and the final critique in ${n('critic')}, each in its own context. Research runs in ${n('researcher')}
+only for a broad brief. Give each sub-agent the brand slug, the concept id, the stage and what the user decided.`
+    : `Run the final critique as a separate, deliberately critical pass — ideally a fresh chat that reads images —
+starting with a cold look at the rendered sheets, before reading the rationale.`
 }
-Models: the critic needs the strongest model you have that reads images, at high reasoning effort (Markilo's gate was
-calibrated on Claude Opus; with another reviewer it says so). Research and design run well on a fast general model.
+Models: design and research run well on a capable general model; the critic benefits from your strongest model that
+reads images. The user, not the critic, decides which concept to develop and approve.
 
 ## Rules
-1. Measured vs judged: measurements (contrast, legibility, similarity, sizes) come from the toolchain; your own
+1. The user owns the creative choice: show proposals and let them choose; \`finalize\` needs
+   \`--user-choice "<their words>"\`.
+2. Measured vs judged: measurements (contrast, legibility, similarity, sizes) come from the toolchain; your own
    opinions are labelled as judgment with a reason.
-2. Never invent facts about a product, market, competitor, trademark or user. Record what you could not establish with
+3. Never invent facts about a product, market, competitor, trademark or user. Record what you could not establish with
    \`${m} profile add-gap\`.
-3. Ask the user before network use (commands need \`--allow-network\`), web searches with private names, copying
+4. Ask the user before network use (commands need \`--allow-network\`), web searches with private names, copying
    assets into their project (\`install-assets --apply\`) or anything that costs money.
-4. Locked brands are never redesigned, recolored or "improved".
-5. Originality is mandatory: a concept with verdict \`redesign\` is reworked from the idea up. "No conflicts found" is
+5. Locked brands are never redesigned, recolored or "improved".
+6. Originality is mandatory: a concept with verdict \`redesign\` is redrawn from the idea up. "No conflicts found" is
    never proof of availability; trademark clearance needs a lawyer.
-6. Look at your work: after every change run \`${m} verify\` and open the PNGs it writes (review sheet, context sheet).
+7. Look at your work: render every SVG you write and open the PNG before showing it.
+8. Spend deliberately: \`${m} cost --brand <slug>\` before each agent or round, record each phase after it; at
+   \`status: over\` stop and ask.
 
-## Workflow (say which stage you are in)
-1. Discover: \`${m} init\`, \`${m} brand add "<Name>"\`; for a repository \`${m} research repo <path> --brand <slug>\`
+## Workflow (say which stage you are in): Understand → Explore → Choose → Develop → Verify → Export
+1. Understand: \`${m} init\`, \`${m} brand add "<Name>"\`; for a repository \`${m} research repo <path> --brand <slug>\`
    (monorepo: \`research monorepo\` first); for a site, with permission, \`research site <url> --brand <slug> --allow-network\`.
-2. Research: \`${m} profile understanding --brand <slug>\` (stated vs inferred facts, unknowns); competitors with
-   \`research competitors\` and \`reference add\`; \`reference dedupe\`. Playbook: ${ref('research-playbook.md')}.
-3. Brief: \`${m} brief update --brand <slug> --file …\`; ask only what you cannot infer, 2–5 questions at once.
-4. Ideas: at least 12 one-line visual hooks from several sources (\`${m} ideas --brand <slug> --add "<what a stranger
-   sees at 32 px>" --means "…" --source product|audience|name|type|abstract\`); then, as the critic, strike or keep
-   and rank each from the words alone (\`--idea iN --strike|--keep "<reading>" [--rank n]\`). Build directions from the
-   kept ideas. Mechanism metaphors drawn with primitives (brackets, crosses, arches, gauges) read as UI glyphs.
-   Explore: 3–5 genuinely different directions (idea, metaphor, form, type, color, risks); at most one built on the
-   name's initial, at least one with no letter and no product object, and usually one wordmark-led
-   (\`concept new … --lead wordmark\`: the name from a good typeface with one or two letters changed, the icon cut
-   from them — "Wordmark-led concepts" in ${ref('construction.md')}); \`concept new\` for each.
-5. Sketch: 3–5 construction specs per direction in \`concepts/<id>/sketches/\`, each with an "idea";
-   \`${m} sketches --brand <slug> --concept <id>\`. Build marks only with construction specs: ${ref('construction.md')}.
-6. Sketch review: as a separate, critical pass, open each \`sketches/board.png\`, strike sketches that read as a UI
-   icon, a known logo, a cliché, the product's own object or the name's initial with a cut, and develop the strongest
-   one left per direction (\`concept update --sketch-pick sN|none\`; none only when every sketch is struck).
-7. Develop: tune with \`construct … --vary\`, commit with \`construct … --brand --concept --set …\`, wordmark
-   (\`wordmark\` or a constructed one), \`verify\`. Principles: ${ref('design-principles.md')}; SVG rules: ${ref('svg-authoring.md')}.
-8. Critique (a separate pass, as an independent critic). Cold first: read the brief and look only at
-   \`research/cache/review/context-<id>.png\` and the review sheet; record what the mark looks like
-   (\`concept update --reads-as "…; …; …"\`), blind scores (\`--blind distinctiveness=n,memorability=n,brand-fit=n,craft=n,versatility=n\`)
-   and whether a senior designer would present it as is (\`--present yes|no:reason\`). Then read the rationale and
-   reports and add feedback scores with \`--judgment criterion=score:reason\` (brand-fit, semantic-relevance,
-   distinctiveness, memorability, simplicity, balance, craft, typography, color, cultural-fit, timelessness,
-   premium-perception, versatility); a measured problem may turn the yes into a no, never the other way. Name your
-   model with \`--reviewer <model>\` (the gate was calibrated on Claude Opus; it reports other models as unmeasured).
-   Gate: blind brand-fit, distinctiveness and memorability ≥ 6 and yes — \`${m} concept list\` shows it — and its
-   \`next\` says what to do: \`fix\` once (only the critic's no is in the way), \`reject\` and try a new direction
-   instead of reworking (in the benchmark 1 of 34 reworked concepts passed later), or \`second-look\` when the first
-   cold look landed on the edge of the bar: two fresh critic passes that see only the brief and the images record
-   \`concept update --look <five scores> --look-present yes|no:reason\`, and the majority of three decides.
-9. Review: \`${m} gallery --serve\` (keep it running in the background; give the user the URL), then
-   \`${m} feedback --brand <slug>\` to read their decisions, pins and preference.
-10. Deliver: \`finalize\` (\`--accept-risk\` only when the user accepts an insufficient-evidence verdict; a concept that
-    has not passed the gate — failed, undecided or never reviewed — needs \`--user-choice "<the user's reason>"\`),
-    \`deliverables\`, \`export\`, then \`install-assets --framework auto --brand <slug>\` as a dry run, and \`--apply\` only
-    with the user's OK.
+   Read the README and the product's interface (its colours and type are equity). Competitors once, about five, only
+   with network approval (\`research competitors\`). Brief: \`${m} brief update --brand <slug> --file …\` with the
+   stance (what the identity should feel like and must not). Ask at most three questions, plus an optional one for
+   references the user likes or dislikes (\`reference add --category inspiration|dislike|existing\`).
+2. Explore: exactly three genuinely different proposals in one designer run (\`concept new … --round 1\`, at least
+   one \`--lead wordmark\`), each with \`wordmark.svg\`, a compact icon \`symbol.svg\`, and
+   \`concept update --idea … --strengths … --weaknesses …\`; then \`${m} proposals --brand <slug>\`. How to design them:
+   ${ref('design-principles.md')} (freeform SVG and custom letterforms are first-class; construction specs are an
+   optional tool: ${ref('construction.md')}). No critic at this stage.
+3. Choose: \`${m} gallery --serve\` (keep it running in the background; give the user the URL), then
+   \`${m} feedback --brand <slug>\`: select, change, combine, or reject the round. At most two rounds on your own;
+   a third needs \`--round 3 --directed "<their words>"\`.
+4. Develop the chosen concept (letterforms, spacing, optical balance, icon and small version, lockups, colour), then
+   \`${m} verify\` until nothing fails. SVG rules: ${ref('svg-authoring.md')}.
+5. Verify: one independent critique (cold first: \`concept update --reads-as … --blind … --present yes|no:reason\`,
+   then \`--judgment criterion=score:reason\` and up to five concrete craft fixes). It is advice; apply the fixes once.
+6. Deliver, on the user's approval: \`finalize --user-choice "<their words>"\` (\`--accept-risk\` only when the user
+   accepts an insufficient-evidence verdict), \`deliverables\`, \`export\`, then
+   \`install-assets --framework auto --brand <slug>\` as a dry run, and \`--apply\` only with the user's OK.
 
 Originality policy: ${ref('originality.md')}. Stage gates: ${ref('workflow.md')}.
 `;
@@ -203,9 +187,9 @@ const DESCRIPTIONS: Record<Role, string> = {
   researcher:
     "Markilo's brand researcher: market, audience, competitors and their marks, recorded as sourced findings in the Markilo workspace.",
   designer:
-    "Markilo's concept designer: sketches one creative direction as construction specs, then develops the picked sketch into a verified symbol and wordmark.",
+    "Markilo's concept designer: three genuinely different identity proposals per round, then the user's chosen one developed into a verified wordmark, icon and lockups.",
   critic:
-    "Markilo's independent design critic: the sketch review and the cold critique behind the quality gate, from the rendered PNGs. Run it in its own context.",
+    "Markilo's independent design critic: a cold read of the developed identity from the rendered PNGs, with scores and concrete craft fixes — advice, never a gate on the user's choice. Run it in its own context.",
 };
 
 function subagentFile(

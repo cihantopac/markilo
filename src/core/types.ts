@@ -166,11 +166,19 @@ export interface Concept {
   updatedAt: string;
   judgment?: Record<string, { score: number; rationale: string }>;
   /**
-   * What carries the identity: the symbol (default), or the wordmark — a word drawn from a real typeface with one or
-   * two letters changed, and a symbol cut from that same drawing for icons. The critic then reads the wordmark sheet
-   * first.
+   * What carries the identity: the symbol (default), or the wordmark — the word itself, drawn with its own character,
+   * with a compact icon derived from that same drawing. Reviews read the wordmark first.
    */
   lead?: 'symbol' | 'wordmark';
+  /**
+   * The exploration round this concept was proposed in (three directions per round). After two rounds Markilo stops
+   * exploring on its own and asks the user for direction; a third round needs the user's direction.
+   */
+  round?: number;
+  /** How the proposal is pitched to the user: the idea in one sentence, its strengths and its risks. */
+  pitch?: { idea: string; strengths: string[]; weaknesses: string[] };
+  /** The user's direction a round beyond the second was built on (their words). */
+  directed?: string;
   /** What the critic saw before reading the rationale (first impressions, in order). */
   readsAs?: string[];
   /**

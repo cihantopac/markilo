@@ -121,6 +121,7 @@ async function mockups(s: Subject): Promise<string> {
 }
 
 const REVISION_CHIPS = [
+  'combine with another',
   'bolder',
   'simpler',
   'more distinctive',
@@ -220,7 +221,15 @@ async function subjectCard(s: Subject, opts: { review?: boolean } = {}): Promise
     s.locked || opts.review === false
       ? ''
       : `<div class="decide" data-key="${key}" data-title="${escapeAttr(s.title)}">
-    <div class="seg">${['keep', 'refine', 'drop'].map((v) => `<button type="button" data-pick="${v}">${v[0]!.toUpperCase()}${v.slice(1)}</button>`).join('')}</div>
+    <div class="seg">${(
+      [
+        ['keep', s.concept?.round !== undefined ? 'Select' : 'Keep'],
+        ['refine', s.concept?.round !== undefined ? 'Change' : 'Refine'],
+        ['drop', 'Drop'],
+      ] as const
+    )
+      .map(([v, l]) => `<button type="button" data-pick="${v}">${l}</button>`)
+      .join('')}</div>
     <div class="chips">${REVISION_CHIPS.map((c) => `<button type="button" class="chip" data-chip="${escapeAttr(c)}">${escapeText(c)}</button>`).join('')}</div>
     <input type="text" class="note" placeholder="Anything specific? (optional)">
     <ol class="pins" title="Click on the large mark to point at a spot"></ol>
@@ -232,7 +241,12 @@ async function subjectCard(s: Subject, opts: { review?: boolean } = {}): Promise
   ${lock && s.symbol ? `<div class="lockup" style="background:${g.native}">${fitInline(lock, 300, 54)}</div>` : ''}
   ${sizes ? `<div class="sizes" style="background:${g.native}">${sizes}</div>` : ''}
   <div class="pills">${pills}</div>
-  ${s.concept ? `<p class="idea">${escapeText(s.concept.direction)}</p>` : ''}
+  ${s.concept ? `<p class="idea">${escapeText(s.concept.pitch?.idea ?? s.concept.direction)}</p>` : ''}
+  ${
+    s.concept?.pitch && (s.concept.pitch.strengths.length || s.concept.pitch.weaknesses.length)
+      ? `<ul class="pitch">${s.concept.pitch.strengths.map((x) => `<li class="plus">${escapeText(x)}</li>`).join('')}${s.concept.pitch.weaknesses.map((x) => `<li class="minus">${escapeText(x)}</li>`).join('')}</ul>`
+      : ''
+  }
   ${s.concept?.critique && gate && gate.status !== 'passed' ? `<p class="verdict">Critic: ${s.concept.critique.present ? 'would present it as is' : 'would not present it as is'} — ${escapeText(s.concept.critique.reason)}${s.concept.readsAs?.length ? `<br><span class="muted">A stranger sees: ${s.concept.readsAs.slice(0, 2).map(escapeText).join(' · ')}</span>` : ''}</p>` : ''}
   ${decide}
   <details><summary>Details &amp; mockups</summary>
@@ -485,11 +499,25 @@ export async function buildGallery(
     }
     const active: string[] = [];
     const rejected: string[] = [];
-    for (const s of subjects) (s.status === 'rejected' ? rejected : active).push(await subjectCard(s));
+    // Proposals are grouped by round, the latest first; each round can be rejected as a whole.
+    const byRound = new Map<number, string[]>();
+    for (const s of subjects) {
+      const r = s.concept?.round;
+      if (r !== undefined && s.status !== 'rejected')
+        byRound.set(r, [...(byRound.get(r) ?? []), await subjectCard(s)]);
+      else (s.status === 'rejected' ? rejected : active).push(await subjectCard(s));
+    }
+    const roundPanels = [...byRound.entries()]
+      .sort((a, b) => b[0] - a[0])
+      .map(
+        ([r, cards], i) =>
+          `<${i ? 'details class="round"' : 'div class="round"'}>${i ? `<summary>Round ${r} (${cards.length})</summary>` : `<h3 class="sub">Round ${r} — ${cards.length === 3 ? 'three directions' : `${cards.length} proposals`}: select one, ask for changes, combine or reject all</h3>`}<div class="grid three">${cards.join('\n')}</div>${i ? '' : `<div class="rejectall" data-brand="${escapeAttr(b.slug)}" data-round="${r}"><button type="button" class="chip" data-reject-all>Reject all ${cards.length === 3 ? 'three' : cards.length}</button><input type="text" class="note" placeholder="What is missing? What should the next round try?"></div>`}</${i ? 'details' : 'div'}>`,
+      )
+      .join('');
     const sketches = b.locked ? [] : sketchCards(ws, b);
     const ideas = b.locked ? '' : ideasPanel(ws, b.slug);
     sections.push(
-      `<section class="brand"><h2>${escapeText(b.name)} <small>${escapeText(b.role)}${b.locked ? ' · locked' : ''} · ${active.length} to review</small></h2>${ideas}${sketches.length ? `<h3 class="sub">Sketches — pick one per direction to develop (${sketches.length})</h3><div class="grid wide">${sketches.join('\n')}</div>` : ''}${active.length || !sketches.length ? `<div class="grid">${active.join('\n') || (rejected.length ? `<p class="empty">No concept passed the critic's gate yet, so none is offered for review: Markilo does not show work it would not present. The ${rejected.length} it tried are below with the critic's readings. Point at a kept idea or a rejected concept you still like and send it to your agent, or ask for new directions.</p>` : '<p class="empty">No concepts yet.</p>')}</div>` : ''}${rejected.length ? `<details class="rejected-list"${active.length ? '' : ' open'}><summary>Rejected (${rejected.length})</summary><div class="grid">${rejected.join('\n')}</div></details>` : ''}${exportList}</section>`,
+      `<section class="brand"><h2>${escapeText(b.name)} <small>${escapeText(b.role)}${b.locked ? ' · locked' : ''} · ${active.length + [...byRound.values()].reduce((a, x) => a + x.length, 0)} to review</small></h2>${roundPanels}${ideas}${sketches.length ? `<h3 class="sub">Sketches — pick one per direction to develop (${sketches.length})</h3><div class="grid wide">${sketches.join('\n')}</div>` : ''}${active.length || (!sketches.length && !byRound.size) ? `<div class="grid">${active.join('\n') || (rejected.length ? `<p class="empty">Nothing is waiting for a decision. The ${rejected.length} rejected concepts are below; point at one you still like and send it to your agent, or ask for new directions.</p>` : '<p class="empty">No concepts yet.</p>')}</div>` : ''}${rejected.length ? `<details class="rejected-list"${active.length ? '' : ' open'}><summary>Rejected (${rejected.length})</summary><div class="grid">${rejected.join('\n')}</div></details>` : ''}${exportList}</section>`,
     );
   }
   const family =
@@ -541,6 +569,9 @@ button{font:inherit;cursor:pointer;color:inherit}.top button{border:1px solid va
 main{max-width:1280px;margin:0 auto;padding:16px}
 h2{font-size:18px;margin:20px 0 10px}h2 small{font-size:12px;color:var(--muted);font-weight:500}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.grid.three{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.round{margin:8px 0 20px}details.round>summary{cursor:pointer;color:var(--muted);margin:6px 0}
+.pitch{list-style:none;padding:0;margin:4px 0 8px;font-size:13px}.pitch li{padding:1px 0 1px 16px;position:relative}.pitch li:before{position:absolute;left:0;font-weight:700}.pitch .plus:before{content:'+';color:var(--good)}.pitch .minus:before{content:'−';color:var(--bad)}
+.rejectall{display:flex;gap:8px;align-items:center;margin-top:10px}.rejectall .note{flex:1}.rejectall .chip.on{background:var(--bad);border-color:var(--bad);color:#fff}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
 .card.rejected{opacity:.6}
 .card header{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.card h3{margin:0;font-size:15px}
@@ -592,7 +623,7 @@ dialog#cmpd button,dialog#cmpd input{font:inherit;color:inherit;border:1px solid
 .bar button{border:1px solid var(--line);background:transparent;border-radius:8px;padding:7px 12px}.bar button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 @media (max-width:640px){.stage{grid-template-columns:1fr 72px}.bar .sum{display:none}}
 </style></head><body>
-<header class="top"><div><h1>${escapeText(title)} · ${reviewing ? 'review' : 'brand identity'}</h1><p>${reviewing ? 'Pick a sketch to develop per direction, or Keep, Refine or Drop a concept; click on a mark to point at a spot, compare concepts side by side, then send your decisions to your agent.' : 'Approved identity, its variants and exported files. Explored concepts are kept for reference.'}</p></div><button type="button" id="theme">Theme</button></header>
+<header class="top"><div><h1>${escapeText(title)} · ${reviewing ? 'review' : 'brand identity'}</h1><p>${reviewing ? 'Select the direction you want, ask for changes (click on a mark to point at a spot), tick “combine with another” on the ones to mix, or reject all three with a note — then send your decisions to your agent. The choice is yours; no critic score decides it.' : 'Approved identity, its variants and exported files. Explored concepts are kept for reference.'}</p></div><button type="button" id="theme">Theme</button></header>
 <main>${body}</main>
 ${reviewing ? '' : '<style>.bar{display:none}body{padding-bottom:16px}</style>'}<div class="bar"><span class="sum" id="sum">No decisions yet.</span><button type="button" id="clear">Clear</button><button type="button" id="cmpbtn">Compare (0)</button><button type="button" id="copy">Copy request</button><button type="button" class="primary" id="send">Save decisions</button></div>
 <dialog id="cmpd"><div class="cmpgrid" id="cmpgrid"></div><input type="text" id="cmpreason" placeholder="Why do you prefer it? (optional, then press Prefer this)"><p class="muted" id="cmpwhy"></p><button type="button" id="cmpclose">Close</button></dialog>
@@ -601,7 +632,7 @@ ${reviewing ? '' : '<style>.bar{display:none}body{padding-bottom:16px}</style>'}
 const q=new URLSearchParams(location.search),TOKEN=q.get('t'),SERVED=location.protocol.startsWith('http')&&!!TOKEN;
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}render()};
 const boxes=[...document.querySelectorAll('.decide:not(.sketch)')];const get=k=>st[k]=st[k]||{};
-const skcards=[...document.querySelectorAll('.sketchcard')];
+const skcards=[...document.querySelectorAll('.sketchcard')];const rejs=[...document.querySelectorAll('.rejectall')];const rk=r=>'_reject:'+r.dataset.brand+'/'+r.dataset.round;
 const where=(x,y)=>(y<34?'top':y>66?'bottom':'middle')+'-'+(x<34?'left':x>66?'right':'center');
 function render(){boxes.forEach(b=>{const k=b.dataset.key,v=st[k]||{};b.classList.toggle('refine',v.pick==='refine');
 b.querySelectorAll('[data-pick]').forEach(x=>x.classList.toggle('on',x.dataset.pick===v.pick));
@@ -610,26 +641,30 @@ const n=b.querySelector('.note');if(document.activeElement!==n)n.value=v.note||'
 const c=b.querySelector('[data-cmp]');if(c)c.checked=!!v.compare;
 const ol=b.querySelector('.pins');const focused=ol.contains(document.activeElement);if(!focused){ol.innerHTML='';(v.pins||[]).forEach((p,i)=>{const li=document.createElement('li');const inp=document.createElement('input');inp.placeholder='What should change here ('+where(p.x,p.y)+')?';inp.value=p.note||'';inp.oninput=e=>{p.note=e.target.value;try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}};li.append(inp);ol.append(li)})}
 const g=document.querySelector('.pinnable[data-key="'+CSS.escape(k)+'"]');if(g){g.querySelectorAll('.pin').forEach(p=>p.remove());(v.pins||[]).forEach((p,i)=>{const d=document.createElement('span');d.className='pin';d.style.left=p.x+'%';d.style.top=p.y+'%';d.textContent=i+1;d.title='Remove pin';d.onclick=e=>{e.stopPropagation();v.pins.splice(i,1);save()};g.append(d)})}});
+rejs.forEach(r=>{const v=st[rk(r)]||{};r.querySelector('[data-reject-all]').classList.toggle('on',!!v.on);const n=r.querySelector('.note');if(document.activeElement!==n)n.value=v.note||''});
 skcards.forEach(c=>{const v=st[c.dataset.key]||{};c.querySelectorAll('[data-sketch]').forEach(x=>x.classList.toggle('on',x.dataset.sketch===v.sketch));const n=c.querySelector('.note');if(document.activeElement!==n)n.value=v.note||''});
-const e=Object.entries(st).filter(([k,v])=>k!=='_prefer'&&(v.pick||v.sketch));document.getElementById('sum').textContent=e.length?e.map(([k,v])=>(v.sketch?'sketch '+v.sketch:v.pick)+' '+k.split('/')[1]).join(' · '):'No decisions yet.';
+const e=Object.entries(st).filter(([k,v])=>k!=='_prefer'&&!k.startsWith('_reject:')&&(v.pick||v.sketch));const ra=Object.entries(st).filter(([k,v])=>k.startsWith('_reject:')&&v.on).map(([k])=>'reject all of round '+k.split('/')[1]);document.getElementById('sum').textContent=e.length||ra.length?[...ra,...e.map(([k,v])=>(v.sketch?'sketch '+v.sketch:v.pick==='keep'?'select':v.pick)+' '+k.split('/')[1])].join(' · '):'No decisions yet.';
 document.getElementById('cmpbtn').textContent='Compare ('+Object.values(st).filter(v=>v&&v.compare).length+')'}
 boxes.forEach(b=>{const k=b.dataset.key;
 b.querySelectorAll('[data-pick]').forEach(x=>x.onclick=()=>{const v=get(k);v.pick=v.pick===x.dataset.pick?undefined:x.dataset.pick;save()});
 b.querySelectorAll('[data-chip]').forEach(x=>x.onclick=()=>{const v=get(k);v.chips=v.chips||[];const c=x.dataset.chip;v.chips=v.chips.includes(c)?v.chips.filter(y=>y!==c):[...v.chips,c];save()});
 b.querySelector('.note').oninput=e=>{get(k).note=e.target.value;try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}};
 const c=b.querySelector('[data-cmp]');if(c)c.onchange=()=>{get(k).compare=c.checked;save()}});
+rejs.forEach(r=>{const k=rk(r);r.querySelector('[data-reject-all]').onclick=()=>{const v=get(k);v.on=!v.on;save()};r.querySelector('.note').oninput=e=>{get(k).note=e.target.value;try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}}});
 skcards.forEach(c=>{const k=c.dataset.key;c.querySelectorAll('[data-sketch]').forEach(x=>x.onclick=()=>{const v=get(k);v.sketch=v.sketch===x.dataset.sketch?undefined:x.dataset.sketch;save()});
 c.querySelector('.note').oninput=e=>{get(k).note=e.target.value;try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}}});
 document.querySelectorAll('.pinnable').forEach(g=>g.onclick=ev=>{const r=g.getBoundingClientRect();const v=get(g.dataset.key);v.pins=v.pins||[];if(v.pins.length>=6)return;
 v.pins.push({x:Math.round((ev.clientX-r.left)/r.width*100),y:Math.round((ev.clientY-r.top)/r.height*100),note:''});if(!v.pick)v.pick='refine';save();
 const ol=document.querySelector('.decide[data-key="'+CSS.escape(g.dataset.key)+'"] .pins');const last=ol&&ol.lastElementChild;if(last)last.querySelector('input').focus()});
-function feedback(){const d=[];for(const[k,v]of Object.entries(st)){if(k==='_prefer'||!v||!(v.pick||v.sketch||(v.pins||[]).length||v.note))continue;const[brand,concept]=k.split('/');
+function feedback(){const d=[];for(const[k,v]of Object.entries(st)){if(k==='_prefer'||k.startsWith('_reject:')||!v||!(v.pick||v.sketch||(v.pins||[]).length||v.note))continue;const[brand,concept]=k.split('/');
 d.push({brand,concept,decision:v.pick||null,...(v.sketch?{sketch:v.sketch}:{}),tags:v.chips||[],note:v.note||'',pins:(v.pins||[]).map((p,i)=>({n:i+1,x:p.x,y:p.y,where:where(p.x,p.y),note:p.note||''}))})}
-return{schema:'markilo/feedback@1',gallery:location.pathname,savedAt:new Date().toISOString(),decisions:d,preferred:st._prefer||null}}
-function request(){const f=feedback(),L=[];for(const d of f.decisions.filter(x=>x.sketch))L.push(d.sketch==='none'?'No sketch for '+d.concept+': try a different move'+(d.note?' ('+d.note+')':''):'Develop sketch '+d.sketch+' of '+d.concept+(d.note?' ('+d.note+')':''));
+const rejectAll=Object.entries(st).filter(([k,v])=>k.startsWith('_reject:')&&v&&v.on).map(([k,v])=>{const[brand,round]=k.slice(8).split('/');return{brand,round:Number(round),note:v.note||''}});
+return{schema:'markilo/feedback@1',gallery:location.pathname,savedAt:new Date().toISOString(),decisions:d,preferred:st._prefer||null,rejectAll}}
+function request(){const f=feedback(),L=[];for(const r of f.rejectAll)L.push('Reject all of round '+r.round+' for '+r.brand+(r.note?': '+r.note:''));for(const d of f.decisions.filter(x=>x.sketch))L.push(d.sketch==='none'?'No sketch for '+d.concept+': try a different move'+(d.note?' ('+d.note+')':''):'Develop sketch '+d.sketch+' of '+d.concept+(d.note?' ('+d.note+')':''));
 for(const d of f.decisions.filter(x=>x.decision==='refine')){const w=[...d.tags];if(d.note)w.push(d.note);d.pins.forEach(p=>w.push('at '+p.where+(p.note?': '+p.note:'')));L.push('/markilo:refine '+d.brand+' '+d.concept+(w.length?': '+w.join('; '):''))}
 const keep=f.decisions.filter(x=>x.decision==='keep').map(x=>x.concept),drop=f.decisions.filter(x=>x.decision==='drop').map(x=>x.concept);
-if(keep.length)L.push('Keep as is: '+keep.join(', '));if(drop.length)L.push('Drop (mark rejected): '+drop.join(', '));if(f.preferred)L.push('Preferred: '+f.preferred.concept+(f.preferred.why?' — '+f.preferred.why:''));
+const comb=f.decisions.filter(x=>x.tags.includes('combine with another')).map(x=>x.concept);if(comb.length>1)L.push('Combine: '+comb.join(' + '));
+if(keep.length)L.push('Selected: '+keep.join(', '));if(drop.length)L.push('Drop (mark rejected): '+drop.join(', '));if(f.preferred)L.push('Preferred: '+f.preferred.concept+(f.preferred.why?' — '+f.preferred.why:''));
 return L.length?L.join('\\n'):'(no decisions yet)'}
 const flash=(id,t,orig)=>{const b=document.getElementById(id);b.textContent=t;setTimeout(()=>b.textContent=orig,1800)};
 document.getElementById('copy').onclick=async()=>{const t=request();try{await navigator.clipboard.writeText(t);flash('copy','Copied ✓','Copy request')}catch(e){prompt('Copy this request:',t)}};

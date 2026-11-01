@@ -20,8 +20,9 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    (one call researches every package). Single project → `markilo research repo <path> --brand <slug>`. Read the design
    docs and icon sets the scan reports. `Read` the existing logo files it lists.
 4. Website: ask the user before fetching. Then `markilo research site <url> --brand <slug> --allow-network`.
-5. Market research: delegate to the `markilo:brand-researcher` agent with the brand slug, what is known, and which
-   topics are missing. For a small brand, do it yourself following the playbook.
+5. Market research, proportionate and once: about five category or competitor brands is enough to differentiate.
+   Delegate to the `markilo:brand-researcher` agent only for a broad brief; for most products do it yourself following
+   the playbook. Research that will not change a design decision is not worth its cost.
 6. Write the brief: `markilo brief update --brand <slug> --file <patch.json>` (write the patch to a temp file first).
 7. Ask the user only the open questions that change the design (batched, each with your suggested answer), and log them.
 8. Finish with a short summary: what the brand is, who it is for, the competitive landscape and category codes,

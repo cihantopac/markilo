@@ -18,7 +18,7 @@ const project = (fixture: string) => {
 beforeAll(async () => {
   ({ ws } = synthBrand());
   await verifyConcept(ws, 'nimbra', 'fold');
-  await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true });
+  await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
   await exportBrand(ws, 'nimbra');
 }, 120_000);
 
@@ -97,9 +97,9 @@ describe('setup for other coding agents', () => {
     const once = readFileSync(join(dir, 'AGENTS.md'), 'utf8');
     expect(once).toMatch(/^# Project rules\n\nUse pnpm.\n\n<!-- markilo:start -->/);
     expect(once).toContain('markilo.mjs" verify');
-    // The other agents get the same process as the plugin: ideas first, second looks at the edge of the gate.
-    expect(once).toContain('ideas --brand <slug> --add');
-    expect(once).toContain('second-look');
+    // The other agents get the same process as the plugin: three proposals, the user's choice, then finalize.
+    expect(once).toContain('proposals --brand <slug>');
+    expect(once).toContain('--user-choice');
     expect(agentSetup(dir, 'codex', { apply: true }).action).toBe('unchanged');
     expect(readFileSync(join(dir, 'AGENTS.md'), 'utf8').match(/markilo:start/g)).toHaveLength(1);
   });
@@ -136,7 +136,7 @@ describe('setup for other coding agents', () => {
       /developer_instructions = '''\nYou are an experienced, demanding identity design critic/,
     );
     expect(codex.models.critic.model).toBe('gpt-5.5');
-    expect(readFileSync(join(dir, 'AGENTS.md'), 'utf8')).toContain('every critique in\n`markilo_critic`');
+    expect(readFileSync(join(dir, 'AGENTS.md'), 'utf8')).toContain('the final critique in `markilo_critic`');
     const models = {
       critic: ['GPT-5.5 (copilot)', 'Claude Opus 5.5 (copilot)'],
       designer: ['GPT-5 mini (copilot)'],

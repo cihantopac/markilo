@@ -98,19 +98,13 @@ export async function finalizeConcept(
   ws.assertNotLocked(brand);
   const concept = ws.concept(brand, conceptId);
   const gate = gateOf(concept);
-  // Only an independent critic's pass, or the user's own choice, finalizes a concept: an unreviewed or undecided one
-  // would let the designer approve its own work.
-  if (gate.status !== 'passed' && !opts.userChoice?.trim()) {
+  // The user owns the creative choice: a concept is finalized only on their word. A critic's pass is advice, and
+  // without the user's choice the designer would be approving its own work.
+  if (!opts.userChoice?.trim()) {
     throw new MarkiloError(
       'INVALID_INPUT',
-      gate.status === 'not-reviewed'
-        ? `Concept ${conceptId} has not been reviewed by the critic.`
-        : gate.status === 'undecided'
-          ? `Concept ${conceptId} is undecided: ${gate.reasons.join('; ')}.`
-          : `Concept ${conceptId} did not pass the critic gate: ${gate.reasons.join('; ')}.`,
-      gate.status === 'undecided'
-        ? 'Ask fresh design-critic agents for the remaining cold looks (concept update --look … --look-present …).'
-        : 'Have the design-critic agent review it, or, if the user chose it anyway, pass --user-choice "<their reason>".',
+      `Concept ${conceptId} has not been chosen by the user.`,
+      'Show it to the user (markilo gallery --serve) and, when they choose it, pass --user-choice "<their words>".',
     );
   }
   const reportFile = join(ws.reportsDir(brand), `originality-${conceptId}.json`);
@@ -247,7 +241,7 @@ export async function finalizeConcept(
       status: gate.status,
       ...(gate.average !== undefined ? { average: gate.average } : {}),
       reasons: gate.reasons,
-      ...(gate.status !== 'passed' && opts.userChoice?.trim() ? { userChoice: opts.userChoice.trim() } : {}),
+      userChoice: opts.userChoice.trim(),
     },
   };
   writeJson(kitPath(ws, brand), kit);
@@ -255,7 +249,7 @@ export async function finalizeConcept(
   ws.logDecision(
     brand,
     'Approved',
-    `${conceptId} (${concept.title}). Gate ${gate.status}${gate.average !== undefined ? ` (average ${gate.average})` : ''}${kit.gate?.userChoice ? `; chosen by the user anyway: ${kit.gate.userChoice}` : ''}. Originality ${orig.verdict} (${orig.confidence ?? 'unknown'} confidence)${orig.verdict !== 'no-conflicts-found' ? ', risk accepted' : ''}.`,
+    `${conceptId} (${concept.title}). Gate ${gate.status}${gate.average !== undefined ? ` (average ${gate.average})` : ''}${kit.gate?.userChoice ? `; chosen by the user: ${kit.gate.userChoice}` : ''}. Originality ${orig.verdict} (${orig.confidence ?? 'unknown'} confidence)${orig.verdict !== 'no-conflicts-found' ? ', risk accepted' : ''}.`,
   );
   return kit;
 }

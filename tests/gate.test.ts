@@ -151,38 +151,21 @@ describe('quality gate', () => {
     expect(gateOf(legacy).status).toBe('passed');
   });
 
-  it('finalize refuses a concept that failed the gate unless the user chose it', async () => {
+  it("finalize needs the user's choice, whatever the critic decided", async () => {
     const { ws } = synthBrand();
     await verifyConcept(ws, 'nimbra', 'fold');
+    // A critic's pass alone does not approve a logo: the user owns the creative choice.
+    expect(gateOf(ws.concept('nimbra', 'fold')).status).toBe('passed');
+    await expect(finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true })).rejects.toThrow(
+      /not been chosen by the user/,
+    );
     const c = ws.concept('nimbra', 'fold');
     ws.saveConcept({ ...c, ...scored({ ...strong, memorability: 4 }, false) });
-    await expect(finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true })).rejects.toThrow(
-      /did not pass the critic gate/,
-    );
     const kit = await finalizeConcept(ws, 'nimbra', 'fold', {
       acceptRisk: true,
       userChoice: 'The owner prefers it.',
     });
     expect(kit.gate).toMatchObject({ status: 'failed', userChoice: 'The owner prefers it.' });
-  }, 60_000);
-
-  it('finalize refuses an unreviewed or undecided concept: the designer cannot approve its own work', async () => {
-    const { ws } = synthBrand();
-    await verifyConcept(ws, 'nimbra', 'fold');
-    const { critique: _c, blind: _b, ...unreviewed } = ws.concept('nimbra', 'fold');
-    ws.saveConcept(unreviewed);
-    await expect(finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true })).rejects.toThrow(
-      /not been reviewed/,
-    );
-    ws.saveConcept({
-      ...unreviewed,
-      critique: { present: true, reason: 'on the edge', at: '2026-01-01T00:00:00Z' },
-      blind: {
-        scores: { distinctiveness: 6, memorability: 6, 'brand-fit': 6, craft: 6, versatility: 6 },
-        at: '2026-01-01T00:00:00Z',
-      },
-    });
-    await expect(finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true })).rejects.toThrow(/undecided/);
   }, 60_000);
 });
 

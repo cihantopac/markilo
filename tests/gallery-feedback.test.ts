@@ -127,7 +127,7 @@ describe('gallery: nothing passed', () => {
     });
     const html = readFileSync((await buildGallery(ws)).path, 'utf8');
     expect(html).not.toContain('No concepts yet.');
-    expect(html).toContain("No concept passed the critic's gate yet");
+    expect(html).toContain('Nothing is waiting for a decision');
     expect(html).toContain('<details class="rejected-list" open>');
     expect(html).toContain('would not present it as is — reads as a folded page icon');
   });

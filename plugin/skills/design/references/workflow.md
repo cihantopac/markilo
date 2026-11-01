@@ -2,18 +2,18 @@
 
 ## Stage gates
 
-| Stage    | Done when                                                                            | Saved in                          |
-| -------- | ------------------------------------------------------------------------------------ | --------------------------------- |
-| Discover | Sources scanned, existing identity seen, mode chosen (new/refresh/redesign/evaluate) | profile.json, brief.json `mode`   |
-| Research | Each topic covered or listed as a gap; references collected                          | profile.json, research/references |
-| Brief    | Brief validates; user confirmed the key trade-offs                                   | brief.json, answers.json          |
-| Explore  | 3–5 directions, each with idea sentence, form language, type, color, risk            | decisions.md                      |
-| Design   | Each direction has symbol.svg (+ wordmark.svg) and concept.json                      | concepts/<id>/                    |
-| Verify   | No `fail` checks, originality not `redesign`, diversity low, critic scores recorded  | reports/, concept.json `judgment` |
-| Review   | User has seen the gallery and chosen                                                 | answers.json, concept status      |
-| Refine   | Chosen concept re-verified after every change; finalized                             | final/                            |
-| Export   | Export ran without skipped groups the user needs                                     | exports/                          |
-| Deliver  | User has paths, guidelines, quality + originality summary, limitations               | —                                 |
+| Stage      | Done when                                                                                        | Saved in                          |
+| ---------- | ------------------------------------------------------------------------------------------------ | --------------------------------- |
+| Understand | Sources read, existing identity seen, concise brief, essential questions answered, references in | profile.json, brief.json, answers |
+| Explore    | Three proposals in the round: word, icon, idea, strengths, weaknesses, rendered board            | concepts/<id>/, proposals/round-N |
+| Choose     | The user selected, asked for changes, combined, or rejected the round with a note                | feedback/, concept status         |
+| Develop    | The chosen concept refined: letterforms, spacing, icon, small version, lockups, colour           | concepts/<id>/                    |
+| Verify     | No `fail` checks, originality not `redesign`, one independent critique applied, user approved    | reports/, final/                  |
+| Export     | Export ran without skipped groups the user needs                                                 | exports/                          |
+
+Rounds: at most two rounds of three proposals on Markilo's own initiative; a third needs the user's direction
+(`concept new --round 3 --directed "<their words>"`). Track cost per phase with `markilo cost`; the default budget is
+$6 per brand (`markilo cost --brand <slug> --budget <usd>` to change it).
 
 Append one dated line per significant decision to `brand/brands/<slug>/decisions.md` (Edit the file):
 what was decided, why, and the evidence.
@@ -32,7 +32,8 @@ Recommend a mode with evidence (measurements of the current mark + findings) and
 
 - "Research X": Discover + Research + Brief, then stop with a summary of the profile.
 - "Check this logo": evaluate mode (`score`, `analyze`, `compare` against references, `name check`).
-- "Make variations of concept A": Refine.
+- "Make variations of concept A": Develop (develop mode on that concept).
+- "Show me three directions": Understand (briefly) + Explore, then stop for the user's choice.
 - "Export / give me favicons": Export (+ `install-assets` dry run).
 - "Show me": `markilo gallery`.
 
@@ -60,14 +61,12 @@ Recommend a mode with evidence (measurements of the current mark + findings) and
    (`--role product --parent <master>`). Locked members: `brand add "<Name>" --locked` then
    `markilo lock --brand <slug> --symbol … --primary …`.
 2. Research the family once (master brand), then product-specific facts per product.
-3. Sketch the family as one system, not the master alone: every sketch spec of a family direction has a `members`
-   block (one parameter set, and colours if they differ, per product — construction.md → Families). `markilo
-   sketches` draws master and members together on `sketches/family.png` and marks a sketch not ready when two members
-   read as the same mark (same shape and close colours); members told apart only by colour get a note. The sketch
-   review judges the system: do the members belong together, and can each be told apart at 16 px?
-4. When the master passes the gate, build each product from the same spec: `markilo concept new --brand <product> …`,
+3. Propose the family as one system, not the master alone: each proposal shows the master and two or three members.
+   With construction specs, a `members` block draws them from one parameter set (construction.md → Families;
+   `markilo sketches` renders `sketches/family.png` and flags members that read as the same mark).
+4. When the user has chosen the master, build each product from the same system: `markilo concept new --brand <product> …`,
    then `markilo construct <spec> --brand <product> --concept <id> --member <name>` (its parameters and colours),
-   `markilo verify`, and a critique per product. Record the system (construction, colour logic) in
+   `markilo verify`, and show the family together. Record the system (construction, colour logic) in
    `shared/system.json`.
 5. Products that need their own idea (an acquired brand, a different audience) are designed separately with the
    concept-designer agent, inside the shared system.

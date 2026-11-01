@@ -21,17 +21,22 @@ beforeAll(async () => {
   const v = await verifyConcept(ws, 'nimbra', 'fold');
   expect(v.status).toBe('verified');
   expect(v.originality.verdict).toBe('insufficient-evidence');
-  await expect(finalizeConcept(ws, 'nimbra', 'fold')).rejects.toThrow(/insufficient-evidence/);
+  await expect(finalizeConcept(ws, 'nimbra', 'fold', { userChoice: 'Chosen in a test.' })).rejects.toThrow(
+    /insufficient-evidence/,
+  );
   // A concept whose artwork fails a technical check (e.g. invisible on its own paper) is not approved silently.
   const c = ws.concept('nimbra', 'fold');
   ws.saveConcept({ ...c, palette: { ...c.palette, paper: '#1b2140' } });
   await verifyConcept(ws, 'nimbra', 'fold');
-  await expect(finalizeConcept(ws, 'nimbra', 'fold')).rejects.toThrow(/failing technical checks/);
+  await expect(finalizeConcept(ws, 'nimbra', 'fold', { userChoice: 'Chosen in a test.' })).rejects.toThrow(
+    /failing technical checks/,
+  );
   ws.saveConcept({ ...ws.concept('nimbra', 'fold'), palette: { ...c.palette } });
   await verifyConcept(ws, 'nimbra', 'fold');
   await finalizeConcept(ws, 'nimbra', 'fold', {
     tagline: 'Notes that fold into structure',
     acceptRisk: true,
+    userChoice: 'Chosen in a test.',
     notes: ['Never use the accent as an error color.'],
   });
   result = await exportBrand(ws, 'nimbra');

@@ -6,6 +6,7 @@
 //   node scripts/bench.mjs list
 //   node scripts/bench.mjs run <id…|all> [--out <dir>] [--model <alias>] [--budget <usd>] [--repeat <n>]
 //                                        [--plugin <dir> | --installed] [--scenarios <dir>] [--work <dir>]
+//                                        [--stage concepts]  (stop after one round of three proposals)
 //   node scripts/bench.mjs judge [<dir>] [--model <alias>] [--times <n>]  (majority of n looks per concept)
 //                                        [--panel opus:3,sonnet:3]  (several judge models; majority of all looks)
 //   node scripts/bench.mjs report [<dir>] [--title <text>]
@@ -109,6 +110,23 @@ const model = opts.model ? ['--model', opts.model] : [];
 const budget = (s) => Number(opts.budget ?? s.budgetUsd ?? 20);
 
 function prompt(s) {
+  // --stage concepts: the default 1.1 workflow up to the user's decision — understand, then one round of three
+  // proposals, rendered and in the gallery. The owner is asked nothing; their choice comes later, from a person.
+  if (opts.stage === 'concepts')
+    return `/markilo:design ${s.ask}
+
+Validation run: the product owner is not available right now. Do not ask questions and do not wait for answers:
+wherever the workflow would ask, take your own recommended answer, record it with \`markilo answers\`, and continue.
+Public web research is approved (send no private data); keep it proportionate (about five competitor brands, once).
+The owner supplied no reference images.
+
+Run the Understand and Explore stages as the skill describes them — one round of exactly three proposals — then render
+the proposals (\`markilo proposals\`) and build the gallery (\`markilo gallery\`, not --serve), and stop there: the owner
+chooses later. Do not develop, critique, finalize or export anything.
+
+${s.owner}
+
+Finish with one line of JSON: {"proposals": [concept ids], "board": "<path>", "notes": "<one sentence>"}`;
   return `/markilo:design ${s.ask}
 
 Benchmark run: the product owner is not available. Do not ask questions and do not wait for answers: wherever the
@@ -260,12 +278,21 @@ function collect(work, dest) {
       cpSync(join(bdir, 'final'), join(dest, b.slug, 'final'), { recursive: true });
     for (const c of b.concepts) {
       const cdir = join(bdir, 'concepts', c.id);
-      for (const f of ['symbol.svg', 'wordmark.svg', 'review/symbol-sheet.png'])
+      for (const f of [
+        'symbol.svg',
+        'wordmark.svg',
+        'review/symbol-sheet.png',
+        'review/wordmark-sheet.png',
+        'review/proposal.png',
+      ])
         if (existsSync(join(cdir, f)))
           cpSync(join(cdir, f), join(dest, b.slug, 'concepts', c.id, f.replace('review/', '')));
     }
     if (existsSync(join(bdir, 'ideas.json')))
       cpSync(join(bdir, 'ideas.json'), join(dest, b.slug, 'ideas.json'));
+    if (existsSync(join(bdir, 'proposals')))
+      cpSync(join(bdir, 'proposals'), join(dest, b.slug, 'proposals'), { recursive: true });
+    if (existsSync(join(bdir, 'cost.json'))) cpSync(join(bdir, 'cost.json'), join(dest, b.slug, 'cost.json'));
     if (existsSync(join(bdir, 'decisions.md')))
       cpSync(join(bdir, 'decisions.md'), join(dest, b.slug, 'decisions.md'));
     if (existsSync(join(bdir, 'exports', 'logos', 'overview.png')))

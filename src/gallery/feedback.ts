@@ -20,6 +20,8 @@ export interface GalleryFeedback {
     sketch?: string;
   }[];
   preferred: { brand: string; concept: string; why: string; over: string[] } | null;
+  /** Rounds the user rejected as a whole, with what the next round should try. */
+  rejectAll?: { brand: string; round: number; note: string }[];
 }
 
 const str = (v: unknown, max: number) => (typeof v === 'string' ? v.slice(0, max) : '');
@@ -71,7 +73,19 @@ export function parseFeedback(raw: unknown): GalleryFeedback {
           over: (Array.isArray(pr.over) ? pr.over : []).slice(0, 10).map((v) => str(v, 80)),
         }
       : null;
-  return { schema: 'markilo/feedback@1', savedAt: nowIso(), decisions, preferred };
+  const rejectAll = (Array.isArray(o.rejectAll) ? o.rejectAll : []).slice(0, 20).flatMap((r) => {
+    const x = r as Record<string, unknown>;
+    const brand = str(x?.brand, 80);
+    const round = typeof x?.round === 'number' && Number.isInteger(x.round) ? x.round : NaN;
+    return isSlug(brand) && round >= 1 && round <= 99 ? [{ brand, round, note: str(x.note, 1000) }] : [];
+  });
+  return {
+    schema: 'markilo/feedback@1',
+    savedAt: nowIso(),
+    decisions,
+    preferred,
+    ...(rejectAll.length ? { rejectAll } : {}),
+  };
 }
 
 export const feedbackDir = (ws: Workspace) => join(ws.root, 'feedback');
@@ -93,6 +107,13 @@ export function readLatestFeedback(ws: Workspace): GalleryFeedback | undefined {
 /** The decisions as plain requests an agent can act on (the same wording as the gallery's "Copy request"). */
 export function feedbackRequests(f: GalleryFeedback): string[] {
   const out: string[] = [];
+  for (const r of f.rejectAll ?? [])
+    out.push(`reject all of round ${r.round} for ${r.brand}${r.note ? `: ${r.note}` : ''}`);
+  const combine = f.decisions.filter((d) => d.tags.includes('combine with another'));
+  if (combine.length > 1)
+    out.push(
+      `combine ${combine.map((d) => `${d.brand}/${d.concept}${d.note ? ` (${d.note})` : ''}`).join(' + ')}`,
+    );
   for (const d of f.decisions) {
     if (d.sketch)
       out.push(
@@ -107,7 +128,10 @@ export function feedbackRequests(f: GalleryFeedback): string[] {
         ...d.pins.map((p) => `at ${p.where}${p.note ? `: ${p.note}` : ''}`),
       ];
       out.push(`refine ${d.brand}/${d.concept}${w.length ? `: ${w.join('; ')}` : ''}`);
-    } else if (d.decision) out.push(`${d.decision} ${d.brand}/${d.concept}${d.note ? ` (${d.note})` : ''}`);
+    } else if (d.decision)
+      out.push(
+        `${d.decision === 'keep' ? 'select' : d.decision} ${d.brand}/${d.concept}${d.note ? ` (${d.note})` : ''}`,
+      );
   }
   if (f.preferred)
     out.push(

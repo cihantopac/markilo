@@ -1,163 +1,153 @@
-# Designing marks that last
+# Designing identities worth choosing
 
-This is the craft standard Markilo holds itself to. Use it when exploring directions, drawing SVGs and
-critiquing.
+This is how Markilo designs. It describes what good work looks like, not a recipe: use judgment, and break a
+recommendation when the work is better for it. Only the technical rules (SVG validity, legibility, safety, originality)
+are fixed — see `svg-authoring.md` and `originality.md`.
 
-## Start from an idea, not a shape
+## What Markilo 1.0 got wrong, so you don't repeat it
 
-A strong mark compresses one true, specific idea about the brand into a form simple enough to remember
-after one look. Before drawing, write the idea in one sentence: _"Two arches that share one stem — research and
-verification meeting in an m."_ If you cannot write that sentence, you do not have a concept yet.
+An independent panel looked at 81 concepts from Markilo 1.0 and would present none. They were not sloppy; they were
+mechanical. The process asked designers to assemble marks from primitives (rings, bars, cuts), to start from what a
+stranger sees in a 32 px favicon, to change "one or two letters" of a stock typeface, and to avoid a long list of
+rejected patterns. The results were what those instructions produce:
 
-Good sources of ideas, in order of strength:
-1. **What the product uniquely does** (its mechanism, its transformation, its promise).
-2. **The name** — its letters, its meaning, its sound, its etymology. Monograms work when the letter is
-   transformed by the idea, not just set in a font.
-3. **The audience's world** — a tool, gesture or artifact they recognise, used unexpectedly.
-4. **Abstract character** — rhythm, tension, motion, balance — when the product is too broad for literal
-   imagery (holding companies, platforms, families).
+- **UI icons** — a metaphor (a round trip, a keystone, a gauge) drawn with uniform strokes on an icon grid reads as a
+  button, not a brand.
+- **Primitive geometry** — a circle, a bar and a gap, however clean, is a shape, not a drawing.
+- **Weak monograms** — the initial with a slice, offset or step.
+- **Stock wordmarks** — a neutral grotesque with one letter tweaked or a coloured dot added.
+- **Literal metaphors** — the product's mechanism drawn as a diagram.
 
-Avoid category clichés unless you subvert them knowingly: lightbulbs for ideas, globes for "global",
-speech bubbles for chat, shields for security, rockets for growth, generic leaves for "green", swooshes,
-brain/circuit hybrids for AI, interlocking rings, abstract "connected dots" networks, and default
-gradient blobs. Markilo's genericity check flags marks that collapse to a stock primitive.
+The fix is not more rules. It is designing the way identity designers do: a point of view first, then drawing with
+intent, then craft.
 
-**The product's own object is a cliché too.** The first idea everyone has — and the icon most competitors already
-use — is the thing the product handles: a page, a folded corner or a sticky note for documents and invoices; bars,
-charts, tally marks or coins for finance; a moon, stars, clouds or a bed for sleep; a padlock, a key or a shield for
-privacy; a check mark for tasks; a speech bubble for messaging. Draw it only when a transformation is the first thing
-a stranger notices; otherwise it reads as a UI icon next to the competitors. The same goes for the literal noun in
-the name (a tally for "Tally…", a fold for "…fold").
+## Start from a point of view
 
-**So is the name's initial with a cut.** Once objects are ruled out, the next default is the first letter split,
-sliced, offset, stepped or nested inside a copy of itself — an S with a seam, an L cut by a diagonal, two Ls, a T with
-a bent arm. Independent judges call it "a common monogram device" every time. A letter-led mark works only when the
-letter becomes something else at first sight (the reading is the idea, not "the letter T"), or when the letterform
-itself is drawn with a character no font has.
+Before drawing, decide what the identity should _feel_ like to the people who will see it every day — and what it must
+not feel like. Write it as a stance, not a metaphor: "quiet authority — a tool that is sure of itself and never
+shouts", "editorial precision, like a well-set technical book", "warm, hand-made confidence". The stance chooses the
+typeface, the weight, the proportions, the colour and the kind of form; the metaphor, if there is one, comes second.
 
-## Ideas before directions
+A strong identity usually has **one distinctive idea, executed with consistency**: a particular letter construction
+carried through the word, a contour that is unmistakably drawn, a rhythm, a proportion. It does not need to explain
+the product. Most identities people remember say almost nothing literal.
 
-Write ideas as what a stranger would see, not as what they mean: "a lamp seen from above, its shade cut into the
-initial" is a hook; "reliability" or "a round trip from audit to fix" is a meaning still looking for a picture. Rules
-for the longlist (`markilo ideas`):
+## Wordmark first, especially for coined names
 
-- At least 12 hooks from at least three sources: the product's mechanism, the audience's world (a tool, a gesture, a
-  material they know), the name (its letters, sound, meaning, the parts of a compound name), type (a face and a
-  treatment that carry the brand across the whole word) and abstract character.
-- **Mechanism metaphors drawn with primitives become UI glyphs.** On three real developer products every such
-  direction — a round trip, a crossing point, a threshold, a keystone, an undertrace, a hinge — was drawn as brackets,
-  crosses, arches, gauges or loops, and read as a D, a return key, a headstone, a speedometer. Keep one only if the
-  hook names a specific, unusual form, not the concept.
-- **Compound and meaningful names are the strongest source when they exist**: both identities that passed in the
-  benchmark drew the name's meaning inside its own letters (a q holding a dot like an egg in a nest; an n sheltering a
-  seed for a name that means a held pine). Coined names (no meaning to draw) lean on type: a distinctive face and one
-  treatment that runs through every letter, not one gimmick letter with a coloured accent ("a letter-plus-dot of the
-  generic kind").
-- A coloured block, dot or tab added to one letter is the default move of every wordmark board; critics read it as
-  a cursor, a flag or a full stop. It needs a reason a stranger can see.
+For a coined or distinctive name (most software products), the word itself is usually the strongest identity: it says
+the name every time, it cannot be mistaken for a UI icon, and type is where character is easiest to make ownable.
+Default to a wordmark-led proposal unless the brief calls for a symbol above all; a separate symbol is never mandatory.
+The compact icon (favicon, app icon, avatar) is then derived from the word — a letter, a pair, a ligature or a detail of
+the drawing — not invented separately.
 
-## Form language follows the brief's character
+**A wordmark is designed, not typeset.** Typing the name in a font is the starting point. Then make it yours:
 
-The same idea drawn with the wrong form language fails on brand fit. Decide the form language from the brief's
-adjectives before sketching, and keep it across the mark and the wordmark:
+- **Choose the face for character, not neutrality.** Inter, Manrope and DM Sans are excellent for interfaces and
+  forgettable as logos. Look for a face whose construction already says the stance (`markilo fonts` lists traits);
+  then push it.
+- **Work the whole word, not one letter.** A treatment that runs through every letter reads as intent; a single
+  modified letter on a stock word reads as a gimmick. Examples of whole-word decisions: one terminal shape repeated on
+  every stroke ending; a consistent cut angle; stroke contrast (thick verticals, thin joins); a unified x-height and
+  counter shape; a width (condensed, extended) that gives the word a silhouette.
+- **Find the word's own opportunities.** Look at the actual letters: which pairs could share a stroke or form a
+  ligature (rl, li, va, ar, ex), which counters could be reshaped consistently, where an ascender or descender could
+  extend, where the word's rhythm (stems and rounds) creates a pattern worth emphasising. These moves are specific to
+  this name, which is what makes them ownable.
+- **Draw custom letters when the face cannot say it.** Build letters from the font's outlines and your own Bézier
+  paths (`construct` with `glyph` and `path`, booleans to join or cut), or draw them fully custom. A custom `R`, `a` or
+  `x` with a distinctive construction, repeated logic in the other letters, beats any off-the-shelf face.
+- **Space it by eye.** Tight, even colour across the word; open the pairs that clump (rn, ri), close the ones that gap
+  (Va, ro). Optical kerning is the difference between "set in a font" and "a logo".
+- **Case is a decision.** Lowercase is approachable and modern; capitals are institutional; mixed case keeps a coined
+  name readable.
+- **Stay readable.** Every letter must still be the letter it is — at 12 px and in a header. A wordmark that has to be
+  explained has failed.
 
-| The brief says               | Construction choices                                                                                                                  |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| warm, handmade, human, craft | organic curves (`line` with `smooth`), slightly irregular rhythm, soft but unequal radii, one hand-cut detail; avoid UI-icon geometry |
-| precise, technical, reliable | one grid and unit, constant weights, crisp corners or one radius family, exact alignments                                             |
-| calm, quiet, trustworthy     | few parts, generous negative space, low internal contrast, no sharp diagonals                                                         |
-| bold, energetic, young       | heavy weights, confident asymmetry, one strong diagonal or cut, saturated accent                                                      |
-| premium, editorial           | contrast between thick and thin, restraint, a serif or a refined grotesque in the wordmark                                            |
+## Symbols: drawn, not assembled
 
-A mark that reads as a tech or UI icon for a handmade brief, or as a playful sticker for an enterprise brief, is the
-wrong form language even when the idea is right.
+When a proposal is symbol-led, draw a form, not a diagram:
 
-## Directions must be genuinely different
+- **Use freeform paths and Bézier curves.** Write the `d` attribute directly in a 1024-unit square, or construct parts
+  and then redraw the contour. Curves with deliberate tension — a contour that speeds up and slows down — read as
+  drawn; arcs of one radius joined to straight bars read as an icon set.
+- **Prefer solid, filled silhouettes** with a distinctive outline and purposeful negative space over outlined line
+  icons. Uniform strokes with round caps on a square grid are the visual language of interface icons; avoid it unless
+  the stance demands it.
+- **Abstract is allowed.** An abstract form with the right energy (balanced, tense, organic, asymmetric, heavy, light)
+  can carry an identity better than a literal picture. It must still be specific: a form you could recognise again,
+  not a generic blob or swoosh.
+- **Asymmetry and organic geometry are tools**, not mistakes. Perfect symmetry and primitive geometry are tools too —
+  choose them on purpose.
+- **If there is a metaphor, transform it.** The product's own object (a document, a chart, a check mark, a shield, a
+  magnifying glass, a funnel) drawn plainly is what every competitor already uses. Use an idea only when the drawing
+  adds something the obvious version does not have.
 
-Three to five directions, each a different _idea_ and form language — e.g. a letterform-led monogram, a
-pictorial metaphor, an abstract geometric system, a typographic-only wordmark, an emblem. Two
-directions that share the same idea are one direction. `markilo diversity` must report `low` risk between
-directions at the explore stage.
+## Three proposals that are genuinely different
 
-**One direction is usually wordmark-led** (`concept new --lead wordmark`). A symbol has to be invented from nothing,
-and in categories full of pictograms (developer tools, SaaS, analytics) an invented symbol is most often read as a
-UI icon — a camera, a download arrow, a toggle. A wordmark starts from letters a type designer already drew well;
-the identity is the word with one or two letters changed so they carry the idea (a ligature that joins two letters
-the way the product joins two things, a counter that holds the product's object, a terminal that points), and the
-icon is that changed letter or pair cut from the same drawing. It is judged as a word first: on the wordmark sheet
-at 12–64 px, then the icon at 16 px. The change must be more than a slice or offset of a letter — that is the
-initial-with-a-cut cliché again.
+A round is three proposals that differ in kind, not three variations of one shape. Vary at least two of: what leads
+(word or symbol), the stance, the typeface family (grotesque, humanist, geometric, serif, custom), the form language
+(geometric, organic, calligraphic, engineered), and colour. A useful default mix:
 
-## Form
+1. **A wordmark-led identity** with a fully worked word and an icon derived from it.
+2. **A symbol + wordmark** where the symbol is a drawn, ownable form and the word is set with care to match it.
+3. **A bolder or unexpected route** — a typographic emblem, an abstract system, an editorial serif, a monogram so well
+   drawn it becomes a mark — something the user might not have asked for and might love.
 
-- **Simplicity**: as few elements as the idea allows. Aim for something a child could redraw from memory.
-  Under ~40 path commands for a symbol is a healthy target; complexity needs a reason.
-- **Silhouette first**: the mark must work as a solid black shape. Color is added after the form works.
-- **Construction**: build on a grid (e.g. 24 or 48 units) with a consistent set of radii and stroke
-  weights. Repeat measurements. Build with `markilo construct` so the recipe is saved as `construction.json`
-  (see `construction.md`).
-- **Optical corrections** (what separates professional marks):
-  - Round and pointed forms overshoot flat ones by ~1–3% to look the same size.
-  - Horizontal strokes are drawn slightly thinner than vertical ones to look equal.
-  - The optical center sits slightly above the geometric center; the verify balance check reports a
-    small upward offset as intentional.
-  - Where strokes meet at acute angles, open the joint (ink traps) or thin the stroke to avoid dark blobs
-    at small sizes.
-  - Circles next to squares need to be slightly larger.
-- **Negative space**: use it on purpose; counters must stay open at 16 px (verify reports closed
-  counter-spaces). Gaps under 1.2 px at 16 px disappear.
-- **Small sizes**: the symbol must survive at 16 px. If a detail matters only at large sizes, it is
-  decoration; drop it or create a deliberately simplified small-size variant.
-- **Balance**: visual weight near the optical center, with breathing room in the artboard (80–98% of the
-  artboard; verify reports it).
-- **Monochrome**: the mark must read in one color with no internal color-only boundaries. Separate parts
-  with real gaps (knockouts), not just different shades.
+Adapt the mix to the brief. If the user's references point somewhere, at least one proposal should go there.
 
-## Color
+## Craft
 
-- One dominant brand color, one optional supporting color, plus ink and paper. More colors need a system
-  reason (a product family, a data palette).
-- Check meaning across markets: red (luck in China, danger/discount elsewhere), green (finance, health,
-  Islam), white (mourning in parts of East Asia), purple (mourning in parts of Latin America and
-  Thailand). Note any risk in the brief.
-- Contrast: the mark needs ≥ 3:1 against its background (WCAG 1.4.11); provide reversed variants for dark
-  grounds. The palette command reports WCAG pairs and semantic clashes (brand color too close to error red
-  or success green).
-- Prefer colors that still work in grayscale (vary lightness, not only hue) for color-vision deficiencies.
+- **Optical corrections.** Round forms overshoot flat ones by 1–3 %; horizontals are slightly thinner than verticals;
+  the optical centre sits a little above the geometric one; acute joins need opening (ink traps) at small sizes.
+- **Consistency.** One stroke-contrast logic, one corner logic, one terminal logic across word and icon.
+- **Small sizes are a check, not the starting point.** Design at display size; then confirm the icon still reads at
+  16–32 px. If a detail matters only large, make a simplified small version rather than coarsening the main mark.
+- **Monochrome first.** The identity must work in one colour; colour is added to a form that already works.
+- **Restraint.** Every element earns its place. Decoration is not character.
 
-## Typography
+## Colour
 
-- The wordmark is drawn from a typeface, then _edited_: tracking, specific letter adjustments, joined or
-  cut strokes when the idea calls for it. Always outlined (`markilo wordmark`), never live text.
-- Match the symbol's construction: geometric symbols pair with geometric sans; humanist forms with
-  humanist sans; editorial or heritage positioning can use a serif (fraunces, ibm-plex-serif).
-- Lowercase reads friendlier and more modern; uppercase reads institutional and stable; title case is
-  neutral.
-- Check every letter of the name for awkward pairs (rn → m, cl → d, Il1) and for diacritics in target
-  markets (Turkish İ/ı, ş, ğ; German ß; Nordic å/ø). Use `--locale tr` for Turkish casing.
-- Licenses: bundled fonts are SIL OFL 1.1 (commercial use allowed; outlined logos carry no font
-  obligations). Record any user-supplied font and its license.
+One confident primary, an optional supporting colour, ink and paper. Pick colour from the stance and the product's
+existing interface (an existing UI palette is equity), check contrast (≥ 3:1 for the mark, `markilo palette` reports
+WCAG pairs) and cultural meaning in the target markets. Prefer a palette that still works in greyscale.
+
+## User references
+
+When the user shares logos, screenshots, mood boards, sketches or identities they like or dislike
+(`markilo reference add --category inspiration|dislike|existing`), read them for **characteristics**: proportion,
+weight, contrast, typeface classification, case, spacing, corner and terminal shapes, density, energy, colour
+temperature. Write those down and design from them. Never reproduce a referenced mark or its distinctive device;
+references are compared in the originality check like any competitor mark. A sketch from the user is an idea to
+develop, credited to them. Without references, design from the brief — references help, they are never required.
+
+## Avoid (short list)
+
+The category's clichés named in the brief; the product's object drawn plainly; outlined line icons; a stock face
+untouched; one tweaked letter or a coloured dot on an otherwise stock word; the initial with a slice or offset as the
+whole idea; gradient blobs, swooshes, connected dots, generic arrows and check marks.
+
+## Typography notes
+
+- Bundled faces are SIL OFL 1.1 (commercial use allowed; outlined logos carry no font obligations). `markilo fonts`
+  lists them with traits; with network approval `markilo fonts search` / `fonts add` reach ~1,800 open-licensed
+  families. Record any user-supplied font and its license.
+- Check every letter pair for confusion (rn → m, cl → d, Il1) and diacritics in target markets (Turkish İ/ı, ş, ğ;
+  German ß; Nordic å/ø). Use `--locale tr` for Turkish casing.
+- Wordmarks are always outlined (no live `<text>`).
 
 ## Refresh vs. redesign
 
-Keep equity that exists. Before changing a working identity, list what people already recognise (shape,
-color, letter, sound). A **refresh** keeps the core idea and improves craft (geometry, small sizes,
-contrast, a modern wordmark). A **redesign** is justified when the current mark fails measurably
-(legibility, originality conflict, scalability), contradicts the positioning, or the business changed.
-State which one you recommend and why, with evidence.
+Keep equity that exists: list what people already recognise (shape, colour, letter, sound) before changing it. A
+refresh keeps the idea and improves craft; a redesign is justified when the current mark fails measurably, contradicts
+the positioning, or the business changed. Recommend one with evidence.
 
-## Families (multi-product brands)
+## Families
 
-- Define the shared system first: grid, corner radii, stroke weight, color logic, type, and a shared
-  structural motif. Write it to `brand/shared/system.json` (tokens) and the brief notes.
-- Each product gets its own idea expressed in the shared language. Family members should be clearly
-  related at a glance and clearly distinguishable at 16 px. Check both with `markilo diversity` per brand
-  and by comparing members with `markilo compare`.
-- Architecture: decide master brand vs. endorsed vs. independent per product, and record it (`--role`,
-  `--parent`).
-- Preserved (locked) members are inputs to the system, not things to change.
+Define the shared system first (type, stroke and corner logic, colour logic, one structural motif), then give each
+product its own expression inside it. Members must be related at a glance and distinct at 16 px.
 
-## Judgment criteria (scored 0–10 by the critic, with one-line reasons)
+## Judgment criteria (used in the final review)
 
-brand-fit, semantic-relevance, distinctiveness, memorability, simplicity, balance, craft (geometry and
-optical alignment), typography, color, cultural-fit, timelessness, premium-perception, versatility.
+brand-fit, semantic-relevance, distinctiveness, memorability, simplicity, balance, craft (geometry and optical
+alignment), typography, color, cultural-fit, timelessness, premium-perception, versatility. Scores inform; the user
+decides.

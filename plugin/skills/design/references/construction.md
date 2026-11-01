@@ -1,10 +1,10 @@
-# Building marks with construction specs
+# Construction specs — an optional drawing tool
 
-Do not hand-type path coordinates for a symbol. Describe how the mark is **built** — primitives, cuts, gaps,
-offsets, repeats, real letterforms — in a JSON construction spec, and let `markilo construct` turn it into exact,
-filled, optimized SVG. A spec is how a designer thinks ("a 300-unit ring, cut open at 2 o'clock, with a bar
-crossing it and a 32-unit gap where they meet"). Every measurement is a named parameter, so one spec gives many
-measured variants.
+`markilo construct` turns a JSON description of how a mark is built — primitives, real letterforms, your own paths,
+booleans, gaps, repeats — into exact, filled, optimized SVG. Use it when it helps: to join or cut real letters, to
+outline a stroked skeleton into a custom letter, to keep measurements consistent, or to try measured variants. It is
+not required. Freeform SVG paths written by hand are equally valid (`svg-authoring.md`), and the best work often mixes
+both: a drawn contour, merged with a letter, cleaned up by a boolean.
 
 ```
 markilo construct <spec.json> -o <out.svg> [--guides <construction.png>]          # build one
@@ -79,28 +79,20 @@ With `--brand/--concept`, palette roles come from the concept, the result is wri
 Every shape also takes `round` (fillet all corners with this radius), `grow` (offset), `scale`, `rotate`, `flip`
 (`x`/`y`), `move` `[dx, dy]` and `origin` (default: the shape's centre). Order: grow, round, scale, flip, rotate, move.
 
-## Process
+## Using it well
 
-1. **Write the idea sentence first** (design-principles.md). Then pick the _move_ that makes it ownable (below).
-   Write it as what the eye catches, then what it means: _"one stem shared by two arches — research and verification
-   meet in an m"_. The first half must be visible at 32 px; a story without a visible hook ("a safe crossing from work
-   to payment") is not a sketch yet.
-2. **Sketch wide**: 3–5 specs (`sketches/s1.json …`), each a different move, not a nudge, each with an `"idea"`
-   sentence in that form. `markilo sketches --brand <slug> --concept <id>` builds them all onto `sketches/board.png` for the
-   critic's sketch review. Build each with
-   `construct sN.json -o sN.svg --brand <slug> --concept <id>` (with `-o` the concept's palette is used and nothing
-   in the concept changes), compare with `markilo render s1.svg s2.svg … --compare --paper <paper> -o
-   compare.png`, `Read` it. Keep one; say why the others lost.
-3. **Tune by measurement**: put the uncertain measurements (stroke weight, gap, cut angle, overlap) in `vary`, run
-   `--vary`, `Read` `variants.png`. The score is a guide, not the judge: pick by eye among the top rows. A red
-   label names the first failing check; `variants.json` has every check's message.
-4. **Commit**: `construct … --brand --concept --set …` → `symbol.svg`, `construction.json`, `construction.png`.
-5. **Verify** (`markilo verify`) and look at the 16 px, dark and one-color rows. Fix in the spec, not the SVG.
-6. For wordmarks, start from `markilo wordmark`; for a custom letter (a cut, a ligature, a terminal that carries
-   the idea) build that letter as a `glyph` with booleans and compose it with `lockup`, or build the whole word
-   with `glyph` and `"role": "wordmark"` (its recipe is saved as `construction-wordmark.json`). `construct` prints
-   each letter's box, baseline, cap and x-height (`glyphs`), so cuts can be aimed at a stem or a bar by expression
-   rather than by reading path data. Judge wordmarks with `markilo render wordmark.svg -o wm.png --width 1200`.
+- **Custom letters as skeletons.** Draw a letter's centre line as a `path` with `width` (and `cap`/`join`); Béziers
+  (`C`) give it a drawn quality. The same `width` across letters gives a consistent stroke; `union` with real glyphs
+  where you keep the font's letters. This is the quickest route to lettering no font has.
+- **Real letters, edited.** A `glyph` gives the font's outline; `subtract` a shape to cut a terminal or open a
+  counter, `union` a drawn stroke to make a ligature between neighbours. `construct` prints each glyph's box, baseline,
+  cap and x-height (`glyphs`), so edits are aimed by expression, not guessed.
+- **Words.** Build the whole word in one spec with `"role": "wordmark"` (the recipe is saved as
+  `construction-wordmark.json` and the wordmark keeps its type metrics for lockups).
+- **Variants.** Put an uncertain measurement (stroke, gap, angle) in `params` + `vary` and run `--vary`; choose by eye
+  among the top rows of `variants.png`.
+- **Look.** Render (`markilo render out.svg -o out.png --width 1200`) and `Read` it after every change. A spec is only
+  as good as the drawing it produces.
 
 ## A worked example
 
@@ -148,9 +140,9 @@ a letter, and a strict independent judge rated it 5.8/10 (the knockout where the
 One move (overlap), one unit system, one accent on the idea, every gap ≥ 80 units. Its weakness is the idea's
 first reading — a letter m — which is why most directions should not start from the name's initial.
 
-## Moves that make a mark ownable
+## Moves that can make a mark ownable
 
-Each is a construction technique, not a shape to copy. Combine at most two.
+Techniques, not recipes — use one when it serves the idea.
 
 - **Letter carries the metaphor**: a `glyph` whose counter, terminal or stem becomes the object — `subtract` the
   metaphor from the letter, or `union` a part of it in. Only when the object is the first reading; an initial with a
@@ -192,39 +184,22 @@ product with `construct <spec> --brand <product> --concept <id> --member <name>`
 
 ## Wordmarks
 
-Carry the symbol's idea into the wordmark **once**: one or two letters that share the symbol's move (a cut, a corner,
-a terminal), on top of a calm, well-spaced typeface. Rebuilding every letter from the idea makes the word busy and
-harder to read, and it reads as a display face rather than a brand. Every letter must still be readable on its own:
-check `e`, `a`, `w`, `m` and other complex forms at 1200 px and at 64 px wide.
+See "Wordmark first" in `design-principles.md` for what to aim for. With construct:
 
-A treatment can also run through the whole word instead of living in one letter — the usual way a coined name gets
-character. Transforms on a `glyph` apply to every letter at once: `"round": 18` softens every corner and terminal,
-`"grow": 6` adds weight evenly, and a `subtract` of one repeated `rect` (`repeat` with `step`) cuts every stem at the
-same angle. Pick one treatment from the brief's form language, check it at 12 px, and keep the letters themselves
-untouched.
+1. Compare faces quickly: `markilo wordmarks --brand <slug> --concept <id> --fonts a,b,c --weights 500,700
+   [--tracking -20,0,20]` (`review/wordmarks.png`).
+2. Build the word in one spec with `glyph` and `"role": "wordmark"`, then apply the treatment across it: a ligature
+   from a `union` of two neighbours and a drawn stroke, terminals cut at one angle by a repeated `subtract`, `round` to
+   soften every corner, `grow` for weight, custom letters drawn as skeleton paths. Aim by the printed `glyphs` boxes.
+3. Derive the icon from the same drawing: the same spec keeping only some letters (`"letters": [i]`), fitted to the
+   square, with `construct … --role symbol`; then redraw it until it stands on its own.
+4. `markilo verify` writes `review/wordmark-sheet.png` (12–64 px on light, dark, black and white): the word must stay
+   readable at 12 px.
 
-### Wordmark-led concepts (`--lead wordmark`)
-
-The word is the identity, so it is built, not typeset:
-
-1. Choose the face on the wordmark board: `markilo wordmarks --brand <slug> --concept <id>` (the bundled faces,
-   weights and spacing, measured), and commit one with `--pick`.
-2. Build the word as one spec with `glyph` and `"role": "wordmark"`, then change one or two letters with booleans so
-   they carry the idea — join two letters into a ligature, reshape a counter, extend or cut a terminal, share a stroke
-   between neighbours. Aim the change by the printed `glyphs` boxes (stem, bowl, x-height), not by eye.
-3. Cut the icon from the same drawing: a second spec with the same `glyph` and the same change, keeping only the
-   changed letter or pair (`"letters": [i]`), fitted to the square — `construct … --role symbol`. Add a small version
-   when the change disappears at 16 px.
-4. `markilo verify` writes `review/wordmark-sheet.png` (the word at 12–64 px on light, dark, black and white). Read it
-   as a stranger: the word must stay readable at 12 px, and the change must be visible at 24 px.
-
-`construct` and `sketches` measure every changed letter against the font's own alphabet. A letter that now looks more
-like another letter ("o" cut open on the right is a "c": the word reads "necn") makes the sketch not `ready`; a letter
-that lost its counter (an e without its eye) or two letters merged into one shape is a note the critic weighs. Most
-misread wordmarks in Markilo's benchmark came from exactly these: "portwise" read as "partwise", an "ll" as a "4" or
-an "n", a "pinehold" whose e lost its eye. Change a terminal, a join or a counter's shape; keep the stroke that names
-the letter. A separate element dropped into the word is read as punctuation: between letters a hyphen ("searve-x"),
-over a letter an accent ("jourílo"), after the word a full stop. Put it inside a counter or attach it to a letter.
+`construct` and `sketches` measure every changed letter against the font's own alphabet: a letter that now looks more
+like another letter ("o" cut open on the right reads as "c") is flagged; a letter that lost its counter or two letters
+merged into one shape is a note to weigh. A separate element dropped into a word reads as punctuation — a hyphen
+between letters, an accent over one, a full stop after the word — so attach it to a letter or put it inside a counter.
 
 ## Craft checklist
 
@@ -246,9 +221,8 @@ over a letter an accent ("jourílo"), after the word a full stop. Put it inside 
 - Before you commit, describe the mark in one sentence without naming a shape ("a ring and a bar" is a shape; "a
   door left ajar" is an idea). If you can only name shapes, go back to step 1.
 
-## Patterns the critic scores low
+## Patterns that read as generic
 
-Circle + bar, plain rings, a single letter in a stock font in a rounded square, generic arrows/checkmarks/sparkles,
-radial petals, interlocking circles, gradient blobs, swooshes, abstract "network" dots, and shapes that are already
-UI icons (paperclip/hairpin = attachment, power symbol, refresh arrows, padlock, cloud). Clean execution does not
-rescue a generic idea.
+Circle + bar, plain rings, a single letter in a stock font in a rounded square, generic arrows, check marks and
+sparkles, radial petals, interlocking circles, gradient blobs, swooshes, "network" dots, and shapes that are already UI
+icons (paperclip, power symbol, refresh arrows, padlock, cloud). Clean execution does not rescue a generic idea.

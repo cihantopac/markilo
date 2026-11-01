@@ -1,8 +1,8 @@
 # SVG authoring rules for Markilo masters
 
-`markilo svg lint --master` and `markilo verify` enforce these. Build symbols with `markilo construct`
-(see `construction.md`): it produces masters that already follow these rules. Write SVG by hand only for parts no
-construction shape can express.
+`markilo svg lint --master` and `markilo verify` enforce these. Write SVG by hand — freeform paths and Bézier curves
+are first-class — or build it with `markilo construct` (`construction.md`), which produces masters that already follow
+these rules. Either way, the rules below are fixed: they keep masters valid, safe, legible and exportable.
 
 ## Required
 
@@ -23,9 +23,10 @@ construction shape can express.
 - Snap coordinates to the construction grid; use integers or one decimal where possible.
 - Keep the mark inside the artboard with a small margin: ink should span 80–98% of the viewBox.
 - Use `fill-rule="evenodd"` for counters (holes) inside one path when it keeps the path simple.
-- Prefer arcs (`a`) and straight segments over many tiny curve segments; prefer a few precise cubic
-  Béziers over auto-traced noise. Keep total path commands low (verify reports complexity).
-- Round corners with arcs of consistent radius across the mark.
+- Draw curves with a few precise cubic Béziers: place points at extremes (top, bottom, left, right of a curve) with
+  horizontal or vertical handles where the curve turns; that is how type designers draw smooth contours. Avoid
+  auto-traced noise; verify reports complexity.
+- Keep one logic for corners (sharp, one radius family, or soft) across the mark and its word.
 - For overlaps that should read as separate parts in one color, cut a real gap: ≥ 1/13 of the artboard (≥ 80 units
   on 1024), which is 1.2 px at 16 px — the verify threshold. Under 1/23 (~45 units) fails.
 
@@ -41,8 +42,10 @@ construction shape can express.
 
 ## Wordmarks and lockups
 
-- Generate with `markilo wordmark --text … --font … --weight … -o wordmark.svg`; it embeds cap-height and
-  baseline metadata used by `markilo lockup` and `finalize`.
+- Start from `markilo wordmark --text … --font … --weight … -o wordmark.svg` or a construct spec with
+  `"role": "wordmark"`; both embed `data-baseline`, `data-cap-height` and `data-x-height` used by `markilo lockup` and
+  `finalize`. A wordmark drawn fully by hand needs `data-markilo-role="wordmark"`, `data-baseline` and
+  `data-cap-height` on its root (in its own viewBox units) so lockups align it.
 - Tune tracking in thousandths of an em (`--tracking=-15` tight display, `0` default, `+40` airy caps).
 - Manual letter edits are allowed after generation: edit individual `<path data-char="…">` elements and
   keep the root attributes.
