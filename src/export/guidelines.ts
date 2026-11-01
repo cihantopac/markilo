@@ -2,6 +2,7 @@ import { contrastRatio, wcagRating } from '../analyze/color.js';
 import type { Palette } from '../design/palette.js';
 import { nestSvg, svgDocument } from '../svg/compose.js';
 import { escapeText } from '../svg/xml.js';
+import { CHROME_CSS, CHROME_HASH, CHROME_SCRIPT, footHtml, t, topBar, withChrome } from '../ui/chrome.js';
 import type { BrandKit } from './kit.js';
 import { groundsFor } from './variants.js';
 
@@ -112,27 +113,35 @@ export function guidelinesMarkdown(g: GuidelinesInput): string {
   return L.join('\n');
 }
 
-function figure(svg: string | undefined, bg: string, w = 360, h = 160): string {
+function figure(svg: string | undefined, bg: string, caption: string, w = 360, h = 160): string {
   if (!svg) return '';
-  return svgDocument(w, h, nestSvg(svg, { x: w * 0.12, y: h * 0.18, width: w * 0.76, height: h * 0.64 }), {
-    background: bg,
-  });
+  return `<figure${w === h ? ' class="sq"' : ''}>${svgDocument(
+    w,
+    h,
+    nestSvg(svg, { x: w * 0.12, y: h * 0.18, width: w * 0.76, height: h * 0.64 }),
+    {
+      background: bg,
+    },
+  )}<figcaption>${t(caption)}</figcaption></figure>`;
 }
 
+const NO_REGISTRY =
+  'No trademark registry search was done (WIPO Global Brand Database, TMview, national registers). Search them, or have a trademark attorney do it, before registering or launching widely.';
+const REGISTRY_LOGGED =
+  "Registry searches logged: {0}. Markilo's checks are still not a trademark clearance; have a trademark attorney confirm before registering.";
+
 /** Plain statements of what the originality verdict rests on; the registry sentence is never softened. */
-function evidenceLines(kit: BrandKit): string[] {
+function evidence(kit: BrandKit): [template: string, vars?: string[]][] {
   const e = kit.originality?.evidence;
-  const out: string[] = [];
-  if (e) out.push(`Compared against: ${e.visual}.`);
-  if (!e || e.registryCoverage === 'none')
-    out.push(
-      'No trademark registry search was done (WIPO Global Brand Database, TMview, national registers). Search them, or have a trademark attorney do it, before registering or launching widely.',
-    );
-  else
-    out.push(
-      `Registry searches logged: ${e.registry}. Markilo's checks are still not a trademark clearance; have a trademark attorney confirm before registering.`,
-    );
+  const out: [string, string[]?][] = [];
+  if (e) out.push(['Compared against: {0}.', [e.visual]]);
+  if (!e || e.registryCoverage === 'none') out.push([NO_REGISTRY]);
+  else out.push([REGISTRY_LOGGED, [e.registry]]);
   return out;
+}
+
+function evidenceLines(kit: BrandKit): string[] {
+  return evidence(kit).map(([s, v]) => s.replace(/\{(\d)\}/g, (_, i: string) => v?.[Number(i)] ?? ''));
 }
 
 export function guidelinesHtml(g: GuidelinesInput): string {
@@ -142,48 +151,58 @@ export function guidelinesHtml(g: GuidelinesInput): string {
   const swatches = colorRows(kit)
     .map(
       (r) =>
-        `<div class="sw"><div class="chip" style="background:${r.hex}"></div><b>${r.name}</b><code>${r.hex}</code><small>${r.onWhite.toFixed(1)}:1 on white · ${r.onDark.toFixed(1)}:1 on dark</small></div>`,
+        `<div class="sw"><div class="chip" style="background:${r.hex}"></div><b>${t(r.name)}</b><code>${r.hex}</code><small>${t('{0}:1 on white · {1}:1 on dark', [r.onWhite.toFixed(1), r.onDark.toFixed(1)])}</small></div>`,
     )
     .join('');
   const scales = Object.entries(g.palette.scales)
     .map(
       ([name, s]) =>
-        `<div class="scale"><span>${name}</span>${Object.entries(s.scale)
+        `<div class="scale"><span>${escapeText(name)}</span>${Object.entries(s.scale)
           .map(([k, v]) => `<i style="background:${v}" title="${k} ${v}"></i>`)
           .join('')}</div>`,
     )
     .join('');
-  return `<!doctype html>
+  const o = kit.originality;
+  let section = 0;
+  const n = () => `<span class="n">${String(++section).padStart(2, '0')}</span>`;
+  return withChrome(`<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${CHROME_HASH}; style-src 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
 <title>${escapeText(kit.name)} — brand guidelines</title>
+<script>${CHROME_SCRIPT}</script>
 <style>
-:root{--ink:${kit.palette.ink};--paper:${kit.palette.paper};--brand:${kit.palette.primary};--line:#e3e5ea}
-*{box-sizing:border-box}body{margin:0;font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--paper)}
-main{max-width:1040px;margin:0 auto;padding:48px 24px}h1{font-size:40px;margin:0 0 8px}h2{margin-top:48px;border-top:1px solid var(--line);padding-top:24px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}.grid svg{width:100%;height:auto;border-radius:12px;border:1px solid var(--line)}
-.sw{display:grid;gap:2px}.chip{height:72px;border-radius:10px;border:1px solid var(--line)}code{font-size:13px}small{color:#6b7080}
-.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}.scale{display:flex;align-items:center;gap:4px;margin:6px 0}.scale span{width:90px}.scale i{flex:1;height:32px;border-radius:4px}
-ul.dont li{margin:4px 0}.locked{padding:12px 16px;border-radius:10px;background:#fff6db;border:1px solid #f0d27a}
-@media (max-width:600px){h1{font-size:30px}}
-</style></head><body><main>
-<h1>${escapeText(kit.name)}</h1><p>Brand guidelines${kit.concept ? ` · concept <code>${escapeText(kit.concept)}</code>` : ''} · generated ${new Date().toISOString().slice(0, 10)}</p>
-${kit.locked ? '<p class="locked">This identity is locked and reproduced exactly as provided.</p>' : ''}
-<h2>Logo</h2><div class="grid">${figure(primary, gr.native)}${kit.locked || !primary ? '' : figure(g.reversed(primary), gr.opposite)}${figure(g.lockupS, gr.native)}${figure(g.symbol, gr.native, 160, 160)}</div>
-<h2>Clear space &amp; minimum size</h2><p>Keep clear space equal to the wordmark cap height on every side. Minimum: symbol 16 px / 5 mm, horizontal logo 96 px / 25 mm.</p>
-<h2>Color</h2><div class="swatches">${swatches}</div>${scales}
-<h2>Typography</h2><p>${kit.typography ? `${escapeText(kit.typography.family ?? kit.typography.fontId)} ${kit.typography.weight} — ${escapeText(kit.typography.license ?? '')}` : 'Outlined wordmark; no typeface required.'}</p>
+${CHROME_CSS}
+body{font-size:16px;line-height:1.6}main{max-width:1040px;margin:0 auto;padding:40px 20px 24px}
+h1{font:600 46px/1.05 var(--serif);margin:0 0 6px;letter-spacing:-.015em}.meta{color:var(--muted);margin:0}
+h2{font:600 24px/1.2 var(--serif);margin:52px 0 16px;padding-top:22px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:baseline}h2 .n{font:600 12px/1 var(--sans);color:var(--accent);letter-spacing:.08em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}figure{margin:0}figure.sq{max-width:220px}figure svg{display:block;width:100%;height:auto;border-radius:14px;border:1px solid var(--line)}figcaption{font-size:12px;color:var(--muted);margin-top:6px}
+.sw{display:grid;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:var(--shadow)}.chip{height:76px;border-radius:10px;border:1px solid var(--line)}code{font-size:13px}small{color:var(--muted)}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px}.scale{display:flex;align-items:center;gap:4px;margin:6px 0}.scale span{width:90px;font-size:13px;color:var(--muted)}.scale i{flex:1;height:32px;border-radius:4px}
+ul.dont{list-style:none;padding:0;display:grid;gap:8px}ul.dont li{padding:10px 14px 10px 40px;position:relative;background:var(--card);border:1px solid var(--line);border-radius:12px}ul.dont li:before{content:"✕";position:absolute;left:15px;color:var(--bad);font-weight:700}
+.locked{padding:12px 16px;border-radius:12px;background:#fff6db;color:#4a3800;border:1px solid #f0d27a}.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:10px 14px}
+@media (max-width:600px){h1{font-size:34px}main{padding-top:28px}}
+</style></head><body>
+${topBar('Brand guidelines')}
+<main>
+<h1>${escapeText(kit.name)}</h1><p class="meta">${t('Brand guidelines')}${kit.concept ? ` · ${t('concept')} <code>${escapeText(kit.concept)}</code>` : ''} · ${t('generated {0}', [new Date().toISOString().slice(0, 10)])}</p>
+${kit.locked ? `<p class="locked">${t('This identity is locked and reproduced exactly as provided.')}</p>` : ''}
+<h2>${n()}${t('Logo')}</h2><div class="grid">${figure(primary, gr.native, 'Primary logo')}${kit.locked || !primary ? '' : figure(g.reversed(primary), gr.opposite, 'On dark backgrounds')}${figure(g.lockupS, gr.native, 'Secondary logo')}${figure(g.symbol, gr.native, 'Symbol', 160, 160)}</div>
+<h2>${n()}${t('Clear space & minimum size')}</h2><p>${t('Keep clear space equal to the wordmark cap height on every side. Minimum: symbol 16 px / 5 mm, horizontal logo 96 px / 25 mm.')}</p>
+<h2>${n()}${t('Color')}</h2><div class="swatches">${swatches}</div>${scales}
+<h2>${n()}${t('Typography')}</h2><p>${kit.typography ? `${escapeText(kit.typography.family ?? kit.typography.fontId)} ${kit.typography.weight} — ${escapeText(kit.typography.license ?? '')}` : t('Outlined wordmark; no typeface required.')}</p>
 ${
-  kit.originality
-    ? `<h2>Originality check</h2><p>Approved with originality verdict <b>${escapeText(kit.originality.verdict)}</b> (confidence ${escapeText(kit.originality.confidence)})${kit.originality.acceptedRisk ? ', with the remaining risk explicitly accepted' : ''}.</p>${evidenceLines(
+  o
+    ? `<h2>${n()}${t('Originality check')}</h2><p>${t(o.acceptedRisk ? 'Approved with originality verdict {0} (confidence {1}), with the remaining risk explicitly accepted.' : 'Approved with originality verdict {0} (confidence {1}).', [o.verdict, o.confidence])}</p>${evidence(
         kit,
       )
-        .map((l) => `<p>${escapeText(l)}</p>`)
+        .map(([s, v]) => `<p class="note">${t(s, v)}</p>`)
         .join('')}`
     : ''
 }
-${kit.notes?.length ? `<h2>Usage notes</h2><ul>${kit.notes.map((n) => `<li>${escapeText(n)}</li>`).join('')}</ul>` : ''}
-<h2>Do not</h2><ul class="dont">${DONTS.map((d) => `<li>${escapeText(d)}</li>`).join('')}</ul>
-</main></body></html>
-`;
+${kit.notes?.length ? `<h2>${n()}${t('Usage notes')}</h2><ul>${kit.notes.map((n) => `<li>${escapeText(n)}</li>`).join('')}</ul>` : ''}
+<h2>${n()}${t('Do not')}</h2><ul class="dont">${DONTS.map((d) => `<li>${t(d)}</li>`).join('')}</ul>
+</main>
+${footHtml()}
+</body></html>
+`);
 }

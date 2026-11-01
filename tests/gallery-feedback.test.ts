@@ -129,6 +129,6 @@ describe('gallery: nothing passed', () => {
     expect(html).not.toContain('No concepts yet.');
     expect(html).toContain('Nothing is waiting for a decision');
     expect(html).toContain('<details class="rejected-list" open>');
-    expect(html).toContain('would not present it as is — reads as a folded page icon');
+    expect(html).toContain('<span data-i18n>would not present it as is</span> — reads as a folded page icon');
   });
 });

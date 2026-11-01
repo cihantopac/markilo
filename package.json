@@ -1,7 +1,7 @@
 {
   "name": "markilo",
-  "version": "1.1.1",
-  "description": "AI-powered brand identity studio for Claude Code: research, originality analysis, SVG identity design, verification and complete asset export.",
+  "version": "1.1.2",
+  "description": "Brand identity studio for Claude Code: three original SVG identities to compare and choose from, originality checks, and a complete asset kit (logos, app icons, favicons, social images, tokens, guidelines).",
   "license": "Apache-2.0",
   "type": "module",
   "author": "Cihan Topaç (https://github.com/cihantopac)",
@@ -22,7 +22,9 @@
     "favicon",
     "app-icon",
     "design-system",
-    "originality"
+    "originality",
+    "brand-guidelines",
+    "design-tokens"
   ],
   "engines": {
     "node": ">=20.10"

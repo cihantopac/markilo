@@ -6,6 +6,50 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-11-01
+
+Visual polish and presentation. No change to how Markilo designs, verifies or exports artwork: the logo files of a kit
+are byte-for-byte what 1.1.1 wrote.
+
+### Added
+
+- The Gallery, the asset kit preview (`exports/index.html`) and the brand guidelines page (`guidelines/index.html`)
+  share one interface: an English / Turkish switch and a light / dark / system theme, remembered in the browser.
+  Interface text, labels, instructions and statuses are translated; brand names, evidence, file names and artwork are
+  not. One small built-in dictionary (`src/ui/tr.ts`), no framework or dependency; a page carries only the entries it
+  uses, and a test fails when interface text has no translation.
+- The workflow is shown on every page: Three proposals → Compare → Select or request changes → Finalize → Export, with
+  where the page stands.
+- `docs/USAGE.md` (commands, a typical session, the Gallery, monorepos, outputs, the CLI on its own, limitations) and
+  `docs/BENCHMARKS.md` (the full benchmark record), moved out of the README.
+
+### Changed
+
+- Markilo's own design language — ink, warm paper and oxblood from its approved identity — styles the interface of the
+  three pages. Brand artwork, grounds and swatches keep each brand's own colors.
+- Gallery: proposals are lettered A, B and C; the decision area lines up across cards; "Change" is now "Request
+  changes" with a short hint; "Compare" is "Add to comparison" and the chosen cards are outlined; the compare dialog
+  also shows strengths and weaknesses; the action bar wraps on phones; the approved identity labels its tiles and
+  opens the asset kit from one primary link.
+- Asset kit preview and guidelines: clearer hierarchy, labelled hero images, numbered guideline sections, mobile
+  layouts.
+- README rewritten as a short visual showcase: the Gallery, selection and comparison, the identities made for
+  Relivaro, Searvex and Jourilo, the asset kit, installation, and plain statements of cost and evidence. Images use
+  absolute URLs pinned to the release tag so they render on GitHub and npm.
+- Package, plugin and marketplace descriptions say what Markilo makes.
+
+### Fixed
+
+- Gallery: the macOS Dock mockup shared the `.bar` class with the fixed action bar, so it could be pinned to the bottom
+  of the window or hidden with it; the action bar is now `.actionbar`.
+
+### Security
+
+- The kit preview and guidelines pages, previously script-free, now run one script: the language and theme switch. It
+  is pinned by its SHA-256 hash in the page's Content-Security-Policy, sets text with `textContent` only, stores two
+  preferences in `localStorage` and has no network access (`default-src 'none'`). Without it the pages read the same,
+  in English. The Gallery keeps its per-build nonce for both of its scripts.
+
 ## [1.1.1] - 2026-11-01
 
 ### Changed
@@ -659,7 +703,8 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 - Self-contained HTML Brand Preview Gallery with mockups and a feedback export.
 - Locked identities that are reproduced byte-for-byte and never redesigned.
 
-[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v1.1.1...HEAD
+[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v1.1.2...HEAD
+[1.1.2]: https://github.com/cihantopac/markilo/compare/markilo--v1.1.1...markilo--v1.1.2
 [1.1.1]: https://github.com/cihantopac/markilo/compare/markilo--v1.1.0...markilo--v1.1.1
 [1.1.0]: https://github.com/cihantopac/markilo/compare/markilo--v1.0.0...markilo--v1.1.0
 [1.0.0]: https://github.com/cihantopac/markilo/compare/markilo--v0.4.0...markilo--v1.0.0

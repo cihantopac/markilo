@@ -1,4 +1,14 @@
 import { escapeAttr, escapeText } from '../svg/xml.js';
+import {
+  CHROME_CSS,
+  CHROME_HASH,
+  CHROME_SCRIPT,
+  footHtml,
+  stepsHtml,
+  t,
+  topBar,
+  withChrome,
+} from '../ui/chrome.js';
 import type { AssetRecord, ExportGroup } from './exporter.js';
 import type { BrandKit } from './kit.js';
 import { groundsFor } from './variants.js';
@@ -96,7 +106,8 @@ export function kitReadme(kit: BrandKit, assets: AssetRecord[]): string {
 
 /**
  * `index.html` at the top of the export: a preview of every file. Images are linked by relative path, so it works
- * straight from the folder, offline, with no script.
+ * straight from the folder, offline. Its only script is the language and theme switch, pinned by hash in the CSP;
+ * without it the page reads the same, in English.
  */
 export function kitIndexHtml(kit: BrandKit, assets: AssetRecord[]): string {
   const has = (p: string) => assets.some((a) => a.path === p);
@@ -109,31 +120,28 @@ export function kitIndexHtml(kit: BrandKit, assets: AssetRecord[]): string {
 
   const primary = has('logos/primary/primary-color.svg');
   const hero = primary
-    ? `<div class="hero"><figure style="background:${g.native}">${img('logos/primary/primary-color.svg', `${kit.name} logo`)}</figure>${
+    ? `<div class="hero"><figure style="background:${g.native}">${img('logos/primary/primary-color.svg', `${kit.name} logo`)}<figcaption>${t('Primary logo')}</figcaption></figure>${
         has('logos/primary/primary-reversed.svg')
-          ? `<figure style="background:${g.opposite}">${img('logos/primary/primary-reversed.svg', `${kit.name} logo, reversed`)}</figure>`
+          ? `<figure style="background:${g.opposite}">${img('logos/primary/primary-reversed.svg', `${kit.name} logo, reversed`)}<figcaption>${t('On dark backgrounds')}</figcaption></figure>`
           : ''
       }</div>`
     : '';
   const colors = Object.entries(kit.palette)
     .filter(([, v]) => typeof v === 'string' && v.startsWith('#'))
-    .map(
-      ([k, v]) =>
-        `<span class="chip"><i style="background:${v}"></i>${escapeText(k)} <code>${v}</code></span>`,
-    )
+    .map(([k, v]) => `<span class="chip"><i style="background:${v}"></i>${t(k)} <code>${v}</code></span>`)
     .join('');
   const start = essentials(kit, has)
-    .map(([use, p]) => `<tr><td>${escapeText(use)}</td><td>${link(p)}</td></tr>`)
+    .map(([use, p]) => `<tr><td>${t(use)}</td><td>${link(p)}</td></tr>`)
     .join('');
 
   // Logos: one row per logo, one column per variant, each on the ground it is made for.
   const rows = LOGO_ROWS.filter(([name]) => assets.some((a) => a.path.startsWith(`logos/${name}/`)));
   const variants = LOGO_VARIANTS.filter((v) => rows.some(([name]) => has(`logos/${name}/${name}-${v}.svg`)));
   const matrix = rows.length
-    ? `<div class="matrix" style="--cols:${variants.length}"><span></span>${variants.map((v) => `<b class="vh">${v}</b>`).join('')}${rows
+    ? `<div class="matrix" style="--cols:${variants.length}"><span></span>${variants.map((v) => `<b class="vh">${t(v)}</b>`).join('')}${rows
         .map(
           ([name, title]) =>
-            `<p class="rh">${escapeText(title)}</p>${variants
+            `<p class="rh">${t(title)}</p>${variants
               .map((v) => {
                 const svg = `logos/${name}/${name}-${v}.svg`;
                 if (!has(svg)) return '<div></div>';
@@ -168,7 +176,7 @@ export function kitIndexHtml(kit: BrandKit, assets: AssetRecord[]): string {
         )
         .join('');
       const count = assets.filter((a) => a.group === grp).length;
-      return `<section id="${grp}"><h2>${grp}/ <small>${count} files — ${escapeText(FOLDERS[grp].replace(/`/g, ''))}</small></h2>${
+      return `<section id="${grp}"><h2>${grp}/ <small>${t('{0} files', [count])} — ${t(FOLDERS[grp].replace(/`/g, ''))}</small></h2>${
         grp === 'logos' ? matrix : ''
       }${cards ? `<div class="cards">${cards}</div>` : ''}${others ? `<table class="files">${others}</table>` : ''}</section>`;
     })
@@ -177,33 +185,38 @@ export function kitIndexHtml(kit: BrandKit, assets: AssetRecord[]): string {
     .map((grp) => `<a href="#${grp}">${grp}</a>`)
     .join('');
 
-  return `<!doctype html>
+  return withChrome(`<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' file: data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${CHROME_HASH}; style-src 'unsafe-inline'; img-src 'self' file: data:; base-uri 'none'; form-action 'none'">
 <title>${escapeText(kit.name)} — brand kit</title>
+<script>${CHROME_SCRIPT}</script>
 <style>
-:root{--bg:#f4f5f7;--card:#fff;--text:#16181d;--muted:#5f6573;--line:#e2e4e9;--check:#e9ebef}
-@media (prefers-color-scheme:dark){:root{--bg:#0e1014;--card:#171a20;--text:#e8eaef;--muted:#9aa1ae;--line:#2a2e37;--check:#20242b}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:1180px;margin:0 auto;padding:32px 16px 64px}a{color:inherit}h1{margin:0;font-size:28px}h2{margin:40px 0 12px;font-size:20px}h2 small{font-weight:400;color:var(--muted);font-size:14px}
-.sub{color:var(--muted);margin:4px 0 20px}nav{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}nav a{padding:4px 10px;border:1px solid var(--line);border-radius:99px;text-decoration:none;background:var(--card)}
-.hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}.hero figure{margin:0;border-radius:14px;border:1px solid var(--line);aspect-ratio:2/1;overflow:hidden}.hero img{display:block;width:100%;height:100%;object-fit:contain;padding:18% 15%}
-.chips{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0}.chip{display:flex;align-items:center;gap:6px;font-size:13px}.chip i{width:18px;height:18px;border-radius:5px;border:1px solid var(--line)}
-table{border-collapse:collapse;width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}td{padding:7px 12px;border-top:1px solid var(--line);vertical-align:top}tr:first-child td{border-top:0}td:first-child{width:38%}
-.matrix{display:grid;grid-template-columns:minmax(120px,170px) repeat(var(--cols),minmax(0,1fr));gap:10px;align-items:center;overflow-x:auto}.vh{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.rh{margin:0;font-size:13px}
+${CHROME_CSS}
+:root{--check:#e6ded1}:root[data-theme=dark]{--check:#2a201f}@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--check:#2a201f}}
+main{max-width:1180px;margin:0 auto;padding:28px 16px 32px}h1{margin:0;font:600 34px/1.1 var(--serif);letter-spacing:-.01em}h2{margin:44px 0 12px;font:600 22px/1.2 var(--serif)}h2 small{font:400 13px/1.4 var(--sans);color:var(--muted)}
+.sub{color:var(--muted);margin:6px 0 16px}.intro{display:grid;gap:14px;margin-bottom:20px}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin:24px 0 0;position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:2;border-bottom:1px solid var(--line)}nav a{padding:5px 12px;border:1px solid var(--line);border-radius:99px;text-decoration:none;background:var(--card);color:var(--ink);font-size:13px}
+.hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}.hero figure{margin:0;border-radius:16px;border:1px solid var(--line);aspect-ratio:2/1;overflow:hidden;position:relative}.hero img{display:block;width:100%;height:100%;object-fit:contain;padding:18% 15%}
+.hero figcaption{position:absolute;left:12px;bottom:10px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.86);color:#16120f;border-radius:99px;padding:3px 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px 14px;margin:16px 0}.chip{display:flex;align-items:center;gap:6px;font-size:13px}.chip i{width:20px;height:20px;border-radius:6px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}tr:first-child td{border-top:0}td:first-child{width:38%}
+.matrix{display:grid;grid-template-columns:minmax(120px,170px) repeat(var(--cols),minmax(0,1fr));gap:10px;align-items:center;overflow-x:auto}.vh{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.rh{margin:0;font-size:13px}
 .cell figure{margin:0;border-radius:10px;border:1px solid var(--line);aspect-ratio:2/1;overflow:hidden}.cell img{display:block;width:100%;height:100%;object-fit:contain;padding:14% 12%}.cell small{display:block;text-align:center;color:var(--muted);font-size:12px;margin-top:3px}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;display:grid;gap:4px;font-size:13px;min-width:0}.card b{font-weight:600;overflow-wrap:anywhere}.card small{color:var(--muted)}
-.thumb{display:block;aspect-ratio:4/3;overflow:hidden;border-radius:6px;background:repeating-conic-gradient(var(--check) 0 25%,transparent 0 50%) 0 0/16px 16px}.thumb img{display:block;width:100%;height:100%;object-fit:contain;padding:8%}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px;display:grid;gap:4px;font-size:13px;min-width:0;box-shadow:var(--shadow)}.card b{font-weight:600;overflow-wrap:anywhere}.card small{color:var(--muted)}
+.thumb{display:block;aspect-ratio:4/3;overflow:hidden;border-radius:8px;background:repeating-conic-gradient(var(--check) 0 25%,transparent 0 50%) 0 0/16px 16px}.thumb img{display:block;width:100%;height:100%;object-fit:contain;padding:8%}
 .files{margin-top:12px;font-size:13px}code{font-size:12px}
-@media (max-width:640px){.matrix{grid-template-columns:90px repeat(var(--cols),minmax(110px,1fr))}}
-</style></head><body><main>
-<h1>${escapeText(kit.name)} brand kit</h1>
-<p class="sub">${assets.length} files · every file below is shown on the background it is made for · ${link('README.md')} · ${link('asset-manifest.json')}</p>
+@media (max-width:640px){h1{font-size:28px}.matrix{grid-template-columns:90px repeat(var(--cols),minmax(110px,1fr))}td:first-child{width:auto}}
+</style></head><body>
+${topBar('Asset kit')}
+<main>
+<div class="intro"><h1>${escapeText(kit.name)}</h1>${stepsHtml(['done', 'done', 'done', 'done', 'done'])}<p class="sub">${t('{0} files · every file below is shown on the background it is made for', [assets.length])} · ${link('README.md')} · ${link('asset-manifest.json')}</p></div>
 ${hero}
 ${colors ? `<div class="chips">${colors}</div>` : ''}
-${start ? `<h2>Start here</h2><table>${start}</table>` : ''}
+${start ? `<h2>${t('Start here')}</h2><table>${start}</table>` : ''}
 <nav>${nav}</nav>
 ${sections}
-</main></body></html>
-`;
+</main>
+${footHtml()}
+</body></html>
+`);
 }

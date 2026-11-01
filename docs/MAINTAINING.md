@@ -40,5 +40,32 @@ rebuild `dist/`, regenerate `THIRD_PARTY_NOTICES.md` (`node scripts/notices.mjs`
 ## Branding
 
 Markilo's own identity is in `branding/`. After changing it, run
-`node plugin/dist/markilo.mjs export --workspace branding --brand markilo --clean` and `node scripts/readme-assets.mjs`
-(it only copies exported files into `assets/` and the plugin icon; nothing is drawn by hand).
+`node plugin/dist/markilo.mjs export --workspace branding --brand markilo --only logos,web,social,tokens,guidelines --clean`
+and `node scripts/readme-assets.mjs` (it only copies exported files into `assets/` and the plugin icon; nothing is drawn
+by hand). After a change to the gallery or export pages only, the same export rewrites `index.html`,
+`guidelines/index.html` and the manifest and leaves every logo file byte-for-byte unchanged; rebuild
+`branding/gallery/index.html` with `node plugin/dist/markilo.mjs gallery --workspace branding`.
+
+## README images
+
+The README is also the npm page, so its images use absolute `raw.githubusercontent.com` URLs pinned to the release tag
+(`markilo--v<version>`): relative paths do not render on npmjs.com. Bump the tag in the URLs with each release that
+changes an image; they resolve once the tag is pushed.
+
+- `assets/logo-*.svg`, `assets/kit-overview.png`, `assets/social-preview.png`: Markilo's own exports
+  (`scripts/readme-assets.mjs`).
+- `assets/made-with/*`: the exported `logos/primary` and `social/og-image.png` files of Relivaro, Searvex and Jourilo,
+  copied unedited from their kits.
+- `assets/screens/*`: screenshots of real pages, never mockups. `gallery*.png` show the Gallery built from a copy of
+  `branding/` with `final/` and `exports/` removed and the Hallmark concept set back to `verified`, so its round of
+  three is waiting for a decision (the decisions in `gallery-request.png` and `gallery-compare.png` were clicked in
+  the page); `kit-preview.png` is `branding/brands/markilo/exports/index.html`. Taken at 1280 px (390 px for the phone
+  view) with device scale 2 in headless Chromium.
+
+## Public presentation
+
+- GitHub About: the description matches `package.json`; topics cover brand identity, logo, SVG, Claude Code and the
+  asset kit.
+- Social preview: GitHub has no API for it. In **Settings → General → Social preview**, upload
+  `assets/social-preview.png` (1280×640, Markilo's exported `social/github-social-preview.png`). `gh repo view --json
+  usesCustomOpenGraphImage` shows whether one is set.
