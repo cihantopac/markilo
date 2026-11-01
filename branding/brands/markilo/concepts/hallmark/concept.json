@@ -1,0 +1,46 @@
+{
+  "schema": "markilo/concept@1",
+  "id": "hallmark",
+  "brand": "markilo",
+  "lead": "wordmark",
+  "round": 1,
+  "title": "Hallmark",
+  "direction": "Editorial authority: a custom high-contrast lowercase serif word whose i-dot is a struck lozenge, the maker's punch, echoed as one wedge cut on every stem of the k-i-l run.",
+  "rationale": "The name contains 'mark'; a hallmark is the small punched mark a maker strikes into finished work. An identity studio's own mark should look like a monograph from a great design press, not a generator.",
+  "semantics": [
+    "lozenge = the punch / hallmark; three wedge-cut stems = deliberate",
+    "struck rhythm; oxblood = sealing wax / assay mark; bone paper = print"
+  ],
+  "palette": {
+    "primary": "#7E1D2A",
+    "ink": "#16120F",
+    "paper": "#F2ECE1"
+  },
+  "typography": {
+    "fontId": "dm-serif-display",
+    "weight": 400,
+    "family": "DM Serif Display",
+    "license": "OFL-1.1"
+  },
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "small": "symbol-small.svg"
+  },
+  "status": "approved",
+  "createdAt": "2026-11-01T11:17:47.425Z",
+  "updatedAt": "2026-11-01T12:00:10.213Z",
+  "pitch": {
+    "idea": "A maker's mark for a studio that makes marks: the word markilo set like a monograph title, every stem cut with one 45-degree chisel and the i dotted with an oxblood lozenge, and a symmetric serif M that points to the same lozenge, struck like a hallmark.",
+    "strengths": [
+      "Every letter carries one logic (chisel-notched stems, lozenge terminals), so it reads as lettering, not a font",
+      "the M icon is built from the word's stems, notch and lozenge and reads at 16 px",
+      "symmetric and calm, it works as an app icon, avatar and favicon"
+    ],
+    "weaknesses": [
+      "At 12-16 px the oxblood lozenge loses contrast against the ink",
+      "the i can read as a dotless Turkish ı",
+      "the icon is a letter, chosen by the owner over two drawn forms"
+    ]
+  }
+}

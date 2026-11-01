@@ -1,5 +1,0 @@
-{"idea":"A real lowercase m planed off on the writing angle: its top is the chisel face, and the cut sliver is the accent.",
-"grid":64,
-"defs":{"m":{"glyph":{"text":"m","font":"manrope","weight":800,"height":560,"c":[512,540]}}},
-"layers":[{"name":"m","fill":"primary","shape":{"intersect":[{"ref":"m"},{"polygon":{"points":[[0,530],[1024,410],[1024,1024],[0,1024]]}}]}},
-{"name":"face","fill":"accent","shape":{"intersect":[{"ref":"m"},{"polygon":{"points":[[0,370],[1024,250],[1024,370],[0,490]]}}]}}],"fit":0.06}

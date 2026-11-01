@@ -1,6 +1,0 @@
-{"idea":"A chisel-cut block whose two slits turn it into a lowercase m: the tool and the letter are the same object, the freshly cut face is the accent.",
-"grid":64,"params":{"s":56},
-"defs":{"body":{"subtract":[{"polygon":{"points":[[232,160],[792,160],[792,700],[232,860]]}},{"rect":{"x":381,"y":400,"w":"s","h":700}},{"rect":{"x":587,"y":400,"w":"s","h":700}}]},
-"face":{"polygon":{"points":[[200,745],[820,570],[820,1000],[200,1000]]}}},
-"layers":[{"name":"body","fill":"primary","shape":{"gap":{"shape":{"ref":"body"},"cut":{"ref":"face"},"width":0}}},
-{"name":"tip","fill":"accent","shape":{"intersect":[{"ref":"body"},{"ref":"face"}]}}],"fit":0.06}

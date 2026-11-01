@@ -1,5 +1,0 @@
-{"role":"wordmark","size":[2700,1024],"grid":64,
-"layers":[{"name":"word","fill":"ink","shape":{"subtract":[
-{"glyph":{"text":"markilo","font":"manrope","weight":700,"at":[40,700],"height":520,"tracking":-10}},
-{"polygon":{"points":[[60,"575+0.2*308-24"],[680,"575-0.2*312-24"],[680,"575-0.2*312+24"],[60,"575+0.2*308+24"]]}}
-]}}]}

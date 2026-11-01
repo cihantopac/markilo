@@ -1,57 +1,39 @@
 {
   "schema": "markilo/palette@1",
   "input": {
-    "primary": "#101218",
-    "accent": "#d12c12"
+    "primary": "#7E1D2A"
   },
   "scales": {
     "primary": {
-      "base": "#101218",
+      "base": "#7E1D2A",
       "scale": {
-        "50": "#f6f7f8",
-        "100": "#eaebed",
-        "200": "#d2d4d9",
-        "300": "#b5b7be",
-        "400": "#9598a0",
-        "500": "#777a83",
-        "600": "#60636b",
-        "700": "#4a4d54",
-        "800": "#36383e",
-        "900": "#25262b",
-        "950": "#101218"
+        "50": "#fff4f4",
+        "100": "#fee4e4",
+        "200": "#ffc3c3",
+        "300": "#f29c9e",
+        "400": "#db767a",
+        "500": "#be535a",
+        "600": "#a33b44",
+        "700": "#7e1d2a",
+        "800": "#651721",
+        "900": "#490d15",
+        "950": "#2e0409"
       },
-      "anchorStep": 950
-    },
-    "accent": {
-      "base": "#d12c12",
-      "scale": {
-        "50": "#fff4f2",
-        "100": "#ffe4df",
-        "200": "#fcc5ba",
-        "300": "#fd9885",
-        "400": "#fa5d43",
-        "500": "#d12c12",
-        "600": "#b3250f",
-        "700": "#8e1a08",
-        "800": "#691205",
-        "900": "#4c0802",
-        "950": "#310200"
-      },
-      "anchorStep": 500
+      "anchorStep": 700
     }
   },
   "neutral": {
-    "50": "#f6f7f7",
-    "100": "#ebebec",
-    "200": "#d4d4d5",
-    "300": "#b7b7b8",
-    "400": "#989899",
-    "500": "#7a7a7b",
-    "600": "#636364",
-    "700": "#4d4d4e",
-    "800": "#383838",
-    "900": "#262627",
-    "950": "#161616"
+    "50": "#fef4f4",
+    "100": "#f2e8e8",
+    "200": "#dbd2d1",
+    "300": "#beb5b5",
+    "400": "#9f9696",
+    "500": "#807878",
+    "600": "#696161",
+    "700": "#534b4b",
+    "800": "#3d3636",
+    "900": "#2b2424",
+    "950": "#1b1414"
   },
   "semantic": {
     "success": "#0e8c41",
@@ -61,64 +43,55 @@
   },
   "pairs": [
     {
-      "foreground": "#101218",
+      "foreground": "#7E1D2A",
       "background": "#ffffff",
-      "ratio": 18.72,
+      "ratio": 10.02,
       "rating": "AAA",
       "use": "brand color on white (logo, large text)"
     },
     {
-      "foreground": "#101218",
-      "background": "#161616",
-      "ratio": 1.03,
+      "foreground": "#7E1D2A",
+      "background": "#1b1414",
+      "ratio": 1.81,
       "rating": "fail",
       "use": "brand color on dark (logo on dark UI)"
     },
     {
       "foreground": "#ffffff",
-      "background": "#101218",
-      "ratio": 18.72,
+      "background": "#7E1D2A",
+      "ratio": 10.02,
       "rating": "AAA",
       "use": "white text on brand fill (buttons)"
     },
     {
-      "foreground": "#161616",
-      "background": "#101218",
-      "ratio": 1.03,
+      "foreground": "#1b1414",
+      "background": "#7E1D2A",
+      "ratio": 1.81,
       "rating": "fail",
       "use": "dark text on brand fill"
     },
     {
-      "foreground": "#4a4d54",
+      "foreground": "#7e1d2a",
       "background": "#ffffff",
-      "ratio": 8.47,
+      "ratio": 10.02,
       "rating": "AAA",
       "use": "brand-dark text on white (links, body accents)"
     },
     {
-      "foreground": "#161616",
-      "background": "#f6f7f7",
-      "ratio": 16.86,
+      "foreground": "#1b1414",
+      "background": "#fef4f4",
+      "ratio": 16.82,
       "rating": "AAA",
       "use": "body text"
     },
     {
-      "foreground": "#636364",
+      "foreground": "#696161",
       "background": "#ffffff",
-      "ratio": 6,
+      "ratio": 6.03,
       "rating": "AA",
       "use": "secondary text"
-    },
-    {
-      "foreground": "#d12c12",
-      "background": "#161616",
-      "ratio": 3.52,
-      "rating": "AA-large",
-      "use": "accent on dark"
     }
   ],
-  "relations": [
-    "primary/accent: neutral pairing"
-  ],
+  "relations": [],
   "warnings": []
 }

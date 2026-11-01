@@ -1,7 +1,0 @@
-{"grid":64,"idea":"Three corner brackets in a row, each a stem with a crop-mark shoulder, read as m: the top edge is cut between them so every arch is its own selection corner.",
-"params":{"w":100,"g":48},
-"layers":[
-{"name":"b1","fill":"primary","shape":{"polygon":{"points":[[230,800],[230,330],[430,330],[430,420],[330,420],[330,800]]}}},
-{"name":"b2","fill":"primary","shape":{"polygon":{"points":[[462,800],[462,330],[662,330],[662,420],[562,420],[562,800]]}}},
-{"name":"b3","fill":"accent","shape":{"rect":{"x":694,"y":330,"w":100,"h":470}}}
-],"fit":0.08}

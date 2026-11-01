@@ -1,9 +1,0 @@
-{"grid":64,"idea":"A full-height amber stem with a square knocked out of its head: the registration hole of a crop mark, which is also the i-dot.",
-"params":{"w":110,"gap":30,"top":260,"foot":840},
-"vary":{"w":[100,112,124],"gap":[24,36]},
-"layers":[
-{"name":"left","fill":"primary","shape":{"path":{"d":"M{150+w/2} {foot}V{top+w/2}H{512-w/2-gap}","width":"w","cap":"butt","join":"miter"}}},
-{"name":"right","fill":"primary","shape":{"path":{"d":"M{874-w/2} {foot}V{top+w/2}H{512+w/2+gap}","width":"w","cap":"butt","join":"miter"}}},
-{"name":"stem","fill":"accent","shape":{"subtract":[{"rect":{"x":"512-w/2","y":"top","w":"w","h":"foot-top"}},{"rect":{"x":"512-w/2","y":"top","w":"w","h":"w*0.8"}}]}},
-{"name":"dot","fill":"accent","shape":{"rect":{"x":"512-w/2+w*0.2","y":"top","w":"w*0.6","h":"w*0.6"}}}
-],"fit":0.06}

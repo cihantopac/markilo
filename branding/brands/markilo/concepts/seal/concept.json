@@ -1,0 +1,43 @@
+{
+  "schema": "markilo/concept@1",
+  "id": "seal",
+  "brand": "markilo",
+  "round": 1,
+  "title": "Seal",
+  "direction": "A maker's mark pressed by hand into good paper: a hand-cut terracotta chop with a carved k, and a letterpress-tooled humanist lowercase word.",
+  "rationale": "Every identity begins with a mark of the maker; Markilo's own is a carved seal, warm and exact, the opposite of the category's bright, flat generator look.",
+  "semantics": [
+    "maker's mark; pressed seal; carved negative space; the k of markilo; hand and precision"
+  ],
+  "palette": {
+    "primary": "#C2502D",
+    "ink": "#2A1D17",
+    "paper": "#F6EFE3"
+  },
+  "typography": {
+    "fontId": "alegreya-sans",
+    "weight": 700,
+    "family": "Alegreya Sans",
+    "license": "OFL-1.1"
+  },
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg"
+  },
+  "status": "verified",
+  "createdAt": "2026-11-01T11:17:53.290Z",
+  "updatedAt": "2026-11-01T11:27:15.278Z",
+  "pitch": {
+    "idea": "One knife angle makes the whole identity: a terracotta block whose top is cut at it, a k carved out standing on the block's edge, and every stem of the word cut top and foot at the same angle, with the i dotted by the block itself.",
+    "strengths": [
+      "Warm, hand-tooled and clearly not a generator logo: nothing in the category looks pressed or carved",
+      "One consistent cut angle ties seal, word and i-dot into a single system that also works in one colour",
+      "The seal survives at 16 px as a distinctive slanted silhouette"
+    ],
+    "weaknesses": [
+      "The icon is still a letter in a shape: the k carries the name but not a product truth, and could be read as a generic k app icon",
+      "The chisel cuts on the word are quiet below ~40 px, where it reads as plain Alegreya Sans",
+      "The tilted top can read as a flag or a price tag at a glance"
+    ]
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "idea": "a symmetric high-contrast M: stems with the word's chisel notch and bracketed feet, diagonals meeting in a point aimed at the oxblood punch",
+  "layers": [
+    {
+      "name": "M",
+      "fill": "#16120F",
+      "shape": {
+        "mirror": {
+          "axis": "x",
+          "at": 512,
+          "shape": {
+            "subtract": [
+              {
+                "union": [
+                  {
+                    "path": {
+                      "d": "M719 860L719 848Q748 842 755 826Q763 812 763 780L763 170L875 170L875 780Q875 812 883 826Q890 842 919 848L919 860Z"
+                    }
+                  },
+                  {
+                    "polygon": {
+                      "points": [
+                        [
+                          673,
+                          170
+                        ],
+                        [
+                          763,
+                          170
+                        ],
+                        [
+                          512,
+                          640
+                        ],
+                        [
+                          512,
+                          471.5
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "polygon": {
+                  "points": [
+                    [
+                      771,
+                      169
+                    ],
+                    [
+                      867,
+                      169
+                    ],
+                    [
+                      819,
+                      217
+                    ]
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "punch",
+      "fill": "#7E1D2A",
+      "shape": {
+        "polygon": {
+          "points": [
+            [
+              512,
+              700
+            ],
+            [
+              596,
+              784
+            ],
+            [
+              512,
+              868
+            ],
+            [
+              428,
+              784
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  "fit": 0.09
+}

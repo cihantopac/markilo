@@ -1,0 +1,96 @@
+{
+  "concept": "hallmark",
+  "candidates": [
+    {
+      "id": "w1",
+      "font": "instrument-serif",
+      "family": "Instrument Serif",
+      "weight": 400,
+      "tracking": 0,
+      "checks": {
+        "pass": 4,
+        "warn": 0,
+        "fail": 0
+      },
+      "failing": []
+    },
+    {
+      "id": "w2",
+      "font": "dm-serif-display",
+      "family": "DM Serif Display",
+      "weight": 400,
+      "tracking": 0,
+      "checks": {
+        "pass": 4,
+        "warn": 0,
+        "fail": 0
+      },
+      "failing": []
+    },
+    {
+      "id": "w3",
+      "font": "fraunces",
+      "family": "Fraunces",
+      "weight": 400,
+      "tracking": 0,
+      "checks": {
+        "pass": 4,
+        "warn": 0,
+        "fail": 0
+      },
+      "failing": []
+    },
+    {
+      "id": "w4",
+      "font": "fraunces",
+      "family": "Fraunces",
+      "weight": 600,
+      "tracking": 0,
+      "checks": {
+        "pass": 4,
+        "warn": 0,
+        "fail": 0
+      },
+      "failing": []
+    },
+    {
+      "id": "w5",
+      "font": "young-serif",
+      "family": "Young Serif",
+      "weight": 400,
+      "tracking": 0,
+      "checks": {
+        "pass": 4,
+        "warn": 0,
+        "fail": 0
+      },
+      "failing": []
+    },
+    {
+      "id": "w6",
+      "font": "newsreader",
+      "family": "Newsreader",
+      "weight": 400,
+      "tracking": 0,
+      "checks": {
+        "pass": 4,
+        "warn": 0,
+        "fail": 0
+      },
+      "failing": []
+    },
+    {
+      "id": "w7",
+      "font": "newsreader",
+      "family": "Newsreader",
+      "weight": 600,
+      "tracking": 0,
+      "checks": {
+        "pass": 4,
+        "warn": 0,
+        "fail": 0
+      },
+      "failing": []
+    }
+  ]
+}

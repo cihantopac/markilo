@@ -3,10 +3,24 @@
   "questions": [
     {
       "id": "Q1",
-      "question": "Brief decisions (mark, color, grounds, name, personality, appmark, wordmark, tagline)",
-      "answer": "Keep current identity as one unchanged candidate; 3-5 new directions, at most one evolves corner-bracket idea; warm accent away from Claude coral; both grounds first-class; name stays; precise/honest/craft; appmark symbol only; lowercase grotesk wordmark; keep tagline unless stronger (one alternative allowed); no trademark searches possible (gap, owner decides at finalize); owner approves all strong directions and wants sketch stage run straight through.",
-      "askedAt": "2026-10-30T02:56:04.881Z",
-      "answeredAt": "2026-10-30T02:56:04.881Z"
+      "question": "Should anything of the current identity (m with vermilion stem, near-black ink) be kept?",
+      "answer": "No — full redesign; the owner said nothing must be kept (Claude's recommended answer, owner unavailable).",
+      "askedAt": "2026-11-01T11:16:20.835Z",
+      "answeredAt": "2026-11-01T11:16:20.836Z"
+    },
+    {
+      "id": "Q2",
+      "question": "Should the identity lead with the word or a symbol, and should it signal 'developer tool'?",
+      "answer": "At least one wordmark-led route; the identity should read as a crafted identity studio (editorial, confident), not a developer utility — no terminal or code devices (Claude's recommended answer, owner unavailable).",
+      "askedAt": "2026-11-01T11:16:22.805Z",
+      "answeredAt": "2026-11-01T11:16:22.805Z"
+    },
+    {
+      "id": "Q3",
+      "question": "Do you have logos, screenshots, mood boards or sketches you like or dislike?",
+      "answer": "None supplied; design from the brief (owner stated no reference images).",
+      "askedAt": "2026-11-01T11:16:24.136Z",
+      "answeredAt": "2026-11-01T11:16:24.136Z"
     }
   ]
 }

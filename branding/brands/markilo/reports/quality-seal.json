@@ -1,0 +1,133 @@
+{
+  "subject": "seal/symbol.svg",
+  "role": "symbol",
+  "measuredAt": "2026-11-01T11:27:14.728Z",
+  "checks": [
+    {
+      "id": "symbol:svg-integrity",
+      "label": "symbol: Clean vector master",
+      "status": "pass",
+      "value": "0 errors, 0 warnings",
+      "message": "Pure vector, self-contained, scalable."
+    },
+    {
+      "id": "symbol:fidelity-16",
+      "label": "symbol: Legibility at 16 px",
+      "status": "pass",
+      "value": 0.95,
+      "message": "95% of the shape survives at 16 px (≥ 85% reads clearly)."
+    },
+    {
+      "id": "symbol:fidelity-32",
+      "label": "symbol: Legibility at 32 px",
+      "status": "pass",
+      "value": 0.95,
+      "message": "95% of the shape survives at 32 px (≥ 85% reads clearly)."
+    },
+    {
+      "id": "symbol:thin-detail",
+      "label": "symbol: Thinnest detail at 16 px",
+      "status": "pass",
+      "value": 1.75,
+      "message": "Thin strokes/gaps are ~1.75 px wide at 16 px (≥ 1.2 px stays crisp)."
+    },
+    {
+      "id": "symbol:balance",
+      "label": "symbol: Optical balance",
+      "status": "pass",
+      "value": 0.03,
+      "message": "Visual centroid sits 3% from center."
+    },
+    {
+      "id": "symbol:artboard-fit",
+      "label": "symbol: Artboard fit",
+      "status": "pass",
+      "value": 0.83,
+      "message": "Mark spans 83% of the artboard (80–98% keeps icon exports consistent)."
+    },
+    {
+      "id": "symbol:square-fit",
+      "label": "symbol: Fits a square icon",
+      "status": "pass",
+      "value": 1.02,
+      "message": "The mark is 1.02:1 and fills a square icon well."
+    },
+    {
+      "id": "symbol:genericity",
+      "label": "symbol: Distinct from stock primitives",
+      "status": "pass",
+      "value": 0.652,
+      "message": "Closest stock shape is a square at 65% overlap."
+    },
+    {
+      "id": "symbol:complexity",
+      "label": "symbol: Construction complexity",
+      "status": "pass",
+      "value": 24,
+      "message": "1 paths, 24 path commands, compactness 4.41."
+    },
+    {
+      "id": "symbol:monochrome",
+      "label": "symbol: One-color reproduction",
+      "status": "pass",
+      "value": 0,
+      "message": "Shapes stay separable in a single color."
+    },
+    {
+      "id": "symbol:ground-contrast",
+      "label": "symbol: Visible on its paper (#F6EFE3)",
+      "status": "pass",
+      "value": "4.1:1",
+      "message": "Reads on its own background (strongest color ≥ 3:1)."
+    },
+    {
+      "id": "symbol:contrast-c2502d",
+      "label": "symbol: Contrast of #c2502d",
+      "status": "pass",
+      "value": "4.69:1 light / 3.96:1 dark",
+      "message": "Meets the 3:1 non-text contrast guideline (WCAG 1.4.11) on light and dark grounds."
+    },
+    {
+      "id": "wordmark:svg-integrity",
+      "label": "wordmark: Clean vector master",
+      "status": "pass",
+      "value": "0 errors, 0 warnings",
+      "message": "Pure vector, self-contained, scalable."
+    },
+    {
+      "id": "wordmark:complexity",
+      "label": "wordmark: Construction complexity",
+      "status": "pass",
+      "value": 159,
+      "message": "1 paths, 159 path commands, compactness 21.75."
+    },
+    {
+      "id": "wordmark:monochrome",
+      "label": "wordmark: One-color reproduction",
+      "status": "pass",
+      "value": 0,
+      "message": "Shapes stay separable in a single color."
+    },
+    {
+      "id": "wordmark:ground-contrast",
+      "label": "wordmark: Visible on its paper (#F6EFE3)",
+      "status": "pass",
+      "value": "14.28:1",
+      "message": "Reads on its own background (every color ≥ 3:1)."
+    },
+    {
+      "id": "wordmark:contrast-2a1d17",
+      "label": "wordmark: Contrast of #2a1d17",
+      "status": "info",
+      "value": "16.32:1 light / 1.14:1 dark",
+      "message": "Works on light grounds; use a reversed variant on the other."
+    }
+  ],
+  "summary": {
+    "pass": 16,
+    "warn": 0,
+    "fail": 0,
+    "info": 1
+  },
+  "note": "Measured technical checks. Brand fit, memorability, cultural fit and timelessness require visual review and are recorded as judgment."
+}

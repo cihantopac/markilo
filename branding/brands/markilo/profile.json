@@ -1,490 +1,55 @@
 {
   "schema": "markilo/profile@1",
   "brand": "markilo",
-  "updatedAt": "2026-10-30T03:34:19.001Z",
+  "updatedAt": "2026-11-01T11:15:25.789Z",
   "sources": [
     {
       "reliability": "primary",
       "id": "S1",
-      "retrievedAt": "2026-10-30T02:50:41.253Z",
+      "retrievedAt": "2026-11-01T11:15:00.675Z",
       "type": "repo",
       "ref": ".",
-      "notes": "568 files scanned; 1 secret-like files skipped unread"
+      "notes": "468 files scanned; 1 secret-like files skipped unread"
     },
     {
       "reliability": "primary",
       "id": "S2",
-      "retrievedAt": "2026-10-30T02:51:09.479Z",
+      "retrievedAt": "2026-11-01T11:15:16.876Z",
       "type": "url",
       "ref": "https://brandmark.io/",
-      "notes": "3 page(s) read; 0 not readable; 1 stylesheet(s)"
+      "notes": "1 page(s) read; 0 not readable; 1 stylesheet(s)"
     },
     {
       "reliability": "primary",
       "id": "S3",
-      "retrievedAt": "2026-10-30T02:51:09.479Z",
+      "retrievedAt": "2026-11-01T11:15:18.407Z",
       "type": "url",
-      "ref": "https://brandmark.io/pricing/"
+      "ref": "https://www.tailorbrands.com/",
+      "notes": "1 page(s) read; 0 not readable; 4 stylesheet(s)"
     },
     {
       "reliability": "primary",
       "id": "S4",
-      "retrievedAt": "2026-10-30T02:51:09.479Z",
+      "retrievedAt": "2026-11-01T11:15:20.932Z",
       "type": "url",
-      "ref": "https://brandmark.io/terms.html"
+      "ref": "https://designs.ai/en",
+      "notes": "1 page(s) read; 0 not readable; 1 stylesheet(s)"
     },
     {
       "reliability": "primary",
       "id": "S5",
-      "retrievedAt": "2026-10-30T02:51:14.759Z",
+      "retrievedAt": "2026-11-01T11:15:21.704Z",
       "type": "url",
-      "ref": "https://designs.ai/en",
-      "notes": "3 page(s) read via sitemap; 0 not readable; 1 stylesheet(s)"
+      "ref": "https://www.logoai.com/",
+      "notes": "1 page(s) read; 0 not readable; 2 stylesheet(s)"
     },
     {
       "reliability": "primary",
       "id": "S6",
-      "retrievedAt": "2026-10-30T02:51:14.759Z",
+      "retrievedAt": "2026-11-01T11:15:25.784Z",
       "type": "url",
-      "ref": "https://designs.ai/en/pricing"
-    },
-    {
-      "reliability": "primary",
-      "id": "S7",
-      "retrievedAt": "2026-10-30T02:51:14.759Z",
-      "type": "url",
-      "ref": "https://designs.ai/en/about"
-    },
-    {
-      "reliability": "primary",
-      "id": "S8",
-      "retrievedAt": "2026-10-30T02:51:19.906Z",
-      "type": "url",
-      "ref": "https://www.canva.com/create/logos/",
-      "notes": "3 page(s) read via sitemap; 0 not readable; 1 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S9",
-      "retrievedAt": "2026-10-30T02:51:19.906Z",
-      "type": "url",
-      "ref": "https://www.canva.com/features/"
-    },
-    {
-      "reliability": "primary",
-      "id": "S10",
-      "retrievedAt": "2026-10-30T02:51:19.906Z",
-      "type": "url",
-      "ref": "https://www.canva.com/apps/"
-    },
-    {
-      "reliability": "primary",
-      "id": "S11",
-      "retrievedAt": "2026-10-30T02:51:21.802Z",
-      "type": "url",
-      "ref": "https://realfavicongenerator.net/",
-      "notes": "3 page(s) read via sitemap; 0 not readable; 2 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S12",
-      "retrievedAt": "2026-10-30T02:51:21.802Z",
-      "type": "url",
-      "ref": "https://realfavicongenerator.net/about"
-    },
-    {
-      "reliability": "primary",
-      "id": "S13",
-      "retrievedAt": "2026-10-30T02:51:21.802Z",
-      "type": "url",
-      "ref": "https://realfavicongenerator.net/favicon-checker"
-    },
-    {
-      "reliability": "primary",
-      "id": "S14",
-      "retrievedAt": "2026-10-30T02:51:24.792Z",
-      "type": "url",
-      "ref": "https://claude.com/product/claude-code",
-      "notes": "3 page(s) read via sitemap; 0 not readable; 4 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S15",
-      "retrievedAt": "2026-10-30T02:51:24.792Z",
-      "type": "url",
-      "ref": "https://claude.com/download"
-    },
-    {
-      "reliability": "primary",
-      "id": "S16",
-      "retrievedAt": "2026-10-30T02:51:24.792Z",
-      "type": "url",
-      "ref": "https://claude.com/customers"
-    },
-    {
-      "reliability": "primary",
-      "id": "S17",
-      "retrievedAt": "2026-10-30T02:51:26.871Z",
-      "type": "url",
-      "ref": "https://cursor.com/",
-      "notes": "3 page(s) read via sitemap; 0 not readable; 4 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S18",
-      "retrievedAt": "2026-10-30T02:51:26.871Z",
-      "type": "url",
-      "ref": "https://cursor.com/product"
-    },
-    {
-      "reliability": "primary",
-      "id": "S19",
-      "retrievedAt": "2026-10-30T02:51:26.871Z",
-      "type": "url",
-      "ref": "https://cursor.com/enterprise"
-    },
-    {
-      "reliability": "primary",
-      "id": "S20",
-      "retrievedAt": "2026-10-30T02:51:29.558Z",
-      "type": "url",
-      "ref": "https://github.com/features/copilot",
-      "notes": "3 page(s) read via sitemap; 0 not readable; 0 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S21",
-      "retrievedAt": "2026-10-30T02:51:29.558Z",
-      "type": "url",
-      "ref": "https://github.com/about"
-    },
-    {
-      "reliability": "primary",
-      "id": "S22",
-      "retrievedAt": "2026-10-30T02:51:29.558Z",
-      "type": "url",
-      "ref": "https://github.com/enterprise"
-    },
-    {
-      "reliability": "primary",
-      "id": "S23",
-      "retrievedAt": "2026-10-30T02:51:32.249Z",
-      "type": "url",
-      "ref": "https://devin.ai/desktop",
-      "notes": "3 page(s) read via sitemap; 0 not readable; 2 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S24",
-      "retrievedAt": "2026-10-30T02:51:32.249Z",
-      "type": "url",
-      "ref": "https://devin.ai/customers"
-    },
-    {
-      "reliability": "primary",
-      "id": "S25",
-      "retrievedAt": "2026-10-30T02:51:32.249Z",
-      "type": "url",
-      "ref": "https://devin.ai/pricing"
-    },
-    {
-      "reliability": "primary",
-      "id": "S26",
-      "retrievedAt": "2026-10-30T02:51:35.938Z",
-      "type": "url",
-      "ref": "https://aider.chat/",
-      "notes": "3 page(s) read via sitemap; 2 not readable; 4 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S27",
-      "retrievedAt": "2026-10-30T02:51:35.938Z",
-      "type": "url",
-      "ref": "https://aider.chat/HISTORY.html"
-    },
-    {
-      "reliability": "primary",
-      "id": "S28",
-      "retrievedAt": "2026-10-30T02:51:35.938Z",
-      "type": "url",
-      "ref": "https://aider.chat/examples/2048-game.html"
-    },
-    {
-      "reliability": "primary",
-      "id": "S29",
-      "retrievedAt": "2026-10-30T02:51:41.061Z",
-      "type": "url",
-      "ref": "https://cline.bot/",
-      "notes": "3 page(s) read via sitemap; 0 not readable; 4 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S30",
-      "retrievedAt": "2026-10-30T02:51:41.061Z",
-      "type": "url",
-      "ref": "https://cline.bot/enterprise"
-    },
-    {
-      "reliability": "primary",
-      "id": "S31",
-      "retrievedAt": "2026-10-30T02:51:41.061Z",
-      "type": "url",
-      "ref": "https://cline.bot/pricing"
-    },
-    {
-      "reliability": "primary",
-      "id": "S32",
-      "retrievedAt": "2026-10-30T02:51:43.663Z",
-      "type": "url",
-      "ref": "https://continue.dev/",
-      "notes": "1 page(s) read; 1 not readable; 3 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S33",
-      "retrievedAt": "2026-10-30T02:51:46.598Z",
-      "type": "url",
-      "ref": "https://geminicli.com/",
-      "notes": "3 page(s) read; 0 not readable; 4 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S34",
-      "retrievedAt": "2026-10-30T02:51:46.598Z",
-      "type": "url",
-      "ref": "https://geminicli.com/extensions/about/"
-    },
-    {
-      "reliability": "primary",
-      "id": "S35",
-      "retrievedAt": "2026-10-30T02:51:46.598Z",
-      "type": "url",
-      "ref": "https://geminicli.com/terms/"
-    },
-    {
-      "reliability": "primary",
-      "id": "S36",
-      "retrievedAt": "2026-10-30T02:51:48.518Z",
-      "type": "url",
-      "ref": "https://www.adobe.com/express/create/logo",
-      "notes": "3 page(s) read via sitemap; 0 not readable; 0 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S37",
-      "retrievedAt": "2026-10-30T02:51:48.518Z",
-      "type": "url",
-      "ref": "https://www.adobe.com/express/pricing"
-    },
-    {
-      "reliability": "primary",
-      "id": "S38",
-      "retrievedAt": "2026-10-30T02:51:48.518Z",
-      "type": "url",
-      "ref": "https://www.adobe.com/express/create/logo/company"
-    },
-    {
-      "reliability": "primary",
-      "id": "S39",
-      "retrievedAt": "2026-10-30T02:51:52.308Z",
-      "type": "url",
-      "ref": "https://www.figma.com/ai/",
-      "notes": "3 page(s) read via sitemap; 0 not readable; 1 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S40",
-      "retrievedAt": "2026-10-30T02:51:52.308Z",
-      "type": "url",
-      "ref": "https://www.figma.com/solutions/"
-    },
-    {
-      "reliability": "primary",
-      "id": "S41",
-      "retrievedAt": "2026-10-30T02:51:52.308Z",
-      "type": "url",
-      "ref": "https://www.figma.com/enterprise/"
-    },
-    {
-      "reliability": "primary",
-      "id": "S42",
-      "retrievedAt": "2026-10-30T02:51:55.896Z",
-      "type": "url",
-      "ref": "https://www.shopify.com/tools/logo-maker",
-      "notes": "3 page(s) read via sitemap; 0 not readable; 0 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S43",
-      "retrievedAt": "2026-10-30T02:51:55.896Z",
-      "type": "url",
-      "ref": "https://www.shopify.com/about"
-    },
-    {
-      "reliability": "primary",
-      "id": "S44",
-      "retrievedAt": "2026-10-30T02:51:55.896Z",
-      "type": "url",
-      "ref": "https://www.shopify.com/enterprise"
-    },
-    {
-      "reliability": "primary",
-      "id": "S45",
-      "retrievedAt": "2026-10-30T02:51:58.878Z",
-      "type": "url",
-      "ref": "https://www.appicon.co/",
-      "notes": "2 page(s) read via sitemap; 1 not readable; 1 stylesheet(s)"
-    },
-    {
-      "reliability": "primary",
-      "id": "S46",
-      "retrievedAt": "2026-10-30T02:51:58.878Z",
-      "type": "url",
-      "ref": "https://www.appicon.co/app-icon-sizer"
-    },
-    {
-      "reliability": "secondary",
-      "id": "S47",
-      "retrievedAt": "2026-10-30T02:53:12.876Z",
-      "type": "url",
-      "ref": "https://en.wiktionary.org/wiki/-ilo",
-      "notes": "Esperanto suffix -ilo = instrument/tool (search result summary, 2026-10-30)"
-    },
-    {
-      "reliability": "secondary",
-      "id": "S48",
-      "retrievedAt": "2026-10-30T02:53:13.990Z",
-      "type": "url",
-      "ref": "https://jmarian.com/eo/en-marker",
-      "notes": "Esperanto-English dictionary entry: markilo = marker (felt-tip pen; biological marker)"
-    },
-    {
-      "reliability": "secondary",
-      "id": "S49",
-      "retrievedAt": "2026-10-30T02:53:16.751Z",
-      "type": "search",
-      "ref": "web search: \"Markilo\" (exact) and \"Markilo trademark software\"",
-      "notes": "No page about Markilo as a product/company name found; only Esperanto dictionary entries and unrelated people names"
-    },
-    {
-      "reliability": "secondary",
-      "id": "S50",
-      "retrievedAt": "2026-10-30T02:53:17.855Z",
-      "type": "url",
-      "ref": "https://www.creativebloq.com/design/logos-icons/why-do-all-ai-company-logos-look-the-same",
-      "notes": "Design commentary on AI logo convergence (search listing; article not read in full)"
-    },
-    {
-      "reliability": "secondary",
-      "id": "S51",
-      "retrievedAt": "2026-10-30T02:53:19.149Z",
-      "type": "url",
-      "ref": "https://www.fastcompany.com/91030156/how-the-sparkle-emoji-took-over-ai",
-      "notes": "Four-pointed sparkle dominates mainstream AI tool marketing/UI (search summary)"
-    },
-    {
-      "reliability": "secondary",
-      "id": "S52",
-      "retrievedAt": "2026-10-30T02:53:20.495Z",
-      "type": "search",
-      "ref": "web search: obra superpowers Claude Code plugin",
-      "notes": "Third-party blogs (pt/de); official repo not read. Superpowers: open-source skills framework by Jesse Vincent (obra), MIT, installable via Claude Code marketplace"
-    },
-    {
-      "reliability": "secondary",
-      "id": "S53",
-      "retrievedAt": "2026-10-30T02:53:26.218Z",
-      "type": "search",
-      "ref": "web search: Looka pricing 2026 (aggregators: costbench, pricingsaas)",
-      "notes": "Looka official site returned HTTP 403; pricing from aggregators only: logo packages / one-time, Brand Kit about /yr; figures inconsistent"
-    },
-    {
-      "reliability": "secondary",
-      "id": "S54",
-      "retrievedAt": "2026-10-30T02:53:26.401Z",
-      "type": "search",
-      "ref": "web search: developer tool branding trends 2026 (webdesignhot.com design.md pages, Red Hat developer branding handbook)",
-      "notes": "Curated design-reference pages: dark canvases, mono type, terminal motifs common; no primary trend report"
-    },
-    {
-      "reliability": "primary",
-      "id": "S55",
-      "retrievedAt": "2026-10-30T02:53:26.573Z",
-      "type": "file",
-      "ref": "branding/brands/markilo/research/references",
-      "notes": "Collected competitor reference marks viewed directly (rendered PNGs) 2026-10-30"
-    },
-    {
-      "reliability": "primary",
-      "id": "S56",
-      "retrievedAt": "2026-10-30T02:53:26.744Z",
-      "type": "file",
-      "ref": "branding/brands/markilo/final/lockup-horizontal.svg",
-      "notes": "Existing Markilo lockup, rendered and viewed"
-    },
-    {
-      "reliability": "primary",
-      "id": "S57",
-      "retrievedAt": "2026-10-30T02:57:46.247Z",
-      "type": "url",
-      "ref": "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/githubcopilot.svg",
-      "notes": "Copilot, Claude, Anthropic, Linear, Raycast, Figma, Brandfetch marks (simple-icons, third-party vector copies), downloaded 2026-10-30"
-    },
-    {
-      "reliability": "primary",
-      "id": "S58",
-      "retrievedAt": "2026-10-30T02:57:46.420Z",
-      "type": "url",
-      "ref": "https://unpkg.com/@lobehub/icons-static-svg@latest/icons/codex.svg",
-      "notes": "OpenAI Codex mark (LobeHub icons), 2026-10-30"
-    },
-    {
-      "reliability": "primary",
-      "id": "S59",
-      "retrievedAt": "2026-10-30T02:57:46.593Z",
-      "type": "url",
-      "ref": "https://aider.chat/assets/logo.svg",
-      "notes": "Aider site logo and GitHub org avatar, 2026-10-30"
-    },
-    {
-      "reliability": "primary",
-      "id": "S60",
-      "retrievedAt": "2026-10-30T02:57:46.776Z",
-      "type": "url",
-      "ref": "https://looka.com/favicon.ico",
-      "notes": "Looka favicon, 2026-10-30"
-    },
-    {
-      "reliability": "primary",
-      "id": "S61",
-      "retrievedAt": "2026-10-30T02:57:46.944Z",
-      "type": "url",
-      "ref": "https://claude.ai/apple-touch-icon.png",
-      "notes": "Claude app icon, 2026-10-30"
-    },
-    {
-      "reliability": "primary",
-      "id": "S62",
-      "retrievedAt": "2026-10-30T02:57:47.120Z",
-      "type": "url",
-      "ref": "https://svgl.app/library/canva.svg",
-      "notes": "Canva mark, 2026-10-30"
-    },
-    {
-      "reliability": "primary",
-      "id": "S63",
-      "retrievedAt": "2026-10-30T02:57:47.298Z",
-      "type": "url",
-      "ref": "https://appicon.co/icon-large.png",
-      "notes": "App Icon Generator og icon, 2026-10-30"
-    },
-    {
-      "reliability": "primary",
-      "id": "S64",
-      "retrievedAt": "2026-10-30T02:57:47.480Z",
-      "type": "url",
-      "ref": "https://vercel.com/apple-touch-icon.png",
-      "notes": "Vercel icon, 2026-10-30"
+      "ref": "https://logo.com/",
+      "notes": "1 page(s) read; 0 not readable; 3 stylesheet(s)"
     }
   ],
   "findings": [
@@ -497,7 +62,7 @@
         "S1"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
+      "recordedAt": "2026-11-01T11:15:00.676Z"
     },
     {
       "id": "F2",
@@ -508,7 +73,7 @@
         "S1"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
+      "recordedAt": "2026-11-01T11:15:00.676Z"
     },
     {
       "id": "F3",
@@ -519,120 +84,10 @@
         "S1"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
+      "recordedAt": "2026-11-01T11:15:00.676Z"
     },
     {
       "id": "F4",
-      "topic": "naming",
-      "statement": "branding/brands/markilo/exports/guidelines/index.html <title>: \"Markilo — brand guidelines\"",
-      "status": "observed",
-      "sourceIds": [
-        "S1"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
-    },
-    {
-      "id": "F5",
-      "topic": "naming",
-      "statement": "branding/gallery/index.html <title>: \"Markilo — Markilo gallery\"",
-      "status": "observed",
-      "sourceIds": [
-        "S1"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
-    },
-    {
-      "id": "F6",
-      "topic": "naming",
-      "statement": "plugin/evals/results/2026-10-30T00-24-04-123Z/report.html <title>: \"Eval report — markilo v0.1.0\"",
-      "status": "observed",
-      "sourceIds": [
-        "S1"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
-    },
-    {
-      "id": "F7",
-      "topic": "naming",
-      "statement": "plugin/evals/results/2026-10-30T00-28-53-497Z/report.html <title>: \"Eval report — markilo v0.1.0\"",
-      "status": "observed",
-      "sourceIds": [
-        "S1"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
-    },
-    {
-      "id": "F8",
-      "topic": "naming",
-      "statement": "plugin/evals/results/2026-10-30T00-29-38-075Z/report.html <title>: \"Eval report — markilo v0.1.0\"",
-      "status": "observed",
-      "sourceIds": [
-        "S1"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
-    },
-    {
-      "id": "F9",
-      "topic": "naming",
-      "statement": "plugin/evals/results/2026-10-30T00-29-53-409Z/report.html <title>: \"Eval report — markilo v0.1.0\"",
-      "status": "observed",
-      "sourceIds": [
-        "S1"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
-    },
-    {
-      "id": "F10",
-      "topic": "naming",
-      "statement": "plugin/evals/results/2026-10-30T00-30-34-064Z/report.html <title>: \"Eval report — markilo v0.1.0\"",
-      "status": "observed",
-      "sourceIds": [
-        "S1"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
-    },
-    {
-      "id": "F11",
-      "topic": "naming",
-      "statement": "plugin/evals/results/2026-10-30T00-31-33-704Z/report.html <title>: \"Eval report — markilo v0.1.0\"",
-      "status": "observed",
-      "sourceIds": [
-        "S1"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
-    },
-    {
-      "id": "F12",
-      "topic": "naming",
-      "statement": "plugin/evals/results/2026-10-30T00-32-27-214Z/report.html <title>: \"Eval report — markilo v0.1.0\"",
-      "status": "observed",
-      "sourceIds": [
-        "S1"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
-    },
-    {
-      "id": "F13",
-      "topic": "color",
-      "statement": "branding/brands/markilo/exports/web/site.webmanifest declares theme_color #f45d2c.",
-      "status": "observed",
-      "sourceIds": [
-        "S1"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
-    },
-    {
-      "id": "F14",
       "topic": "color",
       "statement": "tests/fixtures/repo/public/site.webmanifest declares theme_color #0e9f6e.",
       "status": "observed",
@@ -640,43 +95,98 @@
         "S1"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
+      "recordedAt": "2026-11-01T11:15:00.676Z"
     },
     {
-      "id": "F15",
+      "id": "F5",
       "topic": "visual-identity",
-      "statement": "60 existing logo/icon files found (e.g. assets/logo-dark.svg, assets/logo-light.svg, branding/brands/markilo/concepts/arches/review/symbol-sheet.png).",
+      "statement": "13 existing logo/icon files found (e.g. tests/fixtures/marks/bars.svg, tests/fixtures/marks/bolt.svg, tests/fixtures/marks/fine-lines.svg).",
       "status": "observed",
       "sourceIds": [
         "S1"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
+      "recordedAt": "2026-11-01T11:15:00.676Z"
     },
     {
-      "id": "F16",
+      "id": "F6",
       "topic": "color",
-      "statement": "Most used colors in styles: #0b0b0b (8 files), #6b6a64 (8 files), #898781 (8 files), #0ca30c (8 files), #f9f9f7 (8 files), #fcfcfb (8 files).",
+      "statement": "Most used colors in styles: #ff0000 (2 files), #3b5bdb (1 files), #808080 (1 files), #aabbcc (1 files), #0e9f6e (1 files), #101828 (1 files).",
       "status": "observed",
       "sourceIds": [
         "S1"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
+      "recordedAt": "2026-11-01T11:15:00.676Z"
     },
     {
-      "id": "F17",
+      "id": "F7",
       "topic": "typography",
-      "statement": "Fonts referenced: dm-sans, fraunces, ibm-plex-serif, inter, jetbrains-mono, manrope, outfit, plus-jakarta-sans, sora, space-grotesk, Georgia, Inter.",
+      "statement": "Fonts referenced: alegreya-sans, archivo, atkinson-hyperlegible-next, bricolage-grotesque, dm-sans, dm-serif-display, familjen-grotesk, fraunces, ibm-plex-serif, instrument-serif, inter, jetbrains-mono.",
       "status": "observed",
       "sourceIds": [
         "S1"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:50:41.253Z"
+      "recordedAt": "2026-11-01T11:15:00.676Z"
     },
     {
-      "id": "F18",
+      "id": "F8",
+      "topic": "product",
+      "statement": "What it is, in its own words (README.md): \"Markilo is not a \"generate a logo\" prompt. It is a Claude Code plugin plus a deterministic toolchain that researches a product, designs original vector marks, measures them (small-size legibility, balance, contrast, one-color reproduction), compares them against competitors and each other, and exports a complete, platf\"",
+      "status": "observed",
+      "sourceIds": [
+        "S1"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:00.676Z"
+    },
+    {
+      "id": "F9",
+      "topic": "product",
+      "statement": "Stated features: \"Brand intelligence, with receipts. Repository and website scans, competitor and market research, and a persistent\"; \"Originality engine. Silhouette overlap under rotation and mirroring, perceptual hashes (aHash/dHash/DCT pHash),\"; \"Three proposals, your choice. Markilo reads the product, writes a short brief, and shows three genuinely\"; \"Drawn, not assembled. Designers draw freely: Bézier contours, custom letterforms built from real font outlines\"; \"Development keeps what you chose. The drawing you picked is kept; after development you see it next to the\"; \"Real design output. Construction specs (primitives, booleans, gaps, fillets, repeats and real letterforms,\"; \"Looks before it talks. Every concept is rendered to a review sheet (16–256 px, light, dark, black, white) and a\"; \"Costs in the open. markilo cost records each phase against a budget (default $12) and stops paid work when it\"",
+      "status": "observed",
+      "sourceIds": [
+        "S1"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:00.676Z"
+    },
+    {
+      "id": "F10",
+      "topic": "audience",
+      "statement": "Stated audience (README.md): \"for small teams\"",
+      "status": "observed",
+      "sourceIds": [
+        "S1"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:00.676Z"
+    },
+    {
+      "id": "F11",
+      "topic": "platform",
+      "statement": "Runs on: command line, installable web app (PWA)",
+      "status": "observed",
+      "sourceIds": [
+        "S1"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:00.676Z"
+    },
+    {
+      "id": "F12",
+      "topic": "audience",
+      "statement": "Languages: English, Turkish",
+      "status": "observed",
+      "sourceIds": [
+        "S1"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:00.676Z"
+    },
+    {
+      "id": "F13",
       "topic": "competitor",
       "statement": "Brandmark: Home page title: \"Brandmark Logo Maker - the most advanced AI logo design tool\"",
       "status": "observed",
@@ -684,10 +194,10 @@
         "S2"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:09.481Z"
+      "recordedAt": "2026-11-01T11:15:16.877Z"
     },
     {
-      "id": "F19",
+      "id": "F14",
       "topic": "competitor",
       "statement": "Brandmark: Home page description: \"Create a unique logo, business card and social media graphics in less than a minute. Build your brand identity with our generative AI.\"",
       "status": "observed",
@@ -695,10 +205,10 @@
         "S2"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:09.481Z"
+      "recordedAt": "2026-11-01T11:15:16.877Z"
     },
     {
-      "id": "F20",
+      "id": "F15",
       "topic": "competitor",
       "statement": "Brandmark: Home page headings: \"Brand Mark\", \"Create a unique, professional logo for your business\"",
       "status": "observed",
@@ -706,32 +216,10 @@
         "S2"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:09.481Z"
+      "recordedAt": "2026-11-01T11:15:16.877Z"
     },
     {
-      "id": "F21",
-      "topic": "competitor",
-      "statement": "Brandmark: /pricing/: title \"Brandmark - pricing and package information\"; heading \"Brand Mark\"; description \"Brandmark Logo Maker - Choose the best brandmark package for your brand\"",
-      "status": "observed",
-      "sourceIds": [
-        "S3"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:09.481Z"
-    },
-    {
-      "id": "F22",
-      "topic": "competitor",
-      "statement": "Brandmark: /terms.html: title \"Brandmark.io terms and conditions\"",
-      "status": "observed",
-      "sourceIds": [
-        "S4"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:09.481Z"
-    },
-    {
-      "id": "F23",
+      "id": "F16",
       "topic": "competitor",
       "statement": "Brandmark: theme-color meta: #FCD46A",
       "status": "observed",
@@ -739,10 +227,10 @@
         "S2"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:09.482Z"
+      "recordedAt": "2026-11-01T11:15:16.877Z"
     },
     {
-      "id": "F24",
+      "id": "F17",
       "topic": "competitor",
       "statement": "Brandmark: Most frequent CSS colors: #7b9bff, #ff6bc0, #26314a, #64748b, #292e34, #1bba8b",
       "status": "observed",
@@ -750,10 +238,10 @@
         "S2"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:09.482Z"
+      "recordedAt": "2026-11-01T11:15:16.877Z"
     },
     {
-      "id": "F25",
+      "id": "F18",
       "topic": "competitor",
       "statement": "Brandmark: Fonts in CSS: Inter, Courier New, Material Design Icons",
       "status": "observed",
@@ -761,10 +249,10 @@
         "S2"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:09.482Z"
+      "recordedAt": "2026-11-01T11:15:16.877Z"
     },
     {
-      "id": "F26",
+      "id": "F19",
       "topic": "competitor",
       "statement": "Brandmark: 5 icon links (apple-touch-icon, icon, mask-icon, shortcut icon).",
       "status": "observed",
@@ -772,10 +260,10 @@
         "S2"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:09.482Z"
+      "recordedAt": "2026-11-01T11:15:16.877Z"
     },
     {
-      "id": "F27",
+      "id": "F20",
       "topic": "competitor",
       "statement": "Brandmark: Logo candidates: 10 <img>, 0 inline <svg>.",
       "status": "observed",
@@ -783,2313 +271,549 @@
         "S2"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:09.482Z"
+      "recordedAt": "2026-11-01T11:15:16.878Z"
+    },
+    {
+      "id": "F21",
+      "topic": "competitor",
+      "statement": "Tailor Brands: Home page title: \"Set up, Manage & Grow Your Business with Tailor Brands\"",
+      "status": "observed",
+      "sourceIds": [
+        "S3"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:18.408Z"
+    },
+    {
+      "id": "F22",
+      "topic": "competitor",
+      "statement": "Tailor Brands: Home page description: \"Get all the tools you need to build a successful business with Tailor Brands&#039; guided business building platform.\"",
+      "status": "observed",
+      "sourceIds": [
+        "S3"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:18.408Z"
+    },
+    {
+      "id": "F23",
+      "topic": "competitor",
+      "statement": "Tailor Brands: Home page headings: \"The only place to build a real business.\", \"Built for your first time\", \"Your AI sidekick for every step\", \"Make it official in minutes\"",
+      "status": "observed",
+      "sourceIds": [
+        "S3"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:18.408Z"
+    },
+    {
+      "id": "F24",
+      "topic": "competitor",
+      "statement": "Tailor Brands: Structured data (JSON-LD) declares name \"Tailor Brands\".",
+      "status": "observed",
+      "sourceIds": [
+        "S3"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:18.408Z"
+    },
+    {
+      "id": "F25",
+      "topic": "competitor",
+      "statement": "Tailor Brands: Most frequent CSS colors: #166cff, #000001, #565d66, #6f7a8b, #f3f8fe, #fffffe",
+      "status": "observed",
+      "sourceIds": [
+        "S3"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:18.409Z"
+    },
+    {
+      "id": "F26",
+      "topic": "competitor",
+      "statement": "Tailor Brands: Fonts in CSS: Proxima Nova, Proxima Nova Bold, Gazpacho, Memories, Memories Italic, TAN - MEMORIES, Arial",
+      "status": "observed",
+      "sourceIds": [
+        "S3"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:18.409Z"
+    },
+    {
+      "id": "F27",
+      "topic": "competitor",
+      "statement": "Tailor Brands: 3 icon links (icon, apple-touch-icon).",
+      "status": "observed",
+      "sourceIds": [
+        "S3"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:18.409Z"
     },
     {
       "id": "F28",
       "topic": "competitor",
-      "statement": "Designs.ai: Home page title: \"Your AI creative team, on demand | Designs.ai\"",
+      "statement": "Tailor Brands: Logo candidates: 10 <img>, 3 inline <svg>.",
       "status": "observed",
       "sourceIds": [
-        "S5"
+        "S3"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:14.760Z"
+      "recordedAt": "2026-11-01T11:15:18.409Z"
     },
     {
       "id": "F29",
       "topic": "competitor",
-      "statement": "Designs.ai: Home page description: \"Brief Designs.ai once. Specialist agents handle the planning, pick the right models, and deliver on-brand images, video, copy, design, audio, and slides, ready to ship.\"",
+      "statement": "Designs.ai: Home page title: \"Your AI creative team, on demand | Designs.ai\"",
       "status": "observed",
       "sourceIds": [
-        "S5"
+        "S4"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:14.760Z"
+      "recordedAt": "2026-11-01T11:15:20.932Z"
     },
     {
       "id": "F30",
       "topic": "competitor",
+      "statement": "Designs.ai: Home page description: \"Brief Designs.ai once. Specialist agents handle the planning, pick the right models, and deliver on-brand images, video, copy, design, audio, and slides, ready to ship.\"",
+      "status": "observed",
+      "sourceIds": [
+        "S4"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:20.932Z"
+    },
+    {
+      "id": "F31",
+      "topic": "competitor",
       "statement": "Designs.ai: Home page headings: \"Your AI creative team, on demand\", \"One AI workspace for every creative task.\", \"Bring an idea. Leave with a brief in motion.\", \"Start with a goal. Let agents build the assets.\"",
+      "status": "observed",
+      "sourceIds": [
+        "S4"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:20.932Z"
+    },
+    {
+      "id": "F32",
+      "topic": "competitor",
+      "statement": "Designs.ai: Structured data (JSON-LD) declares name \"Designs.ai\", logo https://designs.ai/img/email/dsai-logo.png; profiles: https://facebook.com/DesignsdotAIOfficial, https://www.instagram.com/DesignsdotAI/, https://twitter.com/DesignsdotAI, https://www.linkedin.com/company/designs-ai/.",
+      "status": "observed",
+      "sourceIds": [
+        "S4"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:20.932Z"
+    },
+    {
+      "id": "F33",
+      "topic": "competitor",
+      "statement": "Designs.ai: Most frequent CSS colors: #1ac9dc, #091717, #625fff, #132546, #fafafa, #f99c00",
+      "status": "observed",
+      "sourceIds": [
+        "S4"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:20.932Z"
+    },
+    {
+      "id": "F34",
+      "topic": "competitor",
+      "statement": "Designs.ai: Fonts in CSS: Inter",
+      "status": "observed",
+      "sourceIds": [
+        "S4"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:20.932Z"
+    },
+    {
+      "id": "F35",
+      "topic": "competitor",
+      "statement": "Designs.ai: 1 icon links (icon).",
+      "status": "observed",
+      "sourceIds": [
+        "S4"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:20.932Z"
+    },
+    {
+      "id": "F36",
+      "topic": "competitor",
+      "statement": "Designs.ai: Logo candidates: 10 <img>, 2 inline <svg>.",
+      "status": "observed",
+      "sourceIds": [
+        "S4"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:20.932Z"
+    },
+    {
+      "id": "F37",
+      "topic": "competitor",
+      "statement": "LogoAI: Home page title: \"Design A New Logo & Brand Identity You Love! - LogoAI\"",
       "status": "observed",
       "sourceIds": [
         "S5"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:14.760Z"
+      "recordedAt": "2026-11-01T11:15:21.705Z"
     },
     {
-      "id": "F31",
+      "id": "F38",
       "topic": "competitor",
-      "statement": "Designs.ai: /en/pricing: title \"Pricing Plan | Designs.ai\"; heading \"Simple Pricing Plans. Powerful Results.\"; description \"Upgrade to get the capacity that exactly matches your team&#x27;s needs.\"",
+      "statement": "LogoAI: Home page description: \"Introducing LogoAI 2.0 — an all-new AI logo maker with living brand kits and a powerful design studio to help you build an amazing brand with AI.\"",
+      "status": "observed",
+      "sourceIds": [
+        "S5"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:21.705Z"
+    },
+    {
+      "id": "F39",
+      "topic": "competitor",
+      "statement": "LogoAI: Home page headings: \"A brand, not just a logo.\", \"Multi-model AI that turns ideas into brand logos.\", \"Portfolio of brand assets that come with every logo.\", \"AI Design Anything. No experience required.\"",
+      "status": "observed",
+      "sourceIds": [
+        "S5"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:21.705Z"
+    },
+    {
+      "id": "F40",
+      "topic": "competitor",
+      "statement": "LogoAI: Structured data (JSON-LD) declares name \"LogoAI\", legal name \"LogoAI\", logo https://www.logoai.com/brand/logoai-logo-1024-white.png; profiles: https://x.com/LogoAi_com, https://www.instagram.com/logoai_com/, https://www.linkedin.com/company/logoai, https://www.facebook.com/LogoAi, https://www.youtube.com/@LogoAi_com.",
+      "status": "observed",
+      "sourceIds": [
+        "S5"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:21.705Z"
+    },
+    {
+      "id": "F41",
+      "topic": "competitor",
+      "statement": "LogoAI: theme-color meta: #fbfbfe",
+      "status": "observed",
+      "sourceIds": [
+        "S5"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:21.705Z"
+    },
+    {
+      "id": "F42",
+      "topic": "competitor",
+      "statement": "LogoAI: Most frequent CSS colors: #3157e1, #ffcd27, #eef0f4, #285eff, #eef2ff, #e5e7eb",
+      "status": "observed",
+      "sourceIds": [
+        "S5"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:21.705Z"
+    },
+    {
+      "id": "F43",
+      "topic": "competitor",
+      "statement": "LogoAI: Fonts in CSS: Space Grotesk, Space Grotesk Fallback, Inter, Inter Fallback, Geist Mono, Geist Mono Fallback, Bebas Neue, Black Ops One, Bungee Shade, Cormorant Garamond",
+      "status": "observed",
+      "sourceIds": [
+        "S5"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:21.705Z"
+    },
+    {
+      "id": "F44",
+      "topic": "competitor",
+      "statement": "LogoAI: 4 icon links (icon, apple-touch-icon).",
+      "status": "observed",
+      "sourceIds": [
+        "S5"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:21.705Z"
+    },
+    {
+      "id": "F45",
+      "topic": "competitor",
+      "statement": "LogoAI: Logo candidates: 7 <img>, 3 inline <svg>.",
+      "status": "observed",
+      "sourceIds": [
+        "S5"
+      ],
+      "confidence": "high",
+      "recordedAt": "2026-11-01T11:15:21.705Z"
+    },
+    {
+      "id": "F46",
+      "topic": "competitor",
+      "statement": "Logo.com: Home page title: \"Free Logo Maker | Generate a Custom Logo Design | LOGO.com\"",
       "status": "observed",
       "sourceIds": [
         "S6"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:14.760Z"
-    },
-    {
-      "id": "F32",
-      "topic": "competitor",
-      "statement": "Designs.ai: /en/about: title \"About Designs.ai\"; heading \"About Designs.ai\"; description \"Enterprise creativity made effortless, secure, and on-brand.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S7"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:14.760Z"
-    },
-    {
-      "id": "F33",
-      "topic": "competitor",
-      "statement": "Designs.ai: Structured data (JSON-LD) declares name \"Designs.ai\", logo https://designs.ai/img/email/dsai-logo.png; profiles: https://facebook.com/DesignsdotAIOfficial, https://www.instagram.com/DesignsdotAI/, https://twitter.com/DesignsdotAI, https://www.linkedin.com/company/designs-ai/.",
-      "status": "observed",
-      "sourceIds": [
-        "S5"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:14.760Z"
-    },
-    {
-      "id": "F34",
-      "topic": "competitor",
-      "statement": "Designs.ai: Most frequent CSS colors: #1ac9dc, #091717, #625fff, #132546, #fafafa, #f99c00",
-      "status": "observed",
-      "sourceIds": [
-        "S5"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:14.760Z"
-    },
-    {
-      "id": "F35",
-      "topic": "competitor",
-      "statement": "Designs.ai: Fonts in CSS: Inter",
-      "status": "observed",
-      "sourceIds": [
-        "S5"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:14.760Z"
-    },
-    {
-      "id": "F36",
-      "topic": "competitor",
-      "statement": "Designs.ai: 1 icon links (icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S5"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:14.760Z"
-    },
-    {
-      "id": "F37",
-      "topic": "competitor",
-      "statement": "Designs.ai: Logo candidates: 10 <img>, 2 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S5"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:14.760Z"
-    },
-    {
-      "id": "F38",
-      "topic": "competitor",
-      "statement": "Canva: Home page title: \"Logo Maker | Create Free Logos in Minutes | Canva\"",
-      "status": "observed",
-      "sourceIds": [
-        "S8"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:19.907Z"
-    },
-    {
-      "id": "F39",
-      "topic": "competitor",
-      "statement": "Canva: Home page description: \"With Canva&#x27;s library of customizable logos, creating the perfect logo for your business is ridiculously easy. Create an eye-catching logo in just minutes! Completely free, completely online, fully customizable.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S8"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:19.907Z"
-    },
-    {
-      "id": "F40",
-      "topic": "competitor",
-      "statement": "Canva: Home page headings: \"Digital design\", \"Print design\", \"Images and photos\", \"Videos and audio\"",
-      "status": "observed",
-      "sourceIds": [
-        "S8"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:19.907Z"
-    },
-    {
-      "id": "F41",
-      "topic": "competitor",
-      "statement": "Canva: /features/: title \"Explore Canva Features to Unlock Your Creativity\"; heading \"Digital design\"; description \"With impressive features all in one place, creating content that stands out has never been this easy. Sign up for a Canva account today.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S9"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:19.907Z"
-    },
-    {
-      "id": "F42",
-      "topic": "competitor",
-      "statement": "Canva: /apps/: title \"Unsupported client – Canva\"; heading \"Please update your browser\"; description \"Unsupported client – Canva\"",
-      "status": "observed",
-      "sourceIds": [
-        "S10"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:19.907Z"
-    },
-    {
-      "id": "F43",
-      "topic": "competitor",
-      "statement": "Canva: Most frequent CSS colors: #4c4c4c, #ebeced, #3f4652, #00afb5, #00c4cc, #7d2ae8",
-      "status": "observed",
-      "sourceIds": [
-        "S8"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:19.907Z"
-    },
-    {
-      "id": "F44",
-      "topic": "competitor",
-      "statement": "Canva: Fonts in CSS: Open Sans",
-      "status": "observed",
-      "sourceIds": [
-        "S8"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:19.907Z"
-    },
-    {
-      "id": "F45",
-      "topic": "competitor",
-      "statement": "Canva: 1 icon links (shortcut icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S8"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:19.907Z"
-    },
-    {
-      "id": "F46",
-      "topic": "competitor",
-      "statement": "Canva: Logo candidates: 10 <img>, 2 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S8"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:19.907Z"
+      "recordedAt": "2026-11-01T11:15:25.788Z"
     },
     {
       "id": "F47",
       "topic": "competitor",
-      "statement": "RealFaviconGenerator: Home page title: \"Favicon Generator for perfect icons on all browsers\"",
+      "statement": "Logo.com: Home page description: \"LOGO.com is the #1 rated free logo maker. Use our logo generator to create unlimited logo designs, customize fonts, colors and icons, then download your logo free.\"",
       "status": "observed",
       "sourceIds": [
-        "S11"
+        "S6"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:21.803Z"
+      "recordedAt": "2026-11-01T11:15:25.788Z"
     },
     {
       "id": "F48",
       "topic": "competitor",
-      "statement": "RealFaviconGenerator: Home page description: \"The ultimate favicon generator. Design your icons platform per platform and make them look great everywhere. Including in Google results pages.\"",
+      "statement": "Logo.com: Home page headings: \"#1 Rated Logo Maker\", \"Logos created using LOGO.com\", \"Create a professional logo design in seconds\", \"Make a logo for your business\"",
       "status": "observed",
       "sourceIds": [
-        "S11"
+        "S6"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:21.804Z"
+      "recordedAt": "2026-11-01T11:15:25.788Z"
     },
     {
       "id": "F49",
       "topic": "competitor",
-      "statement": "RealFaviconGenerator: Home page headings: \"Favicon generator. For real.\", \"All browsers\", \"All platforms\", \"Developers love it 💖\"",
+      "statement": "Logo.com: Structured data (JSON-LD) declares name \"Logo.com\", logo https://cdn.logo.com/hotlink-ok/logo-social.png; profiles: https://www.facebook.com/logodotcom/, https://www.instagram.com/logodotcom/, https://ca.linkedin.com/company/logodotcom/, https://twitter.com/logodotcom.",
       "status": "observed",
       "sourceIds": [
-        "S11"
+        "S6"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:21.804Z"
+      "recordedAt": "2026-11-01T11:15:25.788Z"
     },
     {
       "id": "F50",
       "topic": "competitor",
-      "statement": "RealFaviconGenerator: /about: title \"About\"; heading \"About\"; description \"About RealFaviconGenerator\"",
+      "statement": "Logo.com: Most frequent CSS colors: #1890ff, #0074df, #41a4ff, #003a6f, #0057a7, #bbdeff",
       "status": "observed",
       "sourceIds": [
-        "S12"
+        "S6"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:21.804Z"
+      "recordedAt": "2026-11-01T11:15:25.788Z"
     },
     {
       "id": "F51",
       "topic": "competitor",
-      "statement": "RealFaviconGenerator: /favicon-checker: title \"Favicon checker\"; heading \"Check your Favicon\"; description \"Test the favicon of your site. Make sure it works on all platforms, including Google result pages. Our free favicon checker gives you insights to fix issues.\"",
+      "statement": "Logo.com: Fonts in CSS: Inter, Inter Fallback, Oswald, Playfair Display, Caveat, Space Grotesk, Archivo Black, DM Serif Display, Arial",
       "status": "observed",
       "sourceIds": [
-        "S13"
+        "S6"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:21.804Z"
+      "recordedAt": "2026-11-01T11:15:25.788Z"
     },
     {
       "id": "F52",
       "topic": "competitor",
-      "statement": "RealFaviconGenerator: Structured data (JSON-LD) declares name \"RealFaviconGenerator\", logo https://realfavicongenerator.net/web-app-manifest-512x512.png; profiles: https://x.com/RealFavicon, https://github.com/RealFaviconGenerator/.",
+      "statement": "Logo.com: 3 icon links (icon, apple-touch-icon).",
       "status": "observed",
       "sourceIds": [
-        "S11"
+        "S6"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:21.804Z"
+      "recordedAt": "2026-11-01T11:15:25.788Z"
     },
     {
       "id": "F53",
       "topic": "competitor",
-      "statement": "RealFaviconGenerator: Most frequent CSS colors: #1c64f2, #6b7280, #111827, #374151, #4b5563, #e5e7eb",
+      "statement": "Logo.com: Logo candidates: 10 <img>, 2 inline <svg>.",
       "status": "observed",
       "sourceIds": [
-        "S11"
+        "S6"
       ],
       "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:21.804Z"
-    },
-    {
-      "id": "F54",
-      "topic": "competitor",
-      "statement": "RealFaviconGenerator: Fonts in CSS: __Inter_f367f3, __Inter_Fallback_f367f3, ui-sans-serif, ui-monospace, Roboto, arial",
-      "status": "observed",
-      "sourceIds": [
-        "S11"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:21.804Z"
-    },
-    {
-      "id": "F55",
-      "topic": "competitor",
-      "statement": "RealFaviconGenerator: 4 icon links (icon, apple-touch-icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S11"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:21.804Z"
-    },
-    {
-      "id": "F56",
-      "topic": "competitor",
-      "statement": "RealFaviconGenerator: Logo candidates: 6 <img>, 2 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S11"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:21.804Z"
-    },
-    {
-      "id": "F57",
-      "topic": "competitor",
-      "statement": "Claude Code: Home page title: \"Claude Code by Anthropic | AI Coding Agent, Terminal, IDE\"",
-      "status": "observed",
-      "sourceIds": [
-        "S14"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:24.793Z"
-    },
-    {
-      "id": "F58",
-      "topic": "competitor",
-      "statement": "Claude Code: Home page description: \"Anthropic&#x27;s agentic coding tool for developers. Claude Code understands your codebase, edits files, runs commands, and helps you ship faster.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S14"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:24.793Z"
-    },
-    {
-      "id": "F59",
-      "topic": "competitor",
-      "statement": "Claude Code: Home page headings: \"Claude Code\", \"Get started with Claude Code\", \"Latest feature announcements\", \"What Claude Code can take on\"",
-      "status": "observed",
-      "sourceIds": [
-        "S14"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:24.793Z"
-    },
-    {
-      "id": "F60",
-      "topic": "competitor",
-      "statement": "Claude Code: /download: title \"Download Claude | Claude by Anthropic\"; heading \"Download Claude\"; description \"Download Claude apps for Mac, Windows, iOS, and Android. Install extensions for Chrome, Excel, PowerPoint, and Slack.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S15"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:24.793Z"
-    },
-    {
-      "id": "F61",
-      "topic": "competitor",
-      "statement": "Claude Code: /customers: title \"Customer stories | Claude by Anthropic\"; heading \"Customer stories\"; description \"See how teams across finance, healthcare, legal, and beyond use Anthropic&#x27;s Claude to solve their most complex challenges.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S16"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:24.793Z"
-    },
-    {
-      "id": "F62",
-      "topic": "competitor",
-      "statement": "Claude Code: Structured data (JSON-LD) declares name \"Claude\".",
-      "status": "observed",
-      "sourceIds": [
-        "S14"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:24.793Z"
-    },
-    {
-      "id": "F63",
-      "topic": "competitor",
-      "statement": "Claude Code: Most frequent CSS colors: #e3dacc, #dedcd1, #faf9f5, #d97757, #e3dacb, #e3d9cc",
-      "status": "observed",
-      "sourceIds": [
-        "S14"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:24.793Z"
-    },
-    {
-      "id": "F64",
-      "topic": "competitor",
-      "statement": "Claude Code: Fonts in CSS: ui-monospace, anthropicSans, anthropicSans Fallback, anthropicSerif, anthropicSerif Fallback, anthropicMono, anthropicMono Fallback",
-      "status": "observed",
-      "sourceIds": [
-        "S14"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:24.793Z"
-    },
-    {
-      "id": "F65",
-      "topic": "competitor",
-      "statement": "Claude Code: 2 icon links (icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S14"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:24.793Z"
-    },
-    {
-      "id": "F66",
-      "topic": "competitor",
-      "statement": "Claude Code: Logo candidates: 10 <img>, 3 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S14"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:24.794Z"
-    },
-    {
-      "id": "F67",
-      "topic": "competitor",
-      "statement": "Cursor: Home page title: \"AI Coding Agent for Building Ambitious Software | Cursor\"",
-      "status": "observed",
-      "sourceIds": [
-        "S17"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:26.873Z"
-    },
-    {
-      "id": "F68",
-      "topic": "competitor",
-      "statement": "Cursor: Home page description: \"Built to make you extraordinarily productive, agents turn ideas into code. Accelerate development by handing off tasks to Cursor.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S17"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:26.873Z"
-    },
-    {
-      "id": "F69",
-      "topic": "competitor",
-      "statement": "Cursor: Home page headings: \"Cursor is your coding agent for building ambitious software.\", \"Trusted every day by teams that build world-class software\", \"Mission Control Interface\", \"Trigger\"",
-      "status": "observed",
-      "sourceIds": [
-        "S17"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:26.873Z"
-    },
-    {
-      "id": "F70",
-      "topic": "competitor",
-      "statement": "Cursor: /product: title \"Cursor — Build Software with AI Agents\"; heading \"Turn ideas into code\"; description \"Cursor plans, writes, and reviews code using AI agents that understand your entire codebase. Everywhere you work: Desktop, CLI, Web & Mobile.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S18"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:26.873Z"
-    },
-    {
-      "id": "F71",
-      "topic": "competitor",
-      "statement": "Cursor: /enterprise: title \"Cursor for Enterprise — Trusted by 64% of Fortune 500 companies\"; heading \"Develop enduring software at scale\"; description \"SOC 2 Type II certified. Zero data retention. SAML SSO with Okta, Azure AD & Google Workspace. Used by Nvidia, Samsung, OpenAI, Stripe, and more.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S19"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:26.873Z"
-    },
-    {
-      "id": "F72",
-      "topic": "competitor",
-      "statement": "Cursor: Structured data (JSON-LD) declares name \"Cursor\", founded 2023, logo https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/og/opengraph-default.png; profiles: https://x.com/cursor_ai, https://www.linkedin.com/company/cursorai, https://www.youtube.com/@cursor_ai, https://github.com/cursor.",
-      "status": "observed",
-      "sourceIds": [
-        "S17"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:26.873Z"
-    },
-    {
-      "id": "F73",
-      "topic": "competitor",
-      "statement": "Cursor: theme-color meta: #f7f7f4",
-      "status": "observed",
-      "sourceIds": [
-        "S17"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:26.873Z"
-    },
-    {
-      "id": "F74",
-      "topic": "competitor",
-      "statement": "Cursor: Most frequent CSS colors: #26251e, #edecec, #d9d5cf, #c08532, #8bc4f8, #747066",
-      "status": "observed",
-      "sourceIds": [
-        "S17"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:26.873Z"
-    },
-    {
-      "id": "F75",
-      "topic": "competitor",
-      "statement": "Cursor: Fonts in CSS: CursorIcons16, KaTeX_AMS, KaTeX_Caligraphic, KaTeX_Fraktur, KaTeX_Main, KaTeX_Math, KaTeX_SansSerif, KaTeX_Script, KaTeX_Size1, KaTeX_Size2",
-      "status": "observed",
-      "sourceIds": [
-        "S17"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:26.873Z"
-    },
-    {
-      "id": "F76",
-      "topic": "competitor",
-      "statement": "Cursor: 6 icon links (shortcut icon, icon, apple-touch-icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S17"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:26.873Z"
-    },
-    {
-      "id": "F77",
-      "topic": "competitor",
-      "statement": "Cursor: Logo candidates: 4 <img>, 3 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S17"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:26.873Z"
-    },
-    {
-      "id": "F78",
-      "topic": "competitor",
-      "statement": "GitHub Copilot: Home page title: \"GitHub Copilot · Your AI coding agent · GitHub · GitHub\"",
-      "status": "observed",
-      "sourceIds": [
-        "S20"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:29.558Z"
-    },
-    {
-      "id": "F79",
-      "topic": "competitor",
-      "statement": "GitHub Copilot: Home page description: \"GitHub Copilot works every step of the way, from an open issue to reviewing and merging a pull request. Use it in your editor, the terminal, on your desktop, and on GitHub.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S20"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:29.558Z"
-    },
-    {
-      "id": "F80",
-      "topic": "competitor",
-      "statement": "GitHub Copilot: Home page headings: \"Navigation Menu\", \"GitHub Copilot\", \"GitHub Copilot\", \"More ways to get started with GitHub Copilot\"",
-      "status": "observed",
-      "sourceIds": [
-        "S20"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:29.558Z"
-    },
-    {
-      "id": "F81",
-      "topic": "competitor",
-      "statement": "GitHub Copilot: /about: title \"About GitHub · GitHub\"; heading \"Navigation Menu\"; description \"GitHub is where people build software. More than 225 million people use GitHub to discover, fork, and contribute to over 800 million projects.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S21"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:29.558Z"
-    },
-    {
-      "id": "F82",
-      "topic": "competitor",
-      "statement": "GitHub Copilot: /enterprise: title \"GitHub Enterprise - Secure AI development at scale - GitHub · GitHub\"; heading \"Navigation Menu\"; description \"Ship software at scale on one platform—with governance, security, and deployment choice. GitHub Enterprise now includes GitHub Copilot. Start a free trial.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S22"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:29.558Z"
-    },
-    {
-      "id": "F83",
-      "topic": "competitor",
-      "statement": "GitHub Copilot: theme-color meta: #1e2327",
-      "status": "observed",
-      "sourceIds": [
-        "S20"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:29.558Z"
-    },
-    {
-      "id": "F84",
-      "topic": "competitor",
-      "statement": "GitHub Copilot: Most frequent CSS colors: #a7bbad, #8dd6ff, #08872b, #23ea57, #c898fd, #fd9fe2",
-      "status": "observed",
-      "sourceIds": [
-        "S20"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:29.558Z"
-    },
-    {
-      "id": "F85",
-      "topic": "competitor",
-      "statement": "GitHub Copilot: 4 icon links (fluid-icon, mask-icon, alternate icon, icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S20"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:29.558Z"
-    },
-    {
-      "id": "F86",
-      "topic": "competitor",
-      "statement": "GitHub Copilot: Logo candidates: 10 <img>, 3 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S20"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:29.558Z"
-    },
-    {
-      "id": "F87",
-      "topic": "competitor",
-      "statement": "Windsurf: Home page title: \"Devin Desktop | Devin\"",
-      "status": "observed",
-      "sourceIds": [
-        "S23"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:32.250Z"
-    },
-    {
-      "id": "F88",
-      "topic": "competitor",
-      "statement": "Windsurf: Home page description: \"Manage any agent, locally or in the cloud, from one command center. Plan, review, and ship with a team of agents.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S23"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:32.250Z"
-    },
-    {
-      "id": "F89",
-      "topic": "competitor",
-      "statement": "Windsurf: Home page headings: \"Devin Desktop\", \"One command center for every agent and model\", \"A team of agents for every engineer\", \"Your development environment, everywhere you go\"",
-      "status": "observed",
-      "sourceIds": [
-        "S23"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:32.250Z"
-    },
-    {
-      "id": "F90",
-      "topic": "competitor",
-      "statement": "Windsurf: /customers: title \"Customers | Devin\"; heading \"Industry leaders build with Devin\"; description \"See how leading companies use Devin to accelerate software development. Customer success stories and case studies from top engineering teams.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S24"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:32.250Z"
-    },
-    {
-      "id": "F91",
-      "topic": "competitor",
-      "statement": "Windsurf: /pricing: title \"Plans and Pricing | Devin\"; heading \"Devin Plans and Pricing\"; description \"Choose the perfect plan for your Devin journey. Free, Pro, Max, Teams, and Enterprise plans available.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S25"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:32.251Z"
-    },
-    {
-      "id": "F92",
-      "topic": "competitor",
-      "statement": "Windsurf: Structured data (JSON-LD) declares name \"Devin\".",
-      "status": "observed",
-      "sourceIds": [
-        "S23"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:32.251Z"
-    },
-    {
-      "id": "F93",
-      "topic": "competitor",
-      "statement": "Windsurf: Most frequent CSS colors: #191919, #1f9d55, #317cff, #f8f8f8, #fbfbfa, #3b3b3b",
-      "status": "observed",
-      "sourceIds": [
-        "S23"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:32.251Z"
-    },
-    {
-      "id": "F94",
-      "topic": "competitor",
-      "statement": "Windsurf: Fonts in CSS: nbInternationalPro, nbInternationalPro Fallback, stkBureauSerif, stkBureauSerif Fallback, geistMono, geistMono Fallback, inter, interLatinExt, interLatinExt Fallback, ibmPlexMono",
-      "status": "observed",
-      "sourceIds": [
-        "S23"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:32.251Z"
-    },
-    {
-      "id": "F95",
-      "topic": "competitor",
-      "statement": "Windsurf: 4 icon links (icon, apple-touch-icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S23"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:32.251Z"
-    },
-    {
-      "id": "F96",
-      "topic": "competitor",
-      "statement": "Windsurf: Logo candidates: 10 <img>, 2 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S23"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:32.251Z"
-    },
-    {
-      "id": "F97",
-      "topic": "competitor",
-      "statement": "Aider: Home page title: \"Aider - AI Pair Programming in Your Terminal\"",
-      "status": "observed",
-      "sourceIds": [
-        "S26"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:35.939Z"
-    },
-    {
-      "id": "F98",
-      "topic": "competitor",
-      "statement": "Aider: Home page headings: \"AI pair programming in your terminal\", \"Features\", \"Getting Started\", \"Kind Words From Users\"",
-      "status": "observed",
-      "sourceIds": [
-        "S26"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:35.939Z"
-    },
-    {
-      "id": "F99",
-      "topic": "competitor",
-      "statement": "Aider: /HISTORY.html: title \"Release history | aider\"; heading \"Release history\"; description \"Release notes and stats on aider writing its own code.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S27"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:35.939Z"
-    },
-    {
-      "id": "F100",
-      "topic": "competitor",
-      "statement": "Aider: /examples/2048-game.html: title \"Modify an open source 2048 game with aider | aider\"; heading \"Modify an open source 2048 game with aider\"; description \"aider is AI pair programming in your terminal\"",
-      "status": "observed",
-      "sourceIds": [
-        "S28"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:35.939Z"
-    },
-    {
-      "id": "F101",
-      "topic": "competitor",
-      "statement": "Aider: Most frequent CSS colors: #eeebee, #7253ed, #f5f6fa, #14b014, #50a04f, #ca7601",
-      "status": "observed",
-      "sourceIds": [
-        "S26"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:35.939Z"
-    },
-    {
-      "id": "F102",
-      "topic": "competitor",
-      "statement": "Aider: Fonts in CSS: GlassTTYVT220, Inter, Fira Code, Georgia, SFMono-Regular, Courier New, Open Sans",
-      "status": "observed",
-      "sourceIds": [
-        "S26"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:35.939Z"
-    },
-    {
-      "id": "F103",
-      "topic": "competitor",
-      "statement": "Cline: Home page title: \"Cline - AI Coding, Open Source and Open Choice\"",
-      "status": "observed",
-      "sourceIds": [
-        "S29"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:41.064Z"
-    },
-    {
-      "id": "F104",
-      "topic": "competitor",
-      "statement": "Cline: Home page description: \"Open-source AI coding agent with Plan/Act modes, MCP integration, and terminal-first workflows. Trusted by 11M+ developers worldwide.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S29"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:41.064Z"
-    },
-    {
-      "id": "F105",
-      "topic": "competitor",
-      "statement": "Cline: Home page headings: \"Product\", \"Community\", \"Support\", \"Company\"",
-      "status": "observed",
-      "sourceIds": [
-        "S29"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:41.064Z"
-    },
-    {
-      "id": "F106",
-      "topic": "competitor",
-      "statement": "Cline: /enterprise: title \"Cline Enterprise - AI Coding Agent for Teams\"; heading \"Product\"; description \"Enterprise-grade AI coding with BYO Infrastructure, on-premise deployment, SSO, audit logs, and centralized governance. Trusted by Fortune 500 companies.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S30"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:41.064Z"
-    },
-    {
-      "id": "F107",
-      "topic": "competitor",
-      "statement": "Cline: /pricing: title \"Pricing - Cline AI Coding Agent\"; heading \"Product\"; description \"Flexible pricing for Cline AI coding agent. Free for individual developers, Enterprise for organizations. BYO API keys or use our managed infrastructure.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S31"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:41.064Z"
-    },
-    {
-      "id": "F108",
-      "topic": "competitor",
-      "statement": "Cline: Structured data (JSON-LD) declares name \"Cline Bot Inc\", logo https://cline.bot/assets/branding/favicons/favicon-256x256.png; profiles: https://github.com/cline/cline, https://discord.gg/cline, https://x.com/cline.",
-      "status": "observed",
-      "sourceIds": [
-        "S29"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:41.064Z"
-    },
-    {
-      "id": "F109",
-      "topic": "competitor",
-      "statement": "Cline: Most frequent CSS colors: #9f58fa, #5487c8, #4b96dc, #1e1e1e, #2d1e3e, #333333",
-      "status": "observed",
-      "sourceIds": [
-        "S29"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:41.064Z"
-    },
-    {
-      "id": "F110",
-      "topic": "competitor",
-      "statement": "Cline: Fonts in CSS: Inter, Inter Fallback, GeistMono, stackSansHeadline, stackSansHeadline Fallback",
-      "status": "observed",
-      "sourceIds": [
-        "S29"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:41.064Z"
-    },
-    {
-      "id": "F111",
-      "topic": "competitor",
-      "statement": "Cline: 5 icon links (icon, apple-touch-icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S29"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:41.064Z"
-    },
-    {
-      "id": "F112",
-      "topic": "competitor",
-      "statement": "Cline: Logo candidates: 10 <img>, 3 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S29"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:41.064Z"
-    },
-    {
-      "id": "F113",
-      "topic": "competitor",
-      "statement": "Continue: Home page title: \"Continue (acquired by Cursor)\"",
-      "status": "observed",
-      "sourceIds": [
-        "S32"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:43.665Z"
-    },
-    {
-      "id": "F114",
-      "topic": "competitor",
-      "statement": "Continue: Home page description: \"Continue has been acquired by Cursor.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S32"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:43.665Z"
-    },
-    {
-      "id": "F115",
-      "topic": "competitor",
-      "statement": "Continue: Home page headings: \"Continue has joined Cursor\", \"FAQs\"",
-      "status": "observed",
-      "sourceIds": [
-        "S32"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:43.665Z"
-    },
-    {
-      "id": "F116",
-      "topic": "competitor",
-      "statement": "Continue: Structured data (JSON-LD) declares name \"Continue\", logo https://continue.dev/favicon.png; profiles: https://github.com/continuedev, https://x.com/continuedev, https://www.linkedin.com/company/continuedev.",
-      "status": "observed",
-      "sourceIds": [
-        "S32"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:43.665Z"
-    },
-    {
-      "id": "F117",
-      "topic": "competitor",
-      "statement": "Continue: theme-color meta: #ffffff",
-      "status": "observed",
-      "sourceIds": [
-        "S32"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:43.665Z"
-    },
-    {
-      "id": "F118",
-      "topic": "competitor",
-      "statement": "Continue: Most frequent CSS colors: #ef4444, #e5e7eb, #fbbf24, #111827, #3b82f6, #9ca3af",
-      "status": "observed",
-      "sourceIds": [
-        "S32"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:43.665Z"
-    },
-    {
-      "id": "F119",
-      "topic": "competitor",
-      "statement": "Continue: Fonts in CSS: ui-monospace, Helvetica Neue, Inter, Inter Fallback, IBM Plex Sans, IBM Plex Sans Fallback, IBM Plex Mono, IBM Plex Mono Fallback",
-      "status": "observed",
-      "sourceIds": [
-        "S32"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:43.665Z"
-    },
-    {
-      "id": "F120",
-      "topic": "competitor",
-      "statement": "Continue: 1 icon links (icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S32"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:43.665Z"
-    },
-    {
-      "id": "F121",
-      "topic": "competitor",
-      "statement": "Continue: Logo candidates: 1 <img>, 0 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S32"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:43.665Z"
-    },
-    {
-      "id": "F122",
-      "topic": "competitor",
-      "statement": "Gemini CLI: Home page title: \"Build, debug & deploy with AI | Gemini CLI\"",
-      "status": "observed",
-      "sourceIds": [
-        "S33"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:46.600Z"
-    },
-    {
-      "id": "F123",
-      "topic": "competitor",
-      "statement": "Gemini CLI: Home page headings: \"Build, debug & deploy with AI\", \"Build debug & deploy with AI\"",
-      "status": "observed",
-      "sourceIds": [
-        "S33"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:46.600Z"
-    },
-    {
-      "id": "F124",
-      "topic": "competitor",
-      "statement": "Gemini CLI: /extensions/about/: title \"Gemini CLI Extensions | Gemini CLI\"; heading \"Gemini CLI Extensions\"",
-      "status": "observed",
-      "sourceIds": [
-        "S34"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:46.600Z"
-    },
-    {
-      "id": "F125",
-      "topic": "competitor",
-      "statement": "Gemini CLI: /terms/: title \"Terms | Gemini CLI\"; heading \"Terms\"",
-      "status": "observed",
-      "sourceIds": [
-        "S35"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:46.600Z"
-    },
-    {
-      "id": "F126",
-      "topic": "competitor",
-      "statement": "Gemini CLI: Fonts in CSS: Google Sans, Google Sans Text, Google Sans Mono, Google Symbols, Material Symbols Outlined",
-      "status": "observed",
-      "sourceIds": [
-        "S33"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:46.600Z"
-    },
-    {
-      "id": "F127",
-      "topic": "competitor",
-      "statement": "Gemini CLI: 2 icon links (icon, shortcut icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S33"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:46.600Z"
-    },
-    {
-      "id": "F128",
-      "topic": "competitor",
-      "statement": "Gemini CLI: Logo candidates: 10 <img>, 3 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S33"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:46.600Z"
-    },
-    {
-      "id": "F129",
-      "topic": "competitor",
-      "statement": "Adobe Express: Home page title: \"Free Logo Maker: Design Custom Logos | Adobe Express\"",
-      "status": "observed",
-      "sourceIds": [
-        "S36"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:48.519Z"
-    },
-    {
-      "id": "F130",
-      "topic": "competitor",
-      "statement": "Adobe Express: Home page description: \"The Adobe Express logo maker is an instant, intuitive, and intelligent free logo design tool. Use this logo generator to create a wide range of possibilities for your own logo.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S36"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:48.519Z"
-    },
-    {
-      "id": "F131",
-      "topic": "competitor",
-      "statement": "Adobe Express: Home page headings: \"Free logo maker.\", \"See what people are saying about Adobe Express.\", \"How to make a logo.\", \"Use it as a business logo maker, then add animation.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S36"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:48.519Z"
-    },
-    {
-      "id": "F132",
-      "topic": "competitor",
-      "statement": "Adobe Express: /express/pricing: title \"Pricing: Compare Free &#x26; Premium Plans | Adobe Express\"; heading \"Stand out with Adobe Express. Pick your plan.\"; description \"Find the perfect plan to fit your needs. Check out our powerful features like premium AI, and design tools.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S37"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:48.519Z"
-    },
-    {
-      "id": "F133",
-      "topic": "competitor",
-      "statement": "Adobe Express: /express/create/logo/company: title \"Design Company Logos Online for Free | Adobe Express\"; heading \"Free company logo maker.\"; description \"The Adobe Express free online company logo generator helps you easily create your own custom logo for your brand in minutes. All creative skill levels are welcome.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S38"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:48.519Z"
-    },
-    {
-      "id": "F134",
-      "topic": "competitor",
-      "statement": "Adobe Express: Structured data (JSON-LD) declares name \"Adobe\", logo https://www.adobe.com/content/dam/cc/icons/Adobe_Corporate_Horizontal_Red_HEX.svg.",
-      "status": "observed",
-      "sourceIds": [
-        "S36"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:48.519Z"
-    },
-    {
-      "id": "F135",
-      "topic": "competitor",
-      "statement": "Adobe Express: 1 icon links (icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S36"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:48.519Z"
-    },
-    {
-      "id": "F136",
-      "topic": "competitor",
-      "statement": "Adobe Express: Logo candidates: 1 <img>, 0 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S36"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:48.519Z"
-    },
-    {
-      "id": "F137",
-      "topic": "competitor",
-      "statement": "Figma AI: Home page title: \"Figma AI: Your Creativity, unblocked with Figma AI\"",
-      "status": "observed",
-      "sourceIds": [
-        "S39"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:52.309Z"
-    },
-    {
-      "id": "F138",
-      "topic": "competitor",
-      "statement": "Figma AI: Home page description: \"Get started faster, find what you’re looking for, and stay in the flow—with AI tools build for your workflows. Sign up for free today and harness the power of Figma AI.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S39"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:52.309Z"
-    },
-    {
-      "id": "F139",
-      "topic": "competitor",
-      "statement": "Figma AI: Home page headings: \"What you can do in figma\", \"Explore all products\", \"Additional product resources\", \"Use cases\"",
-      "status": "observed",
-      "sourceIds": [
-        "S39"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:52.309Z"
-    },
-    {
-      "id": "F140",
-      "topic": "competitor",
-      "statement": "Figma AI: /solutions/: title \"Figma Solutions - From Concept to Launch, All in One Place\"; heading \"What you can do in figma\"; description \"Whether you start with AI, a wireframe, or a brainstorm, Figma was made for all your design use cases. Start now.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S40"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:52.309Z"
-    },
-    {
-      "id": "F141",
-      "topic": "competitor",
-      "statement": "Figma AI: /enterprise/: title \"Figma Enterprise | Building Great Products at Scale\"; heading \"What you can do in figma\"; description \"Figma Enterprise is a design platform built for scale. Connect everyone in the product development process to go from idea to reality, faster.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S41"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:52.309Z"
-    },
-    {
-      "id": "F142",
-      "topic": "competitor",
-      "statement": "Figma AI: theme-color meta: #ffffff",
-      "status": "observed",
-      "sourceIds": [
-        "S39"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:52.309Z"
-    },
-    {
-      "id": "F143",
-      "topic": "competitor",
-      "statement": "Figma AI: Most frequent CSS colors: #972121, #4d49fc, #ffb3b3, #e2e2e2, #e4ff97, #d2d9e2",
-      "status": "observed",
-      "sourceIds": [
-        "S39"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:52.309Z"
-    },
-    {
-      "id": "F144",
-      "topic": "competitor",
-      "statement": "Figma AI: Fonts in CSS: figmaSans, figmaSans Fallback, figmaMono, figmaMono Fallback",
-      "status": "observed",
-      "sourceIds": [
-        "S39"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:52.309Z"
-    },
-    {
-      "id": "F145",
-      "topic": "competitor",
-      "statement": "Figma AI: 11 icon links (icon, apple-touch-icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S39"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:52.309Z"
-    },
-    {
-      "id": "F146",
-      "topic": "competitor",
-      "statement": "Figma AI: Logo candidates: 10 <img>, 3 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S39"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:52.309Z"
-    },
-    {
-      "id": "F147",
-      "topic": "competitor",
-      "statement": "Hatchful: Home page title: \"Free AI Logo Maker | Generate a Custom Logo in Minutes - Shopify\"",
-      "status": "observed",
-      "sourceIds": [
-        "S42"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:55.897Z"
-    },
-    {
-      "id": "F148",
-      "topic": "competitor",
-      "statement": "Hatchful: Home page description: \"Create a professional logo for free with Shopify’s AI logo maker. Generate unique, high-resolution logo designs in minutes — no design skills needed. Download and use instantly.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S42"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:55.897Z"
-    },
-    {
-      "id": "F149",
-      "topic": "competitor",
-      "statement": "Hatchful: Home page headings: \"Free Logo Maker\", \"Show off your logo everywhere\", \"Business-ready logos that look the part\", \"Sell everywhere from day one\"",
-      "status": "observed",
-      "sourceIds": [
-        "S42"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:55.897Z"
-    },
-    {
-      "id": "F150",
-      "topic": "competitor",
-      "statement": "Hatchful: /about: title \"About Shopify\"; heading \"What is Shopify?\"; description \"Learn about Shopify and how it works. Explore its pricing plans and essential features for building and managing your business.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S43"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:55.897Z"
-    },
-    {
-      "id": "F151",
-      "topic": "competitor",
-      "statement": "Hatchful: /enterprise: title \"Shopify Enterprise | Commerce Without Compromise - Shopify\"; heading \"Enterprise commerce without compromise\"; description \"Shopify is the commerce platform for the world’s boldest brands, with Shopify Plus and Enterprise plans built for unrivaled scale.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S44"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:55.897Z"
-    },
-    {
-      "id": "F152",
-      "topic": "competitor",
-      "statement": "Hatchful: Most frequent CSS colors: #6bdd9b",
-      "status": "observed",
-      "sourceIds": [
-        "S42"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:55.897Z"
-    },
-    {
-      "id": "F153",
-      "topic": "competitor",
-      "statement": "Hatchful: 6 icon links (icon, apple-touch-icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S42"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:55.897Z"
-    },
-    {
-      "id": "F154",
-      "topic": "competitor",
-      "statement": "Hatchful: Logo candidates: 10 <img>, 0 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S42"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:55.897Z"
-    },
-    {
-      "id": "F155",
-      "topic": "competitor",
-      "statement": "App Icon Generator: Home page title: \"App Icon Generator: Free AI-Powered iOS & Android Icons\"",
-      "status": "observed",
-      "sourceIds": [
-        "S45"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:58.880Z"
-    },
-    {
-      "id": "F156",
-      "topic": "competitor",
-      "statement": "App Icon Generator: Home page description: \"Create an app icon with AI in seconds, free, no sign-up. Every iOS, Android, macOS, and watchOS size exported and ready, with an Xcode-ready asset catalog.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S45"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:58.880Z"
-    },
-    {
-      "id": "F157",
-      "topic": "competitor",
-      "statement": "App Icon Generator: Home page headings: \"The free AI app icon generator .\", \"Mobile app superpowers for your AI agent.\", \"Everything your icon needs to ship.\", \"What is Lance?\"",
-      "status": "observed",
-      "sourceIds": [
-        "S45"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:58.880Z"
-    },
-    {
-      "id": "F158",
-      "topic": "competitor",
-      "statement": "App Icon Generator: /app-icon-sizer: title \"App Icon Resizer — Resize Your App Icon to Every Size for Free\"; heading \"Resize your app icon for every platform.\"; description \"Upload a 1024×1024 image and instantly download every app icon size Apple and Google require — iPhone, iPad, macOS, watchOS, and Android — plus an Xcode-ready asset catalog. Free, no sign-up.\"",
-      "status": "observed",
-      "sourceIds": [
-        "S46"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:58.880Z"
-    },
-    {
-      "id": "F159",
-      "topic": "competitor",
-      "statement": "App Icon Generator: Structured data (JSON-LD) declares name \"App Icon Generator by Lance\".",
-      "status": "observed",
-      "sourceIds": [
-        "S45"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:58.880Z"
-    },
-    {
-      "id": "F160",
-      "topic": "competitor",
-      "statement": "App Icon Generator: theme-color meta: #100A0D",
-      "status": "observed",
-      "sourceIds": [
-        "S45"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:58.880Z"
-    },
-    {
-      "id": "F161",
-      "topic": "competitor",
-      "statement": "App Icon Generator: Most frequent CSS colors: #ff1f73, #ff5c5c, #0d0709, #ff5c8f, #2ec772, #100a0d",
-      "status": "observed",
-      "sourceIds": [
-        "S45"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:58.880Z"
-    },
-    {
-      "id": "F162",
-      "topic": "competitor",
-      "statement": "App Icon Generator: Fonts in CSS: Inter, Inter Fallback, Geist Mono, Geist Mono Fallback",
-      "status": "observed",
-      "sourceIds": [
-        "S45"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:58.880Z"
-    },
-    {
-      "id": "F163",
-      "topic": "competitor",
-      "statement": "App Icon Generator: 1 icon links (shortcut icon).",
-      "status": "observed",
-      "sourceIds": [
-        "S45"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:58.880Z"
-    },
-    {
-      "id": "F164",
-      "topic": "competitor",
-      "statement": "App Icon Generator: Logo candidates: 0 <img>, 1 inline <svg>.",
-      "status": "observed",
-      "sourceIds": [
-        "S45"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:51:58.880Z"
-    },
-    {
-      "id": "F165",
-      "topic": "visual-identity",
-      "statement": "Claude/Claude Code logo: coral-orange (about #D97757-like) irregular radial starburst/asterisk beside a black high-contrast serif wordmark 'Claude'. Orange/coral plus radial burst is the Claude-adjacent territory.",
-      "status": "observed",
-      "sourceIds": [
-        "S14",
-        "S55"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:53:31.868Z"
-    },
-    {
-      "id": "F166",
-      "topic": "visual-identity",
-      "statement": "Cursor logo: black isometric cube/hexagon with a cut-in arrow/cursor facet, heavy rounded-geometric uppercase wordmark; app icon is a light squircle with the black cube. Monochrome, hexagonal.",
-      "status": "observed",
-      "sourceIds": [
-        "S17",
-        "S55"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:53:33.343Z"
-    },
-    {
-      "id": "F167",
-      "topic": "visual-identity",
-      "statement": "The Windsurf URL researched resolved to devin.ai/desktop; its collected logo is a black hexagon-cluster glyph plus a geometric sans 'Devin' wordmark. Brand relationship Windsurf/Devin not verified here (rebrand or acquisition not confirmed).",
-      "status": "observed",
-      "sourceIds": [
-        "S23",
-        "S55"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:53:34.929Z"
-    },
-    {
-      "id": "F168",
-      "topic": "visual-identity",
-      "statement": "Cline logo: dark navy/black rounded-square robot-face glyph (two vertical pill eyes, antenna knob, side arrows) with a monospace uppercase wordmark 'CLINE'. Mascot plus monospace.",
-      "status": "observed",
-      "sourceIds": [
-        "S29",
-        "S55"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:53:36.313Z"
-    },
-    {
-      "id": "F169",
-      "topic": "visual-identity",
-      "statement": "Continue logo: charcoal (#33323A) hexagonal ring built from isometric stripes/blocks plus lowercase geometric-sans wordmark 'continue'. Hexagon family; monochrome.",
-      "status": "observed",
-      "sourceIds": [
-        "S32",
-        "S55"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:53:37.640Z"
-    },
-    {
-      "id": "F170",
-      "topic": "visual-identity",
-      "statement": "Gemini CLI: favicon/icon is a dark navy rounded square with a bold angular '>' prompt chevron, filled with a blue-to-violet-to-red gradient and a gradient border. Terminal prompt plus gradient territory. (The collected inline SVG was only a plain chevron UI icon, not the brand logo.)",
-      "status": "observed",
-      "sourceIds": [
-        "S33",
-        "S55"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:53:39.322Z"
-    },
-    {
-      "id": "F171",
-      "topic": "visual-identity",
-      "statement": "GitHub Copilot research collected the GitHub Octocat icon (black circle, white cat silhouette) and a hamburger menu glyph, not a Copilot-specific mark; the Copilot mark itself was not captured and needs a manual reference.",
-      "status": "observed",
-      "sourceIds": [
-        "S20",
-        "S55"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:53:40.842Z"
-    },
-    {
-      "id": "F172",
-      "topic": "visual-identity",
-      "statement": "Logo/favicon-tool competitors use single-letter or bright-multicolor marks: Brandmark icon is a black 'B' on yellow square; RealFaviconGenerator icon is a white 'R' on blue/yellow split square; Hatchful/Shopify is a green shopping-bag with 'S'; Figma icon is five-shape multicolor on black. Consumer logo makers lean on bright primaries and friendly sans.",
-      "status": "observed",
-      "sourceIds": [
-        "S2",
-        "S11",
-        "S42",
-        "S39",
-        "S55"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:53:42.947Z"
-    },
-    {
-      "id": "F173",
-      "topic": "visual-identity",
-      "statement": "Existing Markilo lockup: two black L-shaped corner brackets (top-left, bottom-right) framing a small orange square (#f45d2c), plus lowercase 'markilo' in a bold geometric grotesk (Space Grotesk 700 per caller brief). Rendered and viewed.",
-      "status": "observed",
-      "sourceIds": [
-        "S56",
-        "S1"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:53:48.225Z"
-    },
-    {
-      "id": "F174",
-      "topic": "color",
-      "statement": "The existing Markilo accent #f45d2c (saturated red-orange) sits close to the Claude coral/orange territory and the existing mark is not a starburst. The accent is likely read as Claude-adjacent next to Claude Code, while the crop-corner shape is not. Based on visual comparison, not on measured hue distance.",
-      "status": "inferred",
-      "sourceIds": [
-        "S56",
-        "S55"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:53:49.973Z"
-    },
-    {
-      "id": "F175",
-      "topic": "competitor",
-      "statement": "Crowded visual territory among AI coding tools in the sample: (1) monochrome black marks on light/white (Cursor, Devin/Windsurf, Continue, Cline); (2) hexagon/isometric-cube forms (Cursor, Continue, Devin); (3) terminal prompt chevron '>' (Gemini CLI icon); (4) radial starburst/asterisk and coral-orange (Claude); (5) friendly robot/mascot (Cline, Octocat); (6) blue-violet-red gradient (Gemini CLI). Sample of about 8 tools, so 'crowded' is a pattern in this sample, not a census.",
-      "status": "inferred",
-      "sourceIds": [
-        "S55",
-        "S14",
-        "S17",
-        "S32",
-        "S23",
-        "S33",
-        "S29"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:53:52.278Z"
-    },
-    {
-      "id": "F176",
-      "topic": "competitor",
-      "statement": "Open territory in the sample: none of the collected marks is a corner-bracket / crop-mark / registration-mark form, none uses a lowercase-only wordmark with a square-geometry glyph combined with a single orange accent on near-black, and no direct logo-tool uses a dark-first developer look (they use bright, friendly, multicolor consumer styling). Crop/registration marks are a print-design reference unrelated to AI-tool visual codes.",
-      "status": "inferred",
-      "sourceIds": [
-        "S55",
-        "S2",
-        "S11",
-        "S42"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:53:54.549Z"
-    },
-    {
-      "id": "F177",
-      "topic": "competitor",
-      "statement": "Looka (official site blocked, HTTP 403) per aggregator sites only: AI logo maker with one-time logo packages (about USD 20 basic PNG, about USD 65 premium with vector) and an annual Brand Kit subscription (about USD 96/yr, 300+ templates); figures vary between aggregators.",
-      "status": "observed",
-      "sourceIds": [
-        "S53"
-      ],
-      "confidence": "low",
-      "recordedAt": "2026-10-30T02:53:56.175Z"
-    },
-    {
-      "id": "F178",
-      "topic": "competitor",
-      "statement": "Category positioning gap: logo makers (Looka, Brandmark, Designs.ai, Canva, Adobe Express, Hatchful) are hosted, template/stock-icon based, consumer or SMB, and sell one-time or subscription packs; none (in what was read) offers local-first execution, originality/similarity evidence or deterministic geometry. Markilo's differentiation is process and evidence, not another generator. Competitor pages not exhaustively read.",
-      "status": "inferred",
-      "sourceIds": [
-        "S53",
-        "S2",
-        "S5",
-        "S8",
-        "S36",
-        "S42"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:53:58.567Z"
-    },
-    {
-      "id": "F179",
-      "topic": "competitor",
-      "statement": "Superpowers (Jesse Vincent / obra) is an open-source (MIT per blogs) agentic skills framework for Claude Code, also cited for Codex, Cursor, Gemini CLI; the closest peer in the Claude Code plugin ecosystem. Known only through secondary blogs; its logo/identity was not examined.",
-      "status": "observed",
-      "sourceIds": [
-        "S52"
-      ],
-      "confidence": "low",
-      "recordedAt": "2026-10-30T02:54:00.103Z"
-    },
-    {
-      "id": "F180",
-      "topic": "naming",
-      "statement": "In Esperanto the suffix -ilo marks an instrument/tool, and 'markilo' is an actual Esperanto word meaning 'marker' (felt-tip pen; also biological marker). So Markilo reads as 'the marking tool' - a real, fitting meaning, but it is an existing dictionary word (not coined). Sources are secondary dictionaries.",
-      "status": "verified",
-      "sourceIds": [
-        "S47",
-        "S48"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:54:03.426Z"
-    },
-    {
-      "id": "F181",
-      "topic": "naming",
-      "statement": "Web search for exact 'Markilo' and 'Markilo trademark software' found no company, product or brand using the name; only Esperanto dictionary hits and unrelated names (Marko...). Search engines are not clearance.",
-      "status": "observed",
-      "sourceIds": [
-        "S49"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:54:04.806Z"
-    },
-    {
-      "id": "F182",
-      "topic": "naming",
-      "statement": "markilo name check against 20 competitor/ecosystem names: highest risk 'review' only for generic words Marker and Markup (0.789, shared stem 'mark') and Marq (0.773); Markdown 0.684 low. All real competitors (Looka, Brandmark, Canva, Cursor, Claude, Cline, Continue, Aider, Codex, Superpowers etc.) scored low (<=0.452). Tool output, run 2026-10-30.",
-      "status": "observed",
-      "sourceIds": [
-        "S1"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:54:06.515Z"
-    },
-    {
-      "id": "F183",
-      "topic": "culture",
-      "statement": "Language check (from general knowledge, not source-verified): 'Markilo' has no known negative meaning in English or Turkish; it sounds like 'mark' + '-ilo' and is pronounceable in Turkish (letters all native; 'k','i','l','o'). In Esperanto it is the ordinary word for marker. Not checked with native speakers for Spanish, Portuguese, German, French, Arabic, Hindi, Chinese, Japanese; Spanish/Italian/Slavic '-ilo' endings (e.g. Croatian/Slovenian words ending -ilo) may read as a noun-of-instrument, which is consistent with the meaning.",
-      "status": "inferred",
-      "sourceIds": [],
-      "confidence": "low",
-      "recordedAt": "2026-10-30T02:54:09.291Z"
-    },
-    {
-      "id": "F184",
-      "topic": "color",
-      "statement": "Color culture: orange/red-orange is energetic and widely positive in English and Turkish contexts (warning/attention in UI semantics). In developer tooling dark near-black grounds with one saturated accent are conventional, so the existing scheme conforms to category trust cues but its orange hue collides with Claude's coral. General knowledge; no source.",
-      "status": "inferred",
-      "sourceIds": [],
-      "confidence": "low",
-      "recordedAt": "2026-10-30T02:54:11.275Z"
-    },
-    {
-      "id": "F185",
-      "topic": "trend",
-      "statement": "Design press describes AI company logos as converging on the four-pointed sparkle and circular/radial 'central opening' forms; Google reportedly used near 100 sparkle variants in 2024. Commentary is opinion, not a study. Sparkle/asterisk/radial symbols are therefore fashionable and saturated.",
-      "status": "observed",
-      "sourceIds": [
-        "S50",
-        "S51"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:54:12.850Z"
-    },
-    {
-      "id": "F186",
-      "topic": "trend",
-      "statement": "Developer-tool brand references show dark canvases, monospace type and terminal imagery as common; an editorial light-canvas alternative exists (Gitpod/Ona); share of dark-theme AI design prompts rose from 26.8 percent (Jan) to 38.1 percent (May 2026) in one vendor's sample. Directional only; curated reference sites, no primary report.",
-      "status": "observed",
-      "sourceIds": [
-        "S54"
-      ],
-      "confidence": "low",
-      "recordedAt": "2026-10-30T02:54:14.645Z"
-    },
-    {
-      "id": "F187",
-      "topic": "trend",
-      "statement": "Durable vs fashionable: durable = simple geometric forms, strict grid, high contrast, works at 16 px and in one color, near-black plus one accent; fashionable (will date) = sparkles, gradients, glowing orbs, glassmorphism, monospace-everything terminal pastiche. Assessment based on the cited commentary and long-standing logo practice.",
-      "status": "inferred",
-      "sourceIds": [
-        "S50",
-        "S54"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:54:16.638Z"
-    },
-    {
-      "id": "F188",
-      "topic": "audience",
-      "statement": "Primary audience (developers, indie makers, founders, OSS maintainers) is given by the project owner's brief and consistent with a Claude Code plugin distributed via CLI; they need logo + favicon + GitHub social preview/OG/avatar + tokens more than print collateral. Secondary: designers and small teams. Not validated with user research.",
-      "status": "inferred",
-      "sourceIds": [
-        "S1"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:54:21.531Z"
-    },
-    {
-      "id": "F189",
-      "topic": "market",
-      "statement": "Market: AI logo makers are a paid, consumer/SMB category (Looka, Brandmark, Designs.ai, Canva, Adobe Express, Hatchful), while Markilo is free, open-source and runs inside an existing AI coding subscription; it competes less on price than on trust, process and developer workflow fit. Adjacent substitutes are favicon/app-icon generators (RealFaviconGenerator, App Icon Generator) and Figma AI. Market size not researched.",
-      "status": "inferred",
-      "sourceIds": [
-        "S53",
-        "S5",
-        "S8"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:54:23.757Z"
-    },
-    {
-      "id": "F190",
-      "topic": "platform",
-      "statement": "Platform surfaces Markilo must read well on: Claude Code plugin listing/marketplace square appmark (small, often dark UI), GitHub README header and social preview (1280x640), repo avatar and org avatar, npm/CLI, favicon at 16 px. Many neighbors (Claude, Cursor, Cline) ship dark UIs and light app-icon squircles, so the mark must survive both grounds. Exact marketplace icon specs not verified.",
-      "status": "inferred",
-      "sourceIds": [
-        "S14",
-        "S1"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:54:25.819Z"
-    },
-    {
-      "id": "F191",
-      "topic": "typography",
-      "statement": "Competitor type: Claude uses a high-contrast serif wordmark; Cursor heavy rounded geometric uppercase; Cline monospace uppercase; Continue and Devin lowercase/regular geometric sans; Brandmark/Hatchful friendly sans. Space Grotesk 700 lowercase (existing) is a neutral geometric grotesk close to the Continue/Devin group; a serif or monospace would be the more distinct choices but monospace is a saturated dev cliche.",
-      "status": "inferred",
-      "sourceIds": [
-        "S55",
-        "S14",
-        "S29",
-        "S32"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:54:27.960Z"
-    },
-    {
-      "id": "F192",
-      "topic": "visual-identity",
-      "statement": "GitHub Copilot mark is a rounded, black monochrome face/helmet with large aviator goggles (two rounded lenses) and two vertical pill eyes/nostrils; filled, symmetric, mascot style.",
-      "status": "observed",
-      "sourceIds": [
-        "S57"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:58:01.397Z"
-    },
-    {
-      "id": "F193",
-      "topic": "visual-identity",
-      "statement": "OpenAI Codex mark is a scalloped cloud-like blob silhouette with a knocked-out terminal prompt (chevron > and underscore); filled monochrome.",
-      "status": "observed",
-      "sourceIds": [
-        "S58"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:58:01.592Z"
-    },
-    {
-      "id": "F194",
-      "topic": "visual-identity",
-      "statement": "Claude mark is a radiating asterisk/starburst of about 12 rounded-tip rays of uneven length around a solid core; Anthropic company mark is a geometric uppercase A (two diagonals, counter notch). Markilo must not resemble either.",
-      "status": "observed",
-      "sourceIds": [
-        "S57",
-        "S61"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:58:01.781Z"
-    },
-    {
-      "id": "F195",
-      "topic": "visual-identity",
-      "statement": "Aider GitHub avatar is a pixelated lowercase letter a in glowing green on a dark scanline CRT look; site logo is an SVG wordmark (200x60) with a glow filter.",
-      "status": "observed",
-      "sourceIds": [
-        "S59"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:58:01.965Z"
-    },
-    {
-      "id": "F196",
-      "topic": "visual-identity",
-      "statement": "App Icon Generator (appicon.co) icon is a 2x2 grid of four rounded-square outlines with a vertical peach-to-pink gradient; generic grid glyph.",
-      "status": "observed",
-      "sourceIds": [
-        "S63"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:58:02.146Z"
-    },
-    {
-      "id": "F197",
-      "topic": "visual-identity",
-      "statement": "Vercel mark is a solid equilateral upward triangle (single path, monochrome); category-reference for minimal dev-tool geometry.",
-      "status": "observed",
-      "sourceIds": [
-        "S64"
-      ],
-      "confidence": "high",
-      "recordedAt": "2026-10-30T02:58:02.330Z"
-    },
-    {
-      "id": "F198",
-      "topic": "visual-identity",
-      "statement": "Collected as category/direct references without detailed visual review: Linear, Raycast, Figma, Brandfetch (simple-icons vectors), Looka favicon, Canva round mark; they are stored as files for automated similarity comparison.",
-      "status": "observed",
-      "sourceIds": [
-        "S57",
-        "S60",
-        "S62"
-      ],
-      "confidence": "medium",
-      "recordedAt": "2026-10-30T02:58:02.515Z"
+      "recordedAt": "2026-11-01T11:15:25.788Z"
     }
   ],
   "existingIdentity": {
     "logos": [
       {
-        "path": "assets/logo-dark.svg",
+        "path": "tests/fixtures/marks/bars.svg",
         "kind": "svg",
         "source": "S1"
       },
       {
-        "path": "assets/logo-light.svg",
+        "path": "tests/fixtures/marks/bolt.svg",
         "kind": "svg",
         "source": "S1"
       },
       {
-        "path": "branding/brands/markilo/concepts/arches/review/symbol-sheet.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/concepts/arches/symbol.svg",
+        "path": "tests/fixtures/marks/fine-lines.svg",
         "kind": "svg",
         "source": "S1"
       },
       {
-        "path": "branding/brands/markilo/concepts/check-m/review/symbol-sheet.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/concepts/check-m/symbol.svg",
+        "path": "tests/fixtures/marks/fold-n.svg",
         "kind": "svg",
         "source": "S1"
       },
       {
-        "path": "branding/brands/markilo/concepts/crop/review/symbol-sheet.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/concepts/crop/symbol.svg",
+        "path": "tests/fixtures/marks/leaf-letter.svg",
         "kind": "svg",
         "source": "S1"
       },
       {
-        "path": "branding/brands/markilo/concepts/crop/wordmark.svg",
+        "path": "tests/fixtures/marks/orbit-mirrored.svg",
         "kind": "svg",
         "source": "S1"
       },
       {
-        "path": "branding/brands/markilo/exports/android/play-store-icon-512.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-hdpi/ic_launcher.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-hdpi/ic_launcher_background.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-hdpi/ic_launcher_foreground.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-hdpi/ic_launcher_monochrome.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-hdpi/ic_launcher_round.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-mdpi/ic_launcher.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-mdpi/ic_launcher_background.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-mdpi/ic_launcher_foreground.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-mdpi/ic_launcher_monochrome.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-mdpi/ic_launcher_round.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xhdpi/ic_launcher.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xhdpi/ic_launcher_background.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xhdpi/ic_launcher_foreground.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xhdpi/ic_launcher_monochrome.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xhdpi/ic_launcher_round.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xxhdpi/ic_launcher.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xxhdpi/ic_launcher_background.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xxhdpi/ic_launcher_foreground.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xxhdpi/ic_launcher_monochrome.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xxhdpi/ic_launcher_round.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xxxhdpi/ic_launcher.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xxxhdpi/ic_launcher_background.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xxxhdpi/ic_launcher_monochrome.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/android/res/mipmap-xxxhdpi/ic_launcher_round.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/ios/AppIcon.appiconset/AppIcon-1024-dark.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/ios/AppIcon.appiconset/AppIcon-1024-tinted.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/ios/AppIcon.appiconset/AppIcon-1024.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/ios/icon-composer/background.svg",
+        "path": "tests/fixtures/marks/orbit-tweaked.svg",
         "kind": "svg",
         "source": "S1"
       },
       {
-        "path": "branding/brands/markilo/exports/ios/icon-composer/foreground.svg",
+        "path": "tests/fixtures/marks/orbit.svg",
         "kind": "svg",
         "source": "S1"
       },
       {
-        "path": "branding/brands/markilo/exports/logos/appmark/appmark.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/appmark/appmark.svg",
+        "path": "tests/fixtures/marks/plain-circle.svg",
         "kind": "svg",
         "source": "S1"
       },
       {
-        "path": "branding/brands/markilo/exports/logos/compact/compact-black.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/compact/compact-black.svg",
+        "path": "tests/fixtures/monorepo/apps/keeper/public/keeper-icon.svg",
         "kind": "svg",
         "source": "S1"
       },
       {
-        "path": "branding/brands/markilo/exports/logos/compact/compact-color.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/compact/compact-color.svg",
+        "path": "tests/fixtures/monorepo/products/alpha-site/public/logo.svg",
         "kind": "svg",
         "source": "S1"
       },
       {
-        "path": "branding/brands/markilo/exports/logos/compact/compact-ink.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/compact/compact-ink.svg",
+        "path": "tests/fixtures/monorepo/public/apps/crm-icon-dark.svg",
         "kind": "svg",
         "source": "S1"
       },
       {
-        "path": "branding/brands/markilo/exports/logos/compact/compact-reversed.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/compact/compact-reversed.svg",
-        "kind": "svg",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/compact/compact-white.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/compact/compact-white.svg",
-        "kind": "svg",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/primary/primary-black.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/primary/primary-black.svg",
-        "kind": "svg",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/primary/primary-color.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/primary/primary-color.svg",
-        "kind": "svg",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/primary/primary-ink.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/primary/primary-ink.svg",
-        "kind": "svg",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/primary/primary-reversed.png",
-        "kind": "png",
-        "source": "S1"
-      },
-      {
-        "path": "branding/brands/markilo/exports/logos/primary/primary-reversed.svg",
+        "path": "tests/fixtures/repo/public/logo.svg",
         "kind": "svg",
         "source": "S1"
       }
     ],
     "colors": [
       {
-        "hex": "#0b0b0b",
-        "count": 72,
+        "hex": "#ff0000",
+        "count": 4,
         "source": "S1"
       },
       {
-        "hex": "#6b6a64",
-        "count": 48,
+        "hex": "#3b5bdb",
+        "count": 5,
         "source": "S1"
       },
       {
-        "hex": "#898781",
-        "count": 32,
+        "hex": "#808080",
+        "count": 2,
         "source": "S1"
       },
       {
-        "hex": "#0ca30c",
-        "count": 32,
+        "hex": "#aabbcc",
+        "count": 2,
         "source": "S1"
       },
       {
-        "hex": "#f9f9f7",
-        "count": 24,
+        "hex": "#0e9f6e",
+        "count": 2,
         "source": "S1"
       },
       {
-        "hex": "#fcfcfb",
-        "count": 24,
+        "hex": "#101828",
+        "count": 2,
         "source": "S1"
       },
       {
-        "hex": "#52514e",
-        "count": 24,
+        "hex": "#008000",
+        "count": 1,
         "source": "S1"
       },
       {
-        "hex": "#e1e0d9",
-        "count": 24,
+        "hex": "#0000ff",
+        "count": 1,
         "source": "S1"
       },
       {
-        "hex": "#2a78d6",
-        "count": 24,
+        "hex": "#ffff00",
+        "count": 1,
         "source": "S1"
       },
       {
-        "hex": "#006300",
-        "count": 24,
+        "hex": "#ffa500",
+        "count": 1,
         "source": "S1"
       },
       {
-        "hex": "#067d06",
-        "count": 24,
+        "hex": "#800080",
+        "count": 1,
         "source": "S1"
       },
       {
-        "hex": "#8a6100",
-        "count": 24,
+        "hex": "#000080",
+        "count": 1,
         "source": "S1"
       },
       {
-        "hex": "#d03b3b",
-        "count": 24,
+        "hex": "#008080",
+        "count": 1,
         "source": "S1"
       },
       {
-        "hex": "#0d0d0d",
-        "count": 16,
+        "hex": "#777777",
+        "count": 1,
         "source": "S1"
       },
       {
-        "hex": "#1a1a19",
-        "count": 16,
+        "hex": "#fe0000",
+        "count": 1,
         "source": "S1"
       },
       {
-        "hex": "#c3c2b7",
-        "count": 16,
+        "hex": "#ff8a3d",
+        "count": 1,
         "source": "S1"
       }
     ],
     "fonts": [
       {
+        "family": "alegreya-sans",
+        "source": "S1"
+      },
+      {
+        "family": "archivo",
+        "source": "S1"
+      },
+      {
+        "family": "atkinson-hyperlegible-next",
+        "source": "S1"
+      },
+      {
+        "family": "bricolage-grotesque",
+        "source": "S1"
+      },
+      {
         "family": "dm-sans",
+        "source": "S1"
+      },
+      {
+        "family": "dm-serif-display",
+        "source": "S1"
+      },
+      {
+        "family": "familjen-grotesk",
         "source": "S1"
       },
       {
@@ -3101,53 +825,126 @@
         "source": "S1"
       },
       {
+        "family": "instrument-serif",
+        "source": "S1"
+      },
+      {
         "family": "inter",
         "source": "S1"
       },
       {
         "family": "jetbrains-mono",
         "source": "S1"
-      },
-      {
-        "family": "manrope",
-        "source": "S1"
-      },
-      {
-        "family": "outfit",
-        "source": "S1"
-      },
-      {
-        "family": "plus-jakarta-sans",
-        "source": "S1"
-      },
-      {
-        "family": "sora",
-        "source": "S1"
-      },
-      {
-        "family": "space-grotesk",
-        "source": "S1"
-      },
-      {
-        "family": "Georgia",
-        "source": "S1"
-      },
-      {
-        "family": "Inter",
-        "source": "S1"
       }
     ]
   },
   "gaps": [
-    "Looka (https://looka.com) could not be researched: https://looka.com/ returned HTTP 403.",
-    "Aider: 2 page(s) or stylesheets of aider.chat could not be read (HTTP 404).",
-    "Continue: 1 page(s) or stylesheets of continue.dev could not be read (HTTP 404).",
-    "OpenAI Codex (https://openai.com/codex) could not be researched: https://openai.com/codex returned HTTP 403.",
-    "App Icon Generator: 1 page(s) or stylesheets of www.appicon.co could not be read (not HTML (text/plain; charset=utf-8)).",
-    "Trademark registry searches NOT performed: WIPO Global Brand Database requires a human-verification widget (automated fetch blocked); TMview, USPTO, TÜRKPATENT and UKIPO are interactive JS apps not searched. 'Markilo' and 'Marki*' in Nice classes 9, 42 (and 41) still need manual interactive search; also image search for the final mark. Only web-search evidence exists (no hits), which is not clearance.",
-    "Reference marks missing or wrong: GitHub Copilot (collected Octocat/menu icon instead), OpenAI Codex (HTTP 403), Aider (no logo found), Looka (HTTP 403), Canva (inline SVG unusable), Superpowers and other Claude Code plugins/skills, App Icon Generator icon, Adobe Express real logo (a promo image was collected). Add manually before an originality verdict.",
-    "Not researched: Claude Code marketplace/plugin icon size and format rules; GitHub social preview current specs; market size; real user feedback on the existing identity; native-speaker checks of the name in non-English/Turkish languages; other Claude Code plugin brands' visual identities; Windsurf/Devin relationship.",
-    "No trademark registry search (WIPO, TMview, USPTO, TÜRKPATENT, UKIPO) was performed for the name or the mark; the product owner could not run manual searches and will decide on the risk at finalize. Not clearance.",
-    "Official Adobe Express logo not obtained (no apple-touch-icon, no public SVG; earlier adobe-express-21 PNG came from a logo-maker page and may be a different graphic). Superpowers (obra) has no logo; GitHub avatar is a personal photo. Official Copilot/Codex/Claude/Linear/Raycast/Figma marks are third-party vector copies (simple-icons/LobeHub), not brand-kit files. Earlier github-copilot-11/12 (Octocat fluid icon) are wrong and the CLI has no remove command; ignore them. Canva/Adobe Express/Windsurf and others from earlier run unchanged."
-  ]
+    "Product understanding — pricing and business model: not stated",
+    "Looka (https://looka.com) could not be researched: https://looka.com/ returned HTTP 403."
+  ],
+  "product": {
+    "valueProposition": {
+      "text": "Markilo is not a \"generate a logo\" prompt. It is a Claude Code plugin plus a deterministic toolchain that researches a product, designs original vector marks, measures them (small-size legibility, balance, contrast, one-color reproduction), compares them against competitors and each other, and exports a complete, platf",
+      "source": "README.md",
+      "basis": "stated"
+    },
+    "features": [
+      {
+        "text": "Brand intelligence, with receipts. Repository and website scans, competitor and market research, and a persistent",
+        "source": "README.md",
+        "basis": "stated"
+      },
+      {
+        "text": "Originality engine. Silhouette overlap under rotation and mirroring, perceptual hashes (aHash/dHash/DCT pHash),",
+        "source": "README.md",
+        "basis": "stated"
+      },
+      {
+        "text": "Three proposals, your choice. Markilo reads the product, writes a short brief, and shows three genuinely",
+        "source": "README.md",
+        "basis": "stated"
+      },
+      {
+        "text": "Drawn, not assembled. Designers draw freely: Bézier contours, custom letterforms built from real font outlines",
+        "source": "README.md",
+        "basis": "stated"
+      },
+      {
+        "text": "Development keeps what you chose. The drawing you picked is kept; after development you see it next to the",
+        "source": "README.md",
+        "basis": "stated"
+      },
+      {
+        "text": "Real design output. Construction specs (primitives, booleans, gaps, fillets, repeats and real letterforms,",
+        "source": "README.md",
+        "basis": "stated"
+      },
+      {
+        "text": "Looks before it talks. Every concept is rendered to a review sheet (16–256 px, light, dark, black, white) and a",
+        "source": "README.md",
+        "basis": "stated"
+      },
+      {
+        "text": "Costs in the open. markilo cost records each phase against a budget (default $12) and stops paid work when it",
+        "source": "README.md",
+        "basis": "stated"
+      },
+      {
+        "text": "Complete asset kit. Logo variants, favicons, PWA + maskable icons, iOS (incl. dark/tinted and Icon Composer",
+        "source": "README.md",
+        "basis": "stated"
+      },
+      {
+        "text": "Brand Preview Gallery. One offline HTML file comparing concepts on realistic surfaces (browser tab, home screen,",
+        "source": "README.md",
+        "basis": "stated"
+      },
+      {
+        "text": "Monorepo-aware. Finds the sites, apps and packages of a monorepo, registers the user-facing ones as brands of a",
+        "source": "README.md",
+        "basis": "stated"
+      },
+      {
+        "text": "Families and locked brands. Multi-product families share a system; existing identities can be locked so they",
+        "source": "README.md",
+        "basis": "stated"
+      }
+    ],
+    "audience": [
+      {
+        "text": "for small teams",
+        "source": "README.md",
+        "basis": "stated"
+      }
+    ],
+    "capabilities": [],
+    "surfaces": [],
+    "platforms": [
+      {
+        "text": "command line",
+        "source": "package.json",
+        "basis": "stated"
+      },
+      {
+        "text": "installable web app (PWA)",
+        "source": "tests/fixtures/repo/public/site.webmanifest",
+        "basis": "stated"
+      }
+    ],
+    "languages": [
+      {
+        "text": "English",
+        "source": "README.md",
+        "basis": "stated"
+      },
+      {
+        "text": "Turkish",
+        "source": "README.md",
+        "basis": "stated"
+      }
+    ],
+    "unknown": [
+      "pricing and business model: not stated"
+    ]
+  }
 }

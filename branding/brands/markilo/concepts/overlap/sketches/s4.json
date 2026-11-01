@@ -1,5 +1,0 @@
-{"idea":"Two outlined arch-pairs, one offset, drawn as contours: the lines that coincide become one heavy stroke, the lines that miss stay thin, a visible diff.",
-"params":{"w":70,"dx":90,"gap":22},
-"defs":{"A":{"outline":{"shape":{"union":[{"rect":{"x":300,"y":400,"w":424,"h":400,"r":[200,200,0,0]}}]},"width":"w"}},
-"B":{"outline":{"shape":{"union":[{"rect":{"x":300,"y":400,"w":424,"h":400,"r":[200,200,0,0]}}]},"width":"w"},"move":["dx",0]}},
-"layers":[{"name":"a","fill":"primary","shape":{"gap":{"shape":{"ref":"A"},"cut":{"ref":"B"},"width":"gap"}}},{"name":"b","fill":"accent","shape":{"ref":"B"}}],"fit":0.08}

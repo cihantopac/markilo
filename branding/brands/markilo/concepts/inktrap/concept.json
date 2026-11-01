@@ -1,0 +1,47 @@
+{
+  "schema": "markilo/concept@1",
+  "id": "inktrap",
+  "brand": "markilo",
+  "lead": "wordmark",
+  "round": 1,
+  "title": "Inktrap",
+  "direction": "Assertive precision: heavy custom lowercase lettering with deep, deliberate ink traps carved at one angle into every join",
+  "rationale": "Ink traps are the type designer's own craft detail; exaggerated and made consistent, they show that Markilo is made by people who draw letters, not by a generator",
+  "semantics": [
+    "craft; precision; studio-grade; type specimen; confident"
+  ],
+  "palette": {
+    "primary": "#2b2bd9",
+    "ink": "#0e0e14",
+    "paper": "#f5f4ef"
+  },
+  "typography": {
+    "fontId": "schibsted-grotesk",
+    "weight": 900,
+    "family": "Schibsted Grotesk",
+    "license": "OFL-1.1"
+  },
+  "files": {
+    "symbol": "symbol.svg",
+    "wordmark": "wordmark.svg",
+    "small": "symbol-small.svg"
+  },
+  "status": "draft",
+  "createdAt": "2026-11-01T11:17:46.960Z",
+  "updatedAt": "2026-11-01T11:32:06.833Z",
+  "pitch": {
+    "idea": "A heavy lowercase word cut like a type designer's proof: every join of m, a, r and k carries the same deep ink trap, and the k-i-l stems rise above the font's ascenders into one tall, even skyline.",
+    "strengths": [
+      "the ink trap is a detail only people who draw type would make, so it says studio, not generator",
+      "one cut geometry (same depth, same funnel) repeated at eight joins reads as a system",
+      "the raised k-i-l stems give the word a silhouette no stock grotesque has (typeset likeness 0.74)",
+      "the trapped k, where three traps converge, stands alone as the icon"
+    ],
+    "weaknesses": [
+      "the icon is still a letter k, the weakest kind of icon, and its traps fill in below 32 px where it is just a heavy k",
+      "the traps disappear below about 24 px wordmark height, so small uses rely on the tall stems alone",
+      "the slits in the a and the lower k join can read as chips at mid sizes (48-96 px)",
+      "stem proportions are Schibsted's, so the face is recognisable to type people"
+    ]
+  }
+}

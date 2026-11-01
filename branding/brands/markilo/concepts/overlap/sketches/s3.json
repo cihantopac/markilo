@@ -1,8 +1,0 @@
-{"idea":"One m cut by a hairline diagonal and the lower half slid a notch: a misregistration, proof the copy does not line up.",
-"params":{"w":104,"slip":46,"cut":40},
-"defs":{"M":{"path":{"d":"M270 800L270 520A121 121 0 0 1 512 520L512 800M512 520A121 121 0 0 1 754 520L754 800","width":"w","cap":"butt","join":"round"}},
-"band":{"rect":{"c":[512,600],"w":1400,"h":"cut","rotate":-18}},
-"upper":{"rect":{"c":[512,100],"w":1400,"h":1000,"rotate":-18,"move":[0,-30]}}},
-"layers":[
-{"name":"top","fill":"primary","shape":{"intersect":[{"gap":{"shape":{"ref":"M"},"cut":{"ref":"band"},"width":0}},{"rect":{"c":[512,230],"w":1400,"h":760,"rotate":-18}}]}},
-{"name":"bot","fill":"accent","shape":{"intersect":[{"gap":{"shape":{"ref":"M"},"cut":{"ref":"band"},"width":0}},{"rect":{"c":[512,1050],"w":1400,"h":900,"rotate":-18}}],"move":["slip",0]}}],"fit":0.08}

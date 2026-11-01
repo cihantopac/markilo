@@ -1,0 +1,32 @@
+{
+  "idea": "a symmetric high-contrast M: heavy stems with the word's chisel notch and bracketed feet, lighter diagonals meeting in a point aimed at the oxblood punch",
+  "layers": [
+    {
+      "name": "M",
+      "fill": "#16120F",
+      "shape": {
+        "mirror": {
+          "axis": "x",
+          "at": 512,
+          "shape": {
+            "subtract": [
+              {
+                "union": [
+                  { "path": { "d": "M706 860L706 848Q735 842 742 826Q750 812 750 780L750 170L875 170L875 780Q875 812 883 826Q890 842 919 848L919 860Z" } },
+                  { "polygon": { "points": [[690,170],[750,170],[512,640],[512,521.5]] } }
+                ]
+              },
+              { "polygon": { "points": [[764,169],[861,169],[812.5,217.5]] } }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "punch",
+      "fill": "#7E1D2A",
+      "shape": { "polygon": { "points": [[512,700],[596,784],[512,868],[428,784]] } }
+    }
+  ],
+  "fit": 0.09
+}

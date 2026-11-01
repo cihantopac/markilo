@@ -1,0 +1,29 @@
+{
+  "idea": "a high-contrast M whose pointed vertex aims at the oxblood punch; every stem top carries the word's 45-degree chisel notch",
+  "layers": [
+    {
+      "name": "M",
+      "fill": "#16120F",
+      "shape": {
+        "subtract": [
+          {
+            "union": [
+              { "path": { "d": "M124 860L124 848Q152 842 161 828Q168 816 168 792L168 170L210 170L210 792Q210 816 217 828Q226 842 254 848L254 860Z" } },
+              { "path": { "d": "M706 860L706 848Q735 842 742 826Q750 812 750 780L750 170L875 170L875 780Q875 812 883 826Q890 842 919 848L919 860Z" } },
+              { "polygon": { "points": [[168,170],[310,170],[581.4,531.3],[521,640]] } },
+              { "polygon": { "points": [[740,170],[782,170],[521,640],[496.9,607.9]] } }
+            ]
+          },
+          { "polygon": { "points": [[184,169],[294,169],[239,224]] } },
+          { "polygon": { "points": [[764,169],[861,169],[812.5,217.5]] } }
+        ]
+      }
+    },
+    {
+      "name": "punch",
+      "fill": "#7E1D2A",
+      "shape": { "polygon": { "points": [[521,700],[605,784],[521,868],[437,784]] } }
+    }
+  ],
+  "fit": 0.09
+}

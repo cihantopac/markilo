@@ -1,9 +1,0 @@
-{"grid":64,"idea":"A pixel-grid m: square tiles on a 5 by 4 grid, the middle leg an accent tile column, as if the letter were selected on a canvas.",
-"layers":[
-{"name":"tiles","fill":"primary","shape":{"union":[
-{"rect":{"x":112,"y":260,"w":150,"h":150,"r":10}},{"rect":{"x":287,"y":260,"w":150,"h":150,"r":10}},{"rect":{"x":437,"y":260,"w":0,"h":0}},
-{"rect":{"x":587,"y":260,"w":150,"h":150,"r":10}},{"rect":{"x":762,"y":260,"w":150,"h":150,"r":10}},
-{"rect":{"x":112,"y":438,"w":150,"h":150,"r":10}},{"rect":{"x":112,"y":616,"w":150,"h":150,"r":10}},
-{"rect":{"x":762,"y":438,"w":150,"h":150,"r":10}},{"rect":{"x":762,"y":616,"w":150,"h":150,"r":10}}]}},
-{"name":"mid","fill":"accent","shape":{"union":[{"rect":{"x":437,"y":260,"w":150,"h":150,"r":10}},{"rect":{"x":437,"y":438,"w":150,"h":150,"r":10}},{"rect":{"x":437,"y":616,"w":150,"h":150,"r":10}}]}}
-],"fit":0.08}

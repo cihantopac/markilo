@@ -1,0 +1,11 @@
+{
+  "idea": "the discerning eye: an almond drawn with the word's stress (heavy upper lid, hairline lower lid) whose iris is the oxblood punch",
+  "layers": [
+    { "name": "lids", "fill": "#16120F", "shape": { "union": [
+      { "path": { "d": "M92 520C232 330 388 236 512 236C636 236 792 330 932 520C792 432 652 372 512 372C372 372 232 432 92 520Z" } },
+      { "path": { "d": "M92 520C232 690 384 780 512 780C640 780 792 690 932 520C792 652 640 738 512 738C384 738 232 652 92 520Z" } }
+    ] } },
+    { "name": "iris", "fill": "#7E1D2A", "shape": { "polygon": { "points": [[512,422],[645,555],[512,688],[379,555]] } } }
+  ],
+  "fit": 0.07
+}

@@ -1,6 +1,0 @@
-{"idea":"An m with its three stems sharpened by one slanted plane: the chisel tip, red face.","grid":64,
-"params":{},
-"defs":{"m":{"glyph":{"text":"m","font":"manrope","weight":700,"height":620,"c":[512,512]}}},
-"layers":[{"name":"m","fill":"primary","shape":{"subtract":[{"ref":"m"},{"polygon":{"points":[[0,0],[1024,0],[1024,300],[0,560]]}}]}},
-{"name":"face","fill":"accent","shape":{"intersect":[{"ref":"m"},{"polygon":{"points":[[0,560],[1024,300],[1024,360],[0,620]]}}]}}],
-"fit":0.06}

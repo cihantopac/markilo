@@ -1,0 +1,16 @@
+{
+  "idea": "the punch and the notch it cut: the oxblood lozenge seated in the word's chisel notch, struck into a block drawn like the word's stems",
+  "layers": [
+    {
+      "name": "work",
+      "fill": "#16120F",
+      "shape": { "path": { "d": "M150 880L150 862Q196 852 210 828Q222 806 222 770L222 440L270 440L512 682L754 440L802 440L802 770Q802 806 814 828Q828 852 874 862L874 880Z" } }
+    },
+    {
+      "name": "punch",
+      "fill": "#7E1D2A",
+      "shape": { "polygon": { "points": [[512,190],[712,390],[512,590],[312,390]] } }
+    }
+  ],
+  "fit": 0.07
+}

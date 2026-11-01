@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-01
+
+### Changed
+
+- Markilo's own identity is redesigned with Markilo 1.1 (`branding/`): a monograph-style serif word cut with one
+  45-degree chisel and dotted with an oxblood lozenge, and a symmetric serif M pointing to the same lozenge. README
+  images and the plugin icon are its exports.
+- README: "Made with Markilo" shows Relivaro, Searvex and Jourilo, whose identities were made with Markilo 1.1.
+
 ## [1.1.0] - 2026-11-01
 
 Markilo 1.1 changes how it designs, and makes the export easier to read. 1.0's independent evaluation found 0 presentable concepts
@@ -650,7 +659,8 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 - Self-contained HTML Brand Preview Gallery with mockups and a feedback export.
 - Locked identities that are reproduced byte-for-byte and never redesigned.
 
-[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v1.1.0...HEAD
+[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v1.1.1...HEAD
+[1.1.1]: https://github.com/cihantopac/markilo/compare/markilo--v1.1.0...markilo--v1.1.1
 [1.1.0]: https://github.com/cihantopac/markilo/compare/markilo--v1.0.0...markilo--v1.1.0
 [1.0.0]: https://github.com/cihantopac/markilo/compare/markilo--v0.4.0...markilo--v1.0.0
 [0.4.0]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.7...markilo--v0.4.0

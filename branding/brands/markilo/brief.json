@@ -3,138 +3,114 @@
   "brand": "markilo",
   "name": "Markilo",
   "mode": "redesign",
-  "oneLiner": "Open-source brand identity studio that runs inside Claude Code: research, originality evidence, geometry-compiled SVG marks, verification and complete asset export.",
+  "oneLiner": "Markilo is an open-source brand identity studio for Claude Code: it researches a product, designs original SVG identities, checks their originality and exports every asset — so developers and indie makers can get a real brand for what they build.",
   "product": {
-    "type": "developer tool (Claude Code plugin + local CLI)",
-    "category": "brand identity tooling",
+    "type": "developer tool (CLI + Claude Code plugin)",
+    "category": "brand identity / logo design tooling",
     "features": [
-      "10-stage workflow",
-      "competitor research",
-      "originality evidence",
-      "construction-spec geometry to SVG",
-      "measured verification",
-      "critic gate",
-      "asset export",
-      "offline gallery"
+      "repository, site and competitor research with sourced findings",
+      "three genuinely different proposals; the user chooses",
+      "drawn wordmarks and icons as real SVG",
+      "originality and similarity checks",
+      "complete asset export (favicons, app icons, social, tokens, guidelines)"
     ],
     "platforms": [
-      "Claude Code",
-      "CLI (Node)",
-      "GitHub",
-      "terminal"
+      "command line",
+      "Claude Code plugin",
+      "npm",
+      "GitHub"
     ]
   },
   "audience": {
     "primary": [
-      "developers",
-      "indie makers",
-      "founders",
-      "OSS maintainers"
+      "developers and indie makers who want a real brand for their product",
+      "small product teams"
     ],
     "secondary": [
-      "designers",
-      "small teams"
+      "designers who use Claude Code",
+      "open-source maintainers"
     ],
     "markets": [
       "global"
     ],
     "languages": [
-      "en"
+      "English",
+      "Turkish"
     ]
   },
   "positioning": {
     "values": [
-      "local-first",
-      "deterministic",
-      "honest about limits",
-      "no invented facts",
-      "evidence over claims"
-    ],
-    "differentiators": [
-      "evidence-backed originality",
-      "deterministic geometry",
-      "complete asset export"
+      "craft",
+      "originality",
+      "honesty (measured vs judged)",
+      "the user owns the choice"
     ],
     "personality": [
-      "precise",
-      "honest",
       "crafted",
-      "calm"
+      "confident",
+      "discerning",
+      "warm but exacting",
+      "studio-grade"
     ],
-    "tone": "Precise and honest with a touch of craft; not playful, not magic."
+    "tone": "Like a small, excellent identity studio: sure of its eye, plain-spoken, never hyped. This is the showpiece — Markilo's own identity must be the most beautiful thing Markilo has made.",
+    "differentiators": [
+      "it designs like a studio (point of view, drawn letterforms) rather than generating a logo",
+      "measured quality and originality checks",
+      "open source and local"
+    ]
   },
   "competitors": [
     {
-      "name": "Looka",
-      "url": "https://looka.com"
+      "name": "Brandmark",
+      "url": "https://brandmark.io",
+      "notes": "heavy black B on yellow; generator aesthetic"
     },
     {
-      "name": "Brandmark",
-      "url": "https://brandmark.io"
+      "name": "Tailor Brands",
+      "url": "https://www.tailorbrands.com",
+      "notes": "pink outlined pencil-heart icon"
     },
     {
       "name": "Designs.ai",
-      "url": "https://designs.ai"
+      "url": "https://designs.ai",
+      "notes": "AI suite wordmark"
     },
     {
-      "name": "Canva",
-      "url": "https://www.canva.com/create/logos/"
+      "name": "LogoAI",
+      "url": "https://www.logoai.com",
+      "notes": "multicolour rounded 'A' with dot, playful AI look"
     },
     {
-      "name": "RealFaviconGenerator",
-      "url": "https://realfavicongenerator.net"
+      "name": "Logo.com",
+      "url": "https://logo.com",
+      "notes": "stacked LOGO letters in a blue circle"
     },
     {
-      "name": "Claude Code",
-      "url": "https://www.anthropic.com/claude-code"
-    },
-    {
-      "name": "Cursor",
-      "url": "https://cursor.com"
-    },
-    {
-      "name": "GitHub Copilot",
-      "url": "https://github.com/features/copilot"
-    },
-    {
-      "name": "Windsurf",
-      "url": "https://windsurf.com"
-    },
-    {
-      "name": "Aider",
-      "url": "https://aider.chat"
+      "name": "Looka",
+      "url": "https://looka.com",
+      "notes": "not collected (site returned 403)"
     }
   ],
-  "niceClasses": [
-    9,
-    42,
-    41
-  ],
   "constraints": {
-    "mustKeep": [
-      "name Markilo",
-      "lowercase grotesk wordmark; one or two letters may carry the idea"
-    ],
+    "mustKeep": [],
     "avoid": [
-      "sparkle / asterisk / radial burst",
-      "Claude-adjacent coral",
-      "hexagon / cube",
-      ">_ prompt",
-      "gradients",
-      "mascots",
-      "monospace wordmark",
-      "anything resembling an Anthropic product"
+      "pens, pencils, brushes, magic wands, sparkles, palettes",
+      "a plain M monogram (the previous icon was an m with a vermilion stem)",
+      "the generic AI-gradient look; multicolour playful generator aesthetic",
+      "looking like a developer utility (terminal prompts, brackets, monospace-as-identity)",
+      "the product's objects drawn plainly (a logo grid, a vector pen nib, bezier handles)"
     ],
-    "typography": [
-      "lowercase grotesk wordmark"
-    ]
+    "colors": [],
+    "typography": []
   },
+  "lockedAssets": [],
   "deliverables": [
-    "logos",
     "web",
+    "GitHub (README header, social preview, avatar)",
+    "npm",
     "social",
-    "tokens",
-    "guidelines"
+    "Claude Code plugin icon",
+    "CLI (terminal-friendly colour)"
   ],
-  "notes": "Color: one warm accent used sparingly, clearly away from Claude coral (red-leaning vermilion or other warm hue), contrast must pass. Current identity (crop corners + #f45d2c, Space Grotesk 700) is evaluated as one candidate unchanged. 3-5 new directions; at most one may evolve the corner-bracket/crop-mark idea. Both light and dark grounds first-class (GitHub README light+dark, Claude Code UI, terminals). Square appmark = symbol only. Tagline: keep 'Brand identities, researched and verified' unless stronger. Trademark registry search NOT performed; owner decides risk at finalize."
+  "notes": "Redesign: nothing of the current identity (an m with a vermilion stem on #101218) must be kept. The name contains the word 'mark' — a maker's mark is the core of an identity studio. Letters m-a-r-k-i-l-o: k-i-l is a run of three ascending/x-height stems; 'lo' ends on a round; 'il' and 'ki' could share strokes. Category marks are bright, flat, heavy-sans and playful; Markilo should stand apart as editorial, crafted and studio-grade."
 }

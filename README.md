@@ -13,7 +13,7 @@
 <p align="center">
   <a href="https://github.com/cihantopac/markilo/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/cihantopac/markilo/actions/workflows/ci.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-d12c12"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.1.0-101218">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.1.1-101218">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-101218">
 </p>
 
@@ -26,11 +26,28 @@ balance, contrast, one-color reproduction), **compares** them against competitor
 
 ![Markilo's own identity: every logo file, exported by Markilo](assets/kit-overview.png)
 
-<sub>Markilo's identity was made by running Markilo on itself, end to end: repository and market research (64 sources,
-37 competitor and category marks), five new directions plus the previous identity, an early sketch review, an
-independent critic gate that only one concept passed (`overlap`: two arches sharing a vermilion stem), then finalize
-and export. Every image in this README and the plugin icon is an unedited Markilo export (`branding/`). No trademark
-registry search has been done yet; the guidelines say so.</sub>
+<sub>Markilo's identity was made by running Markilo 1.1 on itself, with its owner choosing: one round of three proposals
+by the Opus designer ($9.57, 18 min), from which the owner kept one word, a monograph-style serif cut with one 45-degree
+chisel and dotted with an oxblood lozenge; three new icon options for it ($4.11), of which the owner chose the M and
+asked for it symmetric, redrawn with Markilo's own `construct` toolchain; then finalize and export. Every image in this
+README and the plugin icon is an unedited Markilo export (`branding/`). No trademark registry search has been done
+yet; the guidelines say so.</sub>
+
+## Made with Markilo
+
+Three open-source tools from the same author got their brand identities from Markilo 1.1. Each came from one round of
+three proposals with its owner choosing; the logos below are the files Markilo exported, unedited.
+
+<table>
+  <tr>
+    <td align="center" width="33%"><a href="https://github.com/cihantopac/relivaro"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/made-with/relivaro-dark.svg"><img src="assets/made-with/relivaro-light.svg" alt="Relivaro" height="44"></picture></a><br><a href="https://github.com/cihantopac/relivaro"><b>Relivaro</b></a><br><sub>Software quality, security, reliability and release engineering</sub></td>
+    <td align="center" width="33%"><a href="https://github.com/cihantopac/searvex"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/made-with/searvex-dark.svg"><img src="assets/made-with/searvex-light.svg" alt="Searvex" height="44"></picture></a><br><a href="https://github.com/cihantopac/searvex"><b>Searvex</b></a><br><sub>Search intelligence: technical SEO and GEO audits with safe fixes</sub></td>
+    <td align="center" width="33%"><a href="https://github.com/cihantopac/jourilo"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/made-with/jourilo-dark.svg"><img src="assets/made-with/jourilo-light.svg" alt="Jourilo" height="44"></picture></a><br><a href="https://github.com/cihantopac/jourilo"><b>Jourilo</b></a><br><sub>Product experience and conversion engineering</sub></td>
+  </tr>
+</table>
+
+How each one was made, what it cost and what the owner chose at every step is in
+[docs/RELEASE-1.1.md](docs/RELEASE-1.1.md) (products A, B and C, in this order).
 
 ## Highlights
 

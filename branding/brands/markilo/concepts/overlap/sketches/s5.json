@@ -1,5 +1,0 @@
-{"idea":"A solid block with two offset arch-pair windows punched through; where the two windows agree, an accent core remains, so the m is read from the emptiness and the overlap.",
-"params":{"w":84,"dx":70,"gap":0},
-"defs":{"A":{"path":{"d":"M392 780L392 560A120 120 0 0 1 632 560L632 780","width":"w","cap":"butt","join":"round"}},
-"B":{"path":{"d":"M392 780L392 560A120 120 0 0 1 632 560L632 780","width":"w","cap":"butt","join":"round"},"move":["dx",0]}},
-"layers":[{"name":"block","fill":"primary","shape":{"subtract":[{"rect":{"c":[512,512],"w":800,"h":800,"r":150}},{"ref":"A"},{"ref":"B"}]}},{"name":"same","fill":"accent","shape":{"intersect":[{"ref":"A"},{"ref":"B"}]}}],"fit":0.06}

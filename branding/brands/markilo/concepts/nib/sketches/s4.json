@@ -1,4 +1,0 @@
-{"idea":"A chisel barrel planted on the stroke it leaves: the tip's slanted cut is repeated in the sheared ends of the accent mark beneath, so tool and trace share one angle.",
-"grid":64,
-"layers":[{"name":"barrel","fill":"primary","shape":{"polygon":{"points":[[380,70],[680,70],[680,540],[380,690]]}}},
-{"name":"mark","fill":"accent","shape":{"polygon":{"points":[[250,760],[870,760],[790,920],[170,920]]}}}],"fit":0.06}

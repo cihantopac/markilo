@@ -1,0 +1,83 @@
+{
+ "idea": "a magpie, the bird that keeps only what shines, carrying the oxblood punch; heavy back, hairline belly (the word's contrast), tail at the chisel's 45 degrees ending in the word's notch",
+ "defs": {
+  "loz": {
+   "polygon": {
+    "points": [
+     [
+      939,
+      228
+     ],
+     [
+      1015,
+      304
+     ],
+     [
+      939,
+      380
+     ],
+     [
+      863,
+      304
+     ]
+    ]
+   }
+  },
+  "body": {
+   "path": {
+    "d": "M885 304C850 312 815 322 782 328C800 380 808 450 780 520C745 600 660 650 560 640C530 636 512 632 498.3 628.3L254.6 894.6L234 836L175.4 815.4L441.7 571.7C478 535 492 450 530 390C556 350 586 334 600 300C612 250 650 212 694 208C745 204 778 236 785 266C820 280 855 290 885 304Z"
+   }
+  },
+  "belly": {
+   "path": {
+    "d": "M708 462C656 466 590 522 552 578C610 584 668 570 702 524C718 502 720 478 708 462Z"
+   }
+  },
+  "eye": {
+   "polygon": {
+    "points": [
+     [
+      712,
+      242
+     ],
+     [
+      742,
+      272
+     ],
+     [
+      712,
+      302
+     ],
+     [
+      682,
+      272
+     ]
+    ]
+   }
+  }
+ },
+ "layers": [
+  {
+   "name": "punch",
+   "fill": "#7E1D2A",
+   "shape": {
+    "ref": "loz"
+   }
+  },
+  {
+   "name": "bird",
+   "fill": "#16120F",
+   "shape": {
+    "subtract": [
+     {
+      "ref": "body"
+     },
+     {
+      "ref": "belly"
+     }
+    ]
+   }
+  }
+ ],
+ "fit": 0.07
+}

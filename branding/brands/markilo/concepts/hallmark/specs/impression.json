@@ -1,0 +1,11 @@
+{
+  "idea": "the struck impression: a lozenge sunk into the work, its shadowed walls cut at the chisel's 45 degrees, its floor the oxblood punch",
+  "layers": [
+    { "name": "walls", "fill": "#16120F", "shape": { "subtract": [
+      { "polygon": { "points": [[512,80],[944,512],[512,944],[80,512]] } },
+      { "polygon": { "points": [[560,226],[860,526],[526,860],[226,560]] } }
+    ] } },
+    { "name": "floor", "fill": "#7E1D2A", "shape": { "polygon": { "points": [[548,330],[730,512],[548,694],[366,512]] } } }
+  ],
+  "fit": 0.06
+}

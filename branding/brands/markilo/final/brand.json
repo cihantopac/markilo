@@ -2,42 +2,46 @@
   "schema": "markilo/kit@1",
   "brand": "markilo",
   "name": "Markilo",
-  "concept": "overlap",
+  "concept": "hallmark",
   "locked": false,
+  "lead": "wordmark",
   "files": {
     "symbol": "symbol.svg",
     "wordmark": "wordmark.svg",
+    "symbolSmall": "symbol-small.svg",
     "lockupHorizontal": "lockup-horizontal.svg",
     "lockupStacked": "lockup-stacked.svg",
     "lockupCompact": "lockup-compact.svg"
   },
   "palette": {
-    "primary": "#101218",
-    "accent": "#d12c12",
-    "ink": "#101218",
-    "paper": "#f6f6f4",
-    "dark": "#0b0d13"
+    "primary": "#7E1D2A",
+    "ink": "#16120F",
+    "paper": "#F2ECE1",
+    "dark": "#120b0b"
   },
   "typography": {
-    "fontId": "dm-sans",
-    "weight": 700,
-    "family": "DM Sans",
+    "fontId": "dm-serif-display",
+    "weight": 400,
+    "family": "DM Serif Display",
     "license": "OFL-1.1"
   },
-  "tagline": "Brand identities, researched and verified",
-  "notes": [
-    "Use the vermilion only for the mark's stem and small highlights; never as an error, warning or diff color."
-  ],
-  "approvedAt": "2026-10-30T03:32:02.367Z",
+  "approvedAt": "2026-11-01T12:00:10.212Z",
   "originality": {
     "verdict": "insufficient-evidence",
     "confidence": "low",
     "acceptedRisk": true,
-    "report": "../reports/originality-overlap.md",
+    "report": "../reports/originality-hallmark.md",
     "evidence": {
-      "visual": "37 reference mark(s): 32 direct competitor, 5 category/form-family",
+      "visual": "5 brand(s) from 9 reference file(s): 5 direct competitor, 0 category/form-family; sources 5 official, 0 app store, 0 logo catalog, 0 unverified",
       "registry": "no registry searches logged for \"Markilo\"",
       "registryCoverage": "none"
     }
+  },
+  "gate": {
+    "status": "not-reviewed",
+    "reasons": [
+      "No critique recorded yet."
+    ],
+    "userChoice": "C seçeneği m harfi olsun ama onu düzeltelim, en azından simetrik olsun (keep the A word; icon C, the M, made symmetric)"
   }
 }

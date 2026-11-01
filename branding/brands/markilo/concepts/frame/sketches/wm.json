@@ -1,6 +1,0 @@
-{"grid":64,"size":3000,"role":"wordmark",
-"defs":{"dot":{"rect":{"x":2084.5,"y":1188,"w":108,"h":108}}},
-"layers":[
-{"name":"word","fill":"primary","shape":{"subtract":[{"glyph":{"text":"markilo","font":"space-grotesk","weight":700,"height":600,"c":[1500,1500],"tracking":-0.01}},{"rect":{"x":2040,"y":1150,"w":200,"h":190}}]}},
-{"name":"dot","fill":"accent","shape":{"ref":"dot"}}
-]}

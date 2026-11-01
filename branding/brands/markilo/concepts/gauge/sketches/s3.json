@@ -1,8 +1,0 @@
-{"idea":"A bold m sliced into three bands that step sideways by a fixed increment, like a vernier scale being read: precision as measured offset.",
-"grid":64,
-"defs":{"g":{"glyph":{"text":"m","font":"inter","weight":800,"height":620,"c":[512,512]}}},
-"layers":[
- {"name":"b1","fill":"primary","shape":{"intersect":[{"ref":"g"},{"rect":{"x":0,"y":0,"w":1024,"h":470}}],"move":[-44,0]}},
- {"name":"b2","fill":"primary","shape":{"intersect":[{"ref":"g"},{"rect":{"x":0,"y":510,"w":1024,"h":120}}]}},
- {"name":"b3","fill":"accent","shape":{"intersect":[{"ref":"g"},{"rect":{"x":0,"y":670,"w":1024,"h":300}}],"move":[44,0]}}
-],"fit":0.06}

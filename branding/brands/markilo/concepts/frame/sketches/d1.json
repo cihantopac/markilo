@@ -1,8 +1,0 @@
-{"grid":64,"idea":"A crop frame opened at its corners until it spells m: two square brackets face each other, and the red stem between them is the part that is selected.",
-"params":{"w":110,"gap":40,"top":300,"mid":120,"foot":840},
-"vary":{"w":[96,112,128],"gap":[32,48],"mid":[0,110]},
-"layers":[
-{"name":"left","fill":"primary","shape":{"path":{"d":"M{150+w/2} {foot}V{top+w/2}H{512-w/2-gap}","width":"w","cap":"butt","join":"miter"}}},
-{"name":"right","fill":"primary","shape":{"path":{"d":"M{874-w/2} {foot}V{top+w/2}H{512+w/2+gap}","width":"w","cap":"butt","join":"miter"}}},
-{"name":"stem","fill":"accent","shape":{"rect":{"x":"512-w/2","y":"top+mid","w":"w","h":"foot-top-mid"}}}
-],"fit":0.06}

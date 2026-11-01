@@ -1,8 +1,0 @@
-{"grid":64,"idea":"Only the stem side of the crop brackets is cut: arm tips are mitred toward a full-height amber stem, like a selection handle snapping to its marquee.",
-"params":{"w":110,"gap":30,"top":260,"foot":840},
-"vary":{"w":[100,112,124],"gap":[24,36]},
-"layers":[
-{"name":"left","fill":"primary","shape":{"polygon":{"points":[[150,"foot"],[150,"top"],["512-w/2-gap","top"],["512-w/2-gap-w","top+w"],["150+w","top+w"],["150+w","foot"]]}}},
-{"name":"right","fill":"primary","shape":{"polygon":{"points":[[874,"foot"],[874,"top"],["512+w/2+gap","top"],["512+w/2+gap+w","top+w"],["874-w","top+w"],["874-w","foot"]]}}},
-{"name":"stem","fill":"accent","shape":{"rect":{"x":"512-w/2","y":"top","w":"w","h":"foot-top"}}}
-],"fit":0.06}

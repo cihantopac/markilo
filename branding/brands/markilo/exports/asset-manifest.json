@@ -2,9 +2,9 @@
   "schema": "markilo/assets@1",
   "brand": "markilo",
   "name": "Markilo",
-  "concept": "overlap",
+  "concept": "hallmark",
   "locked": false,
-  "generatedAt": "2026-10-30T03:32:06.347Z",
+  "generatedAt": "2026-11-01T12:00:42.313Z",
   "generator": "markilo",
   "specSources": {
     "web": [
@@ -47,142 +47,122 @@
     {
       "path": "logos/primary/primary-color.svg",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — full color, for light backgrounds like #f6f6f4",
-      "derivedFrom": "primary.svg",
+      "purpose": "Primary logo (the wordmark) — full color, for light backgrounds like #F2ECE1",
+      "derivedFrom": "wordmark.svg",
       "format": "svg",
-      "bytes": 2920,
-      "sha256": "80eab572136025457cf139428fc65944d026fe3c5f46bfcd716ed91b478724ad"
+      "bytes": 2263,
+      "sha256": "f525f281484ff480d2a5177b80cbebeabdb06e999d3fade588c830a758696bb7"
     },
     {
       "path": "logos/primary/primary-color.png",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — full color, for light backgrounds like #f6f6f4, transparent PNG",
-      "derivedFrom": "primary.svg",
+      "purpose": "Primary logo (the wordmark) — full color, for light backgrounds like #F2ECE1, transparent PNG",
+      "derivedFrom": "wordmark.svg",
       "format": "png",
       "width": 2000,
-      "height": 320,
-      "bytes": 22119,
-      "sha256": "da6e848401fbab8bf7edf3568a17750a34d5980ea413ed9b9ebf0ddb0e31f5ed"
+      "height": 464,
+      "bytes": 26638,
+      "sha256": "9ef6c289d7dd12582f3ab549782e514652e1640f53b529e805abf487f9eb49f9"
     },
     {
       "path": "logos/primary/primary-reversed.svg",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — for dark backgrounds (#0b0d13)",
-      "derivedFrom": "primary.svg",
+      "purpose": "Primary logo (the wordmark) — for dark backgrounds (#120b0b)",
+      "derivedFrom": "wordmark.svg",
       "format": "svg",
-      "bytes": 2914,
-      "sha256": "94a810dec76ead442ce1aa3813a03853fd946ce478152cbaa5ee052d9db1e463"
+      "bytes": 2260,
+      "sha256": "740f1d8335c9a531d808c34ed50964f234dbf5bd80ad635a5f8b7cf792067c14"
     },
     {
       "path": "logos/primary/primary-reversed.png",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — for dark backgrounds (#0b0d13), transparent PNG",
-      "derivedFrom": "primary.svg",
+      "purpose": "Primary logo (the wordmark) — for dark backgrounds (#120b0b), transparent PNG",
+      "derivedFrom": "wordmark.svg",
       "format": "png",
       "width": 2000,
-      "height": 320,
-      "bytes": 20449,
-      "sha256": "170fd1cf2e5172dcf14a080891afaaf34f364aa2179753388bdd4122a9428b18"
+      "height": 464,
+      "bytes": 25055,
+      "sha256": "64ba3ae04893db80d849406a60a7f7836322e013f684c9dbd4634f0a56efe0fa"
     },
     {
       "path": "logos/primary/primary-black.svg",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — one-color black (print, fax, engraving)",
-      "derivedFrom": "primary.svg",
+      "purpose": "Primary logo (the wordmark) — one-color black (print, fax, engraving)",
+      "derivedFrom": "wordmark.svg",
       "format": "svg",
-      "bytes": 2868,
-      "sha256": "82d814dd84d0d5f6e73a7e02abccefe5ec9b2d78b390de774f3199d629ac9cbe"
+      "bytes": 2226,
+      "sha256": "0c9aeb44309c22cefcdb8b99b6ecd5b3dcfb7301c8fa15c0fa3e10fe23274a93"
     },
     {
       "path": "logos/primary/primary-black.png",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — one-color black (print, fax, engraving), transparent PNG",
-      "derivedFrom": "primary.svg",
+      "purpose": "Primary logo (the wordmark) — one-color black (print, fax, engraving), transparent PNG",
+      "derivedFrom": "wordmark.svg",
       "format": "png",
       "width": 2000,
-      "height": 320,
-      "bytes": 18578,
-      "sha256": "e4a74c20db49f65f951ef2451c9b5448452b6ba3944a8c1bf26fdbe1cea52cd6"
+      "height": 464,
+      "bytes": 23769,
+      "sha256": "30cb25ff0f8ff0132d40db185593b29cc1cf063fe4b39e55ba397151fd937e11"
     },
     {
       "path": "logos/primary/primary-white.svg",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — one-color white (knockout on photos and dark fills)",
-      "derivedFrom": "primary.svg",
+      "purpose": "Primary logo (the wordmark) — one-color white (knockout on photos and dark fills)",
+      "derivedFrom": "wordmark.svg",
       "format": "svg",
-      "bytes": 2899,
-      "sha256": "0d800dd8b29ac57015640cbf516c33d26a74faee210022291420cc5cf0b23ce8"
+      "bytes": 2257,
+      "sha256": "1ea7d9332b4be4b3724369027430ed0bb6430e9858f77e2f9d2ac5f2e3eb6a87"
     },
     {
       "path": "logos/primary/primary-white.png",
       "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — one-color white (knockout on photos and dark fills), transparent PNG",
-      "derivedFrom": "primary.svg",
+      "purpose": "Primary logo (the wordmark) — one-color white (knockout on photos and dark fills), transparent PNG",
+      "derivedFrom": "wordmark.svg",
       "format": "png",
       "width": 2000,
-      "height": 320,
-      "bytes": 19943,
-      "sha256": "151e75ca03d071c4fa21e0cd21aad0ab37a6fd8228fba4df11dd5fb39b6846fd"
-    },
-    {
-      "path": "logos/primary/primary-ink.svg",
-      "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — one-color brand ink #101218",
-      "derivedFrom": "primary.svg",
-      "format": "svg",
-      "bytes": 2905,
-      "sha256": "7da8e68eb9e9b108dfec3c530fd903584e99cb78e685d35fa4c6b25e257c1463"
-    },
-    {
-      "path": "logos/primary/primary-ink.png",
-      "group": "logos",
-      "purpose": "Primary logo (horizontal lockup) — one-color brand ink #101218, transparent PNG",
-      "derivedFrom": "primary.svg",
-      "format": "png",
-      "width": 2000,
-      "height": 320,
-      "bytes": 21569,
-      "sha256": "adb5c96438a64a56e62a8736acf19da848003d38723cf81b4a0017911b472640"
+      "height": 464,
+      "bytes": 25176,
+      "sha256": "6bf724aac99e8aba696b02a2e86bbb0500651cc4da4ab8d6c7e0fef3c09c0a77"
     },
     {
       "path": "logos/secondary/secondary-color.svg",
       "group": "logos",
-      "purpose": "Secondary logo (stacked lockup) — full color, for light backgrounds like #f6f6f4",
+      "purpose": "Secondary logo (stacked lockup) — full color, for light backgrounds like #F2ECE1",
       "derivedFrom": "secondary.svg",
       "format": "svg",
-      "bytes": 3001,
-      "sha256": "b7ca691d1dd9d8714b3d4f17f380ae5fa873ece95a92db00615214b60577b89a"
+      "bytes": 3687,
+      "sha256": "d78db89b3d3a448c8edd0b75c8954b506bbdf8bb4dce0525289398fecfa6694a"
     },
     {
       "path": "logos/secondary/secondary-color.png",
       "group": "logos",
-      "purpose": "Secondary logo (stacked lockup) — full color, for light backgrounds like #f6f6f4, transparent PNG",
+      "purpose": "Secondary logo (stacked lockup) — full color, for light backgrounds like #F2ECE1, transparent PNG",
       "derivedFrom": "secondary.svg",
       "format": "png",
       "width": 2000,
-      "height": 1520,
-      "bytes": 49768,
-      "sha256": "082e0ba6fb26dc454ee64c0098e5728110f85de80dc8ef091499075255c73bb4"
+      "height": 1523,
+      "bytes": 52724,
+      "sha256": "cc7ad6ff5873262f5f669a46107c5cdd6837e619aaa9ff731d8192efc26a6730"
     },
     {
       "path": "logos/secondary/secondary-reversed.svg",
       "group": "logos",
-      "purpose": "Secondary logo (stacked lockup) — for dark backgrounds (#0b0d13)",
+      "purpose": "Secondary logo (stacked lockup) — for dark backgrounds (#120b0b)",
       "derivedFrom": "secondary.svg",
       "format": "svg",
-      "bytes": 2995,
-      "sha256": "d312867e8ad441fe6d59abcb7e521dacf539b17da58bccbf14c02e0058fecf14"
+      "bytes": 3681,
+      "sha256": "5f89b020dde5d21d0340fe412c27720434b19df5d06956b05e17fd20cccc0723"
     },
     {
       "path": "logos/secondary/secondary-reversed.png",
       "group": "logos",
-      "purpose": "Secondary logo (stacked lockup) — for dark backgrounds (#0b0d13), transparent PNG",
+      "purpose": "Secondary logo (stacked lockup) — for dark backgrounds (#120b0b), transparent PNG",
       "derivedFrom": "secondary.svg",
       "format": "png",
       "width": 2000,
-      "height": 1520,
-      "bytes": 45613,
-      "sha256": "b6db5d73c4dde4b4dc23983d0a6e856e88798d2dc4565985fa02a963ed246267"
+      "height": 1523,
+      "bytes": 49154,
+      "sha256": "bbb6d8e48a76b30c0d4e6ace30bfbea8ca9ad629c8b2adacff18e09d1b0cc780"
     },
     {
       "path": "logos/secondary/secondary-black.svg",
@@ -190,8 +170,8 @@
       "purpose": "Secondary logo (stacked lockup) — one-color black (print, fax, engraving)",
       "derivedFrom": "secondary.svg",
       "format": "svg",
-      "bytes": 2949,
-      "sha256": "aeedcdf83de31f1751aa91596e00baf94607cfde11af979ea91d59d70b908169"
+      "bytes": 3620,
+      "sha256": "a2f34f68b2b5d2eb1bb00c056c715e60972b637f5c66e8f3680f2c15040cad3e"
     },
     {
       "path": "logos/secondary/secondary-black.png",
@@ -200,9 +180,9 @@
       "derivedFrom": "secondary.svg",
       "format": "png",
       "width": 2000,
-      "height": 1520,
-      "bytes": 43137,
-      "sha256": "f1cf0076e2d4e51a6938806bf965a82d3d63c1bae4672c4f12815a89e34df011"
+      "height": 1523,
+      "bytes": 47169,
+      "sha256": "db829b1b844de16cad82c117bed2ef2f96d1c54585af3ff471887cccdd72e171"
     },
     {
       "path": "logos/secondary/secondary-white.svg",
@@ -210,8 +190,8 @@
       "purpose": "Secondary logo (stacked lockup) — one-color white (knockout on photos and dark fills)",
       "derivedFrom": "secondary.svg",
       "format": "svg",
-      "bytes": 2980,
-      "sha256": "3f13da1c8691174c4bbc286ed70dcafd10ce78dc5bad6d6eea86f096a5a53c68"
+      "bytes": 3651,
+      "sha256": "4ea84620707ea2f6b3e8d06e9a8bc0688c83d806d14f28cfe6fc36867c1f3376"
     },
     {
       "path": "logos/secondary/secondary-white.png",
@@ -220,69 +200,49 @@
       "derivedFrom": "secondary.svg",
       "format": "png",
       "width": 2000,
-      "height": 1520,
-      "bytes": 44713,
-      "sha256": "7867a57f01a0b28edb6ec3fa926e72b8f01430324c7c88af77502d74f769e27f"
-    },
-    {
-      "path": "logos/secondary/secondary-ink.svg",
-      "group": "logos",
-      "purpose": "Secondary logo (stacked lockup) — one-color brand ink #101218",
-      "derivedFrom": "secondary.svg",
-      "format": "svg",
-      "bytes": 2986,
-      "sha256": "99dacd7263e2487cfaae0df28d30730e78c984fd30f375e68fac8247be31cfb0"
-    },
-    {
-      "path": "logos/secondary/secondary-ink.png",
-      "group": "logos",
-      "purpose": "Secondary logo (stacked lockup) — one-color brand ink #101218, transparent PNG",
-      "derivedFrom": "secondary.svg",
-      "format": "png",
-      "width": 2000,
-      "height": 1520,
-      "bytes": 49678,
-      "sha256": "a875fc671aa83a273cc107fdb706311fe5e447e0c8768a7368cd38ca870576f1"
+      "height": 1523,
+      "bytes": 49524,
+      "sha256": "f83fa2bf8fec7d14687f83dc2dc4d675aacb81c2b82ead9859bc53731faa73ef"
     },
     {
       "path": "logos/compact/compact-color.svg",
       "group": "logos",
-      "purpose": "Compact lockup for navigation bars and tight spaces — full color, for light backgrounds like #f6f6f4",
+      "purpose": "Compact lockup for navigation bars and tight spaces — full color, for light backgrounds like #F2ECE1",
       "derivedFrom": "compact.svg",
       "format": "svg",
-      "bytes": 2923,
-      "sha256": "e0a8899a43003c56c4aa0078e35b7e3dcec763cc0cc9f055f0d4afc5d0a7b953"
+      "bytes": 3669,
+      "sha256": "e9e919420b8c37c29b0f318146a6b062ff861954c270e439a245ab61be8b8089"
     },
     {
       "path": "logos/compact/compact-color.png",
       "group": "logos",
-      "purpose": "Compact lockup for navigation bars and tight spaces — full color, for light backgrounds like #f6f6f4, transparent PNG",
+      "purpose": "Compact lockup for navigation bars and tight spaces — full color, for light backgrounds like #F2ECE1, transparent PNG",
       "derivedFrom": "compact.svg",
       "format": "png",
       "width": 2000,
-      "height": 304,
-      "bytes": 21929,
-      "sha256": "f88e7b477fb421f57d4e212cf73a00b4fc3bdd772c10157a4404402f916d7563"
+      "height": 358,
+      "bytes": 25138,
+      "sha256": "040bba665ea3ae1de1f5e6aa74057ee5bfe0454f436e8aad39d0fa16b28ff62f"
     },
     {
       "path": "logos/compact/compact-reversed.svg",
       "group": "logos",
-      "purpose": "Compact lockup for navigation bars and tight spaces — for dark backgrounds (#0b0d13)",
+      "purpose": "Compact lockup for navigation bars and tight spaces — for dark backgrounds (#120b0b)",
       "derivedFrom": "compact.svg",
       "format": "svg",
-      "bytes": 2917,
-      "sha256": "3cb098f869745807cebe71d1c017cef1525bd50eb3de1217fb2d9d4c068b8711"
+      "bytes": 3663,
+      "sha256": "95bcb2a1eea74fcb8ed6a6f99e3bd1c05be319a546b3b77d27d764ff16d86d7a"
     },
     {
       "path": "logos/compact/compact-reversed.png",
       "group": "logos",
-      "purpose": "Compact lockup for navigation bars and tight spaces — for dark backgrounds (#0b0d13), transparent PNG",
+      "purpose": "Compact lockup for navigation bars and tight spaces — for dark backgrounds (#120b0b), transparent PNG",
       "derivedFrom": "compact.svg",
       "format": "png",
       "width": 2000,
-      "height": 304,
-      "bytes": 20568,
-      "sha256": "702db808d39790966f44b2ca1de3f8cd838baf5507dd6d9be3bc087351a253c5"
+      "height": 358,
+      "bytes": 24114,
+      "sha256": "a50b53209e44dad7ec022537ff4eb2a25aa0187daeae453ef29d8a8d36596864"
     },
     {
       "path": "logos/compact/compact-black.svg",
@@ -290,8 +250,8 @@
       "purpose": "Compact lockup for navigation bars and tight spaces — one-color black (print, fax, engraving)",
       "derivedFrom": "compact.svg",
       "format": "svg",
-      "bytes": 2871,
-      "sha256": "e2293a66f44297c615e5b9c9b088fcbd8efc7965cade957551caa74bf63b75ce"
+      "bytes": 3602,
+      "sha256": "d478aa82d6b89a1e7ecac9c66dea1a4bf30e4486810836bb856c5a7c9456355e"
     },
     {
       "path": "logos/compact/compact-black.png",
@@ -300,9 +260,9 @@
       "derivedFrom": "compact.svg",
       "format": "png",
       "width": 2000,
-      "height": 304,
-      "bytes": 18587,
-      "sha256": "c85f5335fe150c826381dff81b88b7a35d6046074acbae75754174a47e659519"
+      "height": 358,
+      "bytes": 21971,
+      "sha256": "a26a8ece01a8fbdb68274a7aa419d7085bd022d7df794f46cbfdb13b42a08ce8"
     },
     {
       "path": "logos/compact/compact-white.svg",
@@ -310,8 +270,8 @@
       "purpose": "Compact lockup for navigation bars and tight spaces — one-color white (knockout on photos and dark fills)",
       "derivedFrom": "compact.svg",
       "format": "svg",
-      "bytes": 2902,
-      "sha256": "fa0b96dfc72d3c18e94dca9be0b4fe4921d1c68efb7725fe501e11e8871300f0"
+      "bytes": 3633,
+      "sha256": "f1df565f0ca7afb075a5eaea3c13bb175d5584c3ae7b87862535bc2fc728cfcb"
     },
     {
       "path": "logos/compact/compact-white.png",
@@ -320,69 +280,49 @@
       "derivedFrom": "compact.svg",
       "format": "png",
       "width": 2000,
-      "height": 304,
-      "bytes": 19987,
-      "sha256": "42e3c530c1ca25201505b5a86a1f7d04ae93b86f5acc6a1e3a26df838c1d9e16"
-    },
-    {
-      "path": "logos/compact/compact-ink.svg",
-      "group": "logos",
-      "purpose": "Compact lockup for navigation bars and tight spaces — one-color brand ink #101218",
-      "derivedFrom": "compact.svg",
-      "format": "svg",
-      "bytes": 2908,
-      "sha256": "7fa0cbb6bf0e95fbfa337fd0db2d605c803a8486a686318524e81697617e1104"
-    },
-    {
-      "path": "logos/compact/compact-ink.png",
-      "group": "logos",
-      "purpose": "Compact lockup for navigation bars and tight spaces — one-color brand ink #101218, transparent PNG",
-      "derivedFrom": "compact.svg",
-      "format": "png",
-      "width": 2000,
-      "height": 304,
-      "bytes": 21329,
-      "sha256": "73517e7d208d7dd0e12b955f73d297f35fd91dc37bb0b45ee23624d2a8fce6d1"
+      "height": 358,
+      "bytes": 24125,
+      "sha256": "3aad108525c527fde99a52d35f3ed763f69259b6081d9f2367f6b5d53eb04649"
     },
     {
       "path": "logos/symbol/symbol-color.svg",
       "group": "logos",
-      "purpose": "Symbol / brandmark — full color, for light backgrounds like #f6f6f4",
+      "purpose": "Symbol / brandmark — full color, for light backgrounds like #F2ECE1",
       "derivedFrom": "symbol.svg",
       "format": "svg",
-      "bytes": 1036,
-      "sha256": "97f18dad1bea0411da0baa72554ea9a2a74693a8fa096fe6b99753d247181c3f"
+      "bytes": 741,
+      "sha256": "a70024ec138f4b9213213b8a8d8e9bf4099d3b7bbe4e9f1b86b7674831785eb8"
     },
     {
       "path": "logos/symbol/symbol-color.png",
       "group": "logos",
-      "purpose": "Symbol / brandmark — full color, for light backgrounds like #f6f6f4, transparent PNG",
+      "purpose": "Symbol / brandmark — full color, for light backgrounds like #F2ECE1, transparent PNG",
       "derivedFrom": "symbol.svg",
       "format": "png",
       "width": 1024,
       "height": 1024,
-      "bytes": 14379,
-      "sha256": "ee69db2e04c078b13e575964aa0c3293a34c0bb5c10c0ef4209f4217667f9b59"
+      "bytes": 18281,
+      "sha256": "541148636f8067b09d14cbb988e9995a00d40a13345ba44b27c06920f470e5fb"
     },
     {
       "path": "logos/symbol/symbol-reversed.svg",
       "group": "logos",
-      "purpose": "Symbol / brandmark — for dark backgrounds (#0b0d13)",
+      "purpose": "Symbol / brandmark — for dark backgrounds (#120b0b)",
       "derivedFrom": "symbol.svg",
       "format": "svg",
-      "bytes": 1033,
-      "sha256": "0f5bb2cc32d1f95d7079f3fcfa8b0c08bcfaa6e39c5255d57c05a962e625afd3"
+      "bytes": 738,
+      "sha256": "1e6d19579941f41c8c02c921d9d4d93ddb8b7ca4cd2427bb7e62ceea17b061ab"
     },
     {
       "path": "logos/symbol/symbol-reversed.png",
       "group": "logos",
-      "purpose": "Symbol / brandmark — for dark backgrounds (#0b0d13), transparent PNG",
+      "purpose": "Symbol / brandmark — for dark backgrounds (#120b0b), transparent PNG",
       "derivedFrom": "symbol.svg",
       "format": "png",
       "width": 1024,
       "height": 1024,
-      "bytes": 13229,
-      "sha256": "a6b68f930c50c27257c540f2abfdc10586098da4aabddfc9783043bac78bce43"
+      "bytes": 16620,
+      "sha256": "badbf72afc13e894051637394fd0b318dbb12e077658579b2e478f20bd1d3365"
     },
     {
       "path": "logos/symbol/symbol-black.svg",
@@ -390,8 +330,8 @@
       "purpose": "Symbol / brandmark — one-color black (print, fax, engraving)",
       "derivedFrom": "symbol.svg",
       "format": "svg",
-      "bytes": 1006,
-      "sha256": "4c9c37c7e5b66d03fbf1029c9b20bee31160f70bf96adecaaf95e85922a6474b"
+      "bytes": 711,
+      "sha256": "e251feb22c1362f042deb347af555fbc894b1c4749a89c86ac9107f8444d2a57"
     },
     {
       "path": "logos/symbol/symbol-black.png",
@@ -401,8 +341,8 @@
       "format": "png",
       "width": 1024,
       "height": 1024,
-      "bytes": 12278,
-      "sha256": "7dc9e1bab2038088eb3af36be5112dc50bb84d156a97ad171bed35bd27627eff"
+      "bytes": 15915,
+      "sha256": "4908452f966051093d95b4d5555860267a6fef0d68f3ccfa2441459f6cef7945"
     },
     {
       "path": "logos/symbol/symbol-white.svg",
@@ -410,8 +350,8 @@
       "purpose": "Symbol / brandmark — one-color white (knockout on photos and dark fills)",
       "derivedFrom": "symbol.svg",
       "format": "svg",
-      "bytes": 1030,
-      "sha256": "1358619888675eb0fdeea36870e77efb4e792e820a22643d624a698b3a1230ee"
+      "bytes": 735,
+      "sha256": "be76ffd476c59285535a224b735f4b4e9170528769b1b66b1e28b64dc34254f3"
     },
     {
       "path": "logos/symbol/symbol-white.png",
@@ -421,128 +361,8 @@
       "format": "png",
       "width": 1024,
       "height": 1024,
-      "bytes": 12478,
-      "sha256": "c0a8a6f185c6a889076723f50ec7b652a6672860ec6f71662efd471e5b04fccf"
-    },
-    {
-      "path": "logos/symbol/symbol-ink.svg",
-      "group": "logos",
-      "purpose": "Symbol / brandmark — one-color brand ink #101218",
-      "derivedFrom": "symbol.svg",
-      "format": "svg",
-      "bytes": 1036,
-      "sha256": "ae26450a01777dc368ac35e302e04911db9aaf25b898fd374eae5ba232720f56"
-    },
-    {
-      "path": "logos/symbol/symbol-ink.png",
-      "group": "logos",
-      "purpose": "Symbol / brandmark — one-color brand ink #101218, transparent PNG",
-      "derivedFrom": "symbol.svg",
-      "format": "png",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 13739,
-      "sha256": "930b2fad77a0cc860f0dc4d375e9e699ec64f3784e55abe56e472dbde37e965f"
-    },
-    {
-      "path": "logos/wordmark/wordmark-color.svg",
-      "group": "logos",
-      "purpose": "Wordmark — full color, for light backgrounds like #f6f6f4",
-      "derivedFrom": "wordmark.svg",
-      "format": "svg",
-      "bytes": 1675,
-      "sha256": "e1147bd4a3d13de906e1b65274fde504e1b31400d7807b494fb7785b06a93950"
-    },
-    {
-      "path": "logos/wordmark/wordmark-color.png",
-      "group": "logos",
-      "purpose": "Wordmark — full color, for light backgrounds like #f6f6f4, transparent PNG",
-      "derivedFrom": "wordmark.svg",
-      "format": "png",
-      "width": 2000,
-      "height": 415,
-      "bytes": 24229,
-      "sha256": "bfd2501111aad2bec769381e07e5460e1c8a2050388b5960080a4b2a3d040c11"
-    },
-    {
-      "path": "logos/wordmark/wordmark-reversed.svg",
-      "group": "logos",
-      "purpose": "Wordmark — for dark backgrounds (#0b0d13)",
-      "derivedFrom": "wordmark.svg",
-      "format": "svg",
-      "bytes": 1672,
-      "sha256": "4c7d4ac583955f2394f9e0940af87dadc4e16f70c62dc76e6545798d14f44279"
-    },
-    {
-      "path": "logos/wordmark/wordmark-reversed.png",
-      "group": "logos",
-      "purpose": "Wordmark — for dark backgrounds (#0b0d13), transparent PNG",
-      "derivedFrom": "wordmark.svg",
-      "format": "png",
-      "width": 2000,
-      "height": 415,
-      "bytes": 22405,
-      "sha256": "fcdb6208ca1c512f6a06fa4fc1917d4a7c280e8c399fcc5e6821e7dc7db6606e"
-    },
-    {
-      "path": "logos/wordmark/wordmark-black.svg",
-      "group": "logos",
-      "purpose": "Wordmark — one-color black (print, fax, engraving)",
-      "derivedFrom": "wordmark.svg",
-      "format": "svg",
-      "bytes": 1653,
-      "sha256": "ef884ce1f79ab6eaa26774cda0f36023c3727bbec098c3279eb826c7a21e0b55"
-    },
-    {
-      "path": "logos/wordmark/wordmark-black.png",
-      "group": "logos",
-      "purpose": "Wordmark — one-color black (print, fax, engraving), transparent PNG",
-      "derivedFrom": "wordmark.svg",
-      "format": "png",
-      "width": 2000,
-      "height": 415,
-      "bytes": 21221,
-      "sha256": "70a2b713eb50dbbb68308b8f565574a25f1ef22c90afb02954d8ff8715645737"
-    },
-    {
-      "path": "logos/wordmark/wordmark-white.svg",
-      "group": "logos",
-      "purpose": "Wordmark — one-color white (knockout on photos and dark fills)",
-      "derivedFrom": "wordmark.svg",
-      "format": "svg",
-      "bytes": 1672,
-      "sha256": "4c7d4ac583955f2394f9e0940af87dadc4e16f70c62dc76e6545798d14f44279"
-    },
-    {
-      "path": "logos/wordmark/wordmark-white.png",
-      "group": "logos",
-      "purpose": "Wordmark — one-color white (knockout on photos and dark fills), transparent PNG",
-      "derivedFrom": "wordmark.svg",
-      "format": "png",
-      "width": 2000,
-      "height": 415,
-      "bytes": 22405,
-      "sha256": "fcdb6208ca1c512f6a06fa4fc1917d4a7c280e8c399fcc5e6821e7dc7db6606e"
-    },
-    {
-      "path": "logos/wordmark/wordmark-ink.svg",
-      "group": "logos",
-      "purpose": "Wordmark — one-color brand ink #101218",
-      "derivedFrom": "wordmark.svg",
-      "format": "svg",
-      "bytes": 1675,
-      "sha256": "e1147bd4a3d13de906e1b65274fde504e1b31400d7807b494fb7785b06a93950"
-    },
-    {
-      "path": "logos/wordmark/wordmark-ink.png",
-      "group": "logos",
-      "purpose": "Wordmark — one-color brand ink #101218, transparent PNG",
-      "derivedFrom": "wordmark.svg",
-      "format": "png",
-      "width": 2000,
-      "height": 415,
-      "bytes": 24229,
-      "sha256": "bfd2501111aad2bec769381e07e5460e1c8a2050388b5960080a4b2a3d040c11"
+      "bytes": 16483,
+      "sha256": "90ec7539f2d318a2fc7f2ece33457c5cb83d94afd3ae63a0c49c1810f46acc10"
     },
     {
       "path": "logos/overview.png",
@@ -550,19 +370,10 @@
       "purpose": "Overview of every logo file on its intended background",
       "derivedFrom": "brand.json",
       "format": "png",
-      "width": 1584,
-      "height": 968,
-      "bytes": 73043,
-      "sha256": "ad6406799e76d2e9fe947c7939a2d162e5ff4b08aada0090e2499cc6b135475f"
-    },
-    {
-      "path": "logos/README.md",
-      "group": "logos",
-      "purpose": "Which logo file to use where",
-      "derivedFrom": "brand.json",
-      "format": "md",
-      "bytes": 556,
-      "sha256": "cac2ae198c642bf7ccebe9be2c0d4aea8ce6a8b21bd290e1333b9871acb918ba"
+      "width": 1272,
+      "height": 784,
+      "bytes": 57340,
+      "sha256": "2f89645de4a4627f64872320be9ff8ba3e39fd8a3f3db53da0cdb4f82e9bd05b"
     },
     {
       "path": "logos/appmark/appmark.svg",
@@ -570,8 +381,8 @@
       "purpose": "Appmark: symbol on brand tile (avatars, app listings)",
       "derivedFrom": "symbol.svg",
       "format": "svg",
-      "bytes": 1145,
-      "sha256": "69a3f620362c2c234eeacd2a3b1b72b63beded924c6fed0fc1da9a41b9e503e4"
+      "bytes": 905,
+      "sha256": "227e1d5752497f76e9ca81cfb19b75d88d632e1d7b586d87b56580be4ea5670e"
     },
     {
       "path": "logos/appmark/appmark.png",
@@ -581,26 +392,37 @@
       "format": "png",
       "width": 1024,
       "height": 1024,
-      "bytes": 16537,
-      "sha256": "049f2843d637ed913c39750a96dbba8fa5f8ab1a1376967ce7f3e9f123287836"
+      "bytes": 19530,
+      "sha256": "bc57320ed444e5eac29ea7a3c754d9925db177db99bd0a6085db2ebb7d57b80f"
     },
     {
       "path": "web/favicon.svg",
       "group": "web",
       "purpose": "SVG favicon (adapts to dark browser UI)",
-      "derivedFrom": "symbol.svg",
+      "derivedFrom": "symbol-small.svg",
       "format": "svg",
-      "bytes": 1115,
-      "sha256": "a5dc2abbbb87422f3c0f61167678f56d33ffae75e6b8a313bc245844369b0561"
+      "bytes": 848,
+      "sha256": "e71d72dedfa14e17cec6e013e9e7e2131f273c2f8cdbb241f45632c802a035cf"
+    },
+    {
+      "path": "web/favicon-32.png",
+      "group": "web",
+      "purpose": "32 px PNG favicon (for frameworks that expect a PNG, e.g. Flutter web)",
+      "derivedFrom": "symbol-small.svg",
+      "format": "png",
+      "width": 32,
+      "height": 32,
+      "bytes": 457,
+      "sha256": "6077c29303d06a86a1d1089e68b449cdf7e272a74c3b2193c877840ca79fe514"
     },
     {
       "path": "web/favicon.ico",
       "group": "web",
       "purpose": "Legacy favicon (16/32/48 px)",
-      "derivedFrom": "symbol.svg",
+      "derivedFrom": "symbol-small.svg (≤ 32 px), symbol.svg",
       "format": "ico",
-      "bytes": 1172,
-      "sha256": "063e838ea8c93731ace0dd642ca2b722cc4547f5f1cb4b06fd8451b7864375dc"
+      "bytes": 1430,
+      "sha256": "d0b42b716a4cd319d087306122553184d97bdcb58421420b77936688b8677a7a"
     },
     {
       "path": "web/apple-touch-icon.png",
@@ -610,8 +432,8 @@
       "format": "png",
       "width": 180,
       "height": 180,
-      "bytes": 1418,
-      "sha256": "013ef093181165ec3e023d0d78bbd1b9e8ce1aec6b77e3942cfe2dedf4efd60d"
+      "bytes": 1594,
+      "sha256": "511d0c4d15179faa3a164960b4b204f662f70eb337b0faa7e248324196d8012c"
     },
     {
       "path": "web/icon-192.png",
@@ -621,8 +443,8 @@
       "format": "png",
       "width": 192,
       "height": 192,
-      "bytes": 2211,
-      "sha256": "dc58511749fbd6ba702d68bdf2f5c7e3771e75171164a3de051e44b695f01d61"
+      "bytes": 2496,
+      "sha256": "c2855dc4db60555127c469bfb1b7aadd0bbadab2d614610cb47e8ed67c1e0e86"
     },
     {
       "path": "web/icon-384.png",
@@ -632,8 +454,8 @@
       "format": "png",
       "width": 384,
       "height": 384,
-      "bytes": 4672,
-      "sha256": "9e7d2267c343e8bdf0a2a0ac3ace6a2bff86bb40264dd6cce176a4125f8f37d5"
+      "bytes": 4982,
+      "sha256": "eb1481f292f8574e27883de323661019a4d3c28a3db67040c89de266fcdd6488"
     },
     {
       "path": "web/icon-512.png",
@@ -643,8 +465,8 @@
       "format": "png",
       "width": 512,
       "height": 512,
-      "bytes": 6619,
-      "sha256": "deeba58e8804eba84e22a3bed4240a118ebe197efbe742cb98d80e8ed3e945ae"
+      "bytes": 7498,
+      "sha256": "277b7b5933ae77f97636cadf8a24f0c9167b7ef0d5aceadcb0beabb857c74efe"
     },
     {
       "path": "web/icon-maskable-192.png",
@@ -654,8 +476,8 @@
       "format": "png",
       "width": 192,
       "height": 192,
-      "bytes": 1403,
-      "sha256": "92143ec884861a7e84b80548246c8ac4cbb9dcbce7de333bd0ce00bf2139561e"
+      "bytes": 1660,
+      "sha256": "b1d07a17ac0b9b3fd0a380a112bd1268233b2d367ed2a81c85054f46d5aa050c"
     },
     {
       "path": "web/icon-maskable-512.png",
@@ -665,8 +487,8 @@
       "format": "png",
       "width": 512,
       "height": 512,
-      "bytes": 4653,
-      "sha256": "cd7881ed2d57b205f39c0d620685cc6630de6344fea8856651ead5dd88e87fcf"
+      "bytes": 5068,
+      "sha256": "f8463e70e9246bd696f4aadc171571afeb1d99634426d9308ef43071cff915eb"
     },
     {
       "path": "web/site.webmanifest",
@@ -675,7 +497,7 @@
       "derivedFrom": "brand.json",
       "format": "webmanifest",
       "bytes": 774,
-      "sha256": "d7ac6be3482e2370180d82d2796f330facfde1adc7cf44868840b3fb795bfd4e"
+      "sha256": "75dcd7dad6e4aee55dc14780fffe528a5adae4c48b4a580ce736c43794471fe4"
     },
     {
       "path": "web/head-snippet.html",
@@ -684,7 +506,7 @@
       "derivedFrom": "brand.json",
       "format": "html",
       "bytes": 613,
-      "sha256": "54284a34cad29e17011fb2cb51508c1d8a6d5f4c3dc12627a1cdffc0f6f05498"
+      "sha256": "6f77d0c2ecbf47980315b792f7f664ba08e313ca9285d21870ce93765814786c"
     },
     {
       "path": "social/og-image.svg",
@@ -692,8 +514,8 @@
       "purpose": "Open Graph / link preview image (editable source)",
       "derivedFrom": "lockup-horizontal.svg",
       "format": "svg",
-      "bytes": 23111,
-      "sha256": "5aed166cc91d5e1f587e0594271789300646007622ec843a3b5feca59d75548e"
+      "bytes": 3194,
+      "sha256": "5829f6933942fd074f80ef765c50b86f7f06a7c38b695811d64f99f3ad821fb7"
     },
     {
       "path": "social/og-image.png",
@@ -703,8 +525,8 @@
       "format": "png",
       "width": 1200,
       "height": 630,
-      "bytes": 21783,
-      "sha256": "2ea2faf8275a243fcf29675fdd5604f5f45039af6c2adff7a33577280251ddd1"
+      "bytes": 19161,
+      "sha256": "e93d5b0b39c893bc2c20849ee6a614e35cbd29ac09445a677ce29267a95800b7"
     },
     {
       "path": "social/og-image-dark.svg",
@@ -712,8 +534,8 @@
       "purpose": "Open Graph image on the alternate (dark) ground (editable source)",
       "derivedFrom": "lockup-horizontal.svg",
       "format": "svg",
-      "bytes": 23111,
-      "sha256": "e770b03115336eb6b58c269112bf922136080424c44e7295dd63be737e330222"
+      "bytes": 3194,
+      "sha256": "ba5433239bf27129796e448c073fd0987ca4b4b85d6f36e8011176550b308fe9"
     },
     {
       "path": "social/og-image-dark.png",
@@ -723,8 +545,8 @@
       "format": "png",
       "width": 1200,
       "height": 630,
-      "bytes": 20387,
-      "sha256": "bd19a75969096b9c6b42bdd1671fd7de9f4e07eda8daea2a1b371dad0315835a"
+      "bytes": 18376,
+      "sha256": "eaeb6b64b33e78c88a847cb5d0214d0dae019a2292dc3cc6e38c77faecf8ec1e"
     },
     {
       "path": "social/github-social-preview.svg",
@@ -732,8 +554,8 @@
       "purpose": "GitHub repository social preview (editable source)",
       "derivedFrom": "lockup-horizontal.svg",
       "format": "svg",
-      "bytes": 23107,
-      "sha256": "415c83e442cdb23f0d38beec56f3abb1c6562958d30a6bffb291ab2546b54a2e"
+      "bytes": 3197,
+      "sha256": "8c722aa453c43df6341b192ed2e78201b366196be60b4acbdffeb3129862f089"
     },
     {
       "path": "social/github-social-preview.png",
@@ -743,8 +565,8 @@
       "format": "png",
       "width": 1280,
       "height": 640,
-      "bytes": 22700,
-      "sha256": "31c7ae2305643919ad53531bca6dff3d89b151e34dfd8f15dcd63271ad4c6f66"
+      "bytes": 19227,
+      "sha256": "1efe2fe1cc058956e80c94f34f2b43f959698d698247fecb2cacfc8a92e868ed"
     },
     {
       "path": "social/x-header.svg",
@@ -752,8 +574,8 @@
       "purpose": "X (Twitter) profile header (editable source)",
       "derivedFrom": "lockup-horizontal.svg",
       "format": "svg",
-      "bytes": 3971,
-      "sha256": "b205e36bf7ade5f99a37281475f51a72dbc23ea72edfc16b183d6478fc88c29c"
+      "bytes": 3202,
+      "sha256": "3b609ee4006dcf8704d84c8a967e0993d4ab621f888fed601adfe0de1781efd8"
     },
     {
       "path": "social/x-header.png",
@@ -763,8 +585,8 @@
       "format": "png",
       "width": 1500,
       "height": 500,
-      "bytes": 16615,
-      "sha256": "f915b7bc3268518ec18aac63c6ca4e0c06e425700915e1268fd3f3a821686c85"
+      "bytes": 16709,
+      "sha256": "7cefebfbf3897b6e795c34b7dead2672d3b53b942db9f12c3e7d917a2be164b1"
     },
     {
       "path": "social/linkedin-cover.svg",
@@ -772,8 +594,8 @@
       "purpose": "LinkedIn page cover (editable source)",
       "derivedFrom": "lockup-horizontal.svg",
       "format": "svg",
-      "bytes": 3972,
-      "sha256": "1569bfd969120643573b20b028acabeb8475fb9f8edd5296eb021a2c0a569469"
+      "bytes": 3201,
+      "sha256": "d0f31fb4d9b8cf4e822b5e426de5dc31a497cfbd3021a8b074ea65a36b31e2eb"
     },
     {
       "path": "social/linkedin-cover.png",
@@ -783,8 +605,8 @@
       "format": "png",
       "width": 1512,
       "height": 256,
-      "bytes": 10211,
-      "sha256": "375634837a52cb5168fda1d8c3d19b6715728e1c0be9d7007e1dd54f4629c049"
+      "bytes": 9835,
+      "sha256": "ec487ab5164ccec5a4f4eed52b7b73bc17560be896edc92edcb5f25aeb5ddd13"
     },
     {
       "path": "social/avatar-500.png",
@@ -794,8 +616,8 @@
       "format": "png",
       "width": 500,
       "height": 500,
-      "bytes": 4178,
-      "sha256": "cdc7f6d9f01781cb07af73effd163b482322d0e3755491b866b4be15da49ce34"
+      "bytes": 4658,
+      "sha256": "c88822675b94cf1c837315719164ef908a6e1734d1a0e326f9ac527ff3c8a9e7"
     },
     {
       "path": "tokens/tokens.json",
@@ -803,8 +625,8 @@
       "purpose": "Design tokens (W3C DTCG format)",
       "derivedFrom": "brand.json",
       "format": "json",
-      "bytes": 4149,
-      "sha256": "79609097d9fa429b043efb8bb0c1035236c5d6ac05f1475cd3f6913f39c4bf12"
+      "bytes": 3187,
+      "sha256": "4d83edf45dd4e13e41ecc7cd1be18a47b6063dff22ffa0ce3a23798de3f4635a"
     },
     {
       "path": "tokens/tokens.css",
@@ -812,8 +634,8 @@
       "purpose": "CSS custom properties",
       "derivedFrom": "brand.json",
       "format": "css",
-      "bytes": 1172,
-      "sha256": "64ad1892ab8eb5f3ad78d2278c6183a178ea24147e7e0701ba1d3845dc3ff412"
+      "bytes": 810,
+      "sha256": "b606ea960bc4e7161622cf22e7904ccdb28754ea78a7acc99fd1ef6f4b19bf35"
     },
     {
       "path": "tokens/palette.json",
@@ -821,8 +643,8 @@
       "purpose": "Palette with contrast pairs and warnings",
       "derivedFrom": "brand.json",
       "format": "json",
-      "bytes": 2664,
-      "sha256": "fcde7f19be6adb0b4089478158d4479309de3fca5fab932cf6c717d3535c4310"
+      "bytes": 2066,
+      "sha256": "999b8c3c25c13a5b2f5f0e243eea8033a09a79a393f82fb8562e9fa9f06fe3b4"
     },
     {
       "path": "guidelines/brand-guidelines.md",
@@ -830,8 +652,8 @@
       "purpose": "Brand usage guidelines (Markdown)",
       "derivedFrom": "brand.json",
       "format": "md",
-      "bytes": 3111,
-      "sha256": "66e585ec7db3121138f3fadb665aa1aa8961689a43e23b1cec313bb5d7fef8bd"
+      "bytes": 2873,
+      "sha256": "ae547a15bd7995c0bf926a923272ff4f8c457498cc2f0c057f3d1e80af9539fd"
     },
     {
       "path": "guidelines/index.html",
@@ -839,8 +661,8 @@
       "purpose": "Brand usage guidelines (self-contained HTML)",
       "derivedFrom": "brand.json",
       "format": "html",
-      "bytes": 14118,
-      "sha256": "fd47aa360511576f1868cac5c84ed9c8800e708a303eeefe064460cf6afa3f31"
+      "bytes": 12424,
+      "sha256": "d03b42dfb45581b12d478be264db31c689b047edba025443e11d8cc6194f1a76"
     }
   ],
   "skipped": [],

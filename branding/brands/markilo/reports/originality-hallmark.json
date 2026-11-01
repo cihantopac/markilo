@@ -1,0 +1,541 @@
+{
+  "schema": "markilo/originality@2",
+  "brand": "markilo",
+  "concept": "hallmark",
+  "generatedAt": "2026-11-01T12:00:00.716Z",
+  "verdict": "insufficient-evidence",
+  "confidence": "low",
+  "evidence": {
+    "visual": {
+      "coverage": "minimal",
+      "have": "5 brand(s) from 9 reference file(s): 5 direct competitor, 0 category/form-family; sources 5 official, 0 app store, 0 logo catalog, 0 unverified",
+      "next": [
+        "add 2 category leader or similar-form brand(s) (--category category|form-family)",
+        "reach 8 distinct brands in total"
+      ]
+    },
+    "registry": {
+      "coverage": "none",
+      "have": "no registry searches logged for \"Markilo\"",
+      "next": [
+        "search an international database (WIPO Global Brand Database or TMview)",
+        "search at least one national register for your main market (e.g. USPTO, TÜRKPATENT, UKIPO)",
+        "include the suggested Nice classes (9, 42)",
+        "log each search: markilo profile add-source --type registry --registry <id> --query \"<name>\" --classes … --results <n>"
+      ]
+    },
+    "names": {
+      "coverage": "adequate",
+      "have": "10 competitor name(s) compared",
+      "next": []
+    },
+    "confidence": "low",
+    "missing": [
+      "add 2 category leader or similar-form brand(s) (--category category|form-family)",
+      "reach 8 distinct brands in total",
+      "search an international database (WIPO Global Brand Database or TMview)",
+      "search at least one national register for your main market (e.g. USPTO, TÜRKPATENT, UKIPO)",
+      "include the suggested Nice classes (9, 42)",
+      "log each search: markilo profile add-source --type registry --registry <id> --query \"<name>\" --classes … --results <n>"
+    ]
+  },
+  "scope": {
+    "referencesCompared": 9,
+    "brandsCompared": 5,
+    "references": [
+      {
+        "id": "brandmark-1",
+        "name": "Brandmark",
+        "source": "https://brandmark.io/images/logo.svg",
+        "retrievedAt": "2026-11-01T11:15:17.012Z"
+      },
+      {
+        "id": "brandmark-icon-2",
+        "name": "Brandmark icon",
+        "source": "https://brandmark.io/favicons/project/apple-touch-icon.png",
+        "retrievedAt": "2026-11-01T11:15:17.312Z"
+      },
+      {
+        "id": "tailor-brands-3",
+        "name": "Tailor Brands",
+        "source": "https://www.tailorbrands.com/",
+        "retrievedAt": "2026-11-01T11:15:18.451Z"
+      },
+      {
+        "id": "tailor-brands-icon-4",
+        "name": "Tailor Brands icon",
+        "source": "https://www.tailorbrands.com/wp-content/uploads/2024/10/Tailor-Brands-logo-192-x-192.png",
+        "retrievedAt": "2026-11-01T11:15:18.632Z"
+      },
+      {
+        "id": "designs-ai-5",
+        "name": "Designs.ai",
+        "source": "https://designs.ai/en",
+        "retrievedAt": "2026-11-01T11:15:20.954Z"
+      },
+      {
+        "id": "logoai-6",
+        "name": "LogoAI",
+        "source": "https://www.logoai.com/",
+        "retrievedAt": "2026-11-01T11:15:21.721Z"
+      },
+      {
+        "id": "logoai-icon-7",
+        "name": "LogoAI icon",
+        "source": "https://www.logoai.com/apple-icon.png?apple-icon.0b24kullt3snh.png?dpl=dpl_CGTHhFLD3KK2Pa3BLytLVUwipZkG",
+        "retrievedAt": "2026-11-01T11:15:21.820Z"
+      },
+      {
+        "id": "logo-com-8",
+        "name": "Logo.com",
+        "source": "https://logo.com/",
+        "retrievedAt": "2026-11-01T11:15:25.875Z"
+      },
+      {
+        "id": "logo-com-icon-9",
+        "name": "Logo.com icon",
+        "source": "https://logo.com/apple-icon.png",
+        "retrievedAt": "2026-11-01T11:15:26.028Z"
+      }
+    ],
+    "conceptsCompared": [
+      "inktrap",
+      "seal"
+    ],
+    "nameCompetitors": 10,
+    "registrySearchesLogged": []
+  },
+  "visual": {
+    "risk": "low",
+    "thresholds": {
+      "review": 0.62,
+      "high": 0.78
+    },
+    "matches": [
+      {
+        "a": "hallmark",
+        "b": "brandmark-icon-2",
+        "visual": 0.333,
+        "shape": 0.343,
+        "color": 0.637,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.49,
+            "details": {
+              "iou": 0.49,
+              "transform": "mirror+rot270"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.222,
+            "details": {
+              "pHash": 0.625,
+              "dHash": 0.578
+            }
+          },
+          "structure": {
+            "score": 0.171,
+            "details": {
+              "descriptorDistance": 0.314,
+              "holes": "0 vs 2",
+              "components": "2 vs 1"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "Brandmark icon",
+        "brand": "brandmark",
+        "source": "https://brandmark.io/favicons/project/apple-touch-icon.png"
+      },
+      {
+        "a": "hallmark",
+        "b": "logo-com-8",
+        "visual": 0.305,
+        "shape": 0.313,
+        "color": 0.692,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.412,
+            "details": {
+              "iou": 0.412,
+              "transform": "rot180"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.197,
+            "details": {
+              "pHash": 0.594,
+              "dHash": 0.609
+            }
+          },
+          "structure": {
+            "score": 0.23,
+            "details": {
+              "descriptorDistance": 0.285,
+              "holes": "0 vs 4",
+              "components": "2 vs 1"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "Logo.com",
+        "brand": "logo com",
+        "source": "https://logo.com/"
+      },
+      {
+        "a": "hallmark",
+        "b": "logoai-icon-7",
+        "visual": 0.252,
+        "shape": 0.274,
+        "color": 0,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.315,
+            "details": {
+              "iou": 0.315,
+              "transform": "mirror+rot90"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.044,
+            "details": {
+              "pHash": 0.531,
+              "dHash": 0.469
+            }
+          },
+          "structure": {
+            "score": 0.421,
+            "details": {
+              "descriptorDistance": 0.19,
+              "holes": "0 vs 0",
+              "components": "2 vs 4"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "LogoAI icon",
+        "brand": "logoai",
+        "source": "https://www.logoai.com/apple-icon.png?apple-icon.0b24kullt3snh.png?dpl=dpl_CGTHhFLD3KK2Pa3BLytLVUwipZkG"
+      },
+      {
+        "a": "hallmark",
+        "b": "tailor-brands-icon-4",
+        "visual": 0.192,
+        "shape": 0.209,
+        "color": 0,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.268,
+            "details": {
+              "iou": 0.268,
+              "transform": "identity"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.169,
+            "details": {
+              "pHash": 0.594,
+              "dHash": 0.563
+            }
+          },
+          "structure": {
+            "score": 0.131,
+            "details": {
+              "descriptorDistance": 0.334,
+              "holes": "0 vs 6",
+              "components": "2 vs 1"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "Tailor Brands icon",
+        "brand": "tailor brands",
+        "source": "https://www.tailorbrands.com/wp-content/uploads/2024/10/Tailor-Brands-logo-192-x-192.png"
+      },
+      {
+        "a": "hallmark",
+        "b": "designs-ai-5",
+        "visual": 0.168,
+        "shape": 0.172,
+        "color": 0.692,
+        "risk": "low",
+        "signals": {
+          "silhouette": {
+            "score": 0.177,
+            "details": {
+              "iou": 0.177,
+              "transform": "rot180"
+            }
+          },
+          "perceptual-hash": {
+            "score": 0.044,
+            "details": {
+              "pHash": 0.531,
+              "dHash": 0.484
+            }
+          },
+          "structure": {
+            "score": 0.291,
+            "details": {
+              "descriptorDistance": 0.255,
+              "holes": "0 vs 0",
+              "components": "2 vs 1"
+            }
+          }
+        },
+        "reasons": [
+          "No strong overlap in silhouette, composition or structure."
+        ],
+        "name": "Designs.ai",
+        "brand": "designs ai",
+        "source": "https://designs.ai/en"
+      }
+    ]
+  },
+  "diversity": [
+    {
+      "concept": "inktrap",
+      "visual": 0.229,
+      "risk": "low",
+      "reasons": [
+        "No strong overlap in silhouette, composition or structure."
+      ]
+    },
+    {
+      "concept": "seal",
+      "visual": 0.37,
+      "risk": "low",
+      "reasons": [
+        "No strong overlap in silhouette, composition or structure."
+      ]
+    }
+  ],
+  "genericity": {
+    "closest": "rounded square",
+    "similarity": 0.375,
+    "level": "distinct"
+  },
+  "name": {
+    "candidate": "Markilo",
+    "risk": "low",
+    "comparisons": [
+      {
+        "candidate": "Markilo",
+        "other": "Brandmark icon",
+        "score": 0.589,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.462,
+          "jaroWinkler": 0.717,
+          "sound": 0.462,
+          "skeleton": 0.333,
+          "sharedStem": "mark"
+        },
+        "reasons": [
+          "Shares the stem \"mark\"."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Looka",
+        "score": 0.407,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.143,
+          "jaroWinkler": 0.448,
+          "sound": 0.429,
+          "skeleton": 0.25,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Tailor Brands icon",
+        "score": 0.396,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.25,
+          "jaroWinkler": 0.542,
+          "sound": 0.267,
+          "skeleton": 0.2,
+          "sharedStem": "ilo"
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Tailor Brands",
+        "score": 0.372,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.167,
+          "jaroWinkler": 0.577,
+          "sound": 0.273,
+          "skeleton": 0.125,
+          "sharedStem": "ilo"
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Logo.com icon",
+        "score": 0.345,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.182,
+          "jaroWinkler": 0.323,
+          "sound": 0.364,
+          "skeleton": 0.167,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Logo.com",
+        "score": 0.321,
+        "risk": "low",
+        "signals": {
+          "spelling": 0,
+          "jaroWinkler": 0.429,
+          "sound": 0.286,
+          "skeleton": 0.25,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "LogoAI icon",
+        "score": 0.314,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.2,
+          "jaroWinkler": 0.41,
+          "sound": 0.286,
+          "skeleton": 0.25,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Brandmark",
+        "score": 0.306,
+        "risk": "low",
+        "signals": {
+          "spelling": 0.111,
+          "jaroWinkler": 0.336,
+          "sound": 0.222,
+          "skeleton": 0.286,
+          "sharedStem": "mark"
+        },
+        "reasons": [
+          "Shares the stem \"mark\"."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "LogoAI",
+        "score": 0.271,
+        "risk": "low",
+        "signals": {
+          "spelling": 0,
+          "jaroWinkler": 0.437,
+          "sound": 0.286,
+          "skeleton": 0,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      },
+      {
+        "candidate": "Markilo",
+        "other": "Designs.ai",
+        "score": 0.238,
+        "risk": "low",
+        "signals": {
+          "spelling": 0,
+          "jaroWinkler": 0.418,
+          "sound": 0.25,
+          "skeleton": 0,
+          "sharedStem": ""
+        },
+        "reasons": [
+          "No strong spelling, sound or stem overlap."
+        ]
+      }
+    ],
+    "pronunciation": [],
+    "registryConflicts": []
+  },
+  "trademark": {
+    "suggestedClasses": [
+      9,
+      42
+    ],
+    "classReasons": [
+      "downloadable software (9), SaaS and software development (42)"
+    ],
+    "registries": [
+      {
+        "name": "WIPO Global Brand Database",
+        "url": "https://branddb.wipo.int/",
+        "how": "Search \"Brand name\" with the fuzzy/phonetic strategy, then filter by Nice class. Also try the image search with the symbol PNG."
+      },
+      {
+        "name": "TMview (EUIPO and partner offices)",
+        "url": "https://www.tmdn.org/tmview/",
+        "how": "Search the name, enable \"similar\" matching, filter by Nice class and status \"registered\" or \"filed\"."
+      },
+      {
+        "name": "USPTO Trademark Search",
+        "url": "https://tmsearch.uspto.gov/",
+        "how": "Use the wordmark field with wildcards (e.g. nimbr*) and review live marks in the relevant classes."
+      },
+      {
+        "name": "TÜRKPATENT Marka Araştırma",
+        "url": "https://www.turkpatent.gov.tr/arastirma-yap?form=trademark",
+        "how": "Search the brand text and review results in the selected Nice classes."
+      },
+      {
+        "name": "UK IPO trade mark search",
+        "url": "https://trademarks.ipo.gov.uk/ipo-tmtext",
+        "how": "Search by word, then filter by class."
+      }
+    ]
+  },
+  "limitations": [
+    "Compared against 9 reference mark(s) collected for this brand; marks outside that set were not compared.",
+    "Absence of similar results is not evidence that the design or name is unique or registrable.",
+    "Automated similarity measures shape, composition, structure and color. Conceptual similarity (same idea drawn differently) needs human review.",
+    "This report is not legal advice and is not a trademark clearance search. Consult a trademark attorney before adoption.",
+    "No registry searches have been logged yet (markilo profile add-source --type registry ...)."
+  ]
+}

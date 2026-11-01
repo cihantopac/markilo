@@ -1,7 +1,0 @@
-{"idea":"An m cut once, cleanly, by a chisel: the cut face is the accent.","grid":64,
-"params":{"w":70,"a":0.5},
-"defs":{"m":{"glyph":{"text":"m","font":"manrope","weight":700,"height":620,"c":[512,512]}},
-"band":{"polygon":{"points":[[0,"620+a*0"],[1024,"300"],[1024,"300+w"],[0,"620+w"]]}}},
-"layers":[{"name":"m","fill":"primary","shape":{"subtract":[{"ref":"m"},{"ref":"band"}]}},
-{"name":"face","fill":"accent","shape":{"intersect":[{"ref":"m"},{"polygon":{"points":[[0,640],[1024,320],[1024,"320+60"],[0,700]]}}]}}],
-"fit":0.06}

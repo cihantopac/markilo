@@ -1,5 +1,0 @@
-{"role":"wordmark","grid":64,
-"layers":[
- {"name":"word","fill":"ink","shape":{"glyph":{"text":"markilo","font":"inter","weight":700,"size":250,"at":[40,400],"tracking":-5,"letters":[0,1,2,3,4,6]}}},
- {"name":"l","fill":"accent","shape":{"glyph":{"text":"markilo","font":"inter","weight":700,"size":250,"at":[40,400],"tracking":-5,"letters":[5]}}}
-]}

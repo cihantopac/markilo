@@ -1,4 +1,0 @@
-{"idea":"A marker's chisel tip in profile: a barrel sheared at the writing angle, with the felt tip sliding off as one accent parallelogram.",
-"grid":64,
-"layers":[{"name":"barrel","fill":"primary","shape":{"polygon":{"points":[[300,80],[724,80],[724,470],[300,690]]}}},
-{"name":"tip","fill":"accent","shape":{"polygon":{"points":[[300,760],[724,540],[724,700],[300,920]]}}}],"fit":0.06}
