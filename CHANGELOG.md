@@ -6,10 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-Markilo 1.1 changes how it designs, not what it can export. 1.0's independent evaluation found 0 presentable concepts
+## [1.1.0] - 2026-11-01
+
+Markilo 1.1 changes how it designs, and makes the export easier to read. 1.0's independent evaluation found 0 presentable concepts
 of 43: the instructions produced mechanical marks (primitives assembled into UI icons, stock typefaces with one letter
 changed, ideas judged at favicon size) behind a critic gate the user never saw past. 1.1 shows three visually developed
-proposals, lets the user choose, and develops the choice. Validation on one real product: `docs/RELEASE-1.1.md`.
+proposals, lets the user choose, and develops the choice only when asked. Validated on three real products, each
+accepted by its owner from one round of proposals ($15, $11.27 and $5.29 measured): `docs/RELEASE-1.1.md`.
 
 ### Breaking
 
@@ -17,6 +20,9 @@ proposals, lets the user choose, and develops the choice. Validation on one real
 - The default workflow no longer uses the idea longlist, sketch boards, the sketch review, the gate before the user
   or second looks. The commands remain (`ideas`, `sketches`, `concept update --sketch-pick/--look`) for compatibility.
 - `concept-designer` runs on Opus (was Sonnet): on the same prompt it redrew 3 of 3 words where Sonnet redrew 1.
+- Exports no longer write the `*-ink` logo variant (it was indistinguishable from `*-black` for most inks; the brand
+  ink is in `tokens/`), nor a `logos/wordmark/` folder when the primary logo already is the wordmark. `logos/README.md`
+  is replaced by `README.md` at the top of the export.
 
 ### Added
 
@@ -34,6 +40,8 @@ proposals, lets the user choose, and develops the choice. Validation on one real
   in `chosen/`.
 - `status` stages: review (proposals waiting), refine, next round, ask for direction.
 - Bench: `run … --stage concepts` stops after one round of proposals.
+- `exports/index.html`: a preview of every exported file on the background it is made for, with links, sizes and
+  purposes (works offline, no script); `exports/README.md`: the files most people need and what each folder holds.
 
 ### Changed
 
@@ -44,6 +52,18 @@ proposals, lets the user choose, and develops the choice. Validation on one real
   freeform Bézier paths are first-class.
 - The design critic has two modes: `final` (one cold read with concrete craft fixes) and `compare` (on request).
 - `agent-setup` writes the same workflow for Codex, Cursor and VS Code.
+- After a plain selection with nothing missing and no failing checks, the user is offered "finish as chosen": no
+  designer or critic run. Development runs only on requested changes or failing checks; small, precise changes are made
+  with the toolchain directly.
+- Develop mode draws two or three icon options, at least one of them not a letter.
+- The critic's scores are advice in every message (`critic: above the bar / on the edge / below the bar`); they never
+  decide for the user.
+- Wordmark-led kits (`lead: wordmark`) export the word itself as the primary logo and on social cards, marketing and
+  wide tiles, instead of the letter icon beside the word.
+
+### Fixed
+
+- The appmark SVG carries the brand name as its `<title>` for assistive technology.
 
 ## [1.0.0] - 2026-11-01
 
@@ -630,7 +650,8 @@ image and score is in `bench/`; the README's "Measured quality" section reports 
 - Self-contained HTML Brand Preview Gallery with mockups and a feedback export.
 - Locked identities that are reproduced byte-for-byte and never redesigned.
 
-[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v1.0.0...HEAD
+[Unreleased]: https://github.com/cihantopac/markilo/compare/markilo--v1.1.0...HEAD
+[1.1.0]: https://github.com/cihantopac/markilo/compare/markilo--v1.0.0...markilo--v1.1.0
 [1.0.0]: https://github.com/cihantopac/markilo/compare/markilo--v0.4.0...markilo--v1.0.0
 [0.4.0]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.7...markilo--v0.4.0
 [0.3.0-beta.7]: https://github.com/cihantopac/markilo/compare/markilo--v0.3.0-beta.6...markilo--v0.3.0-beta.7

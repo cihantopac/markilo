@@ -56,13 +56,10 @@ export function guidelinesMarkdown(g: GuidelinesInput): string {
     );
   if (g.lockupS) L.push('| Secondary logo (square-ish spaces) | `logos/secondary/secondary-color.svg` |');
   if (g.symbol) L.push('| Symbol (favicons, avatars, small spaces) | `logos/symbol/symbol-color.svg` |');
-  if (g.wordmark)
+  if (g.wordmark && g.primary !== g.wordmark)
     L.push('| Wordmark (when the symbol is shown nearby) | `logos/wordmark/wordmark-color.svg` |');
   if (!kit.locked)
-    L.push(
-      '| On dark backgrounds | `*-reversed.svg` |',
-      '| One-color | `*-black.svg`, `*-white.svg`, `*-ink.svg` |',
-    );
+    L.push('| On dark backgrounds | `*-reversed.svg` |', '| One-color | `*-black.svg`, `*-white.svg` |');
   L.push('');
   L.push('## Clear space and minimum size', '');
   L.push(

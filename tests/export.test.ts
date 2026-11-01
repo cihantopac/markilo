@@ -87,7 +87,12 @@ describe('export kit', () => {
     });
     expect(pngSize(readFileSync(out('social/og-image.png')))).toEqual({ width: 1200, height: 630 });
     expect(pngSize(readFileSync(out('logos/overview.png'))).width).toBeGreaterThan(600);
-    expect(readFileSync(out('logos/README.md'), 'utf8')).toContain('*-white');
+    // The kit opens with a preview of every file and a short "start here".
+    const index = readFileSync(out('index.html'), 'utf8');
+    expect(index).toContain('src="logos/symbol/symbol-white.svg"');
+    expect(index).toContain('src="android/res/mipmap-mdpi/ic_launcher.png"');
+    expect(readFileSync(out('README.md'), 'utf8')).toContain('*-white');
+    expect(existsSync(out('logos/primary/primary-ink.svg'))).toBe(false);
     // No registry search was logged in this workspace, so the guidelines must say so in both formats.
     for (const f of ['guidelines/index.html', 'guidelines/brand-guidelines.md'])
       expect(readFileSync(out(f), 'utf8')).toContain('No trademark registry search was done');

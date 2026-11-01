@@ -33,6 +33,7 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    the plan), and `--force` only if they want existing icons replaced — those are backed up to `.markilo-backup/`.
    Applying is all-or-nothing; `markilo install-assets --undo [--project <dir>]` previews reversing it, `--apply`
    does it (files the user edited since are kept). Do not edit their source files; give them the snippet instead.
-7. Tell the user where everything is (`exports/`, `asset-manifest.json`, `guidelines/index.html`), that more groups
+7. Tell the user where everything is: open `exports/index.html` first (every file previewed on its own background,
+   with links); `exports/README.md` lists the files most people need; `guidelines/index.html` explains usage. Say that more groups
    can be added any time (`markilo deliverables --add ios` then `markilo export`), and mention that
    X (Twitter) header sizes could not be verified against x.com documentation.

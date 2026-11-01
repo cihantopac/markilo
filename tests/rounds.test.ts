@@ -215,6 +215,10 @@ describe('wordmark-led kits', () => {
     expect(primary.derivedFrom).toBe('wordmark.svg');
     // The lockups still exist for places that want the icon beside the word.
     expect(existsSync(join(exports, 'logos', 'secondary', 'secondary-color.svg'))).toBe(true);
+    // The appmark is named for assistive technology like the other masters.
+    expect(readFileSync(join(exports, 'logos', 'appmark', 'appmark.svg'), 'utf8')).toMatch(
+      /<title>[^<]+<\/title>/,
+    );
   }, 120_000);
 });
 

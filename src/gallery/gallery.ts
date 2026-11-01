@@ -309,7 +309,7 @@ async function approvedPanel(
   <div class="approved-meta">
     <div class="swatches">${palette.map((c) => `<span style="background:${c}" title="${c}"></span>`).join('')}<code>${palette.join(' · ')}</code></div>
     <p class="muted">${s.quality ? `Checks ${s.quality.summary.pass}/${s.quality.summary.pass + s.quality.summary.warn + s.quality.summary.fail}${s.quality.summary.fail ? ` · ${s.quality.summary.fail} failing` : ''} · ` : ''}${o ? `originality ${escapeText(o.verdict.replace(/-/g, ' '))}${o.confidence ? ` (${escapeText(o.confidence)} confidence)` : ''} · ` : ''}exports: ${escapeText(groups)}</p>
-    ${exports ? `<p class="links">${link('guidelines/index.html', 'Brand guidelines')} ${link('asset-manifest.json', 'Asset manifest')} ${link('logos/primary/primary-color.svg', 'Primary logo')} ${link('web/head-snippet.html', 'Web head tags')}</p>` : ''}
+    ${exports ? `<p class="links">${link('index.html', 'Every file (preview)')} ${link('guidelines/index.html', 'Brand guidelines')} ${link('asset-manifest.json', 'Asset manifest')} ${link('logos/primary/primary-color.svg', 'Primary logo')} ${link('web/head-snippet.html', 'Web head tags')}</p>` : ''}
   </div>
   <details><summary>On surfaces</summary><div class="mockups">${await mockups(s)}</div></details>
 </div>`;

@@ -17,6 +17,7 @@ import { encodeIcns, encodeIco, ICNS_TYPES } from './encoders.js';
 import { placeMark, squircle } from './geometry.js';
 import { guidelinesHtml, guidelinesMarkdown } from './guidelines.js';
 import { type BrandKit, loadKit } from './kit.js';
+import { kitIndexHtml, kitReadme } from './preview.js';
 import { SPECS } from './specs.js';
 import {
   adaptToGround,
@@ -101,9 +102,10 @@ async function canvas(
   fit: Parameters<typeof placeMark>[2],
   bg?: string,
   under = '',
+  title?: string,
 ): Promise<string> {
   const body = under + (await placeMark(mark, { x: 0, y: 0, width: w, height: h }, fit));
-  return svgDocument(w, h, body, bg ? { background: bg } : {});
+  return svgDocument(w, h, body, { ...(bg ? { background: bg } : {}), ...(title ? { title } : {}) });
 }
 
 /** Whole lockup (no content-aware fit needed: lockups are tight to their ink by construction). */
@@ -141,7 +143,8 @@ async function exportLogos(ctx: Ctx) {
     ['secondary', ctx.lockupS, 'Secondary logo (stacked lockup)'],
     ['compact', ctx.lockupC, 'Compact lockup for navigation bars and tight spaces'],
     ['symbol', ctx.symbol, 'Symbol / brandmark'],
-    ['wordmark', ctx.wordmark, 'Wordmark'],
+    // A wordmark-led primary already is the wordmark: the same files twice only made the folder harder to read.
+    ['wordmark', ctx.primary === ctx.wordmark ? undefined : ctx.wordmark, 'Wordmark'],
   ];
   for (const [name, art, purpose] of arts) {
     if (!art) continue;
@@ -162,7 +165,6 @@ async function exportLogos(ctx: Ctx) {
           ],
           ['black', monochrome(art, '#000000'), 'one-color black (print, fax, engraving)'],
           ['white', monochrome(art, '#ffffff'), 'one-color white (knockout on photos and dark fills)'],
-          ['ink', monochrome(art, kit.palette.ink), `one-color brand ink ${kit.palette.ink}`],
         ];
     overview.push({ name, variants: variants.map(([v, svg]) => ({ v, svg })) });
     for (const [v, svg, note] of variants) {
@@ -185,17 +187,7 @@ async function exportLogos(ctx: Ctx) {
   if (overview.length) {
     const g = grounds(kit);
     const groundFor = (v: string): string =>
-      v === 'color'
-        ? g.native
-        : v === 'reversed'
-          ? g.opposite
-          : v === 'white'
-            ? '#111318'
-            : v === 'black'
-              ? '#ffffff'
-              : contrastRatio(kit.palette.ink, g.native) >= 3
-                ? g.native
-                : g.opposite;
+      v === 'color' ? g.native : v === 'reversed' ? g.opposite : v === 'white' ? '#111318' : '#ffffff';
     const cols = Math.max(...overview.map((o) => o.variants.length));
     const cw = 300;
     const ch = 150;
@@ -225,25 +217,6 @@ async function exportLogos(ctx: Ctx) {
       purpose: 'Overview of every logo file on its intended background',
       derivedFrom: 'brand.json',
     });
-    await emit(
-      ctx,
-      'logos/README.md',
-      [
-        `# ${kit.name} logo files`,
-        '',
-        'Open `overview.png` to see every file on the background it is made for.',
-        '',
-        `- \`*-color\`: full color for ${g.darkFirst ? 'dark' : 'light'} backgrounds (${g.native}).`,
-        `- \`*-reversed\`: for ${g.darkFirst ? 'light' : 'dark'} backgrounds (${g.opposite}).`,
-        '- `*-black`: one color, for light backgrounds, print, engraving.',
-        '- `*-white`: one color, for dark backgrounds and photos. It looks empty in file previews because it is white on transparent.',
-        `- \`*-ink\`: one color in the brand ink (${kit.palette.ink}).`,
-        '',
-        `Folders: \`primary\` (${kit.lead === 'wordmark' ? 'the wordmark' : 'horizontal lockup'}, default), \`secondary\` (stacked), \`compact\`, \`symbol\`, \`wordmark\`, \`appmark\`.`,
-        '',
-      ].join('\n'),
-      { group: 'logos', purpose: 'Which logo file to use where', derivedFrom: 'brand.json' },
-    );
   }
   if (ctx.symbol && !kit.locked) {
     const app = await appmarkSvg(ctx, 1024, 'rounded');
@@ -275,7 +248,7 @@ async function appmarkSvg(
       : shape === 'circle'
         ? `<circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="${fill}"/>`
         : squircle(size, 0, size * 0.225, fill);
-  return canvas(svg, size, size, { mode: 'box', fraction }, undefined, under);
+  return canvas(svg, size, size, { mode: 'box', fraction }, undefined, under, ctx.kit.name);
 }
 
 // ---------------------------------------------------------------- web
@@ -1104,5 +1077,8 @@ export async function exportBrand(
     warnings: ctx.warnings,
   };
   writeJson(join(outDir, 'asset-manifest.json'), manifest);
+  // The human entry points: a preview of every file and a short "start here". Not assets themselves, so not listed.
+  writeGenerated(join(outDir, 'index.html'), Buffer.from(kitIndexHtml(kit, ctx.assets)));
+  writeGenerated(join(outDir, 'README.md'), Buffer.from(kitReadme(kit, ctx.assets)));
   return { outDir, assets: ctx.assets, skipped, warnings: ctx.warnings };
 }

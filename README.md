@@ -13,7 +13,7 @@
 <p align="center">
   <a href="https://github.com/cihantopac/markilo/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/cihantopac/markilo/actions/workflows/ci.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-d12c12"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-101218">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.1.0-101218">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-101218">
 </p>
 
@@ -90,12 +90,13 @@ registry search has been done yet; the guidelines say so.</sub>
 
 ## Measured quality
 
-**1.1, steered (validation on one real product).** The 1.1 workflow was validated on a real release-engineering CLI
-with its owner choosing at each step, and measured with Claude Code's own cost report. The final process — one round of
-three proposals with the Opus designer ($5.81, 13 min), development ($1.76) and an icon choice ($1.59) — reached an
-identity the owner accepted; the earlier steps of the same validation (a single designer, a Sonnet designer) are in
-[docs/RELEASE-1.1.md](docs/RELEASE-1.1.md) with what each taught. 1.0 spent $6.85 on the same product unattended and
-showed nothing. This is one product and its owner's judgment, not a benchmark.
+**1.1, steered (validation on three real products).** The 1.1 workflow was validated on three real developer tools
+with their owner choosing at each step, and measured with Claude Code's own cost report. All three reached an identity
+the owner accepted. The first took about $15 across seven runs while the process was being corrected; with its lessons
+adopted, the second took $11.27 (one round, one development, one change made directly) and the third $5.29 (one round,
+finished as chosen). Every step, its cost and what it taught is in [docs/RELEASE-1.1.md](docs/RELEASE-1.1.md). 1.0
+spent $6.85 on the first product unattended and showed nothing. This is three products and one owner's judgment, not a
+benchmark.
 
 **1.0 and earlier, unattended (benchmark).** Markilo is benchmarked end to end with nobody steering, on nine realistic products (an independent SaaS, a mobile
 app, a multi-product family, a developer tool, an online shop, a B2B platform, a learning app, a feature-flag service
@@ -260,7 +261,9 @@ brand/
 │   ├── reports/                    # originality-<id>.md|json, quality-<id>.md|json
 │   ├── final/                      # approved masters + brand.json
 │   └── exports/
-│       ├── logos/                  # primary, secondary, compact, symbol, wordmark, appmark × color/reversed/black/white/ink (SVG + PNG)
+│       ├── index.html              # open first: a preview of every file on the background it is made for
+│       ├── README.md               # the files most people need, what each folder holds
+│       ├── logos/                  # primary, secondary, compact, symbol, wordmark × color/reversed/black/white (SVG + PNG), appmark
 │       ├── web/                    # favicon.svg (dark-mode aware), favicon.ico, apple-touch-icon, icon-*/maskable-*, site.webmanifest, head-snippet.html
 │       ├── ios/                    # AppIcon.appiconset (default, dark, tinted), icon-composer/ layers
 │       ├── macos/                  # AppIcon.icns, .iconset, full-bleed 1024 for macOS 26+
@@ -333,10 +336,10 @@ Details: [docs/PRIVACY.md](docs/PRIVACY.md) · [SECURITY.md](SECURITY.md).
 - Icon Composer (`.icon`) files are not written directly; Markilo exports the layer sources to import.
 - X (Twitter) image sizes could not be verified against x.com documentation (blocked to automated readers).
 - Design quality depends on the model and on your direction. Unattended, 1.0 produced no identity an independent panel
-  would present ([bench/results/1.0.0](bench/results/1.0.0)). 1.1 is built to be steered: in its validation one real
-  product reached an identity its owner accepted, after one round with the Opus designer, a development and a choice
-  of icons — one product, judged by its owner, not a benchmark ([docs/RELEASE-1.1.md](docs/RELEASE-1.1.md)). Icons
-  remain the hardest part; expect to choose between options.
+  would present ([bench/results/1.0.0](bench/results/1.0.0)). 1.1 is built to be steered: in its validation three real
+  products reached identities their owner accepted, each from one round of proposals — judged by their owner, not a
+  benchmark ([docs/RELEASE-1.1.md](docs/RELEASE-1.1.md)). Icons remain the hardest part (they still tend to be
+  letters); expect to choose between options.
 
 ## Develop
 
