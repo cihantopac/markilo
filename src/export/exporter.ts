@@ -70,6 +70,8 @@ interface Ctx {
   lockupH?: string;
   lockupS?: string;
   lockupC?: string;
+  /** The logo that leads: the wordmark for a wordmark-led identity, else the horizontal lockup. */
+  primary?: string;
   assets: AssetRecord[];
   warnings: string[];
 }
@@ -131,7 +133,11 @@ async function exportLogos(ctx: Ctx) {
   const overview: { name: string; variants: { v: string; svg: string }[] }[] = [];
   const { kit } = ctx;
   const arts: [string, string | undefined, string][] = [
-    ['primary', ctx.lockupH ?? ctx.wordmark, 'Primary logo (horizontal lockup)'],
+    [
+      'primary',
+      ctx.primary,
+      kit.lead === 'wordmark' ? 'Primary logo (the wordmark)' : 'Primary logo (horizontal lockup)',
+    ],
     ['secondary', ctx.lockupS, 'Secondary logo (stacked lockup)'],
     ['compact', ctx.lockupC, 'Compact lockup for navigation bars and tight spaces'],
     ['symbol', ctx.symbol, 'Symbol / brandmark'],
@@ -139,7 +145,8 @@ async function exportLogos(ctx: Ctx) {
   ];
   for (const [name, art, purpose] of arts) {
     if (!art) continue;
-    const from = name === 'primary' && !ctx.lockupH ? 'wordmark.svg' : `${name}.svg`;
+    const from =
+      name === 'primary' && (kit.lead === 'wordmark' || !ctx.lockupH) ? 'wordmark.svg' : `${name}.svg`;
     const variants: [string, string, string][] = kit.locked
       ? [['color', art, 'as provided (locked identity)']]
       : [
@@ -232,7 +239,7 @@ async function exportLogos(ctx: Ctx) {
         '- `*-white`: one color, for dark backgrounds and photos. It looks empty in file previews because it is white on transparent.',
         `- \`*-ink\`: one color in the brand ink (${kit.palette.ink}).`,
         '',
-        'Folders: `primary` (horizontal lockup, default), `secondary` (stacked), `compact`, `symbol`, `wordmark`, `appmark`.',
+        `Folders: \`primary\` (${kit.lead === 'wordmark' ? 'the wordmark' : 'horizontal lockup'}, default), \`secondary\` (stacked), \`compact\`, \`symbol\`, \`wordmark\`, \`appmark\`.`,
         '',
       ].join('\n'),
       { group: 'logos', purpose: 'Which logo file to use where', derivedFrom: 'brand.json' },
@@ -725,7 +732,7 @@ async function exportWindows(ctx: Ctx) {
       `Taskbar ${t}px, unplated for light theme`,
     );
   }
-  const wideArt = ctx.lockupH ?? sym;
+  const wideArt = ctx.primary ?? sym;
   for (const sc of [100, 200]) {
     for (const [name, Wd, H] of [
       ['Wide310x150Logo', 310, 150],
@@ -737,7 +744,11 @@ async function exportWindows(ctx: Ctx) {
       await emit(ctx, `windows/Assets/${name}.scale-${sc}.png`, await png(svg, w, h), {
         group: 'windows',
         purpose: `MSIX ${name} ${w}×${h}`,
-        derivedFrom: ctx.lockupH ? 'lockup-horizontal.svg' : 'symbol.svg',
+        derivedFrom: ctx.primary
+          ? ctx.kit.lead === 'wordmark' || !ctx.lockupH
+            ? 'wordmark.svg'
+            : 'lockup-horizontal.svg'
+          : 'symbol.svg',
       });
     }
   }
@@ -754,7 +765,7 @@ async function socialCard(
   // `dark` means "the alternate ground": dark for light-first brands, light for dark-first brands.
   const g = grounds(kit);
   const bg = opts.dark ? g.opposite : g.native;
-  const art0 = ctx.lockupH ?? ctx.wordmark ?? ctx.symbol!;
+  const art0 = ctx.primary ?? ctx.symbol!;
   const art = kit.locked ? art0 : adaptToGround(art0, bg, { dark: kit.palette.ink, light: '#ffffff' });
   let body = '';
   // Supergraphic: an oversized, cropped tint of the symbol that ties the card to the identity.
@@ -844,7 +855,7 @@ async function exportSocial(ctx: Ctx) {
 // ---------------------------------------------------------------- marketing
 async function exportMarketing(ctx: Ctx) {
   const { kit } = ctx;
-  const art = ctx.lockupH ?? ctx.wordmark ?? ctx.symbol!;
+  const art = ctx.primary ?? ctx.symbol!;
   if (!kit.locked && ctx.symbol) {
     for (const [v, color] of [
       ['white', '#ffffff'],
@@ -1009,6 +1020,7 @@ async function exportGuidelines(ctx: Ctx) {
     wordmark: ctx.wordmark,
     lockupH: ctx.lockupH,
     lockupS: ctx.lockupS,
+    primary: ctx.primary,
     reversed: (s: string) =>
       ctx.kit.locked
         ? s
@@ -1060,6 +1072,8 @@ export async function exportBrand(
     assets: [],
     warnings: [],
   };
+  const lead = kit.lead === 'wordmark' ? (ctx.wordmark ?? ctx.lockupH) : (ctx.lockupH ?? ctx.wordmark);
+  if (lead) ctx.primary = lead;
   const groups = opts.groups?.length ? opts.groups : [...EXPORT_GROUPS];
   for (const g of groups)
     if (!EXPORT_GROUPS.includes(g))

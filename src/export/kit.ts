@@ -19,6 +19,8 @@ export interface BrandKit {
   concept?: string;
   /** Locked kits are reproduced exactly: no recoloring, no re-composition, no optimization. */
   locked: boolean;
+  /** A wordmark-led identity: the word itself is the primary logo, not a symbol + word lockup. */
+  lead?: 'wordmark';
   files: {
     symbol?: string;
     wordmark?: string;
@@ -209,6 +211,7 @@ export async function finalizeConcept(
     name: ws.brand(brand).name,
     concept: conceptId,
     locked: false,
+    ...(concept.lead === 'wordmark' && files.wordmark ? { lead: 'wordmark' as const } : {}),
     files,
     palette: {
       primary: concept.palette.primary,

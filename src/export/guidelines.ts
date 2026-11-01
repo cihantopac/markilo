@@ -11,6 +11,8 @@ export interface GuidelinesInput {
   symbol: string | undefined;
   wordmark: string | undefined;
   lockupH: string | undefined;
+  /** The logo that leads (the wordmark for a wordmark-led identity). */
+  primary?: string | undefined;
   lockupS: string | undefined;
   reversed: (svg: string) => string;
 }
@@ -48,7 +50,10 @@ export function guidelinesMarkdown(g: GuidelinesInput): string {
     );
   L.push('## Logo files', '');
   L.push('| Use | File |', '| --- | --- |');
-  if (g.lockupH) L.push('| Primary logo (default) | `logos/primary/primary-color.svg` |');
+  if (g.primary ?? g.lockupH)
+    L.push(
+      `| Primary logo (default${g.kit.lead === 'wordmark' ? ', the wordmark' : ''}) | \`logos/primary/primary-color.svg\` |`,
+    );
   if (g.lockupS) L.push('| Secondary logo (square-ish spaces) | `logos/secondary/secondary-color.svg` |');
   if (g.symbol) L.push('| Symbol (favicons, avatars, small spaces) | `logos/symbol/symbol-color.svg` |');
   if (g.wordmark)
@@ -136,7 +141,7 @@ function evidenceLines(kit: BrandKit): string[] {
 export function guidelinesHtml(g: GuidelinesInput): string {
   const gr = groundsFor(g.kit.palette.paper, g.kit.palette.dark);
   const { kit } = g;
-  const primary = g.lockupH ?? g.wordmark ?? g.symbol;
+  const primary = g.primary ?? g.lockupH ?? g.wordmark ?? g.symbol;
   const swatches = colorRows(kit)
     .map(
       (r) =>

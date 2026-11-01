@@ -198,6 +198,26 @@ describe('the chosen concept', () => {
   }, 60_000);
 });
 
+describe('wordmark-led kits', () => {
+  it('export the word itself as the primary logo, not a symbol + word lockup', () => {
+    const cwd = proposals(3);
+    ok(['verify', '--brand', 'tidepool', '--concept', 'p1'], cwd);
+    ok(
+      ['finalize', '--brand', 'tidepool', '--concept', 'p1', '--user-choice', 'This one', '--accept-risk'],
+      cwd,
+    );
+    ok(['export', '--brand', 'tidepool', '--only', 'logos'], cwd);
+    const exports = join(cwd, 'brand', 'brands', 'tidepool', 'exports');
+    const manifest = JSON.parse(readFileSync(join(exports, 'asset-manifest.json'), 'utf8'));
+    const primary = manifest.assets.find(
+      (a: { path: string }) => a.path === 'logos/primary/primary-color.svg',
+    );
+    expect(primary.derivedFrom).toBe('wordmark.svg');
+    // The lockups still exist for places that want the icon beside the word.
+    expect(existsSync(join(exports, 'logos', 'secondary', 'secondary-color.svg'))).toBe(true);
+  }, 120_000);
+});
+
 describe('typeset likeness', () => {
   it('tells a typeface as set from a word with a treatment through its letters', async () => {
     const { typesetLikeness } = await import('../src/analyze/typeset.js');
