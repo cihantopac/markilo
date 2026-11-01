@@ -42,9 +42,9 @@ is added until a proposal shows a real gap that custom lettering cannot fill.
 
 ## Validation log
 
-| Date | Product | Round | Result | Cost (measured) | Minutes | Owner's verdict |
-| ---- | ------- | ----- | ------ | --------------- | ------- | --------------- |
-| 2026-11-01 | Relivaro | 1 (one designer for all three) | 3 proposals; 2 words untouched typefaces (likeness 0.99), 1 a stock face with a square i-dot (0.985); icons: stacked bars, "li", underlined R. Not shown as final: the process was corrected first | $1.61 | 4.9 | — |
+| Date       | Product  | Round                          | Result                                                                                                                                                                                             | Cost (measured) | Minutes | Owner's verdict |
+| ---------- | -------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | ------- | --------------- |
+| 2026-11-01 | Relivaro | 1 (one designer for all three) | 3 proposals; 2 words untouched typefaces (likeness 0.99), 1 a stock face with a square i-dot (0.985); icons: stacked bars, "li", underlined R. Not shown as final: the process was corrected first | $1.61           | 4.9     | —               |
 
 Corrections after round 1 (before showing the owner anything):
 
@@ -56,4 +56,3 @@ Corrections after round 1 (before showing the owner anything):
 - The designer sets the word plainly first as a baseline, compares against it, and is not done while `typeset` ≥ 0.95.
 - Plugin-side cost records are a lower bound: an agent's reported tokens do not include the orchestrating session.
   Round 1 recorded $0.29 against $1.61 measured by Claude Code. The bench's measured cost is the reference.
-
