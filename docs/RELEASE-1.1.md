@@ -7,6 +7,12 @@ identity. Less process, fewer model calls, lower cost. The owner approved the id
 **Released 2026-11-01:** `markilo--v1.1.0` and `markilo--v1.1.1` tagged with GitHub releases; npm went from 1.0.0
 straight to 1.1.1 (checksum and `gitHead` verified from the registry, `npx markilo@1.1.1 --version` runs).
 
+**1.1.2 and 1.1.3, 2026-11-01:** visual polish and presentation (EN/TR, light/dark/system, the README showcase).
+`markilo--v1.1.2` and `markilo--v1.1.3` have GitHub releases. On npm, 1.1.2 stayed invisible for about twelve minutes
+after its publish and a retry was refused as a "previously staged version" (npm/cli#9889), so the same content went out
+as 1.1.3; 1.1.2 then appeared as well. `latest` is 1.1.3, its `gitHead` (7138dc3) and checksum verified from the
+registry.
+
 ## Diagnosis (from the 1.0 instructions and the 1.0 evaluation: 0 of 81 judged concepts presentable)
 
 | Cause in 1.0                                                                                      | Effect seen by the judges                        | 1.1 change                                                                           |

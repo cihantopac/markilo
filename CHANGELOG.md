@@ -8,13 +8,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [1.1.3] - 2026-11-01
 
-Republishes 1.1.2 to npm. Its content is identical to 1.1.2.
+Same content as 1.1.2, published again because npm appeared to have lost 1.1.2.
 
-### Fixed
+### Notes
 
-- npm: `markilo@1.1.2` could not be published. The registry answered `409 Conflict — Cannot publish over previously
-  staged version "1.1.2"` while showing no such version and no staged entry (npm/cli#9889). 1.1.2 remains on GitHub
-  as tagged; npm goes from 1.1.1 to 1.1.3.
+- After its publish, `markilo@1.1.2` stayed invisible on npm for about twelve minutes, and a retry was refused with
+  `409 Conflict — Cannot publish over previously staged version "1.1.2"` while npm listed no such version and no
+  staged entry (npm/cli#9889). 1.1.3 was published to get past it; 1.1.2 then appeared too. Both are on npm with
+  the same files; use 1.1.3.
 
 ## [1.1.2] - 2026-11-01
 
