@@ -5,6 +5,7 @@ import { type Mask, maskOf } from '../render/image.js';
 import { renderSvg } from '../render/resvg.js';
 import { fmt, nestSvg, svgDocument } from '../svg/compose.js';
 import { parseXml, serializeXml } from '../svg/xml.js';
+import { rasterizeSvgSquare } from './mark.js';
 import { softIoU } from './similarity.js';
 
 /**
@@ -99,4 +100,18 @@ export async function typesetLikeness(
       await tryOne(coarse.case, tracking);
   const found = best as Best | undefined;
   return found && { ...found, likeness: Math.round(found.likeness * 1000) / 1000 };
+}
+
+/**
+ * True when an icon is drawn on its own filled container (a tile or disc spanning the artboard with the mark knocked
+ * out of it). Exports put icons on their own grounds, so a built-in tile becomes a tile inside a tile.
+ */
+export async function carriesTile(symbol: string): Promise<boolean> {
+  const m = await inkMetrics(symbol);
+  const vb = m.viewBox;
+  const spans = m.bbox.w >= vb.width * 0.88 && m.bbox.h >= vb.height * 0.88;
+  if (!spans) return false;
+  const mask = maskOf(await rasterizeSvgSquare(symbol, 128));
+  const ink = mask.data.reduce((a, v) => a + v, 0) / mask.data.length;
+  return ink >= 0.5;
 }

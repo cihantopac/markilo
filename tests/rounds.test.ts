@@ -228,6 +228,16 @@ describe('typeset likeness', () => {
   }, 60_000);
 });
 
+describe('icon container', () => {
+  it('flags an icon drawn on its own tile, not a free-standing mark', async () => {
+    const { carriesTile } = await import('../src/analyze/typeset.js');
+    const tiled =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path fill="#0b7285" fill-rule="evenodd" d="M247 32H777C896 32 992 128 992 247V777C992 896 896 992 777 992H247C128 992 32 896 32 777V247C32 128 128 32 247 32ZM432 176H292V648H432Z"/></svg>';
+    expect(await carriesTile(tiled)).toBe(true);
+    expect(await carriesTile(readFileSync(fixture('marks/fold-n.svg'), 'utf8'))).toBe(false);
+  });
+});
+
 describe('feedback from the gallery', () => {
   it('keeps only valid round rejections and turns combinations and selections into requests', () => {
     const f = parseFeedback({

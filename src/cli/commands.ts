@@ -6,7 +6,7 @@ import { checkLetters, letterAdvice } from '../analyze/letters.js';
 import { loadMark, sampleFromSvg } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
 import { compareMarks, genericity } from '../analyze/similarity.js';
-import { TYPESET_LIMIT, typesetLikeness, wordmarkFont } from '../analyze/typeset.js';
+import { carriesTile, TYPESET_LIMIT, typesetLikeness, wordmarkFont } from '../analyze/typeset.js';
 import { type ConstructionSpec, compileSpec, constructionSvg, memberOf } from '../construct/compile.js';
 import {
   type Reference,
@@ -1796,6 +1796,10 @@ export const COMMANDS: CommandSpec[] = [
         }
         if (!wordmark) missing.push(`${cpt.id}: no wordmark (the name is not shown)`);
         if (!symbol) missing.push(`${cpt.id}: no compact icon (symbol.svg)`);
+        else if (await carriesTile(symbol))
+          missing.push(
+            `${cpt.id}: the icon draws its own background tile — draw the mark alone; app icons, avatars and favicons add their own ground`,
+          );
         if (!cpt.pitch?.strengths.length || !cpt.pitch?.weaknesses.length)
           missing.push(`${cpt.id}: no strengths/weaknesses (concept update --idea --strengths --weaknesses)`);
         if (wordmark) {

@@ -55,7 +55,8 @@ round's other proposals at the same time — do not touch their concepts.
    letters drawn as skeletons or freeform paths, merged with the font's letters where you keep them. Save it as
    `concepts/<id>/wordmark.svg` (outlined; `"role": "wordmark"` when built with `construct`) and register it with
    `markilo concept update --brand <slug> --concept <id> --wordmark wordmark.svg`.
-4. **The icon** (`symbol.svg`, square). Wordmark-led: derive it from the word — a letter, the pair, the ligature, a
+4. **The icon** (`symbol.svg`, square) is the mark alone, on a transparent artboard — never on its own tile, disc or
+   box: app icons, avatars and favicons add their own ground, and a drawn tile becomes a tile inside a tile. Wordmark-led: derive it from the word — a letter, the pair, the ligature, a
    detail — redrawn to stand alone in a square, not just cropped. Symbol-led: a filled, deliberate form with a drawn
    contour (not an outlined UI icon, not stacked bars or primitives), and a word whose construction matches it.
 5. **Look and redraw, at least three times.** Render the word at 1200 px wide on its paper and on dark, beside the
@@ -81,7 +82,8 @@ from each. Keep what the user chose; do not switch ideas.
 1. Refine the drawing: letterform consistency, optical corrections (overshoot, horizontals thinner than verticals,
    ink traps at acute joins), spacing and kerning by eye, balance of word and icon, stroke and corner logic shared
    between them.
-2. Icon: make it stand on its own at 1024 and 16 px. If a detail disappears at 16–32 px, draw a simplified small
+2. Icon: the mark alone on a transparent artboard (no built-in tile or box); make it stand on its own at 1024 and
+   16 px. If a detail disappears at 16–32 px, draw a simplified small
    version (`symbol-small.svg`, registered with `concept update --small symbol-small.svg`) rather than coarsening the
    main icon.
 3. Lockups: a horizontal and, when useful, a stacked lockup by hand (`lockup-horizontal.svg`, `lockup-stacked.svg`,
