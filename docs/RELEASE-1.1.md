@@ -42,9 +42,10 @@ is added until a proposal shows a real gap that custom lettering cannot fill.
 
 ## Validation log
 
-| Date       | Product  | Round                          | Result                                                                                                                                                                                             | Cost (measured) | Minutes | Owner's verdict |
-| ---------- | -------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | ------- | --------------- |
-| 2026-11-01 | Relivaro | 1 (one designer for all three) | 3 proposals; 2 words untouched typefaces (likeness 0.99), 1 a stock face with a square i-dot (0.985); icons: stacked bars, "li", underlined R. Not shown as final: the process was corrected first | $1.61           | 4.9     | —               |
+| Date       | Product  | Round                                                        | Result                                                                                                                                                                                             | Cost (measured) | Minutes | Owner's verdict |
+| ---------- | -------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | ------- | --------------- |
+| 2026-11-01 | Relivaro | 1 (one designer for all three)                               | 3 proposals; 2 words untouched typefaces (likeness 0.99), 1 a stock face with a square i-dot (0.985); icons: stacked bars, "li", underlined R. Not shown as final: the process was corrected first | $1.61           | 4.9     | —               |
+| 2026-11-01 | Relivaro | 1, rerun (directions by the orchestrator, one designer each) | 3 proposals: a redrawn lowercase word (typeset 0.63), a plumb-bob symbol with wedge-cut letters (0.91), serif capitals with straightened R legs (0.948)                                            | $3.07           | 7.3     | awaiting        |
 
 Corrections after round 1 (before showing the owner anything):
 
