@@ -2,7 +2,10 @@
 
 Goal: three visually developed, genuinely different proposals the user chooses from; then a professionally finished
 identity. Less process, fewer model calls, lower cost. The owner approved the identities of all three validation products
-(below); the release itself waits for the maintainer's explicit go-ahead.
+(below).
+
+**Released 2026-11-01:** `markilo--v1.1.0` and `markilo--v1.1.1` tagged with GitHub releases; npm went from 1.0.0
+straight to 1.1.1 (checksum and `gitHead` verified from the registry, `npx markilo@1.1.1 --version` runs).
 
 ## Diagnosis (from the 1.0 instructions and the 1.0 evaluation: 0 of 81 judged concepts presentable)
 
