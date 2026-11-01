@@ -14,10 +14,13 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 
 1. Collect the user's decision (`markilo feedback --brand <slug>`, or their words) and log it with `markilo answers`.
    Never develop a concept the user dropped. `markilo cost --brand <slug>` before spending.
-2. One `markilo:concept-designer` agent in `develop <concept id>` mode with the user's changes, pinned spots, or the
+2. If the user selected without changes and `markilo proposals --brand <slug> --concepts <id>` lists nothing missing
+   and `verify` has no failing check, ask whether to finish as chosen; on yes, skip to step 5 without a designer or
+   critic. A small, precise change they describe is done directly with the toolchain (`construct`, `lockup`,
+   `verify`). Otherwise: one `markilo:concept-designer` agent in `develop <concept id>` mode with the user's changes, pinned spots, or the
    combination (it creates a new concept for a combination). Record `--phase refine` with its usage.
 3. `markilo verify --brand <slug> --concept <id>` until nothing fails; `Read` the review, wordmark and context sheets.
-4. One `markilo:design-critic` agent in `final <concept id>` mode. Apply the fixes that improve the work without
+4. After a development pass only, one `markilo:design-critic` agent in `final <concept id>` mode. Apply the fixes that improve the work without
    changing what the user chose — once, then verify again; do not critique an unchanged image twice. Record
    `--phase verify`.
 5. Show the user the refined identity (`markilo proposals --brand <slug> --concepts <id>`, the gallery), the measured

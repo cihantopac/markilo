@@ -553,9 +553,10 @@ general model. The user, not the critic, decides which concept to develop and ap
 3. Choose: \`${n} gallery --serve\` (keep it running in the background; give the user the URL), then
    \`${n} feedback --brand <slug>\`: select, change, combine, or reject the round. At most two rounds on your own;
    a third needs \`--round 3 --directed "<their words>"\`.
-4. Develop the chosen concept (letterforms, spacing, optical balance, icon and small version, lockups, colour), then
-   \`${n} verify\` until nothing fails. SVG rules: ${a("svg-authoring.md")}.
-5. Verify: one independent critique (cold first: \`concept update --reads-as \u2026 --blind \u2026 --present yes|no:reason\`,
+4. A plain selection with nothing missing and no failing check: ask whether to finish it as chosen (no designer or
+   critic run). Develop only on requested changes, a combination, or failing checks: letterforms, spacing, optical
+   balance, two or three icon options, small version, lockups, colour; then \`${n} verify\` until nothing fails. SVG rules: ${a("svg-authoring.md")}.
+5. Verify (after a development pass): one independent critique (cold first: \`concept update --reads-as \u2026 --blind \u2026 --present yes|no:reason\`,
    then \`--judgment criterion=score:reason\` and up to five concrete craft fixes). It is advice; apply the fixes once.
 6. Deliver, on the user's approval: \`finalize --user-choice "<their words>"\` (\`--accept-risk\` only when the user
    accepts an insufficient-evidence verdict), \`deliverables\`, \`export\`, then

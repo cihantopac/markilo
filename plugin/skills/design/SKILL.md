@@ -104,19 +104,31 @@ after confirming your summary with the user, `--apply`.
   sketch, an existing identity they admire). A third round needs `--round 3 --directed "<their words>"`.
 - Do not develop or critique proposals the user dropped.
 
-### D. Develop the chosen identity
+### D. Finish as chosen, or develop — ask, don't assume
 
-One `markilo:concept-designer` agent in `develop <concept id>` mode refines the selection — with the user's requested
-changes, or the combination they asked for as a new concept — keeping what the user chose (its width, proportions and
-character): refined letterforms, spacing and optical balance, **two or three icon options** (`review/icon-options.png`)
-with its recommendation as `symbol.svg`, a small version if needed, lockups and colour. `feedback --apply` kept the
-drawing as the user chose it; `markilo proposals --brand <slug> --concepts <id>` renders `review/chosen-vs-now.png` —
-`Read` it, and send the designer back once if the chosen character was lost. Record `--phase refine`.
+A selection is not automatically a request for more work. When the user selects a proposal **without changes**, and
+`markilo proposals` lists nothing `missing` for it and `markilo verify` has no failing check, it is already a finished
+identity: offer to finish it as chosen in the same message that confirms their choice — the originality verdict and
+what evidence is missing, the icon they saw, and one question: finish as is, or develop (and what). On "finish", go to
+Verify step 3 without a designer or critic run. In Markilo 1.1's validation an automatic development pass after a plain
+selection cost $3.47 and 24 minutes and returned the same word and the same icon.
+
+Develop only when the user asked for changes or a combination, or the proposal has failing checks or missing items.
+Then one `markilo:concept-designer` agent in `develop <concept id>` mode refines the selection — with the user's
+requested changes, or the combination they asked for as a new concept — keeping what the user chose (its width,
+proportions and character): refined letterforms, spacing and optical balance, two or three icon options
+(`review/icon-options.png`, at least one that is not a letter) with its recommendation as `symbol.svg`, a small version
+if needed, lockups and colour. `feedback --apply` kept the drawing as the user chose it; `markilo proposals --brand
+<slug> --concepts <id>` renders `review/chosen-vs-now.png` — `Read` it, and send the designer back once if the chosen
+character was lost. A small, precise change the user describes (move a detail from the icon into a letter, a colour, a
+spacing) is done directly with the toolchain (`construct`, `lockup`, `verify`), without a designer run. Record
+`--phase refine`.
 
 ### E. Verify, then one decision
 
 1. `markilo verify --brand <slug> --concept <id>`: fix every failing check.
-2. One `markilo:design-critic` agent in `final` mode reads the developed identity and the icon options cold: what a
+2. After a development pass (not after "finish as chosen", unless the user asks for a second opinion), one
+   `markilo:design-critic` agent in `final` mode reads the developed identity and the icon options cold: what a
    stranger sees first in each (a person, a menu, another letter), scores and at most five concrete craft fixes. It is
    advice. Apply the fixes that improve the work without changing what the user chose, once; never critique an
    unchanged image again. Record `--phase verify`.
