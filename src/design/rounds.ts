@@ -1,3 +1,5 @@
+import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { MarkiloError } from '../core/errors.js';
 import type { Concept } from '../core/types.js';
 import type { Workspace } from '../core/workspace.js';
@@ -42,4 +44,25 @@ export function checkRound(ws: Workspace, slug: string, round: number, directed?
       `Markilo explores at most ${AUTONOMOUS_ROUNDS} rounds on its own.`,
       `Ask the user what they want instead, and start round ${round} with --directed "<their direction>".`,
     );
+}
+
+/** Where the drawing the user chose is kept, so development can be compared with it. */
+export const CHOSEN_DIR = 'chosen';
+
+/**
+ * Keeps a copy of a concept's files as the user chose them (the first time they select or ask to change it). In
+ * Markilo 1.1's validation, development twice lost what the user had picked — a word narrowed, round stones flattened
+ * into pills — and only a side-by-side made that visible.
+ */
+export function keepChosen(ws: Workspace, slug: string, concept: Concept): string[] {
+  const dir = ws.conceptFile(slug, concept.id, CHOSEN_DIR);
+  if (existsSync(dir)) return [];
+  const kept: string[] = [];
+  for (const rel of Object.values(concept.files)) {
+    if (!rel || !existsSync(ws.conceptFile(slug, concept.id, rel))) continue;
+    mkdirSync(dir, { recursive: true });
+    copyFileSync(ws.conceptFile(slug, concept.id, rel), join(dir, rel.split('/').pop()!));
+    kept.push(rel);
+  }
+  return kept;
 }

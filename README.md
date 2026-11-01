@@ -47,21 +47,29 @@ registry search has been done yet; the guidelines say so.</sub>
   logged registry searches the answer is `insufficient-evidence`, never "clear". Calibrated on 24 real brands' logos
   (AUC 0.99; mirrored, rotated and recolored copies always caught; see [docs/ORIGINALITY.md](docs/ORIGINALITY.md)). It
   finds conflicts among what was collected; it cannot prove a mark is unique or registrable.
-- **Ideas before drawings.** Every identity starts from a longlist of at least 12 visual hooks from the product, the
-  audience, the name, type and abstract character; a critic strikes the ones a stranger would read as a UI glyph or a
-  cliché from the words alone, before anything is drawn, and the gallery shows what was kept and why.
-- **Real design output.** Symbols built from construction specs — primitives, booleans, gaps, offsets, fillets,
-  repeats and real letterforms, compiled with Skia's path engine into clean SVG — and tuned by measured variants.
-  Wordmarks outlined from 24 bundled OFL families chosen for the brief's character, with real kerning (Turkish and
-  other Latin-extended letters checked in every weight); every changed letter is measured against the font's own
-  alphabet, so a word that would be misread ("an e that lost its eye", a dot that reads as a hyphen) is caught before
-  review. Lockups aligned to cap height, OKLCH tonal palettes with WCAG pairs.
-- **Looks before it talks.** Directions start as cheap sketches that a critical review must pick before any are
-  developed. Every concept is rendered to a review sheet (16–256 px, light, dark, black, white) and a context sheet (a
-  browser tab, a home screen next to the competitors, a site header, an avatar). An independent critic records a blind
-  first impression before it reads the rationale, and only concepts that pass its gate (brand fit, distinctiveness and
-  memorability ≥ 6 and "a senior designer would present it") reach you. A first look on the edge of the bar is decided
-  by the majority of three cold looks from fresh critics, and the designer can never approve its own work.
+- **Three proposals, your choice.** Markilo reads the product, writes a short brief, and shows three genuinely
+  different, visually developed identities side by side — each with its word, a compact icon, light and dark previews,
+  the idea in one sentence, strengths and honest weaknesses. You select one, ask for changes, combine two, or reject
+  all three with a note; after two rounds it asks you for direction instead of guessing on. Nothing is finalized
+  without your choice.
+- **Drawn, not assembled.** Designers draw freely: Bézier contours, custom letterforms built from real font outlines
+  and their own strokes, ligatures and treatments that run through the whole word. Wordmark-led by default for coined
+  names. `proposals` measures how close each word still is to its typeface set plainly, so "a stock font with a
+  coloured dot" is caught before you see it; it also flags an icon drawn on its own tile.
+- **Development keeps what you chose.** The drawing you picked is kept; after development you see it next to the
+  result, with two or three icon options to choose from in the same decision.
+- **Real design output.** Construction specs (primitives, booleans, gaps, fillets, repeats and real letterforms,
+  compiled with Skia's path engine) when they help, freeform SVG when it is better. Wordmarks outlined from 24 bundled
+  OFL families with real kerning (Turkish and other Latin-extended letters checked in every weight); changed letters
+  are measured against the font's own alphabet, so a word that would be misread is caught. Lockups aligned to cap
+  height, OKLCH tonal palettes with WCAG pairs.
+- **Looks before it talks.** Every concept is rendered to a review sheet (16–256 px, light, dark, black, white) and a
+  context sheet (a browser tab, a home screen next to the competitors, a site header, an avatar). One independent
+  critic reads the developed identity cold — what a stranger sees first, scores and concrete craft fixes — as advice
+  for you, never as a gate in front of you.
+- **Costs in the open.** `markilo cost` records each phase against a budget (default $12) and stops paid work when it
+  is reached. Your references — logos, screenshots, mood boards, sketches you like or dislike — guide the design and are
+  checked for originality like any competitor mark.
 - **Complete asset kit.** Logo variants, favicons, PWA + maskable icons, iOS (incl. dark/tinted and Icon Composer
   layers), macOS `.icns`, Android adaptive + themed icons, Windows ICO + MSIX assets, Open Graph and social images,
   marketing templates, design tokens and brand guidelines, with a manifest of sizes and hashes. You get what the
@@ -82,7 +90,14 @@ registry search has been done yet; the guidelines say so.</sub>
 
 ## Measured quality
 
-Markilo is benchmarked end to end with nobody steering, on nine realistic products (an independent SaaS, a mobile
+**1.1, steered (validation on one real product).** The 1.1 workflow was validated on a real release-engineering CLI
+with its owner choosing at each step, and measured with Claude Code's own cost report. The final process — one round of
+three proposals with the Opus designer ($5.81, 13 min), development ($1.76) and an icon choice ($1.59) — reached an
+identity the owner accepted; the earlier steps of the same validation (a single designer, a Sonnet designer) are in
+[docs/RELEASE-1.1.md](docs/RELEASE-1.1.md) with what each taught. 1.0 spent $6.85 on the same product unattended and
+showed nothing. This is one product and its owner's judgment, not a benchmark.
+
+**1.0 and earlier, unattended (benchmark).** Markilo is benchmarked end to end with nobody steering, on nine realistic products (an independent SaaS, a mobile
 app, a multi-product family, a developer tool, an online shop, a B2B platform, a learning app, a feature-flag service
 and a team secrets manager). Six of them were **holdouts** for a while: written before the changes they test and
 never used for tuning until those results were in. The plugin researches, writes the brief, designs, critiques, and
@@ -195,16 +210,16 @@ node ~/.claude/plugins/marketplaces/markilo/plugin/dist/markilo.mjs shortcut ins
 
 ## Use
 
-| Command                                        | What it does                                                                                                  |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `/markilo:design <url, repo, name or task>`    | The full studio: discover → research → brief → explore → design → verify → review → refine → export → deliver |
-| `/markilo:research <url or repo>`              | Brand Intelligence Profile and brief only                                                                     |
-| `/markilo:concepts <brand>`                    | Creative directions and verified SVG concepts                                                                 |
-| `/markilo:originality <concept, file or name>` | Similarity analysis, name check and trademark pre-screening plan                                              |
-| `/markilo:refine <brand> <concept> <feedback>` | Iterate with verification, then finalize                                                                      |
-| `/markilo:export <brand>`                      | Generate the asset kit (optionally install web assets into your project)                                      |
-| `/markilo:gallery`                             | Build the Brand Preview Gallery                                                                               |
-| `/markilo:audit <logo or brand>`               | Evaluate an existing identity: keep, refresh or redesign                                                      |
+| Command                                        | What it does                                                                                      |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `/markilo:design <url, repo, name or task>`    | The full studio: understand → three proposals → your choice → develop → verify → export           |
+| `/markilo:research <url or repo>`              | Brand Intelligence Profile and brief only                                                         |
+| `/markilo:concepts <brand>`                    | One round of three visually developed proposals for you to choose from                            |
+| `/markilo:originality <concept, file or name>` | Similarity analysis, name check and trademark pre-screening plan                                  |
+| `/markilo:refine <brand> <concept> <feedback>` | Develop the concept you chose, with icon options and one critique, then finalize on your approval |
+| `/markilo:export <brand>`                      | Generate the asset kit (optionally install web assets into your project)                          |
+| `/markilo:gallery`                             | Build the Brand Preview Gallery                                                                   |
+| `/markilo:audit <logo or brand>`               | Evaluate an existing identity: keep, refresh or redesign                                          |
 
 Requests can be written in any language; files and reports are produced in English.
 
@@ -212,19 +227,14 @@ Requests can be written in any language; files and reports are produced in Engli
 
 ```text
 you  › /markilo:design ./ — we're launching this as a product, it needs an identity
-     › (Markilo scans the repo: package.json, README, existing favicon, CSS colors, fonts)
-     › Discover: no real identity yet → mode "new". May I research competitors on the web? (y)
-     › Research: 8 competitors, category codes (green + shields everywhere), 3 gaps recorded
-     › Brief: 3 questions, each with a suggested answer
-     › Ideas: 16 visual hooks; the critic strikes 11 from the words ("a gauge", "a return key"), keeps 5
-     › Explore: 3 directions from the kept ideas — "Pulse" monogram, "Lighthouse" pictogram, "Signal" abstract
-     › Sketch: 4 quick constructions per direction; you pick in the gallery, with the critic's reading beside each
-     › Design: concept-designer agents develop the picks; each iterates on its review and context sheets
-     › Verify: "Lighthouse" 71% similar to a competitor reference → reworked from the idea up
-     › Critique: blind first look ("reads as: a pin, a drop") then scores; only "Pulse" passes the gate
-     › Review: gallery at http://127.0.0.1:…/ — pin a note on the stem, compare, "Send to your agent"
-     › Deliverables: a web app → logos, web, social, tokens, guidelines (app icons are one question away)
-     › Finalize "Pulse" → Export: 80 files → Next.js detected: 10 files for app/ and public/ (dry run, 0 overwrites)
+     › Understand: README, interface colours and type, five competitor marks (with your OK), a short brief,
+       two questions with suggested answers, and "any logos, screenshots or sketches you like or dislike?"
+     › Explore: three designers draw three directions in parallel — a worked wordmark, a symbol with a matching
+       word, a warmer route — rendered side by side (proposals/round-1.png) with strengths and risks
+     › You, in the gallery: "the second one, but the icon should come from the first"
+     › Develop: the chosen word refined, three icon options, your choice shown next to the result
+     › Verify: checks clean, one cold critique ("option C reads as a person icon at 32 px"), originality report
+     › You: "icon B, approved" → Finalize → Export: 81 files → Next.js detected (dry run, 0 overwrites)
 ```
 
 ### Monorepos and product families
@@ -322,11 +332,11 @@ Details: [docs/PRIVACY.md](docs/PRIVACY.md) · [SECURITY.md](SECURITY.md).
 - Raster images (PNG/JPEG) are analyzed for similarity; vector tracing of raster logos is not included.
 - Icon Composer (`.icon`) files are not written directly; Markilo exports the layer sources to import.
 - X (Twitter) image sizes could not be verified against x.com documentation (blocked to automated readers).
-- Design quality still depends on the model and on your direction: unattended runs rarely pass the critic gate, and a
-  strict independent judge accepts only a few of the marks they develop (see [Measured quality](#measured-quality)).
-  On real developer tools with coined names, twelve unattended runs produced no identity an independent panel would
-  present ([bench/results/1.0.0/real-projects.md](bench/results/1.0.0/real-projects.md)). Markilo raises the floor and
-  refuses to hide weak work; taste is a conversation, and the gallery is where you steer it.
+- Design quality depends on the model and on your direction. Unattended, 1.0 produced no identity an independent panel
+  would present ([bench/results/1.0.0](bench/results/1.0.0)). 1.1 is built to be steered: in its validation one real
+  product reached an identity its owner accepted, after one round with the Opus designer, a development and a choice
+  of icons — one product, judged by its owner, not a benchmark ([docs/RELEASE-1.1.md](docs/RELEASE-1.1.md)). Icons
+  remain the hardest part; expect to choose between options.
 
 ## Develop
 

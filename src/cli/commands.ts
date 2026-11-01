@@ -35,7 +35,14 @@ import { addFont, searchFonts } from '../design/font-catalog.js';
 import { fontInfo, listFonts, loadBundledFace, loadFontFile } from '../design/fonts.js';
 import { composeLockup } from '../design/lockup.js';
 import { generatePalette } from '../design/palette.js';
-import { AUTONOMOUS_ROUNDS, checkRound, ROUND_SIZE, rounds } from '../design/rounds.js';
+import {
+  AUTONOMOUS_ROUNDS,
+  CHOSEN_DIR,
+  checkRound,
+  keepChosen,
+  ROUND_SIZE,
+  rounds,
+} from '../design/rounds.js';
 import { wordmarkSvg } from '../design/wordmark.js';
 import { defaultFonts, exploreWordmarks } from '../design/wordmarks.js';
 import { GROUP_INFO, resolveDeliverables, suggestDeliverables } from '../export/deliverables.js';
@@ -1786,6 +1793,7 @@ export const COMMANDS: CommandSpec[] = [
       const inputs: ProposalInput[] = [];
       const missing: string[] = [];
       const typeset: Record<string, number> = {};
+      const compare: Record<string, string> = {};
       const files: string[] = [];
       for (const [i, cpt] of picked.entries()) {
         const symbol = read(cpt, cpt.files.symbol);
@@ -1832,6 +1840,29 @@ export const COMMANDS: CommandSpec[] = [
         const out = w.conceptFile(slug, cpt.id, join('review', 'proposal.png'));
         writeGenerated(out, await renderProposal(input));
         files.push(out);
+        // After the user chose this concept: what they chose next to what it is now, so drift is seen, not guessed.
+        const kept = (rel?: string) => {
+          const f = rel && w.conceptFile(slug, cpt.id, join(CHOSEN_DIR, rel.split('/').pop()!));
+          return f && existsSync(f) ? readText(f) : undefined;
+        };
+        const was = { symbol: kept(cpt.files.symbol), wordmark: kept(cpt.files.wordmark) };
+        if ((was.symbol || was.wordmark) && (was.symbol !== symbol || was.wordmark !== wordmark)) {
+          const lockupWas = kept(cpt.files.lockupHorizontal);
+          const smallWas = kept(cpt.files.small);
+          const then: ProposalInput = {
+            ...input,
+            caption: 'As the user chose it',
+            ...(was.symbol ? { symbol: was.symbol } : {}),
+            ...(was.wordmark ? { wordmark: was.wordmark } : {}),
+          };
+          delete then.lockup;
+          delete then.small;
+          if (lockupWas) then.lockup = lockupWas;
+          if (smallWas) then.small = smallWas;
+          const cmp = w.conceptFile(slug, cpt.id, join('review', 'chosen-vs-now.png'));
+          writeGenerated(cmp, await renderRoundBoard([then, { ...input, caption: 'Now' }]));
+          compare[cpt.id] = cmp;
+        }
       }
       const board =
         inputs.length > 1
@@ -1845,6 +1876,8 @@ export const COMMANDS: CommandSpec[] = [
         files,
         /** How closely each wordmark matches its typeface set plainly (1 = untouched). */
         typeset,
+        /** For a concept the user chose: their choice and its current state side by side. */
+        ...(Object.keys(compare).length ? { compare } : {}),
         missing,
         next: missing.length
           ? 'Complete what is missing, then render again.'
@@ -1968,6 +2001,11 @@ export const COMMANDS: CommandSpec[] = [
               `${d.concept}: ${pick ? `develop ${pick}` : 'none — a different move'}${d.note ? ` — ${d.note}` : ''}`,
             );
             applied.push(`${d.brand}/${d.concept} → sketch ${pick ?? 'none'}`);
+          }
+          if (d.decision === 'keep' || d.decision === 'refine') {
+            const chosen = w.concept(d.brand, d.concept);
+            if (keepChosen(w, d.brand, chosen).length)
+              applied.push(`${d.brand}/${d.concept} → kept as chosen (${CHOSEN_DIR}/)`);
           }
           if (d.decision !== 'keep' && d.decision !== 'drop') continue;
           const cur = w.concept(d.brand, d.concept);

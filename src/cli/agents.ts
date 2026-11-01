@@ -27,9 +27,9 @@ export const ROLES = {
   },
   designer: {
     source: 'concept-designer',
-    claude: 'sonnet',
+    claude: 'opus',
     needs:
-      "a shell, file editing and looking at PNGs; a capable general model (in Markilo's benchmark a stronger designer model did not design better)",
+      "a shell, file editing and looking at PNGs; your strongest model that reads images (in Markilo 1.1's validation the stronger designer redrew 3 of 3 words where the faster one redrew 1, and drew the direction the owner chose)",
   },
   critic: {
     source: 'design-critic',
@@ -84,8 +84,8 @@ only for a broad brief. Give each sub-agent the brand slug, the concept id, the 
     : `Run the final critique as a separate, deliberately critical pass — ideally a fresh chat that reads images —
 starting with a cold look at the rendered sheets, before reading the rationale.`
 }
-Models: design and research run well on a capable general model; the critic benefits from your strongest model that
-reads images. The user, not the critic, decides which concept to develop and approve.
+Models: the designer and the critic need your strongest model that reads images; research runs well on a fast
+general model. The user, not the critic, decides which concept to develop and approve.
 
 ## Rules
 1. The user owns the creative choice: show proposals and let them choose; \`finalize\` needs
@@ -114,7 +114,7 @@ reads images. The user, not the critic, decides which concept to develop and app
    letters, icon, colour), then one designer run per direction (\`concept new … --round 1\`, at least one
    \`--lead wordmark\`), each with \`wordmark.svg\`, a compact icon \`symbol.svg\`, and
    \`concept update --idea … --strengths … --weaknesses …\`; then \`${m} proposals --brand <slug>\` (a word whose
-   \`typeset\` likeness is 0.95 or more is still its typeface as set: design it). How to design them:
+   \`typeset\` likeness is 0.93 or more is still its typeface as set: design it). How to design them:
    ${ref('design-principles.md')} (freeform SVG and custom letterforms are first-class; construction specs are an
    optional tool: ${ref('construction.md')}). No critic at this stage.
 3. Choose: \`${m} gallery --serve\` (keep it running in the background; give the user the URL), then

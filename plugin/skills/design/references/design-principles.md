@@ -93,7 +93,24 @@ A round is three proposals that differ in kind, not three variations of one shap
 3. **A bolder or unexpected route** — a typographic emblem, an abstract system, an editorial serif, a monogram so well
    drawn it becomes a mark — something the user might not have asked for and might love.
 
-Adapt the mix to the brief. If the user's references point somewhere, at least one proposal should go there.
+Adapt the mix to the brief. If the user's references point somewhere, at least one proposal should go there. Let one
+proposal be warmer or more human than the category expects: on a release-engineering tool whose brief said
+"rigorous, calm", the owner chose a hand-tooled humanist word and a cairn of stones over two engineered routes.
+
+## What an accepted identity teaches (the bar for "good enough")
+
+In Markilo 1.1's validation the owner of a real release-engineering tool accepted this identity after one round of
+proposals, a development pass and a choice between icon options:
+
+- **The word had a hand.** A humanist face (Alegreya Sans) softened and tooled across every letter, with a pebble for
+  the i-dot: typeset likeness 0.77 — visibly not the font, still effortless to read.
+- **The icon was an object with character plus one product truth.** Stones at rest (a trail marker: someone checked
+  this way), the top stone drawn only as an outline — the product's "unverified is a state, never a silent pass" made visible. Letter icons
+  (an r, an R, an "r.") were all read as generic; stacked bars read as a menu.
+- **The user combined.** The outline came from an earlier, otherwise rejected proposal. Ideas that lose as a whole
+  often carry the detail that wins — keep them visible in the gallery.
+- **Development keeps the choice.** Two development passes lost what was chosen (a narrowed word, stones flattened into
+  pills); the version the owner accepted refined the chosen drawing and offered icon options instead.
 
 ## Craft
 

@@ -167,6 +167,37 @@ describe('exploration rounds', () => {
   }, 60_000);
 });
 
+describe('the chosen concept', () => {
+  it('keeps the drawing the user chose and shows it next to the developed one', () => {
+    const cwd = proposals(3);
+    ok(['proposals', '--brand', 'tidepool'], cwd);
+    const file = join(cwd, 'choice.json');
+    writeFileSync(
+      file,
+      JSON.stringify({
+        schema: 'markilo/feedback@1',
+        decisions: [
+          { brand: 'tidepool', concept: 'p2', decision: 'keep', tags: [], note: 'This one', pins: [] },
+        ],
+        preferred: null,
+      }),
+    );
+    const f = ok(['feedback', '--brand', 'tidepool', '--import', file, '--apply'], cwd);
+    expect(f.applied).toContain('tidepool/p2 → kept as chosen (chosen/)');
+    const dir = join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'p2');
+    expect(existsSync(join(dir, 'chosen', 'symbol.svg'))).toBe(true);
+    // Unchanged: nothing to compare. Developed: the choice and the current state side by side.
+    expect(ok(['proposals', '--brand', 'tidepool', '--concepts', 'p2'], cwd).compare).toBeUndefined();
+    copyFileSync(fixture('marks/leaf-letter.svg'), join(dir, 'symbol.svg'));
+    const r = ok(['proposals', '--brand', 'tidepool', '--concepts', 'p2'], cwd);
+    expect(existsSync(r.compare.p2)).toBe(true);
+    // A second selection does not overwrite what the user first chose.
+    expect(ok(['feedback', '--brand', 'tidepool', '--apply'], cwd).applied).not.toContain(
+      'tidepool/p2 → kept as chosen (chosen/)',
+    );
+  }, 60_000);
+});
+
 describe('typeset likeness', () => {
   it('tells a typeface as set from a word with a treatment through its letters', async () => {
     const { typesetLikeness } = await import('../src/analyze/typeset.js');
@@ -176,7 +207,7 @@ describe('typeset likeness', () => {
       [
         'wordmark',
         '--text',
-        'relivaro',
+        'tidepool',
         '--font',
         'sora',
         '--weight',
@@ -200,7 +231,7 @@ describe('typeset likeness', () => {
               subtract: [
                 {
                   glyph: {
-                    text: 'relivaro',
+                    text: 'tidepool',
                     font: 'sora',
                     weight: 600,
                     height: 180,
@@ -217,12 +248,12 @@ describe('typeset likeness', () => {
     );
     ok(['construct', spec, '-o', join(cwd, 'cut.svg')], cwd);
     const font = { id: 'sora', weight: 600 };
-    const untouched = await typesetLikeness(readFileSync(plain, 'utf8'), font, 'Relivaro');
-    const cut = await typesetLikeness(readFileSync(join(cwd, 'cut.svg'), 'utf8'), font, 'Relivaro');
+    const untouched = await typesetLikeness(readFileSync(plain, 'utf8'), font, 'Tidepool');
+    const cut = await typesetLikeness(readFileSync(join(cwd, 'cut.svg'), 'utf8'), font, 'Tidepool');
     expect(untouched!.likeness).toBeGreaterThanOrEqual(0.98);
     expect(cut!.likeness).toBeLessThan(0.92);
     expect(
-      (await typesetLikeness(readFileSync(plain, 'utf8'), { id: 'fraunces', weight: 600 }, 'Relivaro'))!
+      (await typesetLikeness(readFileSync(plain, 'utf8'), { id: 'fraunces', weight: 600 }, 'Tidepool'))!
         .likeness,
     ).toBeLessThan(0.7);
   }, 60_000);

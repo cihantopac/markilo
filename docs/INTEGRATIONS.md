@@ -40,17 +40,18 @@ your agent shows:
 
 ```bash
 # VS Code: the names in the model picker, "<model> (<vendor>)"; a comma-separated list is a preference order
-npx markilo agent-setup --target vscode --model "critic=<strongest model> (copilot),<fallback> (copilot)" --model "designer=<fast model> (copilot)" --apply
+npx markilo agent-setup --target vscode --model "critic=<strongest model> (copilot),<fallback> (copilot)" --model "designer=<strongest model> (copilot)" --apply
 # Codex: model ids from `codex` /model; the critic also gets model_reasoning_effort = "high"
 npx markilo agent-setup --target codex --model critic=<model id> --apply
 # Cursor: model ids from the model picker (Cursor accepts parameters such as <model id>[effort=high])
 npx markilo agent-setup --target cursor --model "critic=<model id>[effort=high]" --apply
 ```
 
-Why the critic matters most: the quality gate rests on the critic's cold scores, and it was calibrated against an
-independent Claude Opus judge (`bench/results/calibration-rc.7/`). The critic names its model with
-`concept update --reviewer <model id>`; with any other model, `concept list`, the gate output and the gallery say
-"reviewer not calibrated" — the rule still applies, but how well it predicts the judge has not been measured. Notes
+Why the designer matters most: in Markilo 1.1's validation the same workflow with a stronger designer model redrew 3 of
+3 words instead of 1 and drew the direction the owner chose, so give the designer your strongest model that reads
+images. The critic gives one cold read with craft fixes as advice; the user decides. The critic names its model with
+`concept update --reviewer <model id>` (the 1.0 gate was calibrated on Claude Opus; other reviewers are reported as not
+calibrated). Notes
 from each agent's documentation (October 2026): Cursor runs sub-agents on its own Composer model on legacy
 request-based plans without Max Mode, and falls back to a compatible model when the named one is unavailable; VS Code
 skips a sub-agent model above the chat's cost tier.

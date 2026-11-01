@@ -66,7 +66,9 @@ brand/                          # default; override with --workspace
     brief.json                  # strategy brief (goals, audience, constraints, locked assets)
     profile.json                # Brand Intelligence Profile (findings with source + date + status)
     answers.json                # questions already asked and their answers
-    ideas.json                  # idea longlist with the critic's keep/strike readings
+    ideas.json                  # optional idea log (not used by the default 1.1 workflow)
+    cost.json                   # cost per creative phase against the budget (markilo cost)
+    proposals/round-<n>.png     # a round's three proposals side by side (markilo proposals)
     decisions.md                # append-only design decision log
     research/
       references/               # competitor marks gathered for comparison only (never shipped)

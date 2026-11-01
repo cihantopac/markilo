@@ -77,7 +77,9 @@ what is already in the workspace. `markilo status` says where the work stands an
    (word or symbol); the typeface class or lettering approach; the move you see in _these_ letters (look at the name:
    which pairs could join, which counters, terminals or rounds repeat, where the rhythm is); the icon idea; colour.
    They must differ in kind (`references/design-principles.md` → "Three proposals"); at least one is wordmark-led
-   unless the brief says otherwise. In a later round, start from what the user rejected and why.
+   unless the brief says otherwise, and at least one is warmer or more human than the category expects — for a
+   release-engineering tool in Markilo 1.1's validation, the owner chose the hand-tooled, organic direction over two
+   engineered ones. In a later round, start from what the user rejected and why.
 2. **Start three `markilo:concept-designer` agents in parallel**, one per direction, each in `explore <concept id>`
    mode with `--round <n>`, its direction, the brief summary, what to avoid, the existing interface colours and the
    user's references (paths and what they said). One agent per proposal is deliberate: in Markilo 1.1's first
@@ -85,7 +87,7 @@ what is already in the workspace. `markilo status` says where the work stands an
    typefaces.
 3. When they return, record their usage (`--phase explore`), run `markilo proposals --brand <slug>` and `Read`
    `proposals/round-<n>.png`. `missing` lists anything a proposal still lacks — a word that is still its typeface as
-   set (`typeset` ≥ 0.95), a missing icon or pitch. Send only that proposal back once, with the specific fix. Do not run
+   set (`typeset` ≥ 0.93), a missing icon or pitch. Send only that proposal back once, with the specific fix. Do not run
    a critic here: the user is the judge of the round.
 
 ### C. The user chooses
@@ -105,23 +107,25 @@ after confirming your summary with the user, `--apply`.
 ### D. Develop the chosen identity
 
 One `markilo:concept-designer` agent in `develop <concept id>` mode refines the selection — with the user's requested
-changes, or the combination they asked for as a new concept — into a professional identity: refined geometry and
-letterforms, spacing and optical balance, the primary lockup, the compact icon and a small version if needed, colour
-variants. Record `--phase refine`.
+changes, or the combination they asked for as a new concept — keeping what the user chose (its width, proportions and
+character): refined letterforms, spacing and optical balance, **two or three icon options** (`review/icon-options.png`)
+with its recommendation as `symbol.svg`, a small version if needed, lockups and colour. `feedback --apply` kept the
+drawing as the user chose it; `markilo proposals --brand <slug> --concepts <id>` renders `review/chosen-vs-now.png` —
+`Read` it, and send the designer back once if the chosen character was lost. Record `--phase refine`.
 
-### E. Verify
+### E. Verify, then one decision
 
-1. `markilo verify --brand <slug> --concept <id>`: fix every failing check. `Read` the review, wordmark and context
-   sheets.
-2. One `markilo:design-critic` agent in `final` mode gives an independent read of the developed identity: first
-   impressions, scores and the concrete craft fixes that would make it stronger. It is advice. Apply the fixes that
-   improve the work without changing what the user chose, once; do not loop critiques on unchanged images. Record
-   `--phase verify`.
-3. Show the result to the user with the measured checks, the originality verdict and the critic's notes (labelled as
-   judgment). When they approve:
+1. `markilo verify --brand <slug> --concept <id>`: fix every failing check.
+2. One `markilo:design-critic` agent in `final` mode reads the developed identity and the icon options cold: what a
+   stranger sees first in each (a person, a menu, another letter), scores and at most five concrete craft fixes. It is
+   advice. Apply the fixes that improve the work without changing what the user chose, once; never critique an
+   unchanged image again. Record `--phase verify`.
+3. Show the user, together: the developed identity, `chosen-vs-now.png`, the icon options with your recommendation and
+   the critic's first readings (labelled as judgment), the measured checks and the originality verdict with what
+   evidence is missing. Ask for **one decision**: which icon, and approve or change. When they approve:
    `markilo finalize --brand <slug> --concept <id> --user-choice "<their words>" --tagline …`. Finalize succeeds only when the
-   originality verdict is `no-conflicts-found`; for `insufficient-evidence` or `needs-review`, show what is missing and
-   add `--accept-risk` only on their explicit yes. Never present `insufficient-evidence` as "original".
+   originality verdict is `no-conflicts-found`; for `insufficient-evidence` or `needs-review`, say so in that same
+   message and add `--accept-risk` only on their explicit yes. Never present `insufficient-evidence` as "original".
 
 ### F. Export and deliver
 

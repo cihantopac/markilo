@@ -11,9 +11,10 @@ import { softIoU } from './similarity.js';
 /**
  * At or above this likeness a wordmark is the typeface as set: the same letters, spacing aside. Calibrated on Markilo
  * 1.1's first real-project round: three untouched words, one with a raised square i-dot, scored 0.985–0.995; a cut
- * through every letter of the same word scored 0.895, a different grotesque 0.79 and a serif 0.51.
+ * through every letter of the same word scored 0.895, a different grotesque 0.79 and a serif 0.51. A serif with only its
+ * R legs straightened scored 0.948 and was rightly judged a stock face, hence 0.93; accepted words scored 0.40–0.79.
  */
-export const TYPESET_LIMIT = 0.95;
+export const TYPESET_LIMIT = 0.93;
 
 /** The bundled family a wordmark was set in: the concept's typography, else the SVG's `data-font` ("Sora 600"). */
 export function wordmarkFont(

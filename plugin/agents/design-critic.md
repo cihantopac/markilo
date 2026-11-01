@@ -18,8 +18,9 @@ judge by the same standard the designer worked to.
 
 1. **Cold first look.** Read the brief (`markilo brief show --brand <slug>`) and only the images:
    `concepts/<id>/review/proposal.png`, `concepts/<id>/review/wordmark-sheet.png` (when there is a wordmark),
-   `concepts/<id>/review/symbol-sheet.png` and `brand/brands/<slug>/research/cache/review/context-<id>.png` — not
-   `concept.json` or anything the designer wrote. Record what a stranger sees first:
+   `concepts/<id>/review/symbol-sheet.png`, `brand/brands/<slug>/research/cache/review/context-<id>.png` and, when
+   present, `concepts/<id>/review/icon-options.png` — not `concept.json` or anything the designer wrote. For each icon
+   option, name the first thing a stranger sees at 32 px (a person, a menu, a database, another letter). Record what a stranger sees first:
    `markilo concept update --brand <slug> --concept <id> --reads-as "<first>; <second>; <third>"`, and your cold scores
    and answer: `--blind distinctiveness=n,memorability=n,brand-fit=n,craft=n,versatility=n --present yes|no:"<why>"
    --reviewer <model id>`. Calibration: 3 = clip art or a stock shape, 5 = competent but forgettable, 7 = strong and

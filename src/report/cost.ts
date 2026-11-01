@@ -9,10 +9,11 @@ export const PHASES = ['understand', 'explore', 'refine', 'verify', 'export'] as
 export type Phase = (typeof PHASES)[number];
 
 /**
- * Default exploration budget per brand, in US dollars of API-equivalent cost: three proposals and one round of
- * refinement fit well inside it; a second round of proposals may not.
+ * Default budget per brand, in US dollars of API-equivalent cost. Measured in Markilo 1.1's validation with the Opus
+ * designer: one round of three proposals $5.81, development $1.7, an icon refinement $1.6 — one round, development and
+ * export fit; a second round needs the user's OK to raise it.
  */
-export const DEFAULT_BUDGET_USD = 6;
+export const DEFAULT_BUDGET_USD = 12;
 /**
  * USD per million tokens processed (input, cache and output together), measured on Markilo 1.0's real-project runs:
  * $6.85–9.01 for 10.9–16.3 M tokens, ≈ $0.55–0.63. An estimate for agentic work with heavy prompt caching; an entry

@@ -6,6 +6,45 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+Markilo 1.1 changes how it designs, not what it can export. 1.0's independent evaluation found 0 presentable concepts
+of 43: the instructions produced mechanical marks (primitives assembled into UI icons, stock typefaces with one letter
+changed, ideas judged at favicon size) behind a critic gate the user never saw past. 1.1 shows three visually developed
+proposals, lets the user choose, and develops the choice. Validation on one real product: `docs/RELEASE-1.1.md`.
+
+### Breaking
+
+- `finalize` requires `--user-choice "<the user's words>"`: a critic's pass alone no longer finalizes.
+- The default workflow no longer uses the idea longlist, sketch boards, the sketch review, the gate before the user
+  or second looks. The commands remain (`ideas`, `sketches`, `concept update --sketch-pick/--look`) for compatibility.
+- `concept-designer` runs on Opus (was Sonnet): on the same prompt it redrew 3 of 3 words where Sonnet redrew 1.
+
+### Added
+
+- `concept new --round <n> [--directed "<user's words>"]`: three proposals per round; a round beyond the second only
+  on the user's direction.
+- `concept update --idea --strengths --weaknesses`: the pitch shown with each proposal.
+- `markilo proposals`: per-concept preview (identity on its paper and reversed, icon as app tile, avatar, 32 and
+  16 px), the round side by side, `typeset` likeness of each word to its plain typeface (≥ 0.93 is listed as
+  missing), a built-in icon tile flagged, and `chosen-vs-now.png` once the user chose the concept.
+- `markilo cost`: per-phase tokens, minutes and dollars against a budget (default $12); `status: over` stops paid work.
+- `reference add --category inspiration|dislike|existing`: the user's own references, compared for originality and
+  never shown as competitors.
+- Gallery: rounds side by side, Select / Change / Drop, "combine with another", "Reject all three" with a note; no
+  concept is hidden because of a critic score. `feedback --apply` records round rejections and keeps the chosen drawing
+  in `chosen/`.
+- `status` stages: review (proposals waiting), refine, next round, ask for direction.
+- Bench: `run … --stage concepts` stops after one round of proposals.
+
+### Changed
+
+- Skills and agents rewritten: Understand → Explore (the orchestrator writes three directions, one designer per
+  proposal, in parallel) → the user chooses → Develop (refine the choice, two or three icon options) → Verify (one cold
+  critique, advice) → Export. `design-principles.md` rewritten as positive craft guidance (wordmark first, drawn not
+  assembled, three proposals that differ in kind); `construction.md` and `svg-authoring.md` are tool references, and
+  freeform Bézier paths are first-class.
+- The design critic has two modes: `final` (one cold read with concrete craft fixes) and `compare` (on request).
+- `agent-setup` writes the same workflow for Codex, Cursor and VS Code.
+
 ## [1.0.0] - 2026-11-01
 
 Markilo leaves beta. 1.0 makes everything around the design trustworthy — your files, untrusted input, the critique
