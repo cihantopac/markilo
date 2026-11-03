@@ -638,11 +638,12 @@ async function exportAndroid(ctx: Ctx) {
   const bart = kit.locked ? bart0 : adaptToGround(bart0, bg, { dark: kit.palette.ink, light: '#ffffff' });
   await emit(
     ctx,
-    'android/tv-banner.png',
+    // A drawable resource (names are [a-z0-9_]) under res/, so install-assets copies it with the launcher icons.
+    'android/res/drawable-xhdpi/banner.png',
     await png(svgDocument(bw, bh, fitArt(bart, bw, bh, bw * 0.7, bh * 0.5), { background: bg }), bw),
     {
       group: 'android',
-      purpose: `Android TV home-screen banner ${bw}×${bh} (android:banner, xhdpi)`,
+      purpose: `Android TV home-screen banner ${bw}×${bh}, xhdpi (reference it in the manifest: android:banner="@drawable/banner")`,
       derivedFrom: ctx.primary
         ? kit.lead === 'wordmark' || !ctx.lockupH
           ? 'wordmark.svg'

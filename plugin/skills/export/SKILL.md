@@ -36,4 +36,7 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 7. Tell the user where everything is: open `exports/index.html` first (every file previewed on its own background,
    with links); `exports/README.md` lists the files most people need; `guidelines/index.html` explains usage. Say that more groups
    can be added any time (`markilo deliverables --add ios` then `markilo export`), and mention that
-   X (Twitter) header sizes could not be verified against x.com documentation.
+   X (Twitter) header sizes could not be verified against x.com documentation. For Android TV, the banner is
+   `android/res/drawable-xhdpi/banner.png`, referenced in the app manifest as `android:banner="@drawable/banner"`;
+   Android asks that a banner include text, so for a symbol-only identity tell the user to replace it with one that
+   includes the name.

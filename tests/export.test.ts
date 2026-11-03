@@ -177,7 +177,8 @@ describe('export kit', () => {
     const darkFirst = kitDarkFirst();
     const expectedToDiffer = (path: string) =>
       path.startsWith('tokens/') ||
-      path === 'android/tv-banner.png' ||
+      // 1.2.0 adds the TV banner as an Android drawable resource (not in the 1.1.3 fixture).
+      path === 'android/res/drawable-xhdpi/banner.png' ||
       // The manifest lists every file with its hash and a timestamp, so it changes whenever a file is added.
       path === 'asset-manifest.json' ||
       // README.md and index.html (the kit overview) list the exported files, now including tailwind.css and the TV banner.
@@ -191,10 +192,13 @@ describe('export kit', () => {
     }
     expect(changed).toEqual([]);
   });
-  it('emits an Android TV banner at 320×180', () => {
+  it('emits an Android TV banner at 320×180 as a drawable resource', () => {
     const manifest = JSON.parse(readFileSync(out('asset-manifest.json'), 'utf8'));
-    expect(pngSize(readFileSync(out('android/tv-banner.png')))).toEqual({ width: 320, height: 180 });
-    expect(manifest.assets.some((f: { path: string }) => f.path === 'android/tv-banner.png')).toBe(true);
+    const path = 'android/res/drawable-xhdpi/banner.png';
+    expect(pngSize(readFileSync(out(path)))).toEqual({ width: 320, height: 180 });
+    const entry = manifest.assets.find((f: { path: string }) => f.path === path);
+    expect(entry.purpose).toContain('android:banner="@drawable/banner"');
+    expect(existsSync(out('android/tv-banner.png'))).toBe(false);
   });
   it('builds a self-contained gallery', async () => {
     const g = await buildGallery(ws);
