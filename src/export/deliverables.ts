@@ -44,9 +44,16 @@ export function suggestDeliverables(
     tokens: 'colors and type for designers and developers',
     guidelines: 'how to use the identity',
   };
-  const web = has(text, /\b(web|site|saas|browser|online|pwa)\b/);
-  // "mobile" next to "web" means mobile web, not native apps.
-  const mobile = has(text, /\bmobile\b/) && !web;
+  const WEB = /\b(web|site|saas|browser|online|pwa)\b/;
+  const MOBILE = /\bmobile\b/;
+  const web = has(text, WEB);
+  // "mobile" means mobile web only inside a platforms entry that also names the web ("web (mobile first)",
+  // "mobile web"); anywhere else it means native iOS and Android apps.
+  const otherText = [brief.product?.type ?? '', brief.product?.category ?? '', brief.oneLiner ?? ''].join(
+    ' ',
+  );
+  const mobile =
+    (brief.product?.platforms ?? []).some((p) => has(p, MOBILE) && !has(p, WEB)) || has(otherText, MOBILE);
   const ios = mobile || has(text, /\b(ios|iphone|ipad|ipados|app store|react native|flutter|swiftui)\b/);
   const android = mobile || has(text, /\b(android|play store|google play|react native|flutter|kotlin)\b/);
   const desktop = has(text, /\b(desktop|electron|tauri)\b/);

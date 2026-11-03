@@ -52,4 +52,26 @@ describe('deliverables', () => {
     expect(s.groups).toEqual(expect.arrayContaining(['web', 'ios']));
     expect(s.groups).not.toContain('android');
   });
+  it('a web word outside the platforms entry does not cancel mobile', () => {
+    const banking = suggestDeliverables(
+      brief({ type: 'mobile app', category: 'online banking', platforms: ['mobile'] }),
+    );
+    expect(banking.groups).toEqual(expect.arrayContaining(['ios', 'android']));
+    const market = suggestDeliverables({
+      ...brief({ platforms: ['mobile'] }),
+      oneLiner: 'An online marketplace for handmade goods',
+    });
+    expect(market.groups).toEqual(expect.arrayContaining(['ios', 'android']));
+  });
+  it('web and mobile as separate platforms give native sets and web', () => {
+    const s = suggestDeliverables(brief({ platforms: ['web', 'mobile'] }));
+    expect(s.groups).toEqual(expect.arrayContaining(['ios', 'android', 'web']));
+  });
+  it('a web word next to mobile in the one-liner still means native apps', () => {
+    const s = suggestDeliverables({
+      ...brief({ platforms: ['mobile'] }),
+      oneLiner: 'An online store for mobile users',
+    });
+    expect(s.groups).toEqual(expect.arrayContaining(['ios', 'android']));
+  });
 });
