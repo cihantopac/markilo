@@ -979,9 +979,31 @@ async function exportTokens(ctx: Ctx) {
   for (const [name, s] of Object.entries(pal.scales))
     for (const [k, v] of Object.entries(s.scale)) css.push(`  --${kit.brand}-${name}-${k}: ${v};`);
   for (const [k, v] of Object.entries(pal.neutral)) css.push(`  --${kit.brand}-neutral-${k}: ${v};`);
+  // Semantic hues stay fixed (success, warning, danger must be recognisable whatever the brand colour).
+  for (const [k, v] of Object.entries(pal.semantic)) css.push(`  --${kit.brand}-${k}: ${v};`);
+  for (const n of [1, 2, 3, 4, 6, 8, 12, 16, 24]) css.push(`  --${kit.brand}-space-${n}: ${n * 4}px;`);
+  if (kit.typography) {
+    const fam = kit.typography.family ?? kit.typography.fontId;
+    css.push(
+      `  --${kit.brand}-font-brand: ${/^[\w-]+$/.test(fam) ? fam : JSON.stringify(fam)}, system-ui, sans-serif;`,
+    );
+  }
+  css.push(`  --${kit.brand}-ink: ${kit.palette.ink};`, `  --${kit.brand}-paper: ${kit.palette.paper};`);
+  // A surface/text pair for the brand's own scheme, swapped for the other scheme by the media query.
+  const g = grounds(kit);
+  const readable = (ground: string, preferred: string, fallbacks: [string, string]) =>
+    contrastRatio(preferred, ground) >= 4.5
+      ? preferred
+      : [...fallbacks].sort((a, b) => contrastRatio(b, ground) - contrastRatio(a, ground))[0]!;
+  const nativeText = readable(g.native, kit.palette.ink, ['#111318', '#ffffff']);
+  const oppositeText = readable(g.opposite, g.darkFirst ? '#111318' : '#f5f6f8', ['#111318', '#ffffff']);
+  css.push(`  --${kit.brand}-surface: ${g.native};`, `  --${kit.brand}-text: ${nativeText};`, '}', '');
   css.push(
-    `  --${kit.brand}-ink: ${kit.palette.ink};`,
-    `  --${kit.brand}-paper: ${kit.palette.paper};`,
+    `@media (prefers-color-scheme: ${g.darkFirst ? 'light' : 'dark'}) {`,
+    '  :root {',
+    `    --${kit.brand}-surface: ${g.opposite};`,
+    `    --${kit.brand}-text: ${oppositeText};`,
+    '  }',
     '}',
     '',
   );

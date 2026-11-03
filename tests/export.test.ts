@@ -7,6 +7,7 @@ import type { Workspace } from '../src/core/workspace.js';
 import { readIcnsTypes, readIcoSizes } from '../src/export/encoders.js';
 import { type ExportResult, exportBrand } from '../src/export/exporter.js';
 import { finalizeConcept, lockIdentity } from '../src/export/kit.js';
+import { isDarkGround } from '../src/export/variants.js';
 import { buildGallery } from '../src/gallery/gallery.js';
 import { pngSize } from '../src/render/png.js';
 import { verifyConcept } from '../src/report/quality.js';
@@ -43,6 +44,8 @@ beforeAll(async () => {
 }, 120_000);
 
 const out = (p: string) => join(ws.exportsDir('nimbra'), p);
+const kitDarkFirst = () =>
+  isDarkGround(JSON.parse(readFileSync(out('tokens/tokens.json'), 'utf8')).color.paper.$value);
 
 describe('export kit', () => {
   it('covers every group without skipping', () => {
@@ -152,6 +155,41 @@ describe('export kit', () => {
     expect(css).toContain(`--color-${slug}-ink:`);
     expect(css).toContain(`--color-${slug}-paper:`);
     expect(css).toContain(`--font-${slug}:`);
+  });
+  it('tokens.css carries everything tokens.json has', () => {
+    const slug = 'nimbra';
+    const css = readFileSync(out('tokens/tokens.css'), 'utf8');
+    expect(css).toContain(`--${slug}-success:`);
+    expect(css).toContain(`--${slug}-space-4: 16px;`);
+    expect(css).toContain(`--${slug}-font-brand:`);
+    expect(css).toMatch(/@media \(prefers-color-scheme: (dark|light)\)/);
+    expect(css).toContain(`--${slug}-surface:`);
+    expect(css).toContain(`--${slug}-text:`);
+  });
+  it('old kits export unchanged apart from the new files', () => {
+    // The synthetic brand has no 1.2.0 field in its brand.json. Every logo, icon and social file keeps the sha256 it
+    // had in 1.1.3 (fixture made from a b8b9567 export); only the files below may differ.
+    const fx = JSON.parse(
+      readFileSync(join(import.meta.dirname, 'fixtures/kit-1.1.3-hashes.json'), 'utf8'),
+    ) as {
+      files: Record<string, string>;
+    };
+    const darkFirst = kitDarkFirst();
+    const expectedToDiffer = (path: string) =>
+      path.startsWith('tokens/') ||
+      path === 'android/tv-banner.png' ||
+      // The manifest lists every file with its hash and a timestamp, so it changes whenever a file is added.
+      path === 'asset-manifest.json' ||
+      // README.md and index.html (the kit overview) list the exported files, now including tailwind.css and the TV banner.
+      path === 'README.md' ||
+      path === 'index.html' ||
+      (darkFirst && path.startsWith('web/'));
+    const changed: string[] = [];
+    for (const [path, hash] of Object.entries(fx.files)) {
+      if (expectedToDiffer(path)) continue;
+      if (!existsSync(out(path)) || sha256(readFileSync(out(path))) !== hash) changed.push(path);
+    }
+    expect(changed).toEqual([]);
   });
   it('emits an Android TV banner at 320×180', () => {
     const manifest = JSON.parse(readFileSync(out('asset-manifest.json'), 'utf8'));

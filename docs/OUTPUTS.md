@@ -19,5 +19,24 @@ file). Numbers live in
 | `tokens`     | `tokens.json` (W3C Design Tokens format), `tokens.css`, `tailwind.css` (Tailwind v4 `@theme`), `palette.json` (scales, neutrals, semantic, WCAG pairs, warnings)                                                                            | OKLCH tonal scales with the brand color pinned to its nearest step. Tailwind theme syntax: [tailwindcss.com/docs/theme](https://tailwindcss.com/docs/theme).                                                                                                  |
 | `guidelines` | `brand-guidelines.md`, `index.html`                                                                                                                                                                                                         | Logo use, clear space, minimum sizes, color with contrast, typography and license, don'ts.                                                                                                                                                                    |
 
+## `tokens.css` custom properties
+
+All names are prefixed with the brand slug (`--<slug>-...`).
+
+- Colour scales: `--<slug>-<scale>-<step>` (brand scales) and `--<slug>-neutral-<step>`, plus `--<slug>-ink` and
+  `--<slug>-paper`.
+- Semantic colours: `--<slug>-success`, `-warning`, `-danger`, `-info` and the other keys of `palette.json`'s
+  `semantic`. Their hues are fixed on purpose, so a success or error colour stays recognisable whatever the brand
+  colour is.
+- Spacing: `--<slug>-space-<n>` for n = 1, 2, 3, 4, 6, 8, 12, 16, 24, in 4 px units (`--<slug>-space-4` is 16 px),
+  the same steps as `tokens.json`.
+- Font: `--<slug>-font-brand`, the brand typeface followed by `system-ui, sans-serif` (only when the brand has one).
+- Scheme pair: `--<slug>-surface` and `--<slug>-text` hold the brand's own ground and a readable text colour. A
+  `@media (prefers-color-scheme: ...)` block swaps them for the other scheme (`dark` for light-first brands, `light`
+  for dark-first brands).
+
+Markilo does not design a type scale or corner radii, so neither is generated: generic values would be noise rather
+than part of the identity. Define them in your product's design system.
+
 Copy assets into an app with `markilo install-assets --brand <slug> --group web --into public` (dry run) and add
 `--apply` once you have reviewed the plan.
