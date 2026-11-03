@@ -17,7 +17,7 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 2. **Choose the package once.** Run `markilo deliverables --brand <slug>`. If `source` is `brief`, the user already
    chose; go on. If it is `suggested`, tell the user in one short message what you will prepare, in plain words, and
    offer the left-out groups in the same message as one question, for example: "For a web app I'll prepare the logo
-   files, web icons, link-preview images, color/type tokens and the guidelines. Should I add mobile app icons, desktop
+   files, web icons, link-preview images, color/type tokens (CSS, Tailwind v4 theme, JSON) and the guidelines. Should I add mobile app icons, desktop
    app icons or print items (business card, email signature)?" Save the answer with
    `markilo deliverables --brand <slug> --set …` (or `--add` / `--remove`) and record it with `markilo answers`.
    If the user already said "everything" or "just do it", keep the suggestion and don't ask.

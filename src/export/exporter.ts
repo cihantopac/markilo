@@ -629,6 +629,24 @@ async function exportAndroid(ctx: Ctx) {
     purpose: 'Google Play listing icon 512×512 (Play applies the mask)',
     derivedFrom: 'symbol.svg',
   });
+  const { width: bw, height: bh } = A.tvBanner;
+  const bg = grounds(kit).native;
+  const bart0 = ctx.primary ?? sym;
+  const bart = kit.locked ? bart0 : adaptToGround(bart0, bg, { dark: kit.palette.ink, light: '#ffffff' });
+  await emit(
+    ctx,
+    'android/tv-banner.png',
+    await png(svgDocument(bw, bh, fitArt(bart, bw, bh, bw * 0.7, bh * 0.5), { background: bg }), bw),
+    {
+      group: 'android',
+      purpose: `Android TV home-screen banner ${bw}×${bh} (android:banner, xhdpi)`,
+      derivedFrom: ctx.primary
+        ? kit.lead === 'wordmark' || !ctx.lockupH
+          ? 'wordmark.svg'
+          : 'lockup-horizontal.svg'
+        : 'symbol.svg',
+    },
+  );
 }
 
 // ---------------------------------------------------------------- Windows
@@ -970,6 +988,26 @@ async function exportTokens(ctx: Ctx) {
   await emit(ctx, 'tokens/tokens.css', css.join('\n'), {
     group: 'tokens',
     purpose: 'CSS custom properties',
+    derivedFrom: 'brand.json',
+  });
+  const tw = ['@theme {'];
+  for (const [name, s] of Object.entries(pal.scales))
+    for (const [k, v] of Object.entries(s.scale)) tw.push(`  --color-${kit.brand}-${name}-${k}: ${v};`);
+  for (const [k, v] of Object.entries(pal.neutral)) tw.push(`  --color-${kit.brand}-neutral-${k}: ${v};`);
+  tw.push(
+    `  --color-${kit.brand}-ink: ${kit.palette.ink};`,
+    `  --color-${kit.brand}-paper: ${kit.palette.paper};`,
+  );
+  if (kit.typography) {
+    const fam = kit.typography.family ?? kit.typography.fontId;
+    tw.push(
+      `  --font-${kit.brand}: ${/^[\w-]+$/.test(fam) ? fam : JSON.stringify(fam)}, system-ui, sans-serif;`,
+    );
+  }
+  tw.push('}', '');
+  await emit(ctx, 'tokens/tailwind.css', tw.join('\n'), {
+    group: 'tokens',
+    purpose: 'Tailwind CSS v4 theme (@theme variables)',
     derivedFrom: 'brand.json',
   });
   await emit(ctx, 'tokens/palette.json', `${JSON.stringify(pal, null, 2)}\n`, {

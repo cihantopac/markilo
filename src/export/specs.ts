@@ -51,6 +51,12 @@ export const SPECS = {
     playStore: 512,
     /** Play applies its own mask (corner radius 30% of the icon size); upload a full square. */
     playMaskRadius: 0.3,
+    /** Android TV home-screen banner: xhdpi resource, 320 x 180 px (API 25 and lower; text in the image). */
+    tvBanner: {
+      width: 320,
+      height: 180,
+      source: 'https://developer.android.com/training/tv/get-started/create',
+    },
     sources: [
       'https://developer.android.com/develop/ui/views/launch/icon_design_adaptive',
       'https://developer.android.com/distribute/google-play/resources/icon-design-specifications',

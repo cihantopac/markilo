@@ -143,6 +143,21 @@ describe('export kit', () => {
     const tokens = JSON.parse(readFileSync(out('tokens/tokens.json'), 'utf8'));
     expect(tokens.color.brand.primary['500'].$type).toBe('color');
   });
+  it('emits a Tailwind v4 theme with the brand colours and font', () => {
+    const slug = 'nimbra';
+    const css = readFileSync(out('tokens/tailwind.css'), 'utf8');
+    expect(css).toMatch(/^@theme \{/m);
+    expect(css).toContain(`--color-${slug}-primary-500:`);
+    expect(css).toContain(`--color-${slug}-neutral-500:`);
+    expect(css).toContain(`--color-${slug}-ink:`);
+    expect(css).toContain(`--color-${slug}-paper:`);
+    expect(css).toContain(`--font-${slug}:`);
+  });
+  it('emits an Android TV banner at 320×180', () => {
+    const manifest = JSON.parse(readFileSync(out('asset-manifest.json'), 'utf8'));
+    expect(pngSize(readFileSync(out('android/tv-banner.png')))).toEqual({ width: 320, height: 180 });
+    expect(manifest.assets.some((f: { path: string }) => f.path === 'android/tv-banner.png')).toBe(true);
+  });
   it('builds a self-contained gallery', async () => {
     const g = await buildGallery(ws);
     const html = readFileSync(g.path, 'utf8');
