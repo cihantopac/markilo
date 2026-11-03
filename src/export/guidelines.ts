@@ -22,9 +22,6 @@ const WORDMARK_ONLY_RULE =
   'The symbol is the app icon and favicon only; it is never set next to the wordmark.';
 
 const REARRANGE_RULE = 'Do not rearrange the symbol and wordmark or change their size relationship.';
-/** A wordmark-only kit has no symbol beside the word to rearrange. */
-const donts = (kit: { wordmarkOnly?: boolean }) =>
-  kit.wordmarkOnly ? DONTS.filter((d) => d !== REARRANGE_RULE) : DONTS;
 const DONTS = [
   'Do not stretch, squash, skew or rotate the logo.',
   'Do not recolor outside the approved palette or apply gradients, shadows, glows or outlines.',
@@ -33,6 +30,10 @@ const DONTS = [
   'Do not place the logo on busy images or backgrounds with less than 3:1 contrast.',
   'Do not crop the symbol or place it inside another shape unless it is an approved appmark.',
 ];
+
+/** A wordmark-only kit has no symbol beside the word to rearrange. */
+const donts = (kit: { wordmarkOnly?: boolean }) =>
+  kit.wordmarkOnly ? DONTS.filter((d) => d !== REARRANGE_RULE) : DONTS;
 
 function colorRows(k: BrandKit) {
   const entries: [string, string][] = [['Primary', k.palette.primary]];

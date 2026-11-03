@@ -37,6 +37,27 @@ describe('cli (bundled)', () => {
     expect(run(['center', 'in.svg', '-o', 'out.svg'], cwd).status).not.toBe(0);
     expect(run(['center', 'in.svg', '-o', 'out.svg', '--force'], cwd).status).toBe(0);
   });
+  it("center refuses to write into a brand's final/ folder", () => {
+    const cwd = tmp();
+    run(['init', '--name', 'Demo'], cwd);
+    run(['brand', 'add', 'Acme', '--locked'], cwd);
+    run(['brand', 'add', 'Tidepool'], cwd);
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="40" y="40" width="40" height="40" fill="#111"/></svg>';
+    writeFileSync(join(cwd, 'in.svg'), svg);
+    const code = (out: string, at = cwd) => {
+      const r = run(['center', join(cwd, 'in.svg'), '-o', out], at);
+      return r.status === 0 ? 'OK' : JSON.parse(r.stderr).error.code;
+    };
+    const finalOf = (slug: string) => join(cwd, 'brand', 'brands', slug, 'final');
+    expect(code(join(finalOf('acme'), 'symbol.svg'))).toBe('LOCKED');
+    expect(code(join(finalOf('tidepool'), 'symbol.svg'))).toBe('USAGE');
+    expect(code(finalOf('tidepool'))).toBe('USAGE');
+    // Found from the output path too, when the command runs outside the workspace.
+    expect(code(join(finalOf('tidepool'), 'masters', 'symbol.svg'), tmp())).toBe('USAGE');
+    expect(existsSync(finalOf('tidepool'))).toBe(false);
+    expect(code(join(cwd, 'centered.svg'))).toBe('OK');
+  });
   it('returns structured errors with stable codes', () => {
     const cwd = tmp();
     const r = run(['brand', 'list'], cwd);

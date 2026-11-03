@@ -91,11 +91,11 @@ brand/
 │       ├── web/                    # favicon.svg (dark-mode aware), favicon.ico, apple-touch-icon, icon-*/maskable-*, site.webmanifest, head-snippet.html
 │       ├── ios/                    # AppIcon.appiconset (default, dark, tinted), icon-composer/ layers
 │       ├── macos/                  # AppIcon.icns, .iconset, full-bleed 1024 for macOS 26+
-│       ├── android/                # mipmap-* legacy + adaptive foreground/background/monochrome, anydpi-v26 XML, Play icon
+│       ├── android/                # mipmap-* legacy + adaptive foreground/background/monochrome, anydpi-v26 XML, Play icon, TV banner
 │       ├── windows/                # app.ico, MSIX Assets (scales, target sizes, unplated variants)
 │       ├── social/                 # og-image (+dark), GitHub social preview, X header, LinkedIn cover, avatar
 │       ├── marketing/              # watermarks, email signature, title slide, business card
-│       ├── tokens/                 # tokens.json (W3C DTCG), tokens.css, palette.json
+│       ├── tokens/                 # tokens.json (W3C DTCG), tokens.css, tailwind.css (Tailwind v4 theme), palette.json
 │       ├── guidelines/             # brand-guidelines.md, index.html
 │       └── asset-manifest.json     # every file: purpose, size, sha256, source master
 └── gallery/index.html              # Brand Preview Gallery
@@ -113,7 +113,9 @@ example `{"progress":{"group":"web","done":2,"total":6,"files":19}}`; stdout sta
 An `--out` folder must be empty or new. `--clean` replaces it only if it already holds an `asset-manifest.json`, that
 is, a kit Markilo made. Markilo refuses (error `USAGE`, nothing written or deleted) a non-empty folder without
 `--clean`, a folder without a manifest with `--clean`, any brand's `final/` folder or anything inside or containing it,
-the workspace folder, and any parent of the workspace. Symbolic links are resolved before the check.
+the workspace folder, and any parent of the workspace. Symbolic links are resolved before the check. A kit written
+with `--out` lives outside the workspace, so `gallery`, `status` and `install-assets` do not see it: they read
+`brand/brands/<slug>/exports/`.
 
 ## What Markilo does
 
@@ -139,7 +141,8 @@ the workspace folder, and any parent of the workspace. Symbolic links are resolv
   the main session's share from the total Claude Code shows (the difference since the last call; a lower total counts
   as a new session). That total already covers the agents, so Markilo subtracts the agent work recorded since the last
   session entry (floored at 0) and stores the amount as `agentUsdIncluded` on the entry. It needs `--phase` and cannot
-  be combined with `--tokens` or `--usd`.
+  be combined with `--tokens` or `--usd`. The stored session total (`sessionUsd`) is kept per brand: when one Claude
+  Code session works on two brands, record its total in one brand only, or note the overlap with `--note`.
 - **Not tied to one AI.** The toolchain is a plain CLI: `agent-setup` gives VS Code with Copilot, Codex and Cursor the
   same workflow ([INTEGRATIONS.md](INTEGRATIONS.md)).
 

@@ -1,5 +1,5 @@
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
-import { basename, extname, join, resolve } from 'node:path';
+import { basename, dirname, extname, join, resolve } from 'node:path';
 import { type CalibrationMark, calibrate } from '../analyze/calibrate.js';
 import { contrastRatio, deltaE2000, normalizeColor } from '../analyze/color.js';
 import { checkLetters, letterAdvice } from '../analyze/letters.js';
@@ -46,7 +46,7 @@ import {
 import { wordmarkSvg } from '../design/wordmark.js';
 import { defaultFonts, exploreWordmarks } from '../design/wordmarks.js';
 import { GROUP_INFO, resolveDeliverables, suggestDeliverables } from '../export/deliverables.js';
-import { EXPORT_GROUPS, type ExportGroup, exportBrand } from '../export/exporter.js';
+import { brandFinalHolding, EXPORT_GROUPS, type ExportGroup, exportBrand } from '../export/exporter.js';
 import { inkMetrics } from '../export/geometry.js';
 import { finalizeConcept, lockIdentity } from '../export/kit.js';
 import { feedbackRequests, parseFeedback, readLatestFeedback, storeFeedback } from '../gallery/feedback.js';
@@ -2240,8 +2240,26 @@ export const COMMANDS: CommandSpec[] = [
       force: { type: 'boolean', description: 'Overwrite output' },
     },
     async run(c) {
+      const out = file(c, c.req('out'));
+      // Never into a brand's approved masters: look for a workspace from here and from the output path.
+      for (const from of [c.cwd, dirname(out)]) {
+        let w: Workspace;
+        try {
+          w = Workspace.locate(from);
+        } catch {
+          continue;
+        }
+        const slug = brandFinalHolding(w, out);
+        if (!slug) continue;
+        w.assertNotLocked(slug);
+        throw new MarkiloError(
+          'USAGE',
+          `Refusing -o "${c.req('out')}": it is inside brand "${slug}"'s final/ folder, which holds the approved masters.`,
+          'Write the centred mark elsewhere (e.g. the concept folder) and finalize again.',
+        );
+      }
       const r = await centerOptically(readText(file(c, pos(c, 0, 'in.svg'))));
-      writeFileSafe(file(c, c.req('out')), r.svg, { force: c.bool('force') });
+      writeFileSafe(out, r.svg, { force: c.bool('force') });
       return { out: c.req('out'), dx: r.dx, dy: r.dy, before: r.before, after: r.after };
     },
   },
@@ -2665,7 +2683,7 @@ export const COMMANDS: CommandSpec[] = [
       const palette: Record<string, string> = {};
       if (concept) for (const [k, v] of Object.entries(concept.palette)) if (v) palette[k] = v;
       Object.assign(palette, member?.palette, setColors);
-      const paper = c.str('paper') ?? concept?.palette.paper ?? '#ffffff';
+      const paper = c.str('paper') ?? setColors.paper ?? concept?.palette.paper ?? '#ffffff';
       const title = concept ? `${w!.brand(brand!).name} — ${spec.role ?? 'symbol'}` : spec.title;
 
       if (c.bool('vary')) {

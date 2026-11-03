@@ -5,7 +5,7 @@ import { installAssets } from '../src/cli/system.js';
 import { sha256 } from '../src/core/fsx.js';
 import type { Workspace } from '../src/core/workspace.js';
 import { readIcnsTypes, readIcoSizes } from '../src/export/encoders.js';
-import { type ExportResult, exportBrand } from '../src/export/exporter.js';
+import { cssFontFamily, type ExportResult, exportBrand } from '../src/export/exporter.js';
 import { finalizeConcept, lockIdentity } from '../src/export/kit.js';
 import { isDarkGround } from '../src/export/variants.js';
 import { buildGallery } from '../src/gallery/gallery.js';
@@ -322,6 +322,19 @@ describe('wordmark-only identities', () => {
       'never set next to the wordmark',
     );
   });
+  it('keeps the rearrange rule out of wordmark-only guidelines only', () => {
+    const rule = 'Do not rearrange the symbol and wordmark';
+    expect(readFileSync(wout('guidelines/brand-guidelines.md'), 'utf8')).not.toContain(rule);
+    expect(readFileSync(out('guidelines/brand-guidelines.md'), 'utf8')).toContain(rule);
+  });
+  it('derives the email signature from the lead logo', () => {
+    const sig = (dir: (p: string) => string) =>
+      JSON.parse(readFileSync(dir('asset-manifest.json'), 'utf8')).assets.find(
+        (a: { path: string }) => a.path === 'marketing/email-signature.png',
+      ).derivedFrom;
+    expect(sig(wout)).toBe('wordmark.svg');
+    expect(sig(out)).toBe('lockup-horizontal.svg');
+  });
   it('refuses a locked brand with LOCKED and a concept without a wordmark with USAGE', async () => {
     const symbolPath = join(tmp(), 'symbol.svg');
     writeFileSync(symbolPath, mark('bars'));
@@ -336,5 +349,14 @@ describe('wordmark-only identities', () => {
     await expect(
       finalizeConcept(wws, 'nimbra', 'fold', { userChoice: 'u', wordmarkOnly: true, force: true }),
     ).rejects.toMatchObject({ code: 'USAGE' });
+  });
+});
+
+describe('cssFontFamily', () => {
+  it('quotes a family that is not a valid CSS identifier', () => {
+    expect(cssFontFamily('Inter')).toBe('Inter');
+    expect(cssFontFamily('Alegreya-Sans')).toBe('Alegreya-Sans');
+    expect(cssFontFamily('Source Sans 3')).toBe('"Source Sans 3"');
+    expect(cssFontFamily('3Dumb')).toBe('"3Dumb"');
   });
 });

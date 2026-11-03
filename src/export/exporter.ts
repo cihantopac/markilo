@@ -535,6 +535,16 @@ async function exportMacos(ctx: Ctx) {
   });
 }
 
+/** A font family for CSS: bare only when it is a valid identifier (a name starting with a digit is not), else quoted. */
+export const cssFontFamily = (name: string) =>
+  /^[A-Za-z_-][\w-]*$/.test(name) ? name : JSON.stringify(name);
+
+/** The master file behind `ctx.primary` (the lead logo), or the symbol when there is none. */
+function primaryFile(ctx: Ctx): string {
+  if (!ctx.primary) return 'symbol.svg';
+  return ctx.primary === ctx.wordmark ? 'wordmark.svg' : 'lockup-horizontal.svg';
+}
+
 // ---------------------------------------------------------------- Android
 async function exportAndroid(ctx: Ctx) {
   const { kit } = ctx;
@@ -644,11 +654,7 @@ async function exportAndroid(ctx: Ctx) {
     {
       group: 'android',
       purpose: `Android TV home-screen banner ${bw}×${bh}, xhdpi (reference it in the manifest: android:banner="@drawable/banner")`,
-      derivedFrom: ctx.primary
-        ? kit.lead === 'wordmark' || !ctx.lockupH
-          ? 'wordmark.svg'
-          : 'lockup-horizontal.svg'
-        : 'symbol.svg',
+      derivedFrom: primaryFile(ctx),
     },
   );
 }
@@ -739,11 +745,7 @@ async function exportWindows(ctx: Ctx) {
       await emit(ctx, `windows/Assets/${name}.scale-${sc}.png`, await png(svg, w, h), {
         group: 'windows',
         purpose: `MSIX ${name} ${w}×${h}`,
-        derivedFrom: ctx.primary
-          ? ctx.kit.lead === 'wordmark' || !ctx.lockupH
-            ? 'wordmark.svg'
-            : 'lockup-horizontal.svg'
-          : 'symbol.svg',
+        derivedFrom: primaryFile(ctx),
       });
     }
   }
@@ -879,7 +881,7 @@ async function exportMarketing(ctx: Ctx) {
   await emit(ctx, 'marketing/email-signature.png', await png(sig, 600, 160), {
     group: 'marketing',
     purpose: 'Email signature logo 600×160 (display at 300×80)',
-    derivedFrom: 'lockup-horizontal.svg',
+    derivedFrom: primaryFile(ctx),
   });
 
   const face = kit.typography
@@ -990,9 +992,7 @@ async function exportTokens(ctx: Ctx) {
   for (const n of [1, 2, 3, 4, 6, 8, 12, 16, 24]) css.push(`  --${kit.brand}-space-${n}: ${n * 4}px;`);
   if (kit.typography) {
     const fam = kit.typography.family ?? kit.typography.fontId;
-    css.push(
-      `  --${kit.brand}-font-brand: ${/^[\w-]+$/.test(fam) ? fam : JSON.stringify(fam)}, system-ui, sans-serif;`,
-    );
+    css.push(`  --${kit.brand}-font-brand: ${cssFontFamily(fam)}, system-ui, sans-serif;`);
   }
   css.push(`  --${kit.brand}-ink: ${kit.palette.ink};`, `  --${kit.brand}-paper: ${kit.palette.paper};`);
   // A surface/text pair for the brand's own scheme, swapped for the other scheme by the media query.
@@ -1028,9 +1028,7 @@ async function exportTokens(ctx: Ctx) {
   );
   if (kit.typography) {
     const fam = kit.typography.family ?? kit.typography.fontId;
-    tw.push(
-      `  --font-${kit.brand}: ${/^[\w-]+$/.test(fam) ? fam : JSON.stringify(fam)}, system-ui, sans-serif;`,
-    );
+    tw.push(`  --font-${kit.brand}: ${cssFontFamily(fam)}, system-ui, sans-serif;`);
   }
   tw.push('}', '');
   await emit(ctx, 'tokens/tailwind.css', tw.join('\n'), {
@@ -1097,12 +1095,24 @@ const NEEDS_SYMBOL: ExportGroup[] = ['web', 'ios', 'macos', 'android', 'windows'
  * non-empty folder unless --clean is given. --clean may only remove a folder that holds an asset-manifest.json, i.e.
  * one Markilo made. Paths are compared by real location (symlinks resolved) and by name, separator-aware.
  */
+/** A path under its given name and its real location (symlinks resolved). */
+const names = (p: string) => [...new Set([resolve(p), realExisting(resolve(p))])];
+
+/** The slug of the brand whose final/ folder is `path` or contains it, if any. */
+export function brandFinalHolding(ws: Workspace, path: string): string | undefined {
+  const brandsDir = join(ws.root, 'brands');
+  if (!existsSync(brandsDir)) return undefined;
+  const targets = names(path);
+  return readdirSync(brandsDir).find((slug) =>
+    names(join(brandsDir, slug, 'final')).some((f) => targets.some((t) => isWithin(f, t))),
+  );
+}
+
 function checkOutDir(ws: Workspace, outDir: string, clean: boolean): void {
   const refuse = (why: string): never => {
     throw new MarkiloError('USAGE', `Refusing --out "${outDir}": ${why}.`);
   };
   // `outDir` is already a real location (see exportBrand); the roots are compared under both of their names.
-  const names = (p: string) => [...new Set([resolve(p), realExisting(resolve(p))])];
   if (names(ws.root).some((r) => isWithin(outDir, r)))
     refuse('it is the workspace folder or one of its parents');
   const brandsDir = join(ws.root, 'brands');

@@ -234,7 +234,8 @@ export const TR: Record<string, string> = {
   'link previews, profile covers and the avatar': 'bağlantı önizlemeleri, profil kapakları ve avatar',
   'banners and artwork for launch posts and stores':
     'lansman paylaşımları ve mağazalar için afişler ve görseller',
-  'colors and type as JSON and CSS variables': 'JSON ve CSS değişkenleri olarak renkler ve yazı',
+  'colors and type as JSON, CSS variables and a Tailwind theme':
+    'JSON, CSS değişkenleri ve bir Tailwind teması olarak renkler ve yazı',
   'how to use the identity (HTML and Markdown)': 'kimliğin nasıl kullanılacağı (HTML ve Markdown)',
 
   // Brand guidelines

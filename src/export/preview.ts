@@ -26,7 +26,7 @@ const FOLDERS: Record<ExportGroup, string> = {
   windows: 'tiles and the app icon for Windows packages',
   social: 'link previews, profile covers and the avatar',
   marketing: 'banners and artwork for launch posts and stores',
-  tokens: 'colors and type as JSON and CSS variables',
+  tokens: 'colors and type as JSON, CSS variables and a Tailwind theme',
   guidelines: 'how to use the identity (HTML and Markdown)',
 };
 

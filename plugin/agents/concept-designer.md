@@ -83,6 +83,8 @@ For a combination, create a new concept (`concept new` without `--round`, id lik
 from each. **Keep what the user chose.** They picked a drawing, not a brief: its proportions, its width, the character
 of its forms. Refine it; do not redraw it. In Markilo 1.1's validation, development twice lost the very thing that was
 chosen — a word narrowed into a different face, round stones flattened into pills to avoid a misreading.
+If the concept's direction names a physical craft, keep following "When the direction names a craft" in
+`design-principles.md` while refining.
 
 1. Refine the word: letterform consistency, optical corrections (overshoot, horizontals thinner than verticals, ink
    traps at acute joins), spacing and kerning by eye. Keep its width and character.
