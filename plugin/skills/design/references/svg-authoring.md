@@ -51,3 +51,4 @@ these rules. Either way, the rules below are fixed: they keep masters valid, saf
   keep the root attributes.
 - Hand-made lockups are optional; `finalize` builds horizontal, stacked and compact lockups aligned to
   cap height with clear space = 1 cap height.
+- The renderer has no system fonts: text in mockups and previews must be outlined with `markilo wordmark` or drawn as paths.

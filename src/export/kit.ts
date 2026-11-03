@@ -44,6 +44,8 @@ export interface BrandKit {
     confidence: string;
     acceptedRisk: boolean;
     report: string;
+    /** Said plainly when the verdict rests on no comparison at all. */
+    note?: string;
     /** What the verdict rests on, so guidelines can state it plainly (e.g. that no registry search was done). */
     evidence?: { visual: string; registry: string; registryCoverage: string };
   };
@@ -130,6 +132,7 @@ export async function finalizeConcept(
     verdict: string;
     confidence?: string;
     evidence?: { visual: { have: string }; registry: { have: string; coverage: string } };
+    scope?: { referencesCompared?: number };
   }>(reportFile);
   if (orig.verdict === 'redesign') {
     throw new MarkiloError(
@@ -247,6 +250,11 @@ export async function finalizeConcept(
       confidence: orig.confidence ?? 'unknown',
       acceptedRisk: orig.verdict !== 'no-conflicts-found',
       report: `../reports/originality-${conceptId}.md`,
+      ...(orig.verdict === 'insufficient-evidence' && orig.scope?.referencesCompared === 0
+        ? {
+            note: "No competitor marks were compared, so this verdict says nothing about similarity. Run research (with the user's OK to use the network) before relying on the mark.",
+          }
+        : {}),
       ...(orig.evidence
         ? {
             evidence: {

@@ -1261,7 +1261,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--font <id> --weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1573,7 +1573,7 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'finalize',
     summary:
-      'Approve a concept: freeze optimized masters, generate lockups (horizontal, stacked, compact) and brand.json.',
+      'Approve a concept: freeze optimized masters, generate lockups (horizontal, stacked, compact; --wordmark-only skips them) and brand.json.',
     usage:
       'finalize --brand <slug> --concept <id> --user-choice "<the user\'s words>" [--tagline <text>] [--note <usage rule>]... [--wordmark-only] [--accept-risk] [--force]',
     options: {

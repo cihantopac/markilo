@@ -11,7 +11,7 @@ import {
 } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { tmp } from './helpers.js';
+import { fixture, tmp } from './helpers.js';
 
 const bin = join(__dirname, '..', 'plugin', 'dist', 'markilo.mjs');
 const run = (args: string[], cwd: string) =>
@@ -419,4 +419,62 @@ describe('cli export --out and --progress', () => {
     expect(JSON.parse(r.stderr).error.code).toBe('USAGE');
     expect(existsSync(join(out, 'asset-manifest.json'))).toBe(true);
   });
+});
+
+describe('small fixes found in use (bundled)', () => {
+  it('lists title, direction, rationale and the palette options in the concept update usage', () => {
+    const cwd = tmp();
+    const out = run(['concept', 'update', '--help'], cwd).stdout.split('\n')[0]!;
+    for (const flag of ['--title', '--direction', '--rationale', '--primary', '--secondary', '--accent'])
+      expect(out).toContain(flag);
+  });
+
+  it('says in finalize --accept-risk that no competitor marks were compared when there are no references', () => {
+    const cwd = tmp();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    ok(['init', '--name', 'Demo']);
+    ok(['brand', 'add', 'Tidepool']);
+    ok([
+      'concept',
+      'new',
+      '--brand',
+      'tidepool',
+      '--id',
+      'p1',
+      '--title',
+      'One',
+      '--direction',
+      'd',
+      '--rationale',
+      'r',
+      '--semantics',
+      'a',
+      '--primary',
+      '#1d4e89',
+      '--round',
+      '1',
+    ]);
+    const dir = join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'p1');
+    writeFileSync(join(dir, 'symbol.svg'), readFileSync(fixture('marks/fold-n.svg')));
+    ok(['concept', 'update', '--brand', 'tidepool', '--concept', 'p1', '--symbol', 'symbol.svg']);
+    ok(['verify', '--brand', 'tidepool', '--concept', 'p1']);
+    const r = ok([
+      'finalize',
+      '--brand',
+      'tidepool',
+      '--concept',
+      'p1',
+      '--user-choice',
+      'This one',
+      '--accept-risk',
+    ]);
+    expect(r.kit.originality.verdict).toBe('insufficient-evidence');
+    expect(r.kit.originality.note).toBe(
+      "No competitor marks were compared, so this verdict says nothing about similarity. Run research (with the user's OK to use the network) before relying on the mark.",
+    );
+  }, 60_000);
 });
