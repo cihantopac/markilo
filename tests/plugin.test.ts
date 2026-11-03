@@ -92,6 +92,6 @@ describe('craft-named directions', () => {
     const agent = readFileSync(join(root, 'plugin/agents/concept-designer.md'), 'utf8');
     const explore = agent.slice(agent.indexOf('## Mode `explore'), agent.indexOf('## Mode `develop'));
     expect(explore.length).toBeGreaterThan(100);
-    expect(explore).toContain('craft');
+    expect(explore).toContain('When the direction names a craft');
   });
 });

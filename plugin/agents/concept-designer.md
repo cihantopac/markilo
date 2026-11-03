@@ -45,8 +45,8 @@ round's other proposals at the same time — do not touch their concepts.
 
 1. Read the brief (`markilo brief show --brand <slug>`), `markilo fonts`, and `Read` the user's reference images if
    any; note the characteristics they show (proportion, weight, contrast, type classification, energy) — never the
-   marks themselves. If the direction names a physical craft (neon, sign painting, stencil, engraving), follow "When
-   the direction names a craft" in `design-principles.md` before drawing.
+   marks themselves. If the direction names a physical craft (neon, sign painting, stencil, engraving), follow
+   "When the direction names a craft" in `design-principles.md` before drawing.
 2. `markilo concept new --brand <slug> --id <id> --round <n> --title … --direction … --rationale … --semantics …
    --primary '#rrggbb' [--secondary '#rrggbb'] --ink '#rrggbb' --paper '#rrggbb' --font <id> --weight <n>
    [--lead wordmark]` (quote every colour).

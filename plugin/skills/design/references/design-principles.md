@@ -92,19 +92,26 @@ the tube's rules is a glowing font, not neon.
 - **Neon:**
   - One constant tube width along every stroke; the tube never thickens or tapers.
   - Where the tube passes behind another, it is blocked out: leave a visible gap rather than crossing.
-  - Each tube ends at an electrode: a short capped stub, not a clean cut.
+  - Each tube ends at an electrode on an unlit, blocked-out tail: a short dark stub, not a clean cut.
   - Bends keep a minimum radius (glass kinks if pushed tighter), so corners are rounded and joins are sweeps.
   - A counter (o, e, a) is not a closed loop: break it at an electrode, or the tube cannot be made.
 - **Sign painting:**
-  - Each stroke enters with a pressed start and leaves with a lifted, tapering exit, as one pull of the brush.
+  - One-stroke and script styles: each stroke enters with a pressed start and leaves with a lifted, tapering exit,
+    as one pull of the brush.
+  - Cut-in Roman letters are built, not pulled: squared ends and consistent serifs.
   - Stroke contrast stays consistent: the same pressure logic in every letter, one angle of stress and slant.
   - Space as a sign-writer does, by the area between letters: open between straights, tighter between rounds.
 - **Stencil:**
   - Bridges hold every counter and island (o, a, e, b, d, p, q, R), so no letter falls apart.
-  - Every bridge has the same width, narrower than the stem, and sits in the same place from letter to letter.
-- **Engraving and letterpress:**
-  - Hatching keeps one line weight and one spacing logic; tone comes from line density, not from changing the line.
+  - Place bridges at natural direction changes and joins (O, S, C), not mid-curve.
+  - Align bridges to one axis, and give every bridge the same width and placement from letter to letter.
+  - Keep each bridge small enough that the letter still reads as one shape.
+- **Engraving:**
+  - Lines follow the contour of the form, and burin lines swell and taper.
+  - Keep one hatch angle for a tone area; within one hatch field keep line weight and spacing steady.
+- **Letterpress:**
   - Ink spread rounds corners and closes tight counters and joins at small sizes: open them in the small version.
+  - Impression and ink gain leave edges slightly soft; draw crisp, and let the softness come from the process.
 
 ## Three proposals that are genuinely different
 
