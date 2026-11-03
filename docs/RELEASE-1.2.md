@@ -584,3 +584,8 @@ Tasks 1-12 and the final-review fix wave are done and reviewed. Task 13 (steps 1
   byte-identical to before; README, manifest, guidelines, preview and `tokens.css` changed, `tailwind.css` is new.
 - Version 1.2.0 set in `package.json`, `package-lock.json`, `plugin.json` and `marketplace.json`; dist rebuilt.
 - Not done: push, tag, GitHub release, `npm publish` (Step 4 needs the user's approval).
+
+**Released 2026-11-03.** Tag `markilo--v1.2.0` at `ac2841e`, GitHub release "Markilo 1.2.0" (Latest), and npm
+`markilo@1.2.0`, verified from the registry: `latest` is `1.2.0`, `gitHead` is `ac2841e`, shasum
+`0d89e1198fe3a017dc3ceaf05b220dd2651642cf` matches the local pack (303 files), and `npx markilo@1.2.0 --version` prints
+`1.2.0`.
