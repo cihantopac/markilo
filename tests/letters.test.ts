@@ -117,3 +117,52 @@ describe('a letter that broke into two shapes', () => {
     expect([...advice.fix, ...advice.notes].join(' ')).toMatch(/"h"[^.]*(two|split)/);
   });
 });
+
+describe('an added dot is not a split letter', () => {
+  it('leaves the letters next to an added mark unsplit, and an untouched i or j alone', async () => {
+    const spaced = { glyph: { ...word.glyph, tracking: 150 } };
+    const c = await compileSpec(
+      {
+        role: 'wordmark',
+        size: 1600,
+        layers: [{ fill: 'primary', shape: spaced }],
+      } as unknown as ConstructionSpec,
+      {},
+    );
+    const [, e, o, n2] = c.glyphs as [
+      (typeof c.glyphs)[0],
+      (typeof c.glyphs)[0],
+      (typeof c.glyphs)[0],
+      (typeof c.glyphs)[0],
+    ];
+    const dot = (x: number, y: number) => ({ circle: { c: [x, y], r: 22 } });
+    const cases = [
+      dot((e.x + e.w + o.x) / 2, e.y + e.h / 2),
+      dot(o.x + o.w / 2, o.y - 90),
+      dot(n2.x + n2.w + 70, n2.y + n2.h - 22),
+    ];
+    for (const d of cases) {
+      const r = await check({ union: [spaced, d] });
+      expect(r!.letters.map((l) => l.verdict)).not.toContain('split');
+      expect(letterAdvice(r).fix).toEqual([]);
+    }
+    const ij = await compileSpec(
+      {
+        role: 'wordmark',
+        size: 1600,
+        layers: [
+          {
+            fill: 'primary',
+            shape: { glyph: { text: 'jinx', font: 'inter', weight: 700, size: 400, at: [80, 600] } },
+          },
+        ],
+      } as unknown as ConstructionSpec,
+      {},
+    );
+    const r = await checkLetters(
+      ij.layers.map((l) => l.d),
+      ij.letters!,
+    );
+    expect(r!.letters.map((l) => l.verdict)).not.toContain('split');
+  });
+});

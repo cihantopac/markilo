@@ -155,7 +155,7 @@ export async function checkLetters(
     const mine = minus(built, others);
     const alone = minus(original, others);
     const partsBefore = topology(alone).parts;
-    const partsAfter = topology(mine).parts;
+    const partsAfter = topology(onOriginalInk(mine, alone)).parts;
     // A shoulder that came loose changes few pixels but turns an h into "ln": it counts however small the change.
     const split = partsAfter > partsBefore;
     if (change < CHANGED && !split) {
@@ -301,6 +301,19 @@ const ACCENT: Record<string, string> = {
   y: 'ý',
 };
 const accented = (ch: string) => ACCENT[ch.toLowerCase()] ?? `${ch}\u0301`;
+
+/**
+ * The part of `mask` that is the letter itself: the ink shapes that overlap the letter's original ink. A shoulder that
+ * came loose still sits on the original; a dot added beside or above the letter does not, and is reported as an
+ * added mark, not as a split letter.
+ */
+function onOriginalInk(mask: Mask, original: Mask): Mask {
+  const speck = mask.width * mask.height * 0.0015;
+  const keep = new Float32Array(mask.data.length);
+  for (const c of components(mask, speck))
+    if (c.pixels.some((p) => original.data[p]! >= 0.5)) for (const p of c.pixels) keep[p] = mask.data[p]!;
+  return { ...mask, data: keep };
+}
 
 /** Ink components of a mask, with their pixel boxes. */
 function components(m: Mask, minSize: number) {

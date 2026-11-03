@@ -63,6 +63,17 @@ describe('the letter check says whether it ran', () => {
     expect(r).toEqual({ fix: [], notes: [] });
   });
 
+  it('still checks a wordmark that differs from the recipe only by close commands', async () => {
+    const { ws, compiled, svg } = await wordmarkWorkspace();
+    const r = await wordmarkLetters(
+      ws,
+      'nimbra',
+      'fold',
+      svg(compiled.layers.map((l) => l.d.replace(/Z/g, ''))),
+    );
+    expect('checked' in r).toBe(false);
+  });
+
   it('reports checked: false with the reason when the drawing was moved by hand', async () => {
     const { ws, compiled, svg } = await wordmarkWorkspace();
     const moved = svg(compiled.layers.map((l) => transformPath(l.d, [1, 0, 0, 1, 12, 7])));
