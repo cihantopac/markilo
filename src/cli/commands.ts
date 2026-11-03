@@ -65,6 +65,7 @@ import {
   PHASES,
   phaseOf,
   readCost,
+  sessionShare,
   writeCost,
 } from '../report/cost.js';
 import { BLIND_CRITERIA, criterionOf, gateOf, requireCriterion } from '../report/gate.js';
@@ -1931,7 +1932,7 @@ export const COMMANDS: CommandSpec[] = [
       'session-usd': {
         type: 'string',
         description:
-          'The session total Claude Code shows, in USD: records the main session’s share since the last call (not combinable with --tokens/--usd)',
+          'The session total Claude Code shows, in USD: records the main session’s share since the last call, less the agent work recorded since then (not combinable with --tokens/--usd)',
       },
       minutes: { type: 'string', description: 'Wall-clock minutes' },
       rate: {
@@ -1973,14 +1974,14 @@ export const COMMANDS: CommandSpec[] = [
           const total = c.num('session-usd')!;
           if (!Number.isFinite(total) || total < 0)
             throw new MarkiloError('USAGE', '--session-usd must be a number of dollars, 0 or more.');
-          // A total below the stored one means a new session started: its first total is the whole share.
-          const prev = log.sessionUsd ?? 0;
-          const share = Math.round((total >= prev ? total - prev : total) * 1e6) / 1e6;
+          // The session total contains the agents' work recorded since the last session entry: only the rest is new.
+          const share = sessionShare(log, total);
           log.entries.push({
             phase,
             at: nowIso(),
-            usd: share,
+            usd: share.usd,
             source: 'session',
+            agentUsdIncluded: share.agentUsdIncluded,
             ...(minutes !== undefined ? { minutes } : {}),
             ...note,
           });

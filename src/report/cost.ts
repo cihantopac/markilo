@@ -36,6 +36,8 @@ export interface CostEntry {
   note?: string;
   /** Who did the work: a subagent (tokens or dollars) or the main session (dollars). Missing in 1.1 logs: `agent`. */
   source?: 'agent' | 'session';
+  /** On a session entry: agent dollars the session total already contained, subtracted from its share. */
+  agentUsdIncluded?: number;
 }
 
 export interface CostLog {
@@ -72,6 +74,26 @@ const r2 = (n: number) => Math.round(n * 100) / 100;
 export function entryUsd(e: CostEntry): { usd: number; estimated: boolean } {
   if (e.usd !== undefined) return { usd: e.usd, estimated: false };
   return { usd: ((e.tokens ?? 0) / 1e6) * (e.rate ?? DEFAULT_RATE), estimated: true };
+}
+
+/**
+ * The main session's own share of a cumulative Claude Code session total. That total already includes the subagents'
+ * usage, so the agent entries recorded since the last session entry (all of them when there is none) are subtracted,
+ * floored at 0. A total below the stored one means a new session started: its whole total is the delta.
+ */
+export function sessionShare(log: CostLog, total: number): { usd: number; agentUsdIncluded: number } {
+  const prev = log.sessionUsd ?? 0;
+  const delta = total >= prev ? total - prev : total;
+  let last = -1;
+  log.entries.forEach((e, i) => {
+    if (e.source === 'session') last = i;
+  });
+  const agent = log.entries
+    .slice(last + 1)
+    .filter((e) => e.source !== 'session')
+    .reduce((a, e) => a + entryUsd(e).usd, 0);
+  const r6 = (n: number) => Math.round(n * 1e6) / 1e6;
+  return { usd: r6(Math.max(0, delta - agent)), agentUsdIncluded: r6(agent) };
 }
 
 /** Totals per phase and against the budget; `stop` means the next paid step would go over it. */

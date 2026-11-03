@@ -22,7 +22,8 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    `markilo:concept-designer` agents in parallel, one per direction, in `explore <concept id>` mode with the round,
    the direction, the brief summary, what to avoid, existing interface colours, the user's references and their
    feedback on earlier rounds. Record their usage: `markilo cost --brand <slug> --phase explore --tokens <n> --minutes
-   <m>`, then the session total Claude Code shows: `markilo cost --brand <slug> --phase explore --session-usd <total>`.
+   <m>`, then the session total Claude Code shows: `markilo cost --brand <slug> --phase explore --session-usd <total>`
+   (the total covers the agents; Markilo subtracts what they recorded).
 4. `markilo proposals --brand <slug>` and `Read` `proposals/round-<n>.png`. Send back once only a proposal that
    `missing` flags (a word still its typeface as set, no icon, no pitch) or that has a drafting error. No critic at
    this stage.

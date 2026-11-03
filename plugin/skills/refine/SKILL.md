@@ -23,7 +23,8 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 4. After a development pass only, one `markilo:design-critic` agent in `final <concept id>` mode. Apply the fixes that improve the work without
    changing what the user chose — once, then verify again; do not critique an unchanged image twice. Record
    `--phase verify`. At the end of each phase, record the session total Claude Code shows:
-   `markilo cost --brand <slug> --phase <p> --session-usd <total>`.
+   `markilo cost --brand <slug> --phase <p> --session-usd <total>` (the total covers the agents; Markilo subtracts what
+   they recorded).
 5. Show the user the refined identity (`markilo proposals --brand <slug> --concepts <id>`, the gallery), the measured
    checks, the originality verdict and the critic's notes labelled as judgment. Further changes go back to step 2.
 6. When the user approves: `markilo finalize --brand <slug> --concept <id> --user-choice "<their words>" --tagline "<tagline>"`

@@ -99,7 +99,43 @@ describe('cost --session-usd', () => {
       lowerBound: true,
       basis: 'estimated',
     });
+    // The session total already covers the agent's 1.2: only 1.8 is the main session's own share.
     const s = ok(['cost', '--brand', 'tidepool', '--phase', 'refine', '--session-usd', '3'], cwd);
-    expect(s).toMatchObject({ totalUsd: 4.2, lowerBound: false, basis: 'mixed' });
+    expect(s).toMatchObject({ totalUsd: 3, lowerBound: false, basis: 'mixed' });
+  });
+
+  it('subtracts agent work the session total already contains', () => {
+    const cwd = workspace();
+    ok(['cost', '--brand', 'tidepool', '--phase', 'explore', '--usd', '2'], cwd);
+    const s = ok(['cost', '--brand', 'tidepool', '--phase', 'explore', '--session-usd', '2.5'], cwd);
+    const f = JSON.parse(readFileSync(costFile(cwd), 'utf8'));
+    expect(f.entries[1]).toMatchObject({ usd: 0.5, source: 'session', agentUsdIncluded: 2 });
+    expect(s.phases.find((p: { phase: string }) => p.phase === 'explore').usd).toBe(2.5);
+    expect(s.totalUsd).toBe(2.5);
+  });
+
+  it('subtracts only agent work recorded after the last session entry', () => {
+    const cwd = workspace();
+    ok(['cost', '--brand', 'tidepool', '--phase', 'explore', '--usd', '1'], cwd);
+    ok(['cost', '--brand', 'tidepool', '--phase', 'explore', '--session-usd', '2'], cwd);
+    ok(['cost', '--brand', 'tidepool', '--phase', 'refine', '--usd', '0.75'], cwd);
+    const s = ok(['cost', '--brand', 'tidepool', '--phase', 'refine', '--session-usd', '3.5'], cwd);
+    const f = JSON.parse(readFileSync(costFile(cwd), 'utf8'));
+    expect(f.entries.map((e: { usd: number }) => e.usd)).toEqual([1, 1, 0.75, 0.75]);
+    expect(f.entries[3].agentUsdIncluded).toBe(0.75);
+    expect(s.totalUsd).toBe(3.5);
+  });
+
+  it('never records a negative session share, also for a new session', () => {
+    const cwd = workspace();
+    ok(['cost', '--brand', 'tidepool', '--phase', 'explore', '--usd', '3'], cwd);
+    ok(['cost', '--brand', 'tidepool', '--phase', 'explore', '--session-usd', '2'], cwd);
+    let f = JSON.parse(readFileSync(costFile(cwd), 'utf8'));
+    expect(f.entries[1]).toMatchObject({ usd: 0, agentUsdIncluded: 3 });
+    // A lower total is a new session: its total less the agent work recorded since the last session entry.
+    ok(['cost', '--brand', 'tidepool', '--phase', 'refine', '--usd', '0.5'], cwd);
+    ok(['cost', '--brand', 'tidepool', '--phase', 'refine', '--session-usd', '1.25'], cwd);
+    f = JSON.parse(readFileSync(costFile(cwd), 'utf8'));
+    expect(f.entries[3]).toMatchObject({ usd: 0.75, agentUsdIncluded: 0.5 });
   });
 });

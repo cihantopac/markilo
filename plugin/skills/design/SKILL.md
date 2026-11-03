@@ -45,7 +45,7 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
    it (`markilo cost --brand <slug> --phase <p> --tokens <n> --minutes <m>`, from the agent's reported usage). At
    `status: over`, stop paid work, show what exists and ask. Agent usage alone is a lower bound, so at the end of each
    phase also record the session total Claude Code shows (`markilo cost --brand <slug> --phase <p> --session-usd
-   <total>`). Never repeat research, critique an unchanged image again, or refine a direction the user rejected.
+   <total>`). That total already covers the agents; Markilo subtracts what they recorded. Never repeat research, critique an unchanged image again, or refine a direction the user rejected.
 9. **Don't re-ask.** Check `markilo answers --brand <slug>` first; record every question and answer there.
 10. **Respond in the user's language.** Files, code and reports stay in English unless asked otherwise.
 
