@@ -1,0 +1,27 @@
+@theme {
+  --color-markilo-primary-50: #fff4f4;
+  --color-markilo-primary-100: #fee4e4;
+  --color-markilo-primary-200: #ffc3c3;
+  --color-markilo-primary-300: #f29c9e;
+  --color-markilo-primary-400: #db767a;
+  --color-markilo-primary-500: #be535a;
+  --color-markilo-primary-600: #a33b44;
+  --color-markilo-primary-700: #7e1d2a;
+  --color-markilo-primary-800: #651721;
+  --color-markilo-primary-900: #490d15;
+  --color-markilo-primary-950: #2e0409;
+  --color-markilo-neutral-50: #fef4f4;
+  --color-markilo-neutral-100: #f2e8e8;
+  --color-markilo-neutral-200: #dbd2d1;
+  --color-markilo-neutral-300: #beb5b5;
+  --color-markilo-neutral-400: #9f9696;
+  --color-markilo-neutral-500: #807878;
+  --color-markilo-neutral-600: #696161;
+  --color-markilo-neutral-700: #534b4b;
+  --color-markilo-neutral-800: #3d3636;
+  --color-markilo-neutral-900: #2b2424;
+  --color-markilo-neutral-950: #1b1414;
+  --color-markilo-ink: #16120F;
+  --color-markilo-paper: #F2ECE1;
+  --font-markilo: "DM Serif Display", system-ui, sans-serif;
+}

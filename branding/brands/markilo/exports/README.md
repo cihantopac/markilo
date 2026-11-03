@@ -20,7 +20,7 @@ Open **`index.html`** in a browser: it shows every file in this folder on the ba
 - `logos/` (35 files) — every logo in color, reversed, black and white, as SVG and transparent PNG.
 - `web/` (11 files) — favicons, home-screen icons, the web manifest and `head-snippet.html` to paste into your <head>.
 - `social/` (11 files) — link previews, profile covers and the avatar.
-- `tokens/` (3 files) — colors and type as JSON and CSS variables.
+- `tokens/` (4 files) — colors and type as JSON, CSS variables and a Tailwind theme.
 - `guidelines/` (2 files) — how to use the identity (HTML and Markdown).
 
 ## Logo variants

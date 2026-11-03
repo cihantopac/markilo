@@ -6,6 +6,42 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-03
+
+Fixes from two field reports on 1.1.3. Locked identities and the logo files of existing kits are byte-for-byte what
+1.1.3 wrote.
+
+### Added
+
+- `finalize --wordmark-only`: an identity that is the word itself gets no symbol lockups, and the social images and
+  watermarks no longer carry the symbol; the guidelines say the symbol is never set next to the wordmark.
+- `export --out <dir>` (a kit to a folder of your choice) and `--progress` (one JSON line per group on stderr);
+  `--theme-color primary|paper|#hex`.
+- `tokens/tailwind.css` (a Tailwind v4 `@theme`) and the Android TV banner `android/res/drawable-xhdpi/banner.png`,
+  both promised by the deliverables and now emitted.
+- `markilo center`: optical centring for a mark.
+- `construct --set role=#hex` sets palette colours, and construct reports placeholder colours left in the artwork.
+- A letter-split check in `verify`: a letter that falls into two parts (an "h" read as "ln") is caught, and the report
+  says when the check could not run.
+- `cost --session-usd` records the main session's own share of the cost; `cost` says when the total is a lower bound.
+- The design skill draws a named craft's direction with that craft's construction rules.
+
+### Changed
+
+- `tokens.css` carries the semantic colours, spacing, font and a colour-scheme swap, as `tokens.json` does.
+- `theme-color` (meta and manifest) is the paper colour for a dark-first brand, else the primary.
+- `deliverables`: "web (mobile first)" no longer suggests iOS and Android; "mobile" means mobile web only when a web
+  word is in the same platforms entry.
+- `cost --session-usd` subtracts agent work recorded since the last session mark, so nothing is counted twice.
+- Clearer messages: `concept update` lists title and direction as editable; the originality note without references
+  says what is missing.
+
+### Fixed
+
+- Mockup text is rendered.
+- `export --clean` validates its target before deleting; the `final/` guard is case-insensitive, and `center` refuses to
+  write into a brand's `final/`.
+
 ## [1.1.3] - 2026-11-01
 
 Same content as 1.1.2, published again because npm appeared to have lost 1.1.2.

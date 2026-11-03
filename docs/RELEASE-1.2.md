@@ -565,4 +565,22 @@ the reporting session's shell expanding `$3`.
 
 ## Progress record
 
-_(Filled in during implementation.)_
+Tasks 1-12 and the final-review fix wave are done and reviewed. Task 13 (steps 1-3), 2026-11-03:
+
+- **Checks:** `npm run ci` passes (32 test files, 263 tests; biome, typecheck, build, dist check), `node scripts/smoke.mjs`
+  passes, `claude plugin validate plugin` passes.
+- **Check run** (synthetic brand "Lumen": dark-first website, `product.platforms: ["web (mobile first)"]`, wordmark-led,
+  paper `#0d1018`, built CLI, outside the repo):
+  - `deliverables` suggests logos, web, social, tokens, guidelines; no iOS, no Android.
+  - `finalize --wordmark-only` works; `brand.json` has `wordmarkOnly: true`.
+  - Export (with `android` added): no `logos/secondary` or `logos/compact`; `theme-color` and manifest `theme_color` are
+    `#0d1018` (the paper); `tokens/tailwind.css` and `android/res/drawable-xhdpi/banner.png` exist.
+  - `cost` reports `lowerBound: true` with the explanatory note until `--session-usd` is recorded, then `false`.
+- **Changes after the plan was written:** the TV banner is `android/res/drawable-xhdpi/banner.png`, not
+  `android/tv-banner.png`; `cost --session-usd` subtracts agent work recorded since the last session mark
+  (`agentUsdIncluded`); "mobile" means mobile web only when a web word is in the same platforms entry; `center`
+  refuses to write into a brand's `final/`.
+- **Markilo's own kit** re-exported (`--only logos,web,social,tokens,guidelines --clean`): all 35 logo files are
+  byte-identical to before; README, manifest, guidelines, preview and `tokens.css` changed, `tailwind.css` is new.
+- Version 1.2.0 set in `package.json`, `package-lock.json`, `plugin.json` and `marketplace.json`; dist rebuilt.
+- Not done: push, tag, GitHub release, `npm publish` (Step 4 needs the user's approval).

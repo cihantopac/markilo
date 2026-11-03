@@ -4,7 +4,7 @@
   "name": "Markilo",
   "concept": "hallmark",
   "locked": false,
-  "generatedAt": "2026-11-01T12:37:32.669Z",
+  "generatedAt": "2026-11-03T08:44:01.283Z",
   "generator": "markilo",
   "specSources": {
     "web": [
@@ -25,7 +25,8 @@
     "android": [
       "https://developer.android.com/develop/ui/views/launch/icon_design_adaptive",
       "https://developer.android.com/distribute/google-play/resources/icon-design-specifications",
-      "https://developer.android.com/training/multiscreen/screendensities"
+      "https://developer.android.com/training/multiscreen/screendensities",
+      "https://developer.android.com/training/tv/get-started/create"
     ],
     "windows": [
       "https://learn.microsoft.com/en-us/windows/apps/design/style/iconography/app-icon-construction",
@@ -634,8 +635,17 @@
       "purpose": "CSS custom properties",
       "derivedFrom": "brand.json",
       "format": "css",
-      "bytes": 810,
-      "sha256": "b606ea960bc4e7161622cf22e7904ccdb28754ea78a7acc99fd1ef6f4b19bf35"
+      "bytes": 1410,
+      "sha256": "9c0392d7b3994a5e13d512048d3c9bcadda8b8f546a00f11aaf5465cbfba3db5"
+    },
+    {
+      "path": "tokens/tailwind.css",
+      "group": "tokens",
+      "purpose": "Tailwind CSS v4 theme (@theme variables)",
+      "derivedFrom": "brand.json",
+      "format": "css",
+      "bytes": 1016,
+      "sha256": "20ed75aeb6e3c2a567f8713672c1532ddeb8ddeb00cd884a8d1bc3746d241e9e"
     },
     {
       "path": "tokens/palette.json",
@@ -653,7 +663,7 @@
       "derivedFrom": "brand.json",
       "format": "md",
       "bytes": 2873,
-      "sha256": "ae547a15bd7995c0bf926a923272ff4f8c457498cc2f0c057f3d1e80af9539fd"
+      "sha256": "abd365b3260bceee98088f808947542a2581aa849a269b0d43e69fde9033dabb"
     },
     {
       "path": "guidelines/index.html",
@@ -662,7 +672,7 @@
       "derivedFrom": "brand.json",
       "format": "html",
       "bytes": 25728,
-      "sha256": "c475d303fe6631779f11d132fcbb02b24dc6675db5f3b731457a6d3740a7a6e6"
+      "sha256": "46fe5be784195564f146104b1af7c985a30a3a3de8cb555437506e6cc044d4e0"
     }
   ],
   "skipped": [],

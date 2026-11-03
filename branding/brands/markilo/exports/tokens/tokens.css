@@ -21,6 +21,29 @@
   --markilo-neutral-800: #3d3636;
   --markilo-neutral-900: #2b2424;
   --markilo-neutral-950: #1b1414;
+  --markilo-success: #0e8c41;
+  --markilo-warning: #9c6905;
+  --markilo-danger: #bc4a41;
+  --markilo-info: #0a7abf;
+  --markilo-space-1: 4px;
+  --markilo-space-2: 8px;
+  --markilo-space-3: 12px;
+  --markilo-space-4: 16px;
+  --markilo-space-6: 24px;
+  --markilo-space-8: 32px;
+  --markilo-space-12: 48px;
+  --markilo-space-16: 64px;
+  --markilo-space-24: 96px;
+  --markilo-font-brand: "DM Serif Display", system-ui, sans-serif;
   --markilo-ink: #16120F;
   --markilo-paper: #F2ECE1;
+  --markilo-surface: #F2ECE1;
+  --markilo-text: #16120F;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --markilo-surface: #120b0b;
+    --markilo-text: #f5f6f8;
+  }
 }
