@@ -61,6 +61,7 @@ export const SPECS = {
       'https://developer.android.com/develop/ui/views/launch/icon_design_adaptive',
       'https://developer.android.com/distribute/google-play/resources/icon-design-specifications',
       'https://developer.android.com/training/multiscreen/screendensities',
+      'https://developer.android.com/training/tv/get-started/create',
     ],
   },
   windows: {

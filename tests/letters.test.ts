@@ -101,7 +101,7 @@ describe('a letter that broke into two shapes', () => {
     const spec = (shape: unknown) =>
       ({ role: 'wordmark', size: 1600, layers: [{ fill: 'primary', shape }] }) as unknown as ConstructionSpec;
     const base = await compileSpec(spec(hub), {});
-    const h = base.glyphs.find((g, i) => base.letters![i]?.char === 'h') ?? base.glyphs[5]!;
+    const h = base.glyphs.find((_g, i) => base.letters![i]?.char === 'h') ?? base.glyphs[5]!;
     const c = await compileSpec(
       spec({ subtract: [hub, { rect: { x: h.x + h.w * 0.26, y: h.y + h.h * 0.2, w: h.w * 0.1, h: h.h } }] }),
       {},

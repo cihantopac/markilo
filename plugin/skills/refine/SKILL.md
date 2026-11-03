@@ -19,7 +19,7 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    critic. A small, precise change they describe is done directly with the toolchain (`construct`, `lockup`,
    `verify`). Otherwise: one `markilo:concept-designer` agent in `develop <concept id>` mode with the user's changes, pinned spots, or the
    combination (it creates a new concept for a combination). Record `--phase refine` with its usage.
-3. `markilo verify --brand <slug> --concept <id>` until nothing fails; `Read` the review, wordmark and context sheets. When the `letters` check says it did not run (a freeform or hand-edited wordmark), read the 32 px wordmark render letter by letter and write down what you read before the brand name; a split or misread letter is fixed before the critic. When `balance` says the mark leans, `markilo center in.svg -o out.svg` shifts it to the optical centre.
+3. `markilo verify --brand <slug> --concept <id>` until nothing fails; `Read` the review, wordmark and context sheets. When the `letters` check says it did not run (a freeform or hand-edited wordmark), read the 32 px wordmark render letter by letter and write down what you read before the brand name; a split or misread letter is fixed before the critic. When `balance` says the mark leans, `markilo center in.svg -o out.svg` shifts it to the optical centre (never run on a locked brand's masters).
 4. After a development pass only, one `markilo:design-critic` agent in `final <concept id>` mode. Apply the fixes that improve the work without
    changing what the user chose — once, then verify again; do not critique an unchanged image twice. Record
    `--phase verify`. At the end of each phase, record the session total Claude Code shows:

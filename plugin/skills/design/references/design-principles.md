@@ -104,7 +104,7 @@ the tube's rules is a glowing font, not neon.
 - **Stencil:**
   - Bridges hold every counter and island (o, a, e, b, d, p, q, R), so no letter falls apart.
   - Place bridges at natural direction changes and joins (O, S, C), not mid-curve.
-  - Align bridges to one axis, and give every bridge the same width and placement from letter to letter.
+  - Align bridges to one axis, and give every bridge the same width and the same axis, with placement set by each letter's joins.
   - Keep each bridge small enough that the letter still reads as one shape.
 - **Engraving:**
   - Lines follow the contour of the form, and burin lines swell and taper.
