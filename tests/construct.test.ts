@@ -1,8 +1,12 @@
+import { spawnSync } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { type ConstructionSpec, compileSpec, constructionSvg } from '../src/construct/compile.js';
 import { evaluate } from '../src/construct/expr.js';
 import { runVariants, variantParams } from '../src/construct/vary.js';
 import { lintSvg } from '../src/svg/lint.js';
+import { synthBrand, tmp } from './helpers.js';
 
 const ring: ConstructionSpec = {
   params: { r: 360, w: 120, gap: 32 },
@@ -221,5 +225,53 @@ describe('variants', () => {
       layers: [{ fill: 'primary', shape: { polygon: { points: pts } } }],
     } as unknown as ConstructionSpec);
     expect(plain.layers[0]!.d).not.toMatch(/C/);
+  });
+});
+
+const dot: ConstructionSpec = {
+  layers: [{ fill: 'primary', shape: { circle: { c: [512, 512], r: 300 } } }],
+};
+
+describe('construct colours', () => {
+  it('records the roles that fell back to a placeholder', async () => {
+    expect((await compileSpec(dot)).defaultColors).toEqual(['primary']);
+    expect((await compileSpec(dot, { palette: { primary: '#123abc' } })).defaultColors).toEqual([]);
+    expect((await compileSpec(ring, { palette: { primary: '#123abc' } })).defaultColors).toEqual(['accent']);
+  });
+});
+
+describe('construct --set colours (CLI)', () => {
+  const bin = join(__dirname, '..', 'plugin', 'dist', 'markilo.mjs');
+  const run = (args: string[], cwd: string) =>
+    spawnSync(process.execPath, [bin, ...args], { cwd, encoding: 'utf8' });
+
+  it('fills a role with --set role=#hex and rejects names', () => {
+    const dir = tmp();
+    writeFileSync(join(dir, 's.json'), JSON.stringify(dot));
+    const ok = run(['construct', 's.json', '-o', 'a.svg', '--set', 'primary=#ff9d3a'], dir);
+    expect(ok.status, ok.stderr).toBe(0);
+    expect(readFileSync(join(dir, 'a.svg'), 'utf8')).toContain('#ff9d3a');
+    const out = JSON.parse(ok.stdout);
+    expect(out.defaultColors).toEqual([]);
+    expect(out.hint).toBeUndefined();
+    const bad = run(['construct', 's.json', '-o', 'b.svg', '--set', 'primary=orange'], dir);
+    expect(bad.status).toBe(64);
+    expect(JSON.parse(bad.stderr).error.code).toBe('USAGE');
+  });
+
+  it('says when it used the placeholder colours, and not with a concept palette', () => {
+    const dir = tmp();
+    writeFileSync(join(dir, 's.json'), JSON.stringify(dot));
+    const r = run(['construct', 's.json', '-o', 'a.svg'], dir);
+    const out = JSON.parse(r.stdout);
+    expect(out.defaultColors).toEqual(['primary']);
+    expect(out.hint).toBe(
+      'Placeholder colours used for: primary. Pass --brand and --concept to use the concept palette, or --set primary=#rrggbb.',
+    );
+    const { dir: cwd } = synthBrand();
+    writeFileSync(join(cwd, 's.json'), JSON.stringify(dot));
+    const c = run(['construct', 's.json', '--brand', 'nimbra', '--concept', 'fold', '--force'], cwd);
+    expect(c.status, c.stderr).toBe(0);
+    expect(JSON.parse(c.stdout).defaultColors).toEqual([]);
   });
 });

@@ -42,6 +42,9 @@ With `--brand/--concept`, palette roles come from the concept, the result is wri
 - Any number may be an expression over params: `"r*0.6"`, `"gap/2+4"`, `"sin(30)*r"` (degrees), `min max abs sqrt
   round floor ceil hypot atan2`, `pi`, `phi`.
 - `fill` is a palette role (`primary`, `secondary`, `accent`, `ink`, `paper`) or a hex color. Later layers draw on top.
+- A role takes its colour from `--brand` and `--concept`, or from `--set primary=#rrggbb` (roles: `primary`,
+  `secondary`, `accent`, `ink`, `paper`; a leading `#` is required). A role with no colour falls back to a placeholder;
+  `construct` lists those in `defaultColors` and says so in `hint`, so a placeholder blue never ships by accident.
 - `fit` scales and centres everything into the artboard with that margin. It scales gaps and stroke widths too, so a
   variant that grows taller also gets thinner gaps; leave `fit` out while tuning gaps and widths, and place by grid.
   `fit` centres the bounding box; correct the optical centre with `"nudge": [dx, dy]`, applied after `fit`

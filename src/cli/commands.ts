@@ -2537,7 +2537,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Build a mark from a construction spec (primitives, booleans, gaps, offsets, repeats, glyphs) into clean SVG; --vary explores and scores parameter variants.',
     usage:
-      'construct <spec.json> (-o <out.svg> | --brand <slug> --concept <id>) [--role symbol|wordmark|small] [--member <name>] [--set k=v,…] [--guides <png>] [--vary [--max 24] [--sheet <png>] [--out-dir <dir>]] [--force]',
+      'construct <spec.json> (-o <out.svg> | --brand <slug> --concept <id>) [--role symbol|wordmark|small] [--member <name>] [--set k=v,… | role=#hex,…] [--guides <png>] [--vary [--max 24] [--sheet <png>] [--out-dir <dir>]] [--force]',
     options: {
       ...brandOpt,
       concept: {
@@ -2545,7 +2545,10 @@ export const COMMANDS: CommandSpec[] = [
         description: 'Concept id: palette from the concept, output to its symbol.svg',
       },
       out: { type: 'string', short: 'o', description: 'Output SVG' },
-      set: { type: 'string', description: 'Parameter overrides, e.g. gap=40,angle=15' },
+      set: {
+        type: 'string',
+        description: 'Parameter overrides, e.g. gap=40,angle=15; colours as role=#hex, e.g. primary=#ff9d3a',
+      },
       guides: { type: 'string', description: 'Write a construction drawing PNG (grid + primitives)' },
       vary: {
         type: 'boolean',
@@ -2585,12 +2588,24 @@ export const COMMANDS: CommandSpec[] = [
       if (c.str('role')) spec.role = c.str('role') as ConstructionSpec['role'];
       const member = c.str('member') ? memberOf(spec, c.str('member')!) : undefined;
       const overrides: Record<string, number> = { ...member?.params };
+      const setColors: Record<string, string> = {};
       for (const kv of c.list('set')) {
         const [k, v] = kv.split('=');
+        const key = k?.trim();
+        if (key && ['primary', 'secondary', 'accent', 'ink', 'paper'].includes(key)) {
+          const hex = v?.trim().startsWith('#') ? normalizeColor(v.trim()) : undefined;
+          if (!hex)
+            throw new MarkiloError('USAGE', `--set ${key}=… expects a #rrggbb colour, got "${v ?? ''}".`);
+          setColors[key] = hex;
+          continue;
+        }
         const n = Number(v);
-        if (!k || v === undefined || !Number.isFinite(n))
-          throw new MarkiloError('USAGE', `--set expects name=number pairs, got "${kv}".`);
-        overrides[k.trim()] = n;
+        if (!key || v === undefined || !Number.isFinite(n))
+          throw new MarkiloError(
+            'USAGE',
+            `--set expects name=number or role=#hex (primary, secondary, accent, ink, paper) pairs, got "${kv}".`,
+          );
+        overrides[key] = n;
       }
       const brand = c.str('brand');
       const conceptId = c.str('concept');
@@ -2599,7 +2614,7 @@ export const COMMANDS: CommandSpec[] = [
       const concept = w && brand && conceptId ? w.concept(brand, conceptId) : undefined;
       const palette: Record<string, string> = {};
       if (concept) for (const [k, v] of Object.entries(concept.palette)) if (v) palette[k] = v;
-      Object.assign(palette, member?.palette);
+      Object.assign(palette, member?.palette, setColors);
       const paper = c.str('paper') ?? concept?.palette.paper ?? '#ffffff';
       const title = concept ? `${w!.brand(brand!).name} — ${spec.role ?? 'symbol'}` : spec.title;
 
@@ -2724,6 +2739,12 @@ export const COMMANDS: CommandSpec[] = [
           );
           return advice.fix.length || advice.notes.length ? { letters: advice } : {};
         })()),
+        defaultColors: compiled.defaultColors,
+        ...(compiled.defaultColors.length
+          ? {
+              hint: `Placeholder colours used for: ${compiled.defaultColors.join(', ')}. Pass --brand and --concept to use the concept palette, or --set primary=#rrggbb.`,
+            }
+          : {}),
         warnings: compiled.warnings,
       };
     },

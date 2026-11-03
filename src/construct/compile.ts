@@ -147,6 +147,8 @@ export interface Compiled {
   letters?: SourceLetter[];
   params: Record<string, number>;
   warnings: string[];
+  /** Palette roles the spec used that the caller gave no colour for: they took the placeholder in ROLE_DEFAULTS. */
+  defaultColors: string[];
   stats: { paths: number; commands: number; contours: number; ink: number };
 }
 
@@ -550,11 +552,17 @@ const ROLE_DEFAULTS: Record<string, string> = {
   paper: '#ffffff',
 };
 
-function resolveFill(fill: string, palette: Record<string, string>, at: string): string {
-  const v =
-    (Object.hasOwn(palette, fill) ? palette[fill] : undefined) ??
-    (Object.hasOwn(ROLE_DEFAULTS, fill) ? ROLE_DEFAULTS[fill] : undefined) ??
-    fill;
+function resolveFill(
+  fill: string,
+  palette: Record<string, string>,
+  at: string,
+  defaulted?: Set<string>,
+): string {
+  const given = Object.hasOwn(palette, fill) ? palette[fill] : undefined;
+  const fallback =
+    given === undefined && Object.hasOwn(ROLE_DEFAULTS, fill) ? ROLE_DEFAULTS[fill] : undefined;
+  if (fallback !== undefined) defaulted?.add(fill);
+  const v = given ?? fallback ?? fill;
   const hex = normalizeColor(v);
   if (!hex)
     throw new MarkiloError('INVALID_INPUT', `${at}: "${fill}" is neither a hex color nor a palette role.`);
@@ -582,12 +590,13 @@ export async function compileSpec(spec: ConstructionSpec, opts: CompileOptions =
     vars[k] = ctx.num(v, `params.${k}`);
   }
   const palette = { ...opts.palette };
+  const defaulted = new Set<string>();
   let layers: CompiledLayer[] = spec.layers.map((l, i) => {
     const at = `layers[${i}]`;
     if (!l || typeof l !== 'object') ctx.fail(at, 'expected { fill, shape }');
     return {
       name: l.name ?? `layer-${i + 1}`,
-      fill: resolveFill(String(l.fill ?? 'primary'), palette, `${at}.fill`),
+      fill: resolveFill(String(l.fill ?? 'primary'), palette, `${at}.fill`, defaulted),
       d: shape(l.shape, `${at}.shape`, ctx),
     };
   });
@@ -709,6 +718,7 @@ export async function compileSpec(spec: ConstructionSpec, opts: CompileOptions =
     ...(spec.role === 'wordmark' && ctx.letters.length > 1 ? { letters: ctx.letters } : {}),
     params: Object.fromEntries(Object.entries(vars).filter(([k]) => !['W', 'H', 'cx', 'cy'].includes(k))),
     warnings: ctx.warnings,
+    defaultColors: [...defaulted],
     stats: {
       paths: layers.length,
       commands: layers.reduce((n, l) => n + countCmds(l.d), 0),
