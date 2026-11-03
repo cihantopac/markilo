@@ -1649,12 +1649,17 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'export',
     summary: `Generate the asset kit from the approved identity: the groups chosen in the brief (markilo deliverables), or --only / --all. Groups: ${EXPORT_GROUPS.join(', ')}.`,
-    usage: 'export --brand <slug> [--only web,ios,...] [--all] [--clean]',
+    usage: 'export --brand <slug> [--only web,ios,...] [--all] [--clean] [--theme-color primary|paper|#hex]',
     options: {
       ...brandOpt,
       only: { type: 'string', description: 'Comma-separated groups' },
       all: { type: 'boolean', description: 'Every group, whatever the brief says' },
       clean: { type: 'boolean', description: 'Delete previous exports first' },
+      'theme-color': {
+        type: 'string',
+        description:
+          'Browser theme-color: primary, paper or #hex (default: paper for dark-first brands, else primary)',
+      },
     },
     async run(c) {
       const w = ws(c);
@@ -1670,7 +1675,11 @@ export const COMMANDS: CommandSpec[] = [
           // No readable brief (e.g. a locked brand added without one): export everything.
         }
       }
-      const r = await exportBrand(w, slug, { groups, clean: c.bool('clean') });
+      const r = await exportBrand(w, slug, {
+        groups,
+        clean: c.bool('clean'),
+        ...(c.str('theme-color') ? { themeColor: c.str('theme-color')! } : {}),
+      });
       const byGroup: Record<string, number> = {};
       for (const a of r.assets) byGroup[a.group] = (byGroup[a.group] ?? 0) + 1;
       const made = groups.length ? groups : [...EXPORT_GROUPS];

@@ -73,6 +73,8 @@ interface Ctx {
   lockupC?: string;
   /** The logo that leads: the wordmark for a wordmark-led identity, else the horizontal lockup. */
   primary?: string;
+  /** The browser/OS chrome colour (theme-color meta, manifest theme_color), resolved once. */
+  themeColor: string;
   assets: AssetRecord[];
   warnings: string[];
 }
@@ -366,7 +368,7 @@ async function exportWeb(ctx: Ctx) {
         purpose: 'maskable',
       })),
     ],
-    theme_color: kit.palette.primary,
+    theme_color: ctx.themeColor,
     background_color: kit.palette.paper,
     display: 'standalone',
   };
@@ -381,7 +383,7 @@ async function exportWeb(ctx: Ctx) {
     '<link rel="icon" href="/favicon.svg" sizes="any" type="image/svg+xml">',
     '<link rel="apple-touch-icon" href="/apple-touch-icon.png">',
     '<link rel="manifest" href="/site.webmanifest">',
-    `<meta name="theme-color" content="${kit.palette.primary}">`,
+    `<meta name="theme-color" content="${ctx.themeColor}">`,
     '<meta property="og:image" content="/og-image.png">',
     '<meta property="og:image:width" content="1200">',
     '<meta property="og:image:height" content="630">',
@@ -1088,14 +1090,31 @@ const NEEDS_SYMBOL: ExportGroup[] = ['web', 'ios', 'macos', 'android', 'windows'
 export async function exportBrand(
   ws: Workspace,
   brand: string,
-  opts: { groups?: ExportGroup[]; clean?: boolean } = {},
+  opts: { groups?: ExportGroup[]; clean?: boolean; themeColor?: 'primary' | 'paper' | string } = {},
 ): Promise<ExportResult> {
+  let custom: string | undefined;
+  if (opts.themeColor && opts.themeColor !== 'primary' && opts.themeColor !== 'paper') {
+    custom = opts.themeColor.trim().startsWith('#') ? normalizeColor(opts.themeColor) : undefined;
+    if (custom?.length !== 7)
+      throw new MarkiloError(
+        'USAGE',
+        `--theme-color must be primary, paper or a #rrggbb colour (got "${opts.themeColor}").`,
+      );
+  }
   const kit = loadKit(ws, brand);
+  const themeColor =
+    custom ??
+    (opts.themeColor === 'primary'
+      ? kit.palette.primary
+      : opts.themeColor === 'paper' || grounds(kit).darkFirst
+        ? kit.palette.paper
+        : kit.palette.primary);
   const outDir = ws.exportsDir(brand);
   if (opts.clean && existsSync(outDir)) rmSync(outDir, { recursive: true, force: true });
   const ctx: Ctx = {
     kit,
     outDir,
+    themeColor,
     ...(kit.files.symbol ? { symbol: kit.read('symbol') } : {}),
     ...(kit.files.symbolSmall ? { small: kit.read('symbolSmall') } : {}),
     ...(kit.files.wordmark ? { wordmark: kit.read('wordmark') } : {}),

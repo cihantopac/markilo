@@ -264,3 +264,14 @@ describe('cli: idea longlist', () => {
     expect(kept.summary.bySource).toMatchObject({ product: 1, name: 6, audience: 5 });
   });
 });
+
+describe('cli export --theme-color', () => {
+  it('rejects a colour name with USAGE and lists the option in the usage', () => {
+    const cwd = tmp();
+    run(['init', '--name', 'Demo'], cwd);
+    run(['brand', 'add', 'Nimbra'], cwd);
+    const r = run(['export', '--brand', 'nimbra', '--theme-color', 'blue'], cwd);
+    expect(r.status).toBe(64);
+    expect(JSON.parse(r.stderr).error.code).toBe('USAGE');
+  });
+});

@@ -204,6 +204,49 @@ describe('export kit', () => {
   });
 });
 
+describe('theme-color', () => {
+  const metaOf = (b: string) => readFileSync(join(ws.exportsDir(b), 'web/head-snippet.html'), 'utf8');
+  const manifestOf = (b: string) =>
+    JSON.parse(readFileSync(join(ws.exportsDir(b), 'web/site.webmanifest'), 'utf8'));
+  const lock = (name: string, paper: string) => {
+    const slug = name.toLowerCase();
+    const symbolPath = join(tmp(), 'symbol.svg');
+    writeFileSync(symbolPath, mark('bars'));
+    ws.addBrand({ name, locked: true });
+    lockIdentity(ws, slug, { symbol: symbolPath, primary: '#7a3cf0', paper });
+    return slug;
+  };
+  it('follows the paper colour of a dark-first brand', async () => {
+    const b = lock('Duskly', '#0b1220');
+    await exportBrand(ws, b, { groups: ['web', 'tokens'] });
+    expect(metaOf(b)).toContain('<meta name="theme-color" content="#0b1220">');
+    expect(manifestOf(b).theme_color).toBe('#0b1220');
+    // The scheme swap of a dark-first brand targets the light scheme.
+    expect(readFileSync(join(ws.exportsDir(b), 'tokens/tokens.css'), 'utf8')).toContain(
+      '@media (prefers-color-scheme: light)',
+    );
+  });
+  it('keeps the primary for a light brand', () => {
+    expect(readFileSync(out('web/head-snippet.html'), 'utf8')).toContain(
+      '<meta name="theme-color" content="#3b5bdb">',
+    );
+    expect(JSON.parse(readFileSync(out('web/site.webmanifest'), 'utf8')).theme_color).toBe('#3b5bdb');
+  });
+  it('lets --theme-color override the default', async () => {
+    const b = lock('Brightly', '#ffffff');
+    await exportBrand(ws, b, { groups: ['web'], themeColor: '#123456' });
+    expect(metaOf(b)).toContain('content="#123456"');
+    expect(manifestOf(b).theme_color).toBe('#123456');
+    await exportBrand(ws, b, { groups: ['web'], themeColor: 'paper' });
+    expect(manifestOf(b).theme_color).toBe('#ffffff');
+  });
+  it('rejects a colour name with USAGE', async () => {
+    await expect(exportBrand(ws, 'nimbra', { groups: ['web'], themeColor: 'blue' })).rejects.toMatchObject({
+      code: 'USAGE',
+    });
+  });
+});
+
 describe('locked identities', () => {
   it('are exported without altering the artwork', async () => {
     const lockedDir = tmp();
