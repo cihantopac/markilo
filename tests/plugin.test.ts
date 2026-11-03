@@ -81,3 +81,17 @@ describe('installable plugin folder', () => {
     expect(json('.claude-plugin/marketplace.json').plugins[0].source).toBe('./plugin');
   });
 });
+
+describe('craft-named directions', () => {
+  it('design principles carry a craft section and the explore mode points to it', () => {
+    const principles = readFileSync(
+      join(root, 'plugin/skills/design/references/design-principles.md'),
+      'utf8',
+    );
+    expect(principles).toContain('## When the direction names a craft');
+    const agent = readFileSync(join(root, 'plugin/agents/concept-designer.md'), 'utf8');
+    const explore = agent.slice(agent.indexOf('## Mode `explore'), agent.indexOf('## Mode `develop'));
+    expect(explore.length).toBeGreaterThan(100);
+    expect(explore).toContain('craft');
+  });
+});
