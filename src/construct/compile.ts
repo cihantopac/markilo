@@ -89,6 +89,21 @@ export interface FamilyMember {
   palette?: Record<string, string>;
 }
 
+/**
+ * Path data in one canonical form: parsed (so relative, shorthand and reformatted numbers all resolve), rounded to two
+ * decimals and written again, without close commands (a filled shape closes itself, and optimizers drop a `z` that
+ * follows a segment ending at the start). Two paths that draw the same thing, one straight from the recipe and one that went
+ * through an optimizer or an editor, compare equal.
+ */
+export function normalizePath(d: string): string {
+  return transformPath(d, [1, 0, 0, 1, 0, 0])
+    .replace(/Z/g, '')
+    .replace(/-?\d*\.?\d+(?:e[-+]?\d+)?/gi, (n) => {
+      const v = Math.round(Number(n) * 100) / 100;
+      return String(Object.is(v, -0) ? 0 : v);
+    });
+}
+
 /** The spec's parameters and palette for one family member; throws for an unknown name. */
 export function memberOf(
   spec: ConstructionSpec,

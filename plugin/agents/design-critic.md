@@ -20,7 +20,9 @@ judge by the same standard the designer worked to.
    `concepts/<id>/review/proposal.png`, `concepts/<id>/review/wordmark-sheet.png` (when there is a wordmark),
    `concepts/<id>/review/symbol-sheet.png`, `brand/brands/<slug>/research/cache/review/context-<id>.png` and, when
    present, `concepts/<id>/review/icon-options.png` — not `concept.json` or anything the designer wrote. For each icon
-   option, name the first thing a stranger sees at 32 px (a person, a menu, a database, another letter). Record what a stranger sees first:
+   option, name the first thing a stranger sees at 32 px (a person, a menu, a database, another letter). A wordmark with no
+   recipe (freeform) gets no automated letter check: read its 32 px render letter by letter and write down what you
+   read ("l-n-b" for hub) before you read the brand name; a letter that reads as two shapes or as another letter is a fix. Record what a stranger sees first:
    `markilo concept update --brand <slug> --concept <id> --reads-as "<first>; <second>; <third>"`, and your cold scores
    and answer: `--blind distinctiveness=n,memorability=n,brand-fit=n,craft=n,versatility=n --present yes|no:"<why>"
    --reviewer <model id>`. Calibration: 3 = clip art or a stock shape, 5 = competent but forgettable, 7 = strong and

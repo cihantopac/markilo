@@ -26,7 +26,9 @@ export interface LetterReading {
   closest?: { char: string; likeness: number }[];
   /** Enclosed counters (the eye of an e, the bowl of a b) before and after the change. */
   counters?: { before: number; after: number };
-  verdict: 'unchanged' | 'changed' | 'reads-as-other' | 'unrecognisable' | 'lost-counter';
+  /** Separate ink shapes of the letter (specks ignored) before and after the change, when it came apart or merged. */
+  parts?: { before: number; after: number };
+  verdict: 'unchanged' | 'changed' | 'reads-as-other' | 'unrecognisable' | 'lost-counter' | 'split';
 }
 
 /** Two neighbouring changed letters that merged into what reads as one letter (ll → n, rn → m). */
@@ -148,14 +150,18 @@ export async function checkLetters(
       r,
     );
     const change = 1 - iou(built, original);
-    if (change < CHANGED) {
-      readings.push({ index: i, char: l.char, change: round(change), self: 1, verdict: 'unchanged' });
-      continue;
-    }
     // Compare the letter on its own: neighbours' untouched ink is taken out, a bridge to a neighbour stays.
     const others = await crop(neighbours, r);
     const mine = minus(built, others);
     const alone = minus(original, others);
+    const partsBefore = topology(alone).parts;
+    const partsAfter = topology(mine).parts;
+    // A shoulder that came loose changes few pixels but turns an h into "ln": it counts however small the change.
+    const split = partsAfter > partsBefore;
+    if (change < CHANGED && !split) {
+      readings.push({ index: i, char: l.char, change: round(change), self: 1, verdict: 'unchanged' });
+      continue;
+    }
     const centre = b.x + b.w / 2;
     const scores = new Map<string, { built: number; native: number }>();
     for (const c of new Set([...CANDIDATES, l.char])) {
@@ -186,13 +192,16 @@ export async function checkLetters(
       ...(best ? { readsAs: { char: best.char, likeness: round(best.likeness) } } : {}),
       closest,
       ...(before !== after ? { counters: { before, after } } : {}),
+      ...(partsBefore !== partsAfter ? { parts: { before: partsBefore, after: partsAfter } } : {}),
       verdict: best
         ? 'reads-as-other'
-        : after < before
-          ? 'lost-counter'
-          : self < UNRECOGNISABLE
-            ? 'unrecognisable'
-            : 'changed',
+        : split
+          ? 'split'
+          : after < before
+            ? 'lost-counter'
+            : self < UNRECOGNISABLE
+              ? 'unrecognisable'
+              : 'changed',
     });
   }
   // A whole word that moved (a transform on the glyph shape) is not a word with many changed letters.
@@ -236,6 +245,10 @@ export async function checkLetters(
     if (x.verdict === 'reads-as-other')
       return [
         `Letter ${x.index + 1} of "${word}" ("${x.char}") now looks more like "${x.readsAs!.char}" (${pct(x.readsAs!.likeness)} vs ${pct(x.self)} like itself): a stranger reads "${misread(word, x.index, x.readsAs!.char)}". Keep the letter's defining stroke (its bowl, stem or crossbar) and move the change elsewhere.`,
+      ];
+    if (x.verdict === 'split')
+      return [
+        `Letter ${x.index + 1} of "${word}" ("${x.char}") came apart into ${x.parts!.after} separate shapes (it was ${x.parts!.before}): a stroke has come loose, and a stranger reads two letters where there is one (an h with a loose shoulder reads as "ln"). Reconnect it, or move the cut so the letter stays in one piece.`,
       ];
     if (x.verdict === 'lost-counter')
       return [
@@ -405,6 +418,6 @@ export function letterAdvice(check: LetterCheck | undefined): { fix: string[]; n
   const fix: string[] = [];
   const notes: string[] = [];
   for (const p of check.problems)
-    (/now looks more like|only \d+ % like itself/.test(p) ? fix : notes).push(p);
+    (/now looks more like|only \d+ % like itself|came apart into/.test(p) ? fix : notes).push(p);
   return { fix, notes };
 }

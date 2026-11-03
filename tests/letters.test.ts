@@ -93,3 +93,27 @@ describe('letter legibility of built wordmarks', () => {
     expect(inside!.added).toEqual([]);
   });
 });
+
+describe('a letter that broke into two shapes', () => {
+  const hub = { glyph: { text: 'Acme hub', font: 'inter', weight: 700, size: 400, at: [80, 600] } };
+
+  it('calls an h whose shoulder came loose split, and names the letter', async () => {
+    const spec = (shape: unknown) =>
+      ({ role: 'wordmark', size: 1600, layers: [{ fill: 'primary', shape }] }) as unknown as ConstructionSpec;
+    const base = await compileSpec(spec(hub), {});
+    const h = base.glyphs.find((g, i) => base.letters![i]?.char === 'h') ?? base.glyphs[5]!;
+    const c = await compileSpec(
+      spec({ subtract: [hub, { rect: { x: h.x + h.w * 0.26, y: h.y + h.h * 0.2, w: h.w * 0.1, h: h.h } }] }),
+      {},
+    );
+    const r = await checkLetters(
+      c.layers.map((l) => l.d),
+      c.letters!,
+    );
+    const reading = r!.letters.find((l) => l.char === 'h')!;
+    expect(reading.verdict).toBe('split');
+    expect(reading.parts!.after).toBeGreaterThan(reading.parts!.before);
+    const advice = letterAdvice(r);
+    expect([...advice.fix, ...advice.notes].join(' ')).toMatch(/"h"[^.]*(two|split)/);
+  });
+});

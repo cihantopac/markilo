@@ -4,7 +4,7 @@ import { checkLetters, letterAdvice } from '../analyze/letters.js';
 import { loadMark, sampleFromSvg } from '../analyze/mark.js';
 import { assessQuality, type QualityReport } from '../analyze/quality.js';
 import { compareMarks, RISK_THRESHOLDS } from '../analyze/similarity.js';
-import { type ConstructionSpec, compileSpec } from '../construct/compile.js';
+import { type ConstructionSpec, compileSpec, normalizePath } from '../construct/compile.js';
 import { MarkiloError } from '../core/errors.js';
 import { readText, writeGenerated, writeJson } from '../core/fsx.js';
 import type { Workspace } from '../core/workspace.js';
@@ -68,15 +68,34 @@ export function qualityMarkdown(reports: QualityReport[], title: string): string
   return L.join('\n');
 }
 
-/** The letter check for a wordmark built from a recipe, when the file on disk is still what that recipe draws. */
-async function wordmarkLetters(ws: Workspace, brand: string, id: string, svg: string) {
+/** What the quality report says about the letters when the check did not run. */
+export interface LettersNotChecked {
+  checked: false;
+  reason: 'the wordmark on disk differs from its recipe' | 'no recipe (freeform wordmark)';
+}
+
+/**
+ * The letter check for a wordmark built from a recipe, when the file on disk still draws what that recipe draws
+ * (compared after parsing and rounding, so an optimizer's reformatting does not switch it off). Says so when it did
+ * not run, instead of staying silent.
+ */
+export async function wordmarkLetters(
+  ws: Workspace,
+  brand: string,
+  id: string,
+  svg: string,
+): Promise<ReturnType<typeof letterAdvice> | LettersNotChecked> {
   const recipe = ws.conceptFile(brand, id, 'construction-wordmark.json');
-  if (!existsSync(recipe)) return undefined;
+  if (!existsSync(recipe)) return { checked: false, reason: 'no recipe (freeform wordmark)' };
+  const differs: LettersNotChecked = {
+    checked: false,
+    reason: 'the wordmark on disk differs from its recipe',
+  };
   try {
     const compiled = await compileSpec(JSON.parse(readFileSync(recipe, 'utf8')) as ConstructionSpec, {});
-    if (!compiled.letters) return undefined;
-    const drawn = [...svg.matchAll(/\sd="([^"]+)"/g)].map((m) => m[1]);
-    if (drawn.join('|') !== compiled.layers.map((l) => l.d).join('|')) return undefined;
+    if (!compiled.letters) return { checked: false, reason: 'no recipe (freeform wordmark)' };
+    const drawn = [...svg.matchAll(/\sd="([^"]+)"/g)].map((m) => normalizePath(m[1]!));
+    if (drawn.join('|') !== compiled.layers.map((l) => normalizePath(l.d)).join('|')) return differs;
     return letterAdvice(
       await checkLetters(
         compiled.layers.map((l) => l.d),
@@ -85,7 +104,7 @@ async function wordmarkLetters(ws: Workspace, brand: string, id: string, svg: st
       ),
     );
   } catch {
-    return undefined;
+    return differs;
   }
 }
 
@@ -137,7 +156,17 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
     }
     if (role === 'wordmark') {
       const letters = await wordmarkLetters(ws, brand, id, svg);
-      if (letters) {
+      if ('checked' in letters) {
+        const r = reports[reports.length - 1]!;
+        r.checks.push({
+          id: 'letters',
+          label: 'Letters read as themselves',
+          status: 'info',
+          value: 'not checked',
+          message: `The letter check did not run: ${letters.reason}. Read the 32 px render letter by letter instead.`,
+        });
+        r.summary.info++;
+      } else {
         const r = reports[reports.length - 1]!;
         const problems = [...letters.fix, ...letters.notes];
         r.checks.push({
