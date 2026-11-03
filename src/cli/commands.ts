@@ -52,6 +52,7 @@ import { finalizeConcept, lockIdentity } from '../export/kit.js';
 import { feedbackRequests, parseFeedback, readLatestFeedback, storeFeedback } from '../gallery/feedback.js';
 import { buildGallery } from '../gallery/gallery.js';
 import { serveGallery } from '../gallery/serve.js';
+import { centerOptically } from '../geom/center.js';
 import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarity.js';
 import { suggestNiceClasses, trademarkSearchPlan } from '../name/trademark.js';
 import { type ProposalInput, renderProposal, renderRoundBoard } from '../render/proposal.js';
@@ -2193,6 +2194,21 @@ export const COMMANDS: CommandSpec[] = [
         return { out: c.str('out'), before: src.length, after: out.length };
       }
       return { svg: out, before: src.length, after: out.length };
+    },
+  },
+  {
+    name: 'center',
+    summary:
+      "Shift a mark so its visual centroid sits at the optical centre (fixes the 'balance' check). Path data is untouched; the artwork moves in one translated group.",
+    usage: 'center <in.svg> -o <out.svg> [--force]',
+    options: {
+      out: { type: 'string', short: 'o', description: 'Output SVG' },
+      force: { type: 'boolean', description: 'Overwrite output' },
+    },
+    async run(c) {
+      const r = await centerOptically(readText(file(c, pos(c, 0, 'in.svg'))));
+      writeFileSafe(file(c, c.req('out')), r.svg, { force: c.bool('force') });
+      return { out: c.req('out'), dx: r.dx, dy: r.dy, before: r.before, after: r.after };
     },
   },
   {

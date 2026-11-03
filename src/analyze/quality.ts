@@ -59,6 +59,11 @@ async function colorOnlyEdges(svg: string): Promise<number> {
   return colorEdges + alphaEdges ? colorEdges / (colorEdges + alphaEdges) : 0;
 }
 
+/** The balance check's measure: distance from centre, where up to 5% upward is not counted. */
+export function balanceOffset(o: { x: number; y: number }): number {
+  return Math.hypot(o.x, o.y < 0 ? Math.min(0, o.y + 0.05) : o.y);
+}
+
 export async function assessQuality(
   svg: string,
   subject: string,
@@ -120,7 +125,7 @@ export async function assessQuality(
     });
     // The optical centre sits a little above the geometric one, so up to 5% upward is not counted as imbalance.
     const { x: ox, y: oy } = f.centroidOffset;
-    const off = Math.hypot(ox, oy < 0 ? Math.min(0, oy + 0.05) : oy);
+    const off = balanceOffset(f.centroidOffset);
     const dist = Math.round(Math.hypot(ox, oy) * 100);
     add({
       id: 'balance',
@@ -135,7 +140,7 @@ export async function assessQuality(
               oy > 0.02 ? 'low' : oy < -0.05 ? 'too high' : '',
             ]
               .filter(Boolean)
-              .join(', ')}); shift or rebalance the heavier part.`,
+              .join(', ')}); shift or rebalance the heavier part (markilo center does the shift).`,
     });
     const box = maskBBox(sample.mask, 0.5);
     const extent = box ? Math.max(box.w, box.h) / 256 : 0;

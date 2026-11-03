@@ -34,6 +34,7 @@ const GROUPS: [string, string[]][] = [
       'proposals',
       'wordmark',
       'wordmarks',
+      'center',
       'lockup',
       'palette',
       'fonts',

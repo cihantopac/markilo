@@ -167,7 +167,7 @@ npx markilo compare my-logo.svg competitor.png
 ```
 
 Examples: `wordmark --text "Acme" --font sora --weight 600 -o acme.svg`, `score logo.svg`, `palette "#f45d2c"`,
-`render logo.svg -o sheet.png --sheet`, `name check Acme --against Acmo,Akme`. Every command prints JSON.
+`center logo.svg -o centered.svg` (optical centring), `render logo.svg -o sheet.png --sheet`, `name check Acme --against Acmo,Akme`. Every command prints JSON.
 
 ## Limitations
 

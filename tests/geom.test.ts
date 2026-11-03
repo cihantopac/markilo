@@ -1,4 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
+import { assessQuality } from '../src/analyze/quality.js';
+import { centerOptically } from '../src/geom/center.js';
 import {
   booleanOp,
   boundsOf,
@@ -66,5 +68,35 @@ describe('path operations', () => {
   it('transforms with SVG matrix order', () => {
     const d = transformPath(rectD(0, 0, 10, 10), [1, 0, 0, 1, 5, 7]);
     expect(boundsOf(d)).toEqual({ x: 5, y: 7, w: 10, h: 10 });
+  });
+});
+
+describe('optical centring', () => {
+  const off =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><title>Acme</title><defs><linearGradient id="g"><stop offset="0" stop-color="#1d4ed8"/><stop offset="1" stop-color="#0f172a"/></linearGradient></defs><rect x="40" y="40" width="40" height="40" fill="url(#g)"/></svg>';
+  const balance = async (svg: string) =>
+    (await assessQuality(svg, 't')).checks.find((c) => c.id === 'balance')!;
+
+  it('moves an off-centre mark to a balanced position without touching path data', async () => {
+    const before = await balance(off);
+    expect(before.status).not.toBe('pass');
+    expect(before.message).toContain('markilo center');
+    const r = await centerOptically(off);
+    expect(r.dx).toBeLessThan(0);
+    expect(r.dy).toBeLessThan(0);
+    expect(r.after).toBeLessThan(r.before);
+    expect(r.before).toBe(before.value);
+    const after = await balance(r.svg);
+    expect(after.status).toBe('pass');
+    expect(after.value).toBe(r.after);
+    expect(after.message).not.toContain('markilo center');
+    expect(r.svg).toContain('<rect x="40" y="40" width="40" height="40"');
+    expect(r.svg).toMatch(/<g transform="translate\(/);
+    expect(r.svg.indexOf('<defs>')).toBeLessThan(r.svg.indexOf('<g transform'));
+  });
+  it('refuses when the ink would leave the viewBox', async () => {
+    const tight =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="0" y="0" width="100" height="30" fill="#111"/><rect x="0" y="60" width="100" height="40" fill="#111"/><rect x="0" y="30" width="30" height="30" fill="#111"/></svg>';
+    await expect(centerOptically(tight)).rejects.toMatchObject({ code: 'INVALID_INPUT' });
   });
 });

@@ -75,6 +75,7 @@ Topics: product, audience, market, competitor, visual-identity, typography, colo
 | `originality --brand s --concept ID [--names a,b]`                                  | Originality & Similarity Report only.                                                                             |
 | `score file.svg [--role symbol\|wordmark\|lockup]` / `analyze file` / `compare a b` | Standalone measurements.                                                                                          |
 | `svg lint file.svg [--master]`                                                      | Master-file rules.                                                                                                |
+| `center in.svg -o out.svg [--force]`                                                | Shift a mark to the optical centre when `balance` says it leans (path data untouched).                            |
 | `name check "Name" --against a,b,c` / `name trademark "Name" --describe "…"`        | Name confusion and registry pre-screen plan.                                                                      |
 | `render file.svg -o out.png [--sheet]`                                              | PNG or review contact sheet.                                                                                      |
 

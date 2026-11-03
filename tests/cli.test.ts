@@ -23,6 +23,20 @@ describe('cli (bundled)', () => {
     expect(run(['help'], cwd).stdout).toContain('Usage: markilo');
     expect(run(['--version'], cwd).stdout.trim()).toMatch(/^\d+\.\d+\.\d+/);
   });
+  it('centers a mark and refuses to overwrite without --force', () => {
+    const cwd = tmp();
+    writeFileSync(
+      join(cwd, 'in.svg'),
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="40" y="40" width="40" height="40" fill="#111"/></svg>',
+    );
+    const r = run(['center', 'in.svg', '-o', 'out.svg'], cwd);
+    const j = JSON.parse(r.stdout);
+    expect(j.out).toBe('out.svg');
+    expect(j.after).toBeLessThan(j.before);
+    expect(readFileSync(join(cwd, 'out.svg'), 'utf8')).toContain('translate(');
+    expect(run(['center', 'in.svg', '-o', 'out.svg'], cwd).status).not.toBe(0);
+    expect(run(['center', 'in.svg', '-o', 'out.svg', '--force'], cwd).status).toBe(0);
+  });
   it('returns structured errors with stable codes', () => {
     const cwd = tmp();
     const r = run(['brand', 'list'], cwd);
