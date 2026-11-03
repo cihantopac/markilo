@@ -37,4 +37,19 @@ describe('deliverables', () => {
     });
     expect(resolveDeliverables(brief({ platforms: ['web'] }, ['business cards'])).source).toBe('suggested');
   });
+  it('reads "web (mobile first)" as a website', () => {
+    const s = suggestDeliverables(brief({ platforms: ['web (mobile first)'] }));
+    expect(s.groups).toContain('web');
+    expect(s.groups).not.toContain('ios');
+    expect(s.groups).not.toContain('android');
+  });
+  it('mobile without web still suggests native icon sets', () => {
+    const s = suggestDeliverables(brief({ platforms: ['mobile'] }));
+    expect(s.groups).toEqual(expect.arrayContaining(['ios', 'android']));
+  });
+  it('an explicit platform still counts next to web', () => {
+    const s = suggestDeliverables(brief({ platforms: ['web', 'iOS'] }));
+    expect(s.groups).toEqual(expect.arrayContaining(['web', 'ios']));
+    expect(s.groups).not.toContain('android');
+  });
 });

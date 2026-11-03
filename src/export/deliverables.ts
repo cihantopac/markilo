@@ -44,12 +44,15 @@ export function suggestDeliverables(
     tokens: 'colors and type for designers and developers',
     guidelines: 'how to use the identity',
   };
-  const ios = has(text, /\b(ios|iphone|ipad|ipados|mobile|app store|react native|flutter|swiftui)\b/);
-  const android = has(text, /\b(android|mobile|play store|google play|react native|flutter|kotlin)\b/);
+  const web = has(text, /\b(web|site|saas|browser|online|pwa)\b/);
+  // "mobile" next to "web" means mobile web, not native apps.
+  const mobile = has(text, /\bmobile\b/) && !web;
+  const ios = mobile || has(text, /\b(ios|iphone|ipad|ipados|app store|react native|flutter|swiftui)\b/);
+  const android = mobile || has(text, /\b(android|play store|google play|react native|flutter|kotlin)\b/);
   const desktop = has(text, /\b(desktop|electron|tauri)\b/);
   const mac = desktop || has(text, /\b(macos|mac app|os x)\b/);
   const win = desktop || has(text, /\b(windows|win32|uwp)\b/);
-  const onlyNative = (ios || android || mac || win) && !has(text, /\b(web|site|saas|browser|online|pwa)\b/);
+  const onlyNative = (ios || android || mac || win) && !web;
   if (!onlyNative) reasons.web = 'browser tab icons, home-screen icons and link previews';
   if (ios) reasons.ios = 'the product ships on iOS / iPadOS';
   if (android) reasons.android = 'the product ships on Android';
