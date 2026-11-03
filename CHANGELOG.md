@@ -38,9 +38,11 @@ Fixes from two field reports on 1.1.3. Locked identities and the logo files of e
 
 ### Fixed
 
-- Mockup text is rendered.
-- `export --clean` validates its target before deleting; the `final/` guard is case-insensitive, and `center` refuses to
-  write into a brand's `final/`.
+- The SVG authoring guide says the renderer has no system fonts: text in mockups and previews must be outlined with
+  `markilo wordmark` or drawn as paths.
+- `export --out` refuses unsafe targets (a non-empty folder, any brand's `final/` in any letter case, the workspace or an
+  ancestor of it), and `--clean` deletes only a folder that holds an `asset-manifest.json`, after every option is
+  validated. `center` refuses to write into a brand's `final/`.
 
 ## [1.1.3] - 2026-11-01
 
