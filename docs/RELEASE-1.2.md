@@ -65,33 +65,33 @@ full identity run (understand → export), the other a study of the code. Their 
 
 ```ts
 it('reads "web (mobile first)" as a website', () => {
-  const s = suggestDeliverables(brief({ platforms: ["web (mobile first)"] }));
-  expect(s.groups).toContain("web");
-  expect(s.groups).not.toContain("ios");
-  expect(s.groups).not.toContain("android");
+  const s = suggestDeliverables(brief({ platforms: ['web (mobile first)'] }));
+  expect(s.groups).toContain('web');
+  expect(s.groups).not.toContain('ios');
+  expect(s.groups).not.toContain('android');
 });
-it("mobile without web still suggests native icon sets", () => {
-  const s = suggestDeliverables(brief({ platforms: ["mobile"] }));
-  expect(s.groups).toEqual(expect.arrayContaining(["ios", "android"]));
+it('mobile without web still suggests native icon sets', () => {
+  const s = suggestDeliverables(brief({ platforms: ['mobile'] }));
+  expect(s.groups).toEqual(expect.arrayContaining(['ios', 'android']));
 });
-it("an explicit platform still counts next to web", () => {
-  const s = suggestDeliverables(brief({ platforms: ["web", "iOS"] }));
-  expect(s.groups).toEqual(expect.arrayContaining(["web", "ios"]));
-  expect(s.groups).not.toContain("android");
+it('an explicit platform still counts next to web', () => {
+  const s = suggestDeliverables(brief({ platforms: ['web', 'iOS'] }));
+  expect(s.groups).toEqual(expect.arrayContaining(['web', 'ios']));
+  expect(s.groups).not.toContain('android');
 });
 ```
 
 - [ ] **Step 2: Run them and confirm they fail.** Run `npx vitest run tests/deliverables.test.ts`. Expected: the
-      first test fails, because `ios` is suggested.
+  first test fails, because `ios` is suggested.
 - [ ] **Step 3: Implement.**
   - Compute `web = has(text, /\b(web|site|saas|browser|online|pwa)\b/)` once.
   - Drop `mobile` from the iOS and Android patterns.
   - Add `const mobile = has(text, /\bmobile\b/) && !web;` and OR it into `ios` and `android`.
   - `onlyNative` reuses `web`.
 - [ ] **Step 4: Run the tests and confirm they pass.** Run `npx vitest run tests/deliverables.test.ts`. Expected:
-      PASS.
+  PASS.
 - [ ] **Step 5: Commit** `src/export/deliverables.ts tests/deliverables.test.ts` with the message
-      `fix(deliverables): "web (mobile first)" no longer suggests iOS and Android icons`.
+  `fix(deliverables): "web (mobile first)" no longer suggests iOS and Android icons`.
 
 ### Task 2: Export what `deliverables` promises — Tailwind theme and Android TV banner
 
@@ -112,25 +112,23 @@ it("an explicit platform still counts next to web", () => {
 - [ ] **Step 1: Write the failing tests** in the `export kit` describe:
 
 ```ts
-it("emits a Tailwind v4 theme with the brand colours and font", () => {
-  const css = readFileSync(join(out, "tokens/tailwind.css"), "utf8");
+it('emits a Tailwind v4 theme with the brand colours and font', () => {
+  const css = readFileSync(join(out, 'tokens/tailwind.css'), 'utf8');
   expect(css).toMatch(/^@theme \{/m);
   expect(css).toContain(`--color-${slug}-primary-500:`);
   expect(css).toContain(`--color-${slug}-neutral-500:`);
 });
-it("emits an Android TV banner at 320×180", async () => {
-  expect(pngSize(readFileSync(join(out, "android/tv-banner.png")))).toEqual({
+it('emits an Android TV banner at 320×180', async () => {
+  expect(pngSize(readFileSync(join(out, 'android/tv-banner.png')))).toEqual({
     width: 320,
     height: 180,
   });
-  expect(manifest.files.some((f) => f.path === "android/tv-banner.png")).toBe(
-    true,
-  );
+  expect(manifest.files.some((f) => f.path === 'android/tv-banner.png')).toBe(true);
 });
 ```
 
 - [ ] **Step 2: Run them and confirm they fail.** Run `npx vitest run tests/export.test.ts`. Expected: ENOENT on both
-      files.
+  files.
 - [ ] **Step 3: Implement.**
   - **`tokens/tailwind.css`:** an `@theme { … }` block. It holds `--color-<slug>-<scale>-<step>` for every brand
     scale and the neutral scale, `--color-<slug>-ink`, `--color-<slug>-paper`, and `--font-<slug>` when
@@ -142,7 +140,7 @@ it("emits an Android TV banner at 320×180", async () => {
   - **OUTPUTS.md:** add a row for each file.
 - [ ] **Step 4: Run the tests and confirm they pass.** Run `npx vitest run tests/export.test.ts`. Expected: PASS.
 - [ ] **Step 5: Commit** the touched paths with the message
-      `feat(export): Tailwind v4 theme and Android TV banner, as deliverables promised`.
+  `feat(export): Tailwind v4 theme and Android TV banner, as deliverables promised`.
 
 ### Task 3: A complete tokens.css
 
@@ -168,14 +166,14 @@ light-first brand also gets no surface/text pair for the other scheme.
 - [ ] **Step 1: Write the failing tests**
 
 ```ts
-it("tokens.css carries everything tokens.json has", () => {
-  const css = readFileSync(join(out, "tokens/tokens.css"), "utf8");
+it('tokens.css carries everything tokens.json has', () => {
+  const css = readFileSync(join(out, 'tokens/tokens.css'), 'utf8');
   expect(css).toContain(`--${slug}-success:`);
   expect(css).toContain(`--${slug}-space-4: 16px;`);
   expect(css).toContain(`--${slug}-font-brand:`);
   expect(css).toMatch(/@media \(prefers-color-scheme: (dark|light)\)/);
 });
-it("old kits export unchanged apart from the new files", () => {
+it('old kits export unchanged apart from the new files', () => {
   // Export the synthetic brand with a brand.json that lacks every 1.2.0 field. Every logo, icon and social file
   // keeps the sha256 it had before; only tokens/*, android/tv-banner.png and (dark-first only) web/* differ.
 });
@@ -185,7 +183,7 @@ For the second test, record the 1.1.3 hashes once: export the synthetic brand at
 `tests/fixtures/kit-1.1.3-hashes.json`.
 
 - [ ] **Step 2: Run them and confirm they fail.** Run `npx vitest run tests/export.test.ts`. Expected: the first test
-      fails on `--<slug>-success`.
+  fails on `--<slug>-success`.
 - [ ] **Step 3: Implement** the additions in `exportTokens`.
   - Keep the semantic hues as they are: success, warning and danger must stay recognisable whatever the brand colour.
     Document this in OUTPUTS.md.
@@ -193,7 +191,7 @@ For the second test, record the 1.1.3 hashes once: export the synthetic brand at
     OUTPUTS.md.
 - [ ] **Step 4: Run the tests and confirm they pass.** Run `npx vitest run tests/export.test.ts`. Expected: PASS.
 - [ ] **Step 5: Commit** with the message
-      `feat(tokens): tokens.css carries semantic colours, spacing, font and a scheme swap`.
+  `feat(tokens): tokens.css carries semantic colours, spacing, font and a scheme swap`.
 
 ### Task 4: theme-color follows the brand's ground
 
@@ -218,7 +216,7 @@ For the second test, record the 1.1.3 hashes once: export the synthetic brand at
   - `--theme-color blue` → error code `USAGE`.
 - [ ] **Step 2: Run them and confirm they fail.** Run `npx vitest run tests/export.test.ts tests/cli.test.ts`.
 - [ ] **Step 3: Implement.** Resolve `ctx.themeColor` in `exportBrand`, use it in both places, and validate
-      `--theme-color` with `normalizeColor`.
+  `--theme-color` with `normalizeColor`.
 - [ ] **Step 4: Run the tests and confirm they pass.**
 - [ ] **Step 5: Commit** with the message `fix(export): theme-color follows the brand's ground; --theme-color to override`.
 
@@ -247,17 +245,15 @@ horizontal, stacked and compact lockups (`kit.ts:181-205`). Social cards put a l
 - [ ] **Step 1: Write the failing tests**
 
 ```ts
-it("a wordmark-only kit has no symbol lockups and no symbol behind social images", async () => {
+it('a wordmark-only kit has no symbol lockups and no symbol behind social images', async () => {
   // finalize the synthetic brand with { wordmarkOnly: true }, export
-  expect(existsSync(join(out, "logos/secondary"))).toBe(false);
-  expect(existsSync(join(out, "logos/compact"))).toBe(false);
-  expect(readFileSync(join(out, "social/og-image.svg"), "utf8")).not.toMatch(
-    /<g opacity="0\.(08|16)">/,
-  );
-  expect(existsSync(join(out, "web/favicon.svg"))).toBe(true); // the symbol still makes the icons
-  expect(guidelinesMd).toContain("never set next to the wordmark");
+  expect(existsSync(join(out, 'logos/secondary'))).toBe(false);
+  expect(existsSync(join(out, 'logos/compact'))).toBe(false);
+  expect(readFileSync(join(out, 'social/og-image.svg'), 'utf8')).not.toMatch(/<g opacity="0\.(08|16)">/);
+  expect(existsSync(join(out, 'web/favicon.svg'))).toBe(true); // the symbol still makes the icons
+  expect(guidelinesMd).toContain('never set next to the wordmark');
 });
-it("refuses --wordmark-only on a locked brand", () => {
+it('refuses --wordmark-only on a locked brand', () => {
   /* lock, then finalize --wordmark-only → code LOCKED */
 });
 ```
@@ -272,7 +268,7 @@ it("refuses --wordmark-only on a locked brand", () => {
     Add its Turkish entry to `tr.ts`.
 - [ ] **Step 4: Run the tests and confirm they pass.** Run `npx vitest run tests/export.test.ts tests/cli.test.ts tests/ui.test.ts`.
 - [ ] **Step 5: Commit** with the message
-      `feat(finalize): --wordmark-only — no symbol lockups, no symbol behind social images`.
+  `feat(finalize): --wordmark-only — no symbol lockups, no symbol behind social images`.
 
 ### Task 6: `export --out <dir>` and `--progress`
 
@@ -328,10 +324,10 @@ it("refuses --wordmark-only on a locked brand", () => {
   - With `--brand` and `--concept`, `defaultColors` is `[]`.
 - [ ] **Step 2: Run them and confirm they fail.**
 - [ ] **Step 3: Implement.** `resolveFill` records each role it took from `ROLE_DEFAULTS`. `--set` splits number pairs
-      from palette pairs, validates the hex with `normalizeColor` and merges the colours into `palette`.
+  from palette pairs, validates the hex with `normalizeColor` and merges the colours into `palette`.
 - [ ] **Step 4: Run the tests and confirm they pass.**
 - [ ] **Step 5: Commit** with the message
-      `feat(construct): --set role=#hex, and report placeholder colours`.
+  `feat(construct): --set role=#hex, and report placeholder colours`.
 
 ### Task 8: `markilo center` — optical centring as a command
 
@@ -353,7 +349,7 @@ coordinates by hand.
   - CLI: `center <in.svg> -o <out.svg> [--force]`, printing `{ out, dx, dy, before, after }`.
 
 - [ ] **Step 1: Write the failing test.** Take a fixture mark whose ink sits 10 % right and low of centre. After
-      `centerOptically`, the `balance` check in `assessQuality` is `pass`, and `after < before`.
+  `centerOptically`, the `balance` check in `assessQuality` is `pass`, and `after < before`.
 - [ ] **Step 2: Run it and confirm it fails.** Run `npx vitest run tests/geom.test.ts`.
 - [ ] **Step 3: Implement.**
   - Measure `shapeFeatures(...).centroidOffset`. It is a fraction of the rendered square; convert it to viewBox units
@@ -402,7 +398,7 @@ An "h" whose shoulder came loose read as "ln", and nothing flagged it. Two gaps 
   - **No silent skip:** return the `checked: false` entry instead of `undefined`.
 - [ ] **Step 4: Run the tests and confirm they pass.** Run `npx vitest run tests/letters.test.ts tests/quality.test.ts`.
 - [ ] **Step 5: Commit** with the message
-      `feat(letters): catch letters that split in two; report when the check could not run`.
+  `feat(letters): catch letters that split in two; report when the check could not run`.
 
 ### Task 10: Honest cost — the orchestrator's share and a clear lower bound
 
@@ -440,7 +436,7 @@ finalize, export) is not recorded, so a run with a $25 budget reported $0.24.
     better than any table. `--rate` stays for estimates.
 - [ ] **Step 4: Run the tests and confirm they pass.**
 - [ ] **Step 5: Commit** with the message
-      `feat(cost): record the main session's share; say when the total is a lower bound`.
+  `feat(cost): record the main session's share; say when the total is a lower bound`.
 
 ### Task 11: Design to the craft a direction names
 
@@ -456,12 +452,12 @@ neon's construction rules.
 **Interfaces:** none (skill and agent text).
 
 - [ ] **Step 1: Write the failing test.** `plugin.test.ts` asserts that `design-principles.md` has a heading
-      `## When the direction names a craft`, and that `concept-designer.md` explore mode mentions `craft`.
+  `## When the direction names a craft`, and that `concept-designer.md` explore mode mentions `craft`.
 - [ ] **Step 2: Run it and confirm it fails.**
 - [ ] **Step 3: Write the section.** It should be short and positive in tone, like the rest of the file. It sets one
-      rule: when a direction names a physical craft, the designer writes that craft's construction rules into
-      `work/notes.md` before drawing, draws to them, and states in the pitch which rule gives the word its character.
-      Then give four or five rules each for:
+  rule: when a direction names a physical craft, the designer writes that craft's construction rules into
+  `work/notes.md` before drawing, draws to them, and states in the pitch which rule gives the word its character.
+  Then give four or five rules each for:
   - neon: one constant tube width, blockouts where the tube passes behind, electrode ends, minimum bend radius, no
     closed counters without a break;
   - sign painting: brush-stroke entry and exit, consistent stroke contrast, a sign-writer's spacing;
@@ -493,10 +489,10 @@ neon's construction rules.
   - `finalize --accept-risk` on a brand with no references returns the note.
 - [ ] **Step 2: Run them and confirm they fail.**
 - [ ] **Step 3: Implement both.** Then add one line to `svg-authoring.md`: the renderer has no system fonts, so text in
-      mockups and previews must be outlined with `markilo wordmark` or drawn as paths.
+  mockups and previews must be outlined with `markilo wordmark` or drawn as paths.
 - [ ] **Step 4: Run the tests and confirm they pass.**
 - [ ] **Step 5: Commit** with the message
-      `fix: concept update usage lists title/direction; clearer originality note without references`.
+  `fix: concept update usage lists title/direction; clearer originality note without references`.
 
 ### Task 13: Release 1.2.0
 
@@ -521,10 +517,10 @@ neon's construction rules.
   Record the result here.
 
 - [ ] **Step 3: Write the CHANGELOG** 1.2.0 entry (Added / Changed / Fixed) and commit
-      `release: 1.2.0 — field-report fixes`, then push.
+  `release: 1.2.0 — field-report fixes`, then push.
 - [ ] **Step 4: Ask the user** before tagging (`claude plugin tag plugin --push`) and before `npm publish` (the user
-      supplies the OTP). After publishing, verify from the registry: `latest`, `gitHead`, checksum, and that
-      `npx markilo@1.2.0 --version` prints `1.2.0`.
+  supplies the OTP). After publishing, verify from the registry: `latest`, `gitHead`, checksum, and that
+  `npx markilo@1.2.0 --version` prints `1.2.0`.
 
 ---
 

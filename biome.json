@@ -13,7 +13,8 @@
       "!branding",
       "!bench/results",
       "!branding-next",
-      "!**/*.png"
+      "!**/*.png",
+      "!.superpowers"
     ]
   },
   "formatter": {
