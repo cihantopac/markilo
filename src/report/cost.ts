@@ -20,6 +20,8 @@ export const DEFAULT_BUDGET_USD = 12;
  * that records dollars directly (`--usd`, e.g. from Claude Code's own cost report) is used as is.
  */
 export const DEFAULT_RATE = 0.6;
+const LOWER_BOUND_NOTE =
+  "Only agent work is recorded; the main session's own work is missing, so the real cost is higher. Record it with markilo cost --phase <p> --session-usd <total shown by Claude Code>.";
 /** Share of the budget after which the report warns. */
 const WARN_AT = 0.8;
 
@@ -32,11 +34,15 @@ export interface CostEntry {
   usd?: number;
   rate?: number;
   note?: string;
+  /** Who did the work: a subagent (tokens or dollars) or the main session (dollars). Missing in 1.1 logs: `agent`. */
+  source?: 'agent' | 'session';
 }
 
 export interface CostLog {
   schema: 'markilo/cost@1';
   budgetUsd: number;
+  /** The last cumulative session total recorded with `--session-usd`; the next call records the difference. */
+  sessionUsd?: number;
   entries: CostEntry[];
 }
 
@@ -84,6 +90,12 @@ export function costSummary(log: CostLog) {
   }).filter((p) => p.entries);
   const total = r2(phases.reduce((a, p) => a + p.usd, 0));
   const remaining = r2(log.budgetUsd - total);
+  // basis: `measured` when every entry carries dollars (`usd`), `estimated` when every entry is tokens × rate, `mixed`
+  // otherwise. No entries: `measured` (nothing was estimated).
+  const flags = log.entries.map((e) => entryUsd(e).estimated);
+  const basis = flags.every((f) => !f) ? 'measured' : flags.every((f) => f) ? 'estimated' : 'mixed';
+  // A total without any `session` entry (a missing source means `agent`) leaves out the main session's own work.
+  const lowerBound = !log.entries.some((e) => e.source === 'session');
   const status = total >= log.budgetUsd ? 'over' : total >= log.budgetUsd * WARN_AT ? 'warn' : 'ok';
   return {
     budgetUsd: log.budgetUsd,
@@ -92,6 +104,9 @@ export function costSummary(log: CostLog) {
     minutes: r2(phases.reduce((a, p) => a + p.minutes, 0)),
     estimated: phases.some((p) => p.estimated),
     status,
+    basis,
+    lowerBound,
+    note: lowerBound ? LOWER_BOUND_NOTE : undefined,
     phases,
     next:
       status === 'over'

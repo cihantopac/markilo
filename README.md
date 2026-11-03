@@ -106,7 +106,7 @@ npm install -g markilo
 - **The design work is done by the AI model and uses your Claude Code usage.** In validation, one round of three
   proposals cost $5–10 and a finished identity $5–15 (API-equivalent, measured by Claude Code; on a subscription it
   counts against your plan instead). `markilo cost` tracks it against a budget you set (default $12) and stops paid
-  work when it is reached.
+  work when it is reached. Totals are a lower bound until the main session's share is recorded with `--session-usd`.
 - **Steered, it works; unattended, it does not yet.** With their owner choosing, all three real products above reached
   an identity the owner approved — three products and one owner's judgment, not a benchmark. Unattended, 1.0 produced
   no identity a blind judge panel would present. The full record, with every run and image:

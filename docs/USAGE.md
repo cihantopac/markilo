@@ -135,7 +135,9 @@ the workspace folder, and any parent of the workspace. Symbolic links are resolv
   context sheet. One independent critic reads the developed identity cold — as advice for you, never as a gate in front
   of you.
 - **Costs in the open.** `markilo cost` records each phase against a budget (default $12) and stops paid work when it is
-  reached.
+  reached. Agent usage alone is a lower bound: `markilo cost --brand <slug> --phase <p> --session-usd <total>` records
+  the main session's share from the total Claude Code shows (the difference since the last call; a lower total counts
+  as a new session). It needs `--phase` and cannot be combined with `--tokens` or `--usd`.
 - **Not tied to one AI.** The toolchain is a plain CLI: `agent-setup` gives VS Code with Copilot, Codex and Cursor the
   same workflow ([INTEGRATIONS.md](INTEGRATIONS.md)).
 

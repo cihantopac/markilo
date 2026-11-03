@@ -43,7 +43,8 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
 7. **Look at your work.** After writing or changing an SVG, render it and `Read` the PNG before showing it.
 8. **Spend deliberately.** Check `markilo cost --brand <slug>` before every agent or new round; record each phase after
    it (`markilo cost --brand <slug> --phase <p> --tokens <n> --minutes <m>`, from the agent's reported usage). At
-   `status: over`, stop paid work, show what exists and ask. Never repeat research, critique an unchanged image again,
+   `status: over`, stop paid work, show what exists and ask. Agent usage alone is a lower bound: at the end of each phase
+   also record the session total Claude Code shows (`markilo cost --brand <slug> --phase <p> --session-usd <total>`). Never repeat research, critique an unchanged image again,
    or refine a direction the user rejected.
 9. **Don't re-ask.** Check `markilo answers --brand <slug>` first; record every question and answer there.
 10. **Respond in the user's language.** Files, code and reports stay in English unless asked otherwise.

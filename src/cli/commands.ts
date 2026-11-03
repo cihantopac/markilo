@@ -1922,12 +1922,17 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Track what the creative work cost per phase (understand, explore, refine, verify, export) against a budget. Without options: the summary; status "over" means stop paid work and ask.',
     usage:
-      'cost --brand <slug> [--phase <p> (--tokens <n> | --usd <x>) [--minutes <m>] [--rate <usd per M tokens>] [--note <text>]] [--budget <usd>]',
+      'cost --brand <slug> [--phase <p> (--tokens <n> | --usd <x> | --session-usd <total>) [--minutes <m>] [--rate <usd per M tokens>] [--note <text>]] [--budget <usd>]',
     options: {
       ...brandOpt,
       phase: { type: 'string', description: `Phase: ${PHASES.join(', ')}` },
       tokens: { type: 'string', description: 'Tokens the step used (e.g. a subagent’s reported total)' },
       usd: { type: 'string', description: 'Measured cost in USD, when known' },
+      'session-usd': {
+        type: 'string',
+        description:
+          'The session total Claude Code shows, in USD: records the main session’s share since the last call (not combinable with --tokens/--usd)',
+      },
       minutes: { type: 'string', description: 'Wall-clock minutes' },
       rate: {
         type: 'string',
@@ -1946,26 +1951,54 @@ export const COMMANDS: CommandSpec[] = [
         if (!(b > 0)) throw new MarkiloError('USAGE', '--budget must be a positive number of dollars.');
         log.budgetUsd = b;
       }
+      if (c.str('session-usd') && !c.str('phase'))
+        throw new MarkiloError('USAGE', '--session-usd needs --phase.');
       if (c.str('phase')) {
-        if (!c.str('tokens') && !c.str('usd'))
-          throw new MarkiloError('USAGE', 'Record --tokens or --usd with --phase.');
+        if (!c.str('tokens') && !c.str('usd') && !c.str('session-usd'))
+          throw new MarkiloError('USAGE', 'Record --tokens, --usd or --session-usd with --phase.');
         const n = (k: string) => {
           const v = c.num(k);
           if (v !== undefined && !(v >= 0)) throw new MarkiloError('USAGE', `--${k} must be 0 or more.`);
           return v;
         };
+        const phase = phaseOf(c.str('phase')!);
+        const minutes = n('minutes');
+        const note = c.str('note') ? { note: c.str('note')!.slice(0, 200) } : {};
+        if (c.str('session-usd')) {
+          if (c.str('tokens') || c.str('usd') || c.str('rate'))
+            throw new MarkiloError(
+              'USAGE',
+              '--session-usd cannot be combined with --tokens, --usd or --rate.',
+            );
+          const total = c.num('session-usd')!;
+          if (!Number.isFinite(total) || total < 0)
+            throw new MarkiloError('USAGE', '--session-usd must be a number of dollars, 0 or more.');
+          // A total below the stored one means a new session started: its first total is the whole share.
+          const prev = log.sessionUsd ?? 0;
+          const share = Math.round((total >= prev ? total - prev : total) * 1e6) / 1e6;
+          log.entries.push({
+            phase,
+            at: nowIso(),
+            usd: share,
+            source: 'session',
+            ...(minutes !== undefined ? { minutes } : {}),
+            ...note,
+          });
+          log.sessionUsd = total;
+          writeCost(w, slug, log);
+          return costSummary(log);
+        }
         const tokens = n('tokens');
         const usd = n('usd');
-        const minutes = n('minutes');
         const rate = n('rate');
         log.entries.push({
-          phase: phaseOf(c.str('phase')!),
+          phase,
           at: nowIso(),
           ...(tokens !== undefined ? { tokens } : {}),
           ...(usd !== undefined ? { usd } : {}),
           ...(minutes !== undefined ? { minutes } : {}),
           ...(rate !== undefined ? { rate } : {}),
-          ...(c.str('note') ? { note: c.str('note')!.slice(0, 200) } : {}),
+          ...note,
         });
       }
       if (c.str('budget') || c.str('phase')) writeCost(w, slug, log);
