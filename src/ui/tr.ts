@@ -265,6 +265,8 @@ export const TR: Record<string, string> = {
   "Registry searches logged: {0}. Markilo's checks are still not a trademark clearance; have a trademark attorney confirm before registering.":
     'Kaydedilen tescil aramaları: {0}. Markilo’nun kontrolleri yine de marka uygunluk onayı değildir; tescil öncesinde bir marka vekiline doğrulatın.',
   'Usage notes': 'Kullanım notları',
+  'The symbol is the app icon and favicon only; it is never set next to the wordmark.':
+    'Simge yalnızca uygulama simgesi ve favicon içindir; logotipin yanına hiçbir zaman konmaz.',
   'Do not': 'Yapmayın',
   'Do not stretch, squash, skew or rotate the logo.': 'Logoyu germeyin, ezmeyin, eğmeyin veya döndürmeyin.',
   'Do not recolor outside the approved palette or apply gradients, shadows, glows or outlines.':

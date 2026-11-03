@@ -18,6 +18,9 @@ export interface GuidelinesInput {
   reversed: (svg: string) => string;
 }
 
+const WORDMARK_ONLY_RULE =
+  'The symbol is the app icon and favicon only; it is never set next to the wordmark.';
+
 const DONTS = [
   'Do not stretch, squash, skew or rotate the logo.',
   'Do not recolor outside the approved palette or apply gradients, shadows, glows or outlines.',
@@ -102,7 +105,9 @@ export function guidelinesMarkdown(g: GuidelinesInput): string {
     );
     for (const line of evidenceLines(kit)) L.push('', line);
   }
-  if (kit.notes?.length) L.push('', '## Usage notes', '', ...kit.notes.map((n) => `- ${n}`));
+  const rules = kit.wordmarkOnly ? [WORDMARK_ONLY_RULE] : [];
+  if (rules.length || kit.notes?.length)
+    L.push('', '## Usage notes', '', ...[...rules, ...(kit.notes ?? [])].map((n) => `- ${n}`));
   L.push('', '## Do not', '', ...DONTS.map((d) => `- ${d}`), '');
   L.push(
     '---',
@@ -199,7 +204,7 @@ ${
         .join('')}`
     : ''
 }
-${kit.notes?.length ? `<h2>${n()}${t('Usage notes')}</h2><ul>${kit.notes.map((n) => `<li>${escapeText(n)}</li>`).join('')}</ul>` : ''}
+${kit.wordmarkOnly || kit.notes?.length ? `<h2>${n()}${t('Usage notes')}</h2><ul>${(kit.wordmarkOnly ? [`<li>${t(WORDMARK_ONLY_RULE)}</li>`] : []).concat((kit.notes ?? []).map((n) => `<li>${escapeText(n)}</li>`)).join('')}</ul>` : ''}
 <h2>${n()}${t('Do not')}</h2><ul class="dont">${DONTS.map((d) => `<li>${t(d)}</li>`).join('')}</ul>
 </main>
 ${footHtml()}

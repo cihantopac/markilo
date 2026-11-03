@@ -137,7 +137,8 @@ spacing) is done directly with the toolchain (`construct`, `lockup`, `verify`), 
    evidence is missing. Ask for **one decision**: which icon, and approve or change. When they approve:
    `markilo finalize --brand <slug> --concept <id> --user-choice "<their words>" --tagline …`. Finalize succeeds only when the
    originality verdict is `no-conflicts-found`; for `insufficient-evidence` or `needs-review`, say so in that same
-   message and add `--accept-risk` only on their explicit yes. Never present `insufficient-evidence` as "original".
+   message and add `--accept-risk` only on their explicit yes. Never present `insufficient-evidence` as "original". When they
+   want the word alone, add `--wordmark-only`: no symbol lockups, and the symbol stays the app icon and favicon.
 
 ### F. Export and deliver
 

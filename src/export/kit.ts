@@ -21,6 +21,8 @@ export interface BrandKit {
   locked: boolean;
   /** A wordmark-led identity: the word itself is the primary logo, not a symbol + word lockup. */
   lead?: 'wordmark';
+  /** The symbol is the app icon and favicon only: no symbol lockups, no symbol behind social images or in watermarks. */
+  wordmarkOnly?: true;
   files: {
     symbol?: string;
     wordmark?: string;
@@ -95,10 +97,17 @@ export async function finalizeConcept(
     acceptRisk?: boolean;
     notes?: string[];
     userChoice?: string;
+    wordmarkOnly?: boolean;
   } = {},
 ): Promise<BrandKit> {
   ws.assertNotLocked(brand);
   const concept = ws.concept(brand, conceptId);
+  if (opts.wordmarkOnly && !concept.files.wordmark)
+    throw new MarkiloError(
+      'USAGE',
+      `Concept ${conceptId} has no wordmark, so it cannot be finalized with --wordmark-only.`,
+      'Design a wordmark for the concept first, or finalize without --wordmark-only.',
+    );
   const gate = gateOf(concept);
   // The user owns the creative choice: a concept is finalized only on their word. A critic's pass is advice, and
   // without the user's choice the designer would be approving its own work.
@@ -197,11 +206,15 @@ export async function finalizeConcept(
     writeGenerated(join(dir, out), l.svg);
     return l.svg;
   };
-  if (lockup(concept.files.lockupHorizontal, 'lockup-horizontal.svg', 'horizontal'))
+  // A wordmark-only identity composes no lockups; lockups the user drew themselves are still kept.
+  const compose = !opts.wordmarkOnly;
+  const drawn = (rel: string | undefined, out: string) => (rel ? take(rel, out) : undefined);
+  const make = compose ? lockup : drawn;
+  if (make(concept.files.lockupHorizontal, 'lockup-horizontal.svg', 'horizontal'))
     files.lockupHorizontal = 'lockup-horizontal.svg';
-  if (lockup(concept.files.lockupStacked, 'lockup-stacked.svg', 'stacked'))
+  if (make(concept.files.lockupStacked, 'lockup-stacked.svg', 'stacked'))
     files.lockupStacked = 'lockup-stacked.svg';
-  if (lockup(undefined, 'lockup-compact.svg', 'horizontal', 1, 0.4))
+  if (compose && lockup(undefined, 'lockup-compact.svg', 'horizontal', 1, 0.4))
     files.lockupCompact = 'lockup-compact.svg';
 
   const { ink, dark } = inkFor(concept.palette.primary);
@@ -211,7 +224,11 @@ export async function finalizeConcept(
     name: ws.brand(brand).name,
     concept: conceptId,
     locked: false,
-    ...(concept.lead === 'wordmark' && files.wordmark ? { lead: 'wordmark' as const } : {}),
+    // A wordmark-only identity is wordmark-led too, so the primary logo is the word even next to hand-drawn lockups.
+    ...((concept.lead === 'wordmark' || opts.wordmarkOnly) && files.wordmark
+      ? { lead: 'wordmark' as const }
+      : {}),
+    ...(opts.wordmarkOnly ? { wordmarkOnly: true as const } : {}),
     files,
     palette: {
       primary: concept.palette.primary,

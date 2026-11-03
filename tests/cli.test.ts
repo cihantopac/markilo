@@ -275,3 +275,17 @@ describe('cli export --theme-color', () => {
     expect(JSON.parse(r.stderr).error.code).toBe('USAGE');
   });
 });
+
+describe('finalize --wordmark-only (bundled)', () => {
+  it('is refused on a locked brand with LOCKED', () => {
+    const cwd = tmp();
+    run(['init'], cwd);
+    run(['brand', 'add', 'Fixed', '--locked'], cwd);
+    const r = run(
+      ['finalize', '--brand', 'fixed', '--concept', 'x', '--user-choice', 'u', '--wordmark-only'],
+      cwd,
+    );
+    expect(r.status).toBe(1);
+    expect(r.stdout + r.stderr).toContain('LOCKED');
+  });
+});

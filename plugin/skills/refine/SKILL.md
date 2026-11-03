@@ -26,5 +26,6 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 5. Show the user the refined identity (`markilo proposals --brand <slug> --concepts <id>`, the gallery), the measured
    checks, the originality verdict and the critic's notes labelled as judgment. Further changes go back to step 2.
 6. When the user approves: `markilo finalize --brand <slug> --concept <id> --user-choice "<their words>" --tagline "<tagline>"`
-   (`--accept-risk` only on their explicit yes to an `insufficient-evidence` or `needs-review` verdict), append the
+   (`--accept-risk` only on their explicit yes to an `insufficient-evidence` or `needs-review` verdict; add
+   `--wordmark-only` when they want the word alone: no symbol lockups, the symbol only makes the app icon and favicon), append the
    decision to `decisions.md`, then offer the export.

@@ -762,7 +762,7 @@ async function socialCard(
   const art = kit.locked ? art0 : adaptToGround(art0, bg, { dark: kit.palette.ink, light: '#ffffff' });
   let body = '';
   // Supergraphic: an oversized, cropped tint of the symbol that ties the card to the identity.
-  if (ctx.symbol && !kit.locked) {
+  if (ctx.symbol && !kit.locked && !kit.wordmarkOnly) {
     const tint = monochrome(ctx.symbol, kit.palette.primary);
     body += `<g opacity="${isDarkGround(bg) ? 0.16 : 0.08}">${await placeMark(tint, { x: w - h * 0.95, y: -h * 0.2, width: h * 1.4, height: h * 1.4 }, { mode: 'box', fraction: 1 })}</g>`;
   }
@@ -849,7 +849,9 @@ async function exportSocial(ctx: Ctx) {
 async function exportMarketing(ctx: Ctx) {
   const { kit } = ctx;
   const art = ctx.primary ?? ctx.symbol!;
-  if (!kit.locked && ctx.symbol) {
+  const mark = kit.wordmarkOnly ? ctx.wordmark : ctx.symbol;
+  const markFile = kit.wordmarkOnly ? 'wordmark.svg' : 'symbol.svg';
+  if (!kit.locked && mark) {
     for (const [v, color] of [
       ['white', '#ffffff'],
       ['black', '#000000'],
@@ -857,17 +859,17 @@ async function exportMarketing(ctx: Ctx) {
       const wm = svgDocument(
         512,
         512,
-        `<g opacity="0.35">${await placeMark(monochrome(ctx.symbol, color), { x: 0, y: 0, width: 512, height: 512 }, { mode: 'box', fraction: 0.9 })}</g>`,
+        `<g opacity="0.35">${await placeMark(monochrome(mark, color), { x: 0, y: 0, width: 512, height: 512 }, { mode: 'box', fraction: 0.9 })}</g>`,
       );
       await emit(ctx, `marketing/watermark-${v}.svg`, wm, {
         group: 'marketing',
         purpose: `Watermark (${v}, 35% opacity) for photos and video`,
-        derivedFrom: 'symbol.svg',
+        derivedFrom: markFile,
       });
       await emit(ctx, `marketing/watermark-${v}.png`, await png(wm, 512), {
         group: 'marketing',
         purpose: `Watermark PNG (${v})`,
-        derivedFrom: 'symbol.svg',
+        derivedFrom: markFile,
       });
     }
   }

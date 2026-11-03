@@ -279,3 +279,58 @@ describe('install-assets', () => {
     ).toThrow(/outside/);
   });
 });
+
+describe('wordmark-only identities', () => {
+  let wws: Workspace;
+  const wout = (p: string) => join(wws.exportsDir('nimbra'), p);
+  beforeAll(async () => {
+    ({ ws: wws } = synthBrand());
+    await verifyConcept(wws, 'nimbra', 'fold');
+    const kit = await finalizeConcept(wws, 'nimbra', 'fold', {
+      acceptRisk: true,
+      userChoice: 'Chosen in a test.',
+      wordmarkOnly: true,
+    });
+    expect(kit.wordmarkOnly).toBe(true);
+    await exportBrand(wws, 'nimbra');
+  }, 120_000);
+
+  it('has no symbol lockups and no symbol behind social images', () => {
+    expect(existsSync(wout('logos/secondary'))).toBe(false);
+    expect(existsSync(wout('logos/compact'))).toBe(false);
+    for (const f of ['social/og-image.svg', 'social/og-image-dark.svg'])
+      expect(readFileSync(wout(f), 'utf8')).not.toMatch(/<g opacity="0\.(08|16)">/);
+    expect(existsSync(wout('web/favicon.svg'))).toBe(true); // the symbol still makes the icons
+    expect(readFileSync(wout('guidelines/brand-guidelines.md'), 'utf8')).toContain(
+      'never set next to the wordmark',
+    );
+  });
+  it('leads with the wordmark and uses it for the watermarks', () => {
+    const kit = JSON.parse(readFileSync(join(wws.finalDir('nimbra'), 'brand.json'), 'utf8'));
+    expect(kit.files.lockupHorizontal).toBeUndefined();
+    // The kit with lockups watermarks with the symbol; the wordmark-only kit watermarks with the word.
+    expect(readFileSync(wout('marketing/watermark-white.svg'), 'utf8')).not.toEqual(
+      readFileSync(out('marketing/watermark-white.svg'), 'utf8'),
+    );
+  });
+  it('does not state the rule for kits with lockups', () => {
+    expect(readFileSync(out('guidelines/brand-guidelines.md'), 'utf8')).not.toContain(
+      'never set next to the wordmark',
+    );
+  });
+  it('refuses a locked brand with LOCKED and a concept without a wordmark with USAGE', async () => {
+    const symbolPath = join(tmp(), 'symbol.svg');
+    writeFileSync(symbolPath, mark('bars'));
+    wws.addBrand({ name: 'Fixed', locked: true });
+    lockIdentity(wws, 'fixed', { symbol: symbolPath, primary: '#7a3cf0' });
+    await expect(
+      finalizeConcept(wws, 'fixed', 'x', { userChoice: 'u', wordmarkOnly: true }),
+    ).rejects.toMatchObject({ code: 'LOCKED' });
+    const c = wws.concept('nimbra', 'fold');
+    const { wordmark: _w, ...files } = c.files;
+    wws.saveConcept({ ...c, files });
+    await expect(
+      finalizeConcept(wws, 'nimbra', 'fold', { userChoice: 'u', wordmarkOnly: true, force: true }),
+    ).rejects.toMatchObject({ code: 'USAGE' });
+  });
+});

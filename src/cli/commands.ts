@@ -1574,7 +1574,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Approve a concept: freeze optimized masters, generate lockups (horizontal, stacked, compact) and brand.json.',
     usage:
-      'finalize --brand <slug> --concept <id> --user-choice "<the user\'s words>" [--tagline <text>] [--note <usage rule>]... [--accept-risk] [--force]',
+      'finalize --brand <slug> --concept <id> --user-choice "<the user\'s words>" [--tagline <text>] [--note <usage rule>]... [--wordmark-only] [--accept-risk] [--force]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1584,6 +1584,11 @@ export const COMMANDS: CommandSpec[] = [
         multiple: true,
         description:
           'Usage rule for the guidelines, e.g. "Never use the accent as an error color" (repeatable)',
+      },
+      'wordmark-only': {
+        type: 'boolean',
+        description:
+          'The word alone is the logo: no symbol lockups, and the symbol only makes the app icon and favicon',
       },
       'accept-risk': {
         type: 'boolean',
@@ -1604,6 +1609,7 @@ export const COMMANDS: CommandSpec[] = [
         ...(notes.length ? { notes } : {}),
         force: c.bool('force'),
         acceptRisk: c.bool('accept-risk'),
+        wordmarkOnly: c.bool('wordmark-only'),
         ...(c.str('user-choice') ? { userChoice: c.str('user-choice')! } : {}),
       });
       return { kit, dir: w.finalDir(c.req('brand')), next: `markilo export --brand ${c.req('brand')}` };
