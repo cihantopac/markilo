@@ -1,5 +1,14 @@
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { dirname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { tmp } from './helpers.js';
@@ -287,5 +296,102 @@ describe('finalize --wordmark-only (bundled)', () => {
     );
     expect(r.status).toBe(1);
     expect(r.stdout + r.stderr).toContain('LOCKED');
+  });
+});
+
+describe('cli export --out and --progress', () => {
+  const setup = () => {
+    const cwd = tmp();
+    run(['init', '--name', 'Demo'], cwd);
+    run(['brand', 'add', 'Acme', '--locked'], cwd);
+    const r = run(
+      [
+        'lock',
+        '--brand',
+        'acme',
+        '--symbol',
+        join(__dirname, 'fixtures', 'marks', 'orbit.svg'),
+        '--primary',
+        '#7a3cf0',
+      ],
+      cwd,
+    );
+    expect(r.status, r.stderr).toBe(0);
+    return { cwd, brandDir: join(cwd, 'brand', 'brands', 'acme') };
+  };
+
+  it('writes the kit to --out and leaves the default exports folder absent', () => {
+    const { cwd, brandDir } = setup();
+    const r = run(['export', '--brand', 'acme', '--only', 'tokens', '--out', 'kit'], cwd);
+    expect(r.status, r.stderr).toBe(0);
+    expect(existsSync(join(cwd, 'kit', 'asset-manifest.json'))).toBe(true);
+    expect(existsSync(join(brandDir, 'exports'))).toBe(false);
+    expect(JSON.parse(r.stdout).outDir).toBe(join(realpathSync(cwd), 'kit'));
+  });
+
+  it('prints one progress line per group on stderr and a single JSON result on stdout', () => {
+    const { cwd } = setup();
+    const r = run(['export', '--brand', 'acme', '--only', 'tokens,guidelines', '--progress'], cwd);
+    expect(r.status, r.stderr).toBe(0);
+    const lines = r.stderr
+      .split('\n')
+      .filter(Boolean)
+      .map((l) => JSON.parse(l).progress);
+    expect(lines.map((p) => p.group)).toEqual(['tokens', 'guidelines']);
+    expect(lines[0]).toMatchObject({ done: 1, total: 2 });
+    expect(lines[0].files).toBeGreaterThan(0);
+    expect(lines.at(-1).done).toBe(lines.at(-1).total);
+    expect(() => JSON.parse(r.stdout)).not.toThrow();
+  });
+
+  it('refuses unsafe --out targets', () => {
+    const { cwd, brandDir } = setup();
+    const root = join(cwd, 'brand');
+    const final = join(brandDir, 'final');
+    const finalBefore = readdirSync(final).sort();
+    const full = join(cwd, 'full');
+    mkdirSync(full);
+    writeFileSync(join(full, 'precious.txt'), 'keep');
+    const plain = join(cwd, 'plain'); // non-empty, no manifest
+    mkdirSync(plain);
+    writeFileSync(join(plain, 'a.txt'), 'keep');
+    symlinkSync(final, join(cwd, 'link-to-final'));
+    const bad: string[][] = [
+      [full],
+      [final],
+      [join(final, 'sub')],
+      [join(brandDir)],
+      [root],
+      [cwd],
+      [join(cwd, '..')],
+      ['/'],
+      [join(cwd, 'link-to-final')],
+      [join(cwd, 'link-to-final', 'x')],
+      [plain, '--clean'],
+      [full, '--clean'],
+      [`${root}/../brand`],
+    ];
+    for (const [out, ...extra] of bad) {
+      const r = run(['export', '--brand', 'acme', '--only', 'tokens', '--out', out!, ...extra], cwd);
+      expect(r.status, `${out} ${extra}`).toBe(64);
+      expect(JSON.parse(r.stderr).error.code, `${out} ${extra}`).toBe('USAGE');
+    }
+    expect(readFileSync(join(full, 'precious.txt'), 'utf8')).toBe('keep');
+    expect(readFileSync(join(plain, 'a.txt'), 'utf8')).toBe('keep');
+    expect(readdirSync(final).sort()).toEqual(finalBefore);
+    expect(existsSync(join(final, 'asset-manifest.json'))).toBe(false);
+  });
+
+  it('--clean with --out replaces only a folder Markilo made', () => {
+    const { cwd } = setup();
+    const out = join(cwd, 'kit');
+    expect(run(['export', '--brand', 'acme', '--only', 'tokens', '--out', out], cwd).status).toBe(0);
+    writeFileSync(join(out, 'stale.txt'), 'old');
+    const again = run(['export', '--brand', 'acme', '--only', 'tokens', '--out', out], cwd);
+    expect(JSON.parse(again.stderr).error.code).toBe('USAGE');
+    const r = run(['export', '--brand', 'acme', '--only', 'tokens', '--out', out, '--clean'], cwd);
+    expect(r.status, r.stderr).toBe(0);
+    expect(existsSync(join(out, 'stale.txt'))).toBe(false);
+    expect(existsSync(join(out, 'asset-manifest.json'))).toBe(true);
   });
 });

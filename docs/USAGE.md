@@ -104,6 +104,17 @@ brand/
 A web app gets web, social, tokens and guidelines by default; app and desktop icon sets are one question away. Sizes,
 safe zones and their official sources are in [OUTPUTS.md](OUTPUTS.md).
 
+### Choosing where the kit goes
+
+`markilo export --brand <slug> --out ./kit` writes the kit to a folder of your choice (resolved against the current
+directory) instead of `brand/brands/<slug>/exports/`. `--progress` prints one JSON line per group to stderr, for
+example `{"progress":{"group":"web","done":2,"total":6,"files":19}}`; stdout stays the single JSON result.
+
+An `--out` folder must be empty or new. `--clean` replaces it only if it already holds an `asset-manifest.json`, that
+is, a kit Markilo made. Markilo refuses (error `USAGE`, nothing written or deleted) a non-empty folder without
+`--clean`, a folder without a manifest with `--clean`, any brand's `final/` folder or anything inside or containing it,
+the workspace folder, and any parent of the workspace. Symbolic links are resolved before the check.
+
 ## What Markilo does
 
 - **Brand intelligence, with receipts.** Repository and website scans, competitor and market research, and a persistent

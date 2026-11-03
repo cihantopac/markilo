@@ -56,13 +56,14 @@ export function resolveInside(root: string, target: string): string {
   throw new MarkiloError('UNSAFE_PATH', `Refusing to access "${target}" because it is outside ${base}.`);
 }
 
-function isWithin(base: string, full: string): boolean {
+/** True when `full` is `base` or lies inside it (separator-aware, so /a/b does not contain /a/bc). */
+export function isWithin(base: string, full: string): boolean {
   const rel = relative(base, full);
   return !(rel.startsWith(`..${sep}`) || rel === '..' || isAbsolute(rel));
 }
 
 /** realpath of the deepest existing ancestor, with the missing tail re-appended. */
-function realExisting(path: string): string {
+export function realExisting(path: string): string {
   let probe = path;
   const tail: string[] = [];
   while (!existsSync(probe)) {

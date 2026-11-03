@@ -1,8 +1,9 @@
-import { existsSync, rmSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, lstatSync, readdirSync, rmSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { contrastRatio, normalizeColor } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
 import { sha256, writeGenerated, writeJson } from '../core/fsx.js';
+import { isWithin, realExisting } from '../core/paths.js';
 import type { Workspace } from '../core/workspace.js';
 import { loadBundledFace } from '../design/fonts.js';
 import { generatePalette } from '../design/palette.js';
@@ -1089,10 +1090,46 @@ const RUNNERS: Record<ExportGroup, (ctx: Ctx) => Promise<void>> = {
 };
 const NEEDS_SYMBOL: ExportGroup[] = ['web', 'ios', 'macos', 'android', 'windows'];
 
+/**
+ * Validates a user-chosen export folder before anything is written or deleted. Refuses the workspace root and its
+ * ancestors, any brand's final/ folder (or anything inside or containing it), a path that is not a folder, and a
+ * non-empty folder unless --clean is given. --clean may only remove a folder that holds an asset-manifest.json, i.e.
+ * one Markilo made. Paths are compared by real location (symlinks resolved) and by name, separator-aware.
+ */
+function checkOutDir(ws: Workspace, outDir: string, clean: boolean): void {
+  const refuse = (why: string): never => {
+    throw new MarkiloError('USAGE', `Refusing --out "${outDir}": ${why}.`);
+  };
+  // `outDir` is already a real location (see exportBrand); the roots are compared under both of their names.
+  const names = (p: string) => [...new Set([resolve(p), realExisting(resolve(p))])];
+  if (names(ws.root).some((r) => isWithin(outDir, r)))
+    refuse('it is the workspace folder or one of its parents');
+  const brandsDir = join(ws.root, 'brands');
+  const finals = existsSync(brandsDir) ? readdirSync(brandsDir).map((e) => join(brandsDir, e, 'final')) : [];
+  for (const f of finals)
+    if (names(f).some((x) => isWithin(outDir, x) || isWithin(x, outDir)))
+      refuse("it overlaps a brand's final/ folder, which holds the approved masters");
+  if (!existsSync(outDir)) return;
+  if (!lstatSync(outDir).isDirectory()) refuse('it is not a folder');
+  if (readdirSync(outDir).length === 0) return;
+  if (!clean) refuse('the folder is not empty (use an empty folder, or --clean to replace a Markilo kit)');
+  const manifest = join(outDir, 'asset-manifest.json');
+  if (!existsSync(manifest) || !lstatSync(manifest).isFile())
+    refuse('--clean only replaces a folder Markilo made (one holding asset-manifest.json)');
+}
+
 export async function exportBrand(
   ws: Workspace,
   brand: string,
-  opts: { groups?: ExportGroup[]; clean?: boolean; themeColor?: 'primary' | 'paper' | string } = {},
+  opts: {
+    groups?: ExportGroup[];
+    clean?: boolean;
+    themeColor?: 'primary' | 'paper' | string;
+    /** Absolute folder to write the kit to; defaults to the brand's exports folder. */
+    outDir?: string;
+    /** Called after each group (including skipped ones) with the running count and that group's file count. */
+    onProgress?: (e: { group: ExportGroup; done: number; total: number; files: number }) => void;
+  } = {},
 ): Promise<ExportResult> {
   let custom: string | undefined;
   if (opts.themeColor && opts.themeColor !== 'primary' && opts.themeColor !== 'paper') {
@@ -1111,7 +1148,8 @@ export async function exportBrand(
       : opts.themeColor === 'paper' || grounds(kit).darkFirst
         ? kit.palette.paper
         : kit.palette.primary);
-  const outDir = ws.exportsDir(brand);
+  const outDir = opts.outDir ? realExisting(resolve(opts.outDir)) : ws.exportsDir(brand);
+  if (opts.outDir) checkOutDir(ws, outDir, !!opts.clean);
   if (opts.clean && existsSync(outDir)) rmSync(outDir, { recursive: true, force: true });
   const ctx: Ctx = {
     kit,
@@ -1133,12 +1171,15 @@ export async function exportBrand(
     if (!EXPORT_GROUPS.includes(g))
       throw new MarkiloError('USAGE', `Unknown export group "${g}". Use: ${EXPORT_GROUPS.join(', ')}.`);
   const skipped: ExportResult['skipped'] = [];
+  let done = 0;
   for (const g of groups) {
+    const before = ctx.assets.length;
     if (NEEDS_SYMBOL.includes(g) && !ctx.symbol) {
       skipped.push({ group: g, reason: 'needs a symbol (app icons cannot be made from a wordmark alone)' });
-      continue;
+    } else {
+      await RUNNERS[g](ctx);
     }
-    await RUNNERS[g](ctx);
+    opts.onProgress?.({ group: g, done: ++done, total: groups.length, files: ctx.assets.length - before });
   }
   if (kit.locked)
     ctx.warnings.push(
