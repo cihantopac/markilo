@@ -367,6 +367,8 @@ describe('cli export --out and --progress', () => {
       ['/'],
       [join(cwd, 'link-to-final')],
       [join(cwd, 'link-to-final', 'x')],
+      [join(brandDir, 'FINAL', 'sub')],
+      [''],
       [plain, '--clean'],
       [full, '--clean'],
       [`${root}/../brand`],
@@ -392,6 +394,15 @@ describe('cli export --out and --progress', () => {
     const r = run(['export', '--brand', 'acme', '--only', 'tokens', '--out', out, '--clean'], cwd);
     expect(r.status, r.stderr).toBe(0);
     expect(existsSync(join(out, 'stale.txt'))).toBe(false);
+    expect(existsSync(join(out, 'asset-manifest.json'))).toBe(true);
+  });
+
+  it('validates before deleting: a bogus group with --clean leaves the folder intact', () => {
+    const { cwd } = setup();
+    const out = join(cwd, 'k2');
+    expect(run(['export', '--brand', 'acme', '--only', 'tokens', '--out', out], cwd).status).toBe(0);
+    const r = run(['export', '--brand', 'acme', '--only', 'bogus', '--out', out, '--clean'], cwd);
+    expect(JSON.parse(r.stderr).error.code).toBe('USAGE');
     expect(existsSync(join(out, 'asset-manifest.json'))).toBe(true);
   });
 });

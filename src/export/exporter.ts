@@ -1140,6 +1140,10 @@ export async function exportBrand(
         `--theme-color must be primary, paper or a #rrggbb colour (got "${opts.themeColor}").`,
       );
   }
+  const groups = opts.groups?.length ? opts.groups : [...EXPORT_GROUPS];
+  for (const g of groups)
+    if (!EXPORT_GROUPS.includes(g))
+      throw new MarkiloError('USAGE', `Unknown export group "${g}". Use: ${EXPORT_GROUPS.join(', ')}.`);
   const kit = loadKit(ws, brand);
   const themeColor =
     custom ??
@@ -1150,7 +1154,6 @@ export async function exportBrand(
         : kit.palette.primary);
   const outDir = opts.outDir ? realExisting(resolve(opts.outDir)) : ws.exportsDir(brand);
   if (opts.outDir) checkOutDir(ws, outDir, !!opts.clean);
-  if (opts.clean && existsSync(outDir)) rmSync(outDir, { recursive: true, force: true });
   const ctx: Ctx = {
     kit,
     outDir,
@@ -1164,12 +1167,9 @@ export async function exportBrand(
     assets: [],
     warnings: [],
   };
+  if (opts.clean && existsSync(outDir)) rmSync(outDir, { recursive: true, force: true });
   const lead = kit.lead === 'wordmark' ? (ctx.wordmark ?? ctx.lockupH) : (ctx.lockupH ?? ctx.wordmark);
   if (lead) ctx.primary = lead;
-  const groups = opts.groups?.length ? opts.groups : [...EXPORT_GROUPS];
-  for (const g of groups)
-    if (!EXPORT_GROUPS.includes(g))
-      throw new MarkiloError('USAGE', `Unknown export group "${g}". Use: ${EXPORT_GROUPS.join(', ')}.`);
   const skipped: ExportResult['skipped'] = [];
   let done = 0;
   for (const g of groups) {

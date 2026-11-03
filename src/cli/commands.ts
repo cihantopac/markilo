@@ -1691,10 +1691,12 @@ export const COMMANDS: CommandSpec[] = [
           // No readable brief (e.g. a locked brand added without one): export everything.
         }
       }
+      if (c.str('out') === '') throw new MarkiloError('USAGE', '--out needs a folder path.');
+      const out = c.str('out') ? file(c, c.str('out')!) : undefined;
       const r = await exportBrand(w, slug, {
         groups,
         clean: c.bool('clean'),
-        ...(c.str('out') ? { outDir: file(c, c.str('out')!) } : {}),
+        ...(out ? { outDir: out } : {}),
         ...(c.bool('progress')
           ? { onProgress: (progress: unknown) => process.stderr.write(`${JSON.stringify({ progress })}\n`) }
           : {}),
@@ -1703,16 +1705,15 @@ export const COMMANDS: CommandSpec[] = [
       const byGroup: Record<string, number> = {};
       for (const a of r.assets) byGroup[a.group] = (byGroup[a.group] ?? 0) + 1;
       const made = groups.length ? groups : [...EXPORT_GROUPS];
-      const given = c.str('out') ? file(c, c.str('out')!) : undefined;
       return {
-        outDir: given ?? r.outDir,
+        outDir: out ?? r.outDir,
         files: r.assets.length,
         selection,
         byGroup,
         notIncluded: EXPORT_GROUPS.filter((g) => !made.includes(g)),
         skipped: r.skipped,
         warnings: r.warnings,
-        manifest: join(given ?? r.outDir, 'asset-manifest.json'),
+        manifest: join(out ?? r.outDir, 'asset-manifest.json'),
       };
     },
   },

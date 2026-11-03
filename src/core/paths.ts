@@ -72,7 +72,8 @@ export function realExisting(path: string): string {
     tail.unshift(probe.slice(parent.length).replace(/^[\\/]/, ''));
     probe = parent;
   }
-  return [realpathSync(probe), ...tail].join(sep);
+  // .native returns the on-disk case, so FINAL and final are one folder on case-insensitive filesystems.
+  return [realpathSync.native(probe), ...tail].join(sep);
 }
 
 /**
