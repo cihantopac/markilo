@@ -59,9 +59,12 @@ round's other proposals at the same time — do not touch their concepts.
 4. **The icon** (`symbol.svg`, square) is the mark alone, on a transparent artboard — never on its own tile, disc or
    box: app icons, avatars and favicons add their own ground, and a drawn tile becomes a tile inside a tile. Prefer a
    drawn form that carries one truth about the product over a lone initial: every letter icon in Markilo 1.1's
-   validation was read as generic. Wordmark-led: derive it from the word — a letter, the pair, the ligature, a
-   detail — redrawn to stand alone in a square, not just cropped. Symbol-led: a filled, deliberate form with a drawn
-   contour (not an outlined UI icon, not stacked bars or primitives), and a word whose construction matches it.
+   validation was read as generic. It must first be a beautiful app tile on its own (`design-principles.md` → "The
+   icon stands on its own"). Wordmark-led: a letter, pair or ligature only if it passes that test, redrawn to stand
+   alone in a square, not just cropped. Symbol-led: a filled, deliberate form with a drawn contour (not an outlined UI
+   icon, not stacked bars or primitives), and a word whose construction matches it. Draw at least four variants of
+   the icon, render them together as tiles (`markilo render a.svg b.svg c.svg d.svg --compare -o
+   work/icon-variants.png`), keep the best and list the readings you discarded in `work/notes.md`.
 5. **Look and redraw, at least three times.** Render the word at 1200 px wide on its paper and on dark, beside the
    plain setting (`markilo render wordmark.svg plain.svg --compare -o cmp.png`), and the icon at 1024 and 32 px. Ask
    as a client would: would anyone notice this is not just the font? Is it beautiful? Does every letter still read?
@@ -69,7 +72,9 @@ round's other proposals at the same time — do not touch their concepts.
    value measures how close the word still is to the plain setting (1 = untouched); at 0.93 or more it is listed in
    `missing` and you are not done.
 6. **The pitch**: `markilo concept update --brand <slug> --concept <id> --idea "<one sentence>" --strengths "<a>;
-   <b>" --weaknesses "<a>; <b>"`. Weaknesses must be honest (e.g. "the ligature slows reading at 12 px").
+   <b>" --weaknesses "<a>; <b>"`. Weaknesses must be honest (e.g. "the ligature slows reading at 12 px"). Add one
+   weakness that starts `First read:` — what a stranger sees at first glance, and any well-known logo or symbol the
+   icon or a letter recalls (look at every O, C and circle).
 7. `markilo verify --brand <slug> --concept <id>`; fix every failing check (a misread letter, a vanishing detail at 16
    px, poor contrast). Warnings you understand may stay. Render `proposals --concepts <id>` once more and `Read` it.
 

@@ -37,8 +37,23 @@ the product. Most identities people remember say almost nothing literal.
 For a coined or distinctive name (most software products), the word itself is usually the strongest identity: it says
 the name every time, it cannot be mistaken for a UI icon, and type is where character is easiest to make ownable.
 Default to a wordmark-led proposal unless the brief calls for a symbol above all; a separate symbol is never mandatory.
-The compact icon (favicon, app icon, avatar) is then derived from the word — a letter, a pair, a ligature or a detail of
-the drawing — not invented separately.
+The compact icon (favicon, app icon, avatar) may come from the word — a letter, a pair, a ligature or a detail of the
+drawing — but only when it passes "The icon stands on its own" below.
+
+## The icon stands on its own
+
+The icon is judged alone, as an app tile, before anyone reads the name. In real use a whole round of clever icons — a
+letter fusion, a monogram seal, a symbol built from the word — was rejected as "all three are bad"; the round that
+worked drew icons that were simply good shapes.
+
+- **Beautiful first, clever second.** Every icon must work alone at 180 px and at 32 px: a clear silhouette, one idea,
+  balanced weight. Then let it carry a truth about the product.
+- **Letters are the exception.** A letter, pair or monogram is fine only when it passes that test; in Markilo 1.1's
+  validation every plain letter icon read as generic.
+- **No borrowed fame.** A shape that recalls a well-known logo or symbol counts against it, however original the
+  drawing — an O cut by an angled lens read instantly as a famous browser's icon.
+- **Draw many, keep one.** Draw at least four variants, look at them side by side as tiles, keep the best and note the
+  readings you discarded (a saw blade, an aperture, a fan).
 
 **A wordmark is designed, not typeset.** Typing the name in a font is the starting point. Then make it yours:
 
@@ -119,14 +134,16 @@ A round is three proposals that differ in kind, not three variations of one shap
 (word or symbol), the stance, the typeface family (grotesque, humanist, geometric, serif, custom), the form language
 (geometric, organic, calligraphic, engineered), and colour. A useful default mix:
 
-1. **A wordmark-led identity** with a fully worked word and an icon derived from it.
+1. **A wordmark-led identity** with a fully worked word and an icon that stands on its own (from the word only if it
+   passes that test).
 2. **A symbol + wordmark** where the symbol is a drawn, ownable form and the word is set with care to match it.
 3. **A bolder or unexpected route** — a typographic emblem, an abstract system, an editorial serif, a monogram so well
    drawn it becomes a mark — something the user might not have asked for and might love.
 
-Adapt the mix to the brief. If the user's references point somewhere, at least one proposal should go there. Let one
-proposal be warmer or more human than the category expects: on a release-engineering tool whose brief said
-"rigorous, calm", the owner chose a hand-tooled humanist word and a cairn of stones over two engineered routes.
+Adapt the mix to the brief. If the user's references point somewhere, at least one proposal should go there. A route
+warmer or more human than the category expects is worth offering when the brief's personality asks for it: on a
+release-engineering tool whose brief said "rigorous, calm", the owner chose a hand-tooled humanist word and a cairn of
+stones over two engineered routes. On a company site that wanted a precise, confident mark, the warmer route lost.
 
 ## What an accepted identity teaches (the bar for "good enough")
 

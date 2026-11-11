@@ -70,12 +70,26 @@ what is already in the workspace. `markilo status` says where the work stands an
    brief). Do not repeat it in later rounds.
 3. Write a concise brief (`markilo brief update --brand <slug> --file …`): product, audience, positioning, the stance
    (what the identity should feel like and must not), things to avoid, existing equity, deliverables.
-4. Ask only what you cannot infer — at most three questions, together, each with your suggested answer. Always offer
-   one optional question: _"Do you have logos, screenshots, mood boards or sketches you like or dislike?"_ Add any the
+4. Ask only what you cannot infer — at most three questions, together, each with your suggested answer, starting
+   with the first questions below. Always offer one optional question: _"Do you have logos, screenshots, mood boards or sketches you like or dislike?"_ Add any the
    user gives with `markilo reference add --category inspiration|dislike|existing --notes "<what they like or not>"`
    and `Read` them. No references is fine: design from the brief.
 5. Record the phase: `markilo cost --brand <slug> --phase understand …`, and the user's budgets: `markilo cost --brand
    <slug> --budget <usd> --budget-minutes <m>`.
+
+### First questions
+
+Skipping these cost a whole round in real use. Ask them in one message, each with your suggested answer as a button:
+
+1. **Letter case** of the name: CAPITALS, lower case or Mixed. Suggest what `research site` reports in `nameCase`;
+   record the answer in the brief's `mustKeep`.
+2. **Icon or word first**: which one the user will judge the identity by.
+3. **Network**: may research collect competitor marks and search registries? Without it originality stays
+   `insufficient-evidence`.
+
+Ask the money and time budget in the same message. If the user is away or asked not to be asked, take your suggested
+answers, write them into the brief's notes as assumptions, list them at the top of the first round's message and ask
+them again there.
 
 ### B. Explore: exactly three proposals
 
@@ -83,16 +97,18 @@ what is already in the workspace. `markilo status` says where the work stands an
    (word or symbol); the typeface class or lettering approach; the move you see in _these_ letters (look at the name:
    which pairs could join, which counters, terminals or rounds repeat, where the rhythm is); the icon idea; colour.
    They must differ in kind (`references/design-principles.md` → "Three proposals"); at least one is wordmark-led
-   unless the brief says otherwise, and at least one is warmer or more human than the category expects — for a
-   release-engineering tool in Markilo 1.1's validation, the owner chose the hand-tooled, organic direction over two
-   engineered ones. In a later round, start from what the user rejected and why.
+   unless the brief says otherwise. A direction warmer or more human than the category is a good option when the
+   brief's personality asks for it, not a quota. Every icon must first stand on its own as a beautiful app tile
+   (`design-principles.md` → "The icon stands on its own"). In a later round, start from what the user rejected and
+   why.
 2. **Start three `markilo:concept-designer` agents in parallel**, one per direction, each in `explore <concept id>`
    mode with `--round <n>`, its direction, the brief summary, what to avoid, the existing interface colours and the
    user's references (paths and what they said). One agent per proposal is deliberate: in Markilo 1.1's first
    validation a single agent drawing all three spent about eight tool calls on each and returned two untouched
    typefaces.
 3. When they return, record their usage (`--phase explore`), run `markilo proposals --brand <slug>` and `Read`
-   `proposals/round-<n>.png`. `missing` lists anything a proposal still lacks — a word that is still its typeface as
+   `proposals/round-<n>.png`. Read each pitch's `First read:` line against the board: if a mark recalls a well-known
+   logo or symbol, say so to the user with the round. `missing` lists anything a proposal still lacks — a word that is still its typeface as
    set (`typeset` ≥ 0.93), a missing icon or pitch. Send only that proposal back once, with the specific fix. Do not run
    a critic here: the user is the judge of the round.
 

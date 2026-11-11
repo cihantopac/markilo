@@ -13,7 +13,8 @@ Request: $ARGUMENTS
 Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts. Read `${CLAUDE_PLUGIN_ROOT}/skills/design/references/design-principles.md`.
 
 1. `markilo brief show --brand <slug>` and `markilo profile show --brand <slug>`. If the brief is thin, run the
-   research skill first or ask the user (at most three questions, plus the optional one about references). Refuse
+   research skill first or ask the user (at most three questions, plus the optional one about references), starting
+   with the first questions in the design skill: letter case, icon or word first, network. Refuse
    concept work for locked brands. `markilo cost --brand <slug>`: at `status: over`, ask before spending more.
 2. Round number: 1, or the next one after a round the user rejected (`markilo status`). After two rounds the user
    rejected, ask for direction instead; a third round needs `--directed "<their words>"`.

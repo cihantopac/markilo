@@ -99,4 +99,20 @@ describe('craft-named directions', () => {
     expect(concepts).toContain('subagent_tokens');
     expect(concepts).toContain('duration_ms');
   });
+  it('asks the first questions and aims at an icon that stands on its own', () => {
+    const skill = readFileSync(join(root, 'plugin/skills/design/SKILL.md'), 'utf8');
+    expect(skill).toContain('### First questions');
+    for (const q of ['Letter case', 'Icon or word first', 'Network']) expect(skill).toContain(q);
+    expect(skill).toContain('If the user is away or asked not to be asked');
+    expect(skill).not.toContain('at least one is warmer or more human than the category expects');
+    const principles = readFileSync(
+      join(root, 'plugin/skills/design/references/design-principles.md'),
+      'utf8',
+    );
+    expect(principles).toContain('## The icon stands on its own');
+    const agent = readFileSync(join(root, 'plugin/agents/concept-designer.md'), 'utf8');
+    const explore = agent.slice(agent.indexOf('## Mode `explore'), agent.indexOf('## Mode `develop'));
+    expect(explore).toContain('at least four variants');
+    expect(explore).toContain('First read:');
+  });
 });
