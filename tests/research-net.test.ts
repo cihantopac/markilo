@@ -84,6 +84,8 @@ beforeAll(async () => {
           '<meta property="og:site_name" content="Tidepool"><script type="application/ld+json">{"@type":"Organization","name":"TIDEPOOL"}</script>',
         ),
       );
+    if (url === '/kana')
+      return send(200, 'text/html', page('みなと', '<h1>港</h1>', '<meta property="og:site_name" content="みなと">'));
     if (url === '/s.css')
       return send(200, 'text/css', 'body{color:#0e9f6e;font-family:"Sora",sans-serif}.a{background:#0e9f6e}');
     if (url === '/icon.svg') return send(200, 'image/svg+xml', mark('bolt'));
@@ -151,6 +153,9 @@ describe('name casing', () => {
   });
   it('says nothing when the name is mixed case or the sources disagree', async () => {
     expect((await scanSite(`${base}/mixed`, { ...local, maxPages: 1 })).nameCase).toBeUndefined();
+  });
+  it('says nothing for a script without letter case', async () => {
+    expect((await scanSite(`${base}/kana`, { ...local, maxPages: 1 })).nameCase).toBeUndefined();
   });
 });
 

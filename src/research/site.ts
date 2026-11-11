@@ -160,7 +160,8 @@ function nameCaseOf(
   title: string | undefined,
 ): SiteScan['nameCase'] {
   const name = siteName ?? orgName;
-  if (!name || (name.match(/\p{L}/gu) ?? []).length < 2) return undefined;
+  // Scripts without letter case (e.g. Japanese) say nothing about capitals.
+  if (!name || (name.match(/\p{L}/gu) ?? []).length < 2 || name.toUpperCase() === name.toLowerCase()) return undefined;
   const titleHead = title?.split(/\s+[—|-]\s+|—|\||: /)[0]?.trim();
   const candidates: [NonNullable<SiteScan['nameCase']>['seenIn'][number], string | undefined][] = [
     ['og:site_name', siteName],
