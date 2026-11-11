@@ -573,6 +573,7 @@ export const COMMANDS: CommandSpec[] = [
             title: scan.title,
             description: scan.description,
             organization: scan.organization,
+            ...(scan.nameCase ? { nameCase: scan.nameCase } : {}),
             colors: scan.colors.slice(0, 6).map((x) => x.hex),
             fonts: scan.fonts,
             icons: scan.icons.length,
