@@ -109,6 +109,9 @@ export async function wordmarkLetters(
 }
 
 /** Runs every automated check on a concept and writes the reports and the review contact sheet. */
+/** Checks of the sizes export draws from the small version (≤ 32 px) when a concept has one. */
+const SMALL_SIZE_CHECKS = new Set(['fidelity-16', 'fidelity-32', 'thin-detail']);
+
 export async function verifyConcept(ws: Workspace, brand: string, id: string) {
   ws.assertNotLocked(brand);
   const concept = ws.concept(brand, id);
@@ -126,6 +129,15 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
       await assessQuality(svg, `${id}/${rel}`, role, { paper: concept.palette.paper ?? '#ffffff' }),
     );
     if (role === 'symbol' && concept.files.small) {
+      // Export draws every size up to 32 px from the small version, so it, not the main symbol, answers for them.
+      const main = reports[reports.length - 1]!;
+      for (const c of main.checks) {
+        if (!SMALL_SIZE_CHECKS.has(c.id) || (c.status !== 'warn' && c.status !== 'fail')) continue;
+        main.summary[c.status]--;
+        main.summary.info++;
+        c.status = 'info';
+        c.message += ' — the small version carries this size.';
+      }
       // The small version is measured like a symbol, and must still read as the same mark: the similarity
       // engine's "review" bar (0.62), the level at which it would flag two marks as related.
       const small = readText(ws.conceptFile(brand, id, concept.files.small));
