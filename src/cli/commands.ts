@@ -1826,6 +1826,7 @@ export const COMMANDS: CommandSpec[] = [
       const inputs: ProposalInput[] = [];
       const missing: string[] = [];
       const typeset: Record<string, number> = {};
+      const typesetBase: Record<string, { font: string; weight: number; case: 'as-is' | 'lower' | 'upper' }> = {};
       const compare: Record<string, string> = {};
       const files: string[] = [];
       for (const [i, cpt] of picked.entries()) {
@@ -1848,9 +1849,10 @@ export const COMMANDS: CommandSpec[] = [
           const t = font && (await typesetLikeness(wordmark, font, w.brand(slug).name));
           if (t) {
             typeset[cpt.id] = t.likeness;
+            typesetBase[cpt.id] = { font: font!.id, weight: font!.weight, case: t.case };
             if (t.likeness >= TYPESET_LIMIT)
               missing.push(
-                `${cpt.id}: the wordmark is ${font!.id} ${font!.weight} as set (likeness ${t.likeness}) — design the word, not only its colour, spacing or a dot`,
+                `${cpt.id}: the wordmark is ${font!.id} ${font!.weight} as set (likeness ${t.likeness} against ${font!.id} ${font!.weight}, ${t.case}) — design the word, not only its colour, spacing or a dot`,
               );
           }
         }
@@ -1909,6 +1911,8 @@ export const COMMANDS: CommandSpec[] = [
         files,
         /** How closely each wordmark matches its typeface set plainly (1 = untouched). */
         typeset,
+        /** The font, weight and case each typeset score was measured against. */
+        typesetBase,
         /** For a concept the user chose: their choice and its current state side by side. */
         ...(Object.keys(compare).length ? { compare } : {}),
         missing,

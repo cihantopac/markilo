@@ -130,6 +130,8 @@ describe('exploration rounds', () => {
     expect(r.files).toHaveLength(3);
     // The words are Fraunces as set: proposals says so, so the designer keeps designing.
     expect(r.typeset.p1).toBeGreaterThanOrEqual(0.95);
+    // The score names what it was measured against.
+    expect(r.typesetBase.p1).toEqual({ font: 'fraunces', weight: 600, case: expect.any(String) });
     expect(r.missing.filter((m: string) => m.includes('fraunces 600 as set'))).toHaveLength(3);
     // p2 and p3 have no strengths or weaknesses yet; p1 has its pitch.
     expect(r.missing.filter((m: string) => m.includes('strengths'))).toHaveLength(2);
