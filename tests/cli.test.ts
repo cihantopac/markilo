@@ -37,6 +37,49 @@ describe('cli (bundled)', () => {
     expect(run(['center', 'in.svg', '-o', 'out.svg'], cwd).status).not.toBe(0);
     expect(run(['center', 'in.svg', '-o', 'out.svg', '--force'], cwd).status).toBe(0);
   });
+  it('sets and removes a brand colour for each ground', () => {
+    const cwd = tmp();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    ok(['init', '--name', 'Demo']);
+    ok(['brand', 'add', 'Tidepool']);
+    ok([
+      'concept',
+      'new',
+      '--brand',
+      'tidepool',
+      '--id',
+      'p1',
+      '--title',
+      'One',
+      '--direction',
+      'd',
+      '--rationale',
+      'r',
+      '--semantics',
+      'a',
+      '--primary',
+      '#3ddc97',
+      '--on-dark',
+      '#3ddc97',
+    ]);
+    const conceptJson = () =>
+      JSON.parse(
+        readFileSync(join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'p1', 'concept.json'), 'utf8'),
+      );
+    expect(conceptJson().palette.onDark).toBe('#3ddc97');
+    const set = ['concept', 'update', '--brand', 'tidepool', '--concept', 'p1'];
+    ok([...set, '--on-light', '#007044']);
+    expect(conceptJson().palette.onLight).toBe('#007044');
+    const bad = run([...set, '--on-light', 'green'], cwd);
+    expect(JSON.parse(bad.stderr).error.code).toBe('INVALID_INPUT');
+    ok([...set, '--on-light', 'none']);
+    expect(conceptJson().palette.onLight).toBeUndefined();
+    expect(conceptJson().palette.onDark).toBe('#3ddc97');
+  });
   it("center refuses to write into a brand's final/ folder", () => {
     const cwd = tmp();
     run(['init', '--name', 'Demo'], cwd);

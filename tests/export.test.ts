@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { installAssets } from '../src/cli/system.js';
@@ -6,7 +6,7 @@ import { sha256 } from '../src/core/fsx.js';
 import type { Workspace } from '../src/core/workspace.js';
 import { readIcnsTypes, readIcoSizes } from '../src/export/encoders.js';
 import { cssFontFamily, type ExportResult, exportBrand } from '../src/export/exporter.js';
-import { finalizeConcept, lockIdentity } from '../src/export/kit.js';
+import { finalizeConcept, kitPath, lockIdentity } from '../src/export/kit.js';
 import { isDarkGround } from '../src/export/variants.js';
 import { buildGallery } from '../src/gallery/gallery.js';
 import { pngSize } from '../src/render/png.js';
@@ -361,4 +361,63 @@ describe('cssFontFamily', () => {
     expect(cssFontFamily('Source Sans 3')).toBe('"Source Sans 3"');
     expect(cssFontFamily('3Dumb')).toBe('"3Dumb"');
   });
+});
+
+describe('a colour for each ground', () => {
+  const svgsUnder = (root: string, sub: string): string[] => {
+    const dir = join(root, sub);
+    if (!existsSync(dir)) return [];
+    return readdirSync(dir, { recursive: true })
+      .map(String)
+      .filter((f) => f.endsWith('.svg'))
+      .map((f) => readFileSync(join(dir, f), 'utf8'));
+  };
+  it('uses onLight on light grounds and onDark on dark grounds', async () => {
+    const { ws } = synthBrand();
+    const cdir = ws.conceptDir('nimbra', 'fold');
+    writeFileSync(
+      join(cdir, 'symbol.svg'),
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20 20h30v60H20zM60 20l20 30-20 30z" fill="#3ddc97"/></svg>',
+    );
+    const c = ws.concept('nimbra', 'fold');
+    ws.saveConcept({
+      ...c,
+      palette: { primary: '#3ddc97', paper: '#0b1220', ink: '#e8f0ec', onLight: '#007044' },
+    });
+    await verifyConcept(ws, 'nimbra', 'fold');
+    await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
+    await exportBrand(ws, 'nimbra', { groups: ['logos', 'social', 'tokens'] });
+    const out = ws.exportsDir('nimbra');
+    // Dark-first: the reversed artwork sits on white, so it takes the green chosen for light grounds.
+    const reversed = svgsUnder(out, 'logos').filter((x) => x.includes('#007044'));
+    expect(reversed.length).toBeGreaterThan(0);
+    expect(svgsUnder(out, 'social').some((x) => x.includes('#007044'))).toBe(true);
+    const tokens = readFileSync(join(out, 'tokens/tokens.css'), 'utf8');
+    expect(tokens).toContain('--nimbra-on-light: #007044;');
+    expect(tokens).not.toContain('--nimbra-on-dark:');
+  }, 120_000);
+
+  it('does not recolour a locked brand', async () => {
+    const { ws } = synthBrand();
+    const symbolPath = join(tmp(), 'symbol.svg');
+    writeFileSync(symbolPath, mark('bars'));
+    ws.addBrand({ name: 'Duskmint', locked: true });
+    lockIdentity(ws, 'duskmint', { symbol: symbolPath, primary: '#7a3cf0', paper: '#0b1220' });
+    const hashes = () =>
+      Object.fromEntries(
+        readdirSync(join(ws.exportsDir('duskmint'), 'logos'), { recursive: true })
+          .map(String)
+          .filter((f) => /\.(svg|png)$/.test(f))
+          .map((f) => [f, sha256(readFileSync(join(ws.exportsDir('duskmint'), 'logos', f)))]),
+      );
+    await exportBrand(ws, 'duskmint', { groups: ['logos'] });
+    const before = hashes();
+    const kit = JSON.parse(readFileSync(kitPath(ws, 'duskmint'), 'utf8'));
+    writeFileSync(
+      kitPath(ws, 'duskmint'),
+      JSON.stringify({ ...kit, palette: { ...kit.palette, onDark: '#00ff99', onLight: '#004422' } }),
+    );
+    await exportBrand(ws, 'duskmint', { groups: ['logos'], clean: true });
+    expect(hashes()).toEqual(before);
+  }, 120_000);
 });

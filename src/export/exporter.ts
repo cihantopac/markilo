@@ -22,6 +22,8 @@ import { kitIndexHtml, kitReadme } from './preview.js';
 import { SPECS } from './specs.js';
 import {
   adaptToGround,
+  type GroundColors,
+  groundColors,
   groundsFor,
   isDarkGround,
   monochrome,
@@ -163,7 +165,12 @@ async function exportLogos(ctx: Ctx) {
           ],
           [
             'reversed',
-            adaptToGround(art, grounds(kit).opposite, { dark: kit.palette.ink, light: '#ffffff' }),
+            adaptToGround(
+              art,
+              grounds(kit).opposite,
+              { dark: kit.palette.ink, light: '#ffffff' },
+              groundColors(kit.palette),
+            ),
             `for ${grounds(kit).darkFirst ? 'light' : 'dark'} backgrounds (${grounds(kit).opposite})`,
           ],
           ['black', monochrome(art, '#000000'), 'one-color black (print, fax, engraving)'],
@@ -256,7 +263,7 @@ async function appmarkSvg(
 
 // ---------------------------------------------------------------- web
 /** SVG favicon that swaps low-contrast colors when the browser UI is dark. */
-export function adaptiveFavicon(symbol: string, dark: string, paper: string): string {
+export function adaptiveFavicon(symbol: string, dark: string, paper: string, brand?: GroundColors): string {
   const root = parseXml(symbol);
   const rules: string[] = [];
   let n = 0;
@@ -277,6 +284,7 @@ export function adaptiveFavicon(symbol: string, dark: string, paper: string): st
           `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><rect width="1" height="1" fill="${c}"/></svg>`,
           dark,
           paper,
+          brand,
         ).match(/fill="(#[0-9a-f]{6})"/)?.[1] ?? paper;
       rules.push(`.${cls}{${prop}:${lifted}}`);
     }
@@ -297,7 +305,9 @@ async function exportWeb(ctx: Ctx) {
   // Browser tabs show the favicon at 16–32 px: the small version when there is one.
   const tiny = ctx.small ?? sym;
   const tinyFrom = ctx.small ? 'symbol-small.svg' : 'symbol.svg';
-  const fav = kit.locked ? tiny : optimizeSvg(adaptiveFavicon(tiny, '#202124', kit.palette.paper));
+  const fav = kit.locked
+    ? tiny
+    : optimizeSvg(adaptiveFavicon(tiny, '#202124', kit.palette.paper, groundColors(kit.palette)));
   await emit(ctx, 'web/favicon.svg', fav, {
     group: 'web',
     purpose: 'SVG favicon (adapts to dark browser UI)',
@@ -418,7 +428,7 @@ async function exportIos(ctx: Ctx) {
   ];
   if (!kit.locked) {
     // Dark appearance: mark on a transparent background, the system supplies the dark backdrop.
-    const darkMark = reversedVariant(sym, kit.palette.dark, kit.palette.paper);
+    const darkMark = reversedVariant(sym, kit.palette.dark, kit.palette.paper, groundColors(kit.palette));
     const dark = await canvas(darkMark, S, S, { mode: 'box', fraction: 0.6 });
     await emit(ctx, `${base}/AppIcon-1024-dark.png`, await png(dark, S), {
       group: 'ios',
@@ -645,7 +655,9 @@ async function exportAndroid(ctx: Ctx) {
   const { width: bw, height: bh } = A.tvBanner;
   const bg = grounds(kit).native;
   const bart0 = ctx.primary ?? sym;
-  const bart = kit.locked ? bart0 : adaptToGround(bart0, bg, { dark: kit.palette.ink, light: '#ffffff' });
+  const bart = kit.locked
+    ? bart0
+    : adaptToGround(bart0, bg, { dark: kit.palette.ink, light: '#ffffff' }, groundColors(kit.palette));
   await emit(
     ctx,
     // A drawable resource (names are [a-z0-9_]) under res/, so install-assets copies it with the launcher icons.
@@ -664,7 +676,7 @@ async function exportWindows(ctx: Ctx) {
   const { kit } = ctx;
   const W = SPECS.windows;
   const sym = ctx.symbol!;
-  const forDark = kit.locked ? sym : reversedVariant(sym, '#202020', '#ffffff');
+  const forDark = kit.locked ? sym : reversedVariant(sym, '#202020', '#ffffff', groundColors(kit.palette));
   const pngs: Buffer[] = [];
   for (const s of W.icoSizes)
     pngs.push(
@@ -763,7 +775,9 @@ async function socialCard(
   const g = grounds(kit);
   const bg = opts.dark ? g.opposite : g.native;
   const art0 = ctx.primary ?? ctx.symbol!;
-  const art = kit.locked ? art0 : adaptToGround(art0, bg, { dark: kit.palette.ink, light: '#ffffff' });
+  const art = kit.locked
+    ? art0
+    : adaptToGround(art0, bg, { dark: kit.palette.ink, light: '#ffffff' }, groundColors(kit.palette));
   let body = '';
   // Supergraphic: an oversized, cropped tint of the symbol that ties the card to the identity.
   if (ctx.symbol && !kit.locked && !kit.wordmarkOnly) {
@@ -968,6 +982,8 @@ async function exportTokens(ctx: Ctx) {
   );
   color.ink = { $type: 'color', $value: kit.palette.ink } as never;
   color.paper = { $type: 'color', $value: kit.palette.paper } as never;
+  if (kit.palette.onDark) color.onDark = { $type: 'color', $value: kit.palette.onDark } as never;
+  if (kit.palette.onLight) color.onLight = { $type: 'color', $value: kit.palette.onLight } as never;
   dtcg.spacing = Object.fromEntries(
     [1, 2, 3, 4, 6, 8, 12, 16, 24].map((n) => [String(n), { $type: 'dimension', $value: `${n * 4}px` }]),
   );
@@ -995,6 +1011,8 @@ async function exportTokens(ctx: Ctx) {
     css.push(`  --${kit.brand}-font-brand: ${cssFontFamily(fam)}, system-ui, sans-serif;`);
   }
   css.push(`  --${kit.brand}-ink: ${kit.palette.ink};`, `  --${kit.brand}-paper: ${kit.palette.paper};`);
+  if (kit.palette.onDark) css.push(`  --${kit.brand}-on-dark: ${kit.palette.onDark};`);
+  if (kit.palette.onLight) css.push(`  --${kit.brand}-on-light: ${kit.palette.onLight};`);
   // A surface/text pair for the brand's own scheme, swapped for the other scheme by the media query.
   const g = grounds(kit);
   const readable = (ground: string, preferred: string, fallbacks: [string, string]) =>
@@ -1061,7 +1079,12 @@ async function exportGuidelines(ctx: Ctx) {
     reversed: (s: string) =>
       ctx.kit.locked
         ? s
-        : adaptToGround(s, grounds(ctx.kit).opposite, { dark: ctx.kit.palette.ink, light: '#ffffff' }),
+        : adaptToGround(
+            s,
+            grounds(ctx.kit).opposite,
+            { dark: ctx.kit.palette.ink, light: '#ffffff' },
+            groundColors(ctx.kit.palette),
+          ),
   };
   await emit(ctx, 'guidelines/brand-guidelines.md', guidelinesMarkdown(input), {
     group: 'guidelines',

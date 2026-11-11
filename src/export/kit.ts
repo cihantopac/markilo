@@ -32,7 +32,17 @@ export interface BrandKit {
     /** The simplified symbol used at 32 px and below. */
     symbolSmall?: string;
   };
-  palette: { primary: string; secondary?: string; accent?: string; ink: string; paper: string; dark: string };
+  palette: {
+    primary: string;
+    secondary?: string;
+    accent?: string;
+    ink: string;
+    paper: string;
+    dark: string;
+    /** The brand colour on a dark / light ground, replacing `primary` there. */
+    onDark?: string;
+    onLight?: string;
+  };
   typography?: { fontId: string; weight: number; family?: string; license?: string };
   tagline?: string;
   /** Usage rules decided at approval (e.g. "never use the accent as an error color"); shown in the guidelines. */
@@ -237,6 +247,8 @@ export async function finalizeConcept(
       primary: concept.palette.primary,
       ...(concept.palette.secondary ? { secondary: concept.palette.secondary } : {}),
       ...(concept.palette.accent ? { accent: concept.palette.accent } : {}),
+      ...(concept.palette.onDark ? { onDark: concept.palette.onDark } : {}),
+      ...(concept.palette.onLight ? { onLight: concept.palette.onLight } : {}),
       ink: concept.palette.ink ?? ink,
       paper: concept.palette.paper ?? '#ffffff',
       dark,

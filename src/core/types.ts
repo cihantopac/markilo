@@ -133,6 +133,10 @@ export interface ConceptPalette {
   accent?: string;
   ink?: string;
   paper?: string;
+  /** The brand colour on a dark ground, replacing `primary` there (e.g. mint where `primary` is deep green). */
+  onDark?: string;
+  /** The brand colour on a light ground, replacing `primary` there. */
+  onLight?: string;
 }
 
 export interface Concept {

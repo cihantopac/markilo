@@ -104,7 +104,9 @@ If the concept's direction names a physical craft, keep following "When the dire
    the main symbol; the small version is only for 32 px and below.
 5. Lockups: horizontal and, when useful, stacked (`markilo lockup … -o lockup-horizontal.svg`, registered with
    `concept update --lockup-horizontal … --lockup-stacked …`), or leave them to `finalize`.
-6. Colour: confirm primary, ink and paper; `markilo palette '<primary>'` for contrast pairs.
+6. Colour: confirm primary, ink and paper; `markilo palette '<primary>'` for contrast pairs. When the brand colour must
+   differ by ground (mint on dark, deep green on light), set it with `concept update --on-dark <#hex> --on-light <#hex>`;
+   export then uses it instead of an automatic lighter or darker shade. Never turn `paper` dark only to get a colour right.
 7. `markilo verify --brand <slug> --concept <id>` until nothing fails; `Read` the review, wordmark and context sheets.
 8. `markilo proposals --brand <slug> --concepts <id>`: `Read` `review/chosen-vs-now.png` (what the user chose next to
    what it is now). If the chosen character is gone, go back to step 1. Update the pitch with `concept update --idea …

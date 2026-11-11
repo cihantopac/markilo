@@ -112,6 +112,30 @@ const pos = (c: RunContext, i: number, label: string): string => {
   return v;
 };
 const file = (c: RunContext, p: string) => resolve(c.cwd, p);
+
+/** `--on-dark` / `--on-light`: the brand colour for one ground, as #hex ("none" is handled by the caller). */
+function groundColorOptions(
+  c: RunContext,
+  only?: 'on-dark' | 'on-light',
+): { onDark?: string; onLight?: string } {
+  const out: { onDark?: string; onLight?: string } = {};
+  for (const [opt, key] of [
+    ['on-dark', 'onDark'],
+    ['on-light', 'onLight'],
+  ] as const) {
+    if (only && opt !== only) continue;
+    const v = c.str(opt);
+    if (!v || v === 'none') continue;
+    const hex = v.startsWith('#') ? normalizeColor(v) : undefined;
+    if (!hex)
+      throw new MarkiloError(
+        'INVALID_INPUT',
+        `--${opt} must be a hex color like #007044${only ? ' or "none"' : ''}.`,
+      );
+    out[key] = hex;
+  }
+  return out;
+}
 async function loadReferences(w: Workspace, brand: string): Promise<Reference[]> {
   const out: Reference[] = [];
   for (const r of readReferences(w, brand).references.slice(0, 60)) {
@@ -1152,6 +1176,8 @@ export const COMMANDS: CommandSpec[] = [
       accent: { type: 'string', description: 'Accent color' },
       ink: { type: 'string', description: 'Text/ink color' },
       paper: { type: 'string', description: 'Background color' },
+      'on-dark': { type: 'string', description: 'Brand color on a dark ground, replacing primary there' },
+      'on-light': { type: 'string', description: 'Brand color on a light ground, replacing primary there' },
       font: { type: 'string', description: 'Wordmark font id (markilo fonts)' },
       weight: { type: 'string', description: 'Wordmark font weight' },
     },
@@ -1194,6 +1220,7 @@ export const COMMANDS: CommandSpec[] = [
               .filter((k) => c.str(k))
               .map((k) => [k, c.str(k)!]),
           ),
+          ...groundColorOptions(c),
         },
         ...(font
           ? {
@@ -1262,7 +1289,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--font <id> --weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--font <id> --weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1309,6 +1336,14 @@ export const COMMANDS: CommandSpec[] = [
       accent: { type: 'string', description: 'Accent color ("none" removes it)' },
       ink: { type: 'string', description: 'Text color on paper' },
       paper: { type: 'string', description: 'Background the brand lives on' },
+      'on-dark': {
+        type: 'string',
+        description: 'Brand color on a dark ground, replacing primary there ("none" removes it)',
+      },
+      'on-light': {
+        type: 'string',
+        description: 'Brand color on a light ground, replacing primary there ("none" removes it)',
+      },
       font: { type: 'string', description: 'Font id' },
       weight: { type: 'string', description: 'Font weight' },
       construction: { type: 'string', description: 'Grid / geometry notes' },
@@ -1363,6 +1398,13 @@ export const COMMANDS: CommandSpec[] = [
             'INVALID_INPUT',
             `--${role} must be a hex color${role === 'secondary' || role === 'accent' ? ' or "none"' : ''}.`,
           );
+      }
+      for (const [opt, key] of [
+        ['on-dark', 'onDark'],
+        ['on-light', 'onLight'],
+      ] as const) {
+        if (c.str(opt) === 'none') delete next.palette[key];
+        else Object.assign(next.palette, groundColorOptions(c, opt));
       }
       if (c.str('construction')) next.construction = c.str('construction')!;
       for (const k of ['title', 'direction', 'rationale'] as const) if (c.str(k)) next[k] = c.str(k)!;

@@ -1,4 +1,4 @@
-import { contrastRatio, hexToOklch, luminance, oklchToHex } from '../analyze/color.js';
+import { contrastRatio, hexToOklch, luminance, normalizeColor, oklchToHex } from '../analyze/color.js';
 import { lintSvg } from '../svg/lint.js';
 import { monochrome, recolorSvg } from '../svg/variants.js';
 
@@ -26,17 +26,49 @@ export function deepenForLight(color: string, bg: string, min = 3): string {
 
 export const isDarkGround = (hex: string): boolean => luminance(hex) < 0.2;
 
+/** The brand colour a designer chose for each ground: it replaces `primary` there instead of an automatic shade. */
+export interface GroundColors {
+  primary: string;
+  onDark?: string;
+  onLight?: string;
+}
+
+/** The ground colours of a palette, or undefined when it sets none (the export then adapts colours as before). */
+export const groundColors = (p: {
+  primary: string;
+  onDark?: string;
+  onLight?: string;
+}): GroundColors | undefined =>
+  p.onDark || p.onLight
+    ? {
+        primary: p.primary,
+        ...(p.onDark ? { onDark: p.onDark } : {}),
+        ...(p.onLight ? { onLight: p.onLight } : {}),
+      }
+    : undefined;
+
+/** Replaces fills and strokes equal to `primary` with `to`. */
+export function recolorPrimary(svg: string, primary: string, to: string): string {
+  const from = normalizeColor(primary);
+  return recolorSvg(svg, (c) => (normalizeColor(c) === from ? to : undefined));
+}
+
 /**
  * Adapts artwork to a background: colors under 3:1 contrast change. Neutral inks flip to the opposite neutral;
  * saturated brand colors keep their hue and move in lightness. Works for light-first and dark-first brands.
+ * With `brand`, the primary colour takes the colour chosen for that ground (onDark / onLight) instead.
  */
 export function adaptToGround(
   svg: string,
   ground: string,
   neutrals: { light?: string; dark?: string } = {},
+  brand?: GroundColors,
 ): string {
   const dark = isDarkGround(ground);
+  const chosen = brand && (dark ? brand.onDark : brand.onLight);
+  const primary = chosen && normalizeColor(brand!.primary);
   return recolorSvg(svg, (c) => {
+    if (primary && normalizeColor(c) === primary) return chosen;
     if (contrastRatio(c, ground) >= 3) return undefined;
     const o = hexToOklch(c);
     const neutral = o.c < 0.09 || o.l < 0.3 || o.l > 0.93;
@@ -51,8 +83,13 @@ export function adaptToGround(
 }
 
 /** Light-on-dark version (kept for callers that always target a dark ground). */
-export function reversedVariant(svg: string, darkBg: string, paper = '#ffffff'): string {
-  return adaptToGround(svg, darkBg, { light: isDarkGround(paper) ? '#ffffff' : paper });
+export function reversedVariant(
+  svg: string,
+  darkBg: string,
+  paper = '#ffffff',
+  brand?: GroundColors,
+): string {
+  return adaptToGround(svg, darkBg, { light: isDarkGround(paper) ? '#ffffff' : paper }, brand);
 }
 
 /** The two grounds a brand is shown on: its own paper, and the opposite one for reversed artwork. */
