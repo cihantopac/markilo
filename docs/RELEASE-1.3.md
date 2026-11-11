@@ -461,4 +461,29 @@ The report also praised parts that should stay as they are:
 
 ## Progress record
 
-_(Filled in during implementation.)_
+- **Tasks 1–9** implemented on branch `v1.3`. Task 1 by a subagent; after the 16 GB machine froze (a relayed owner
+  notice: at most one subagent, no parallel work), Tasks 2–9 were implemented in the main session without per-task
+  reviews. One whole-branch review (most capable model) found one important issue — `concept update` stored a
+  `../../…` path when the workspace was reached through a symlink — and eight minor ones; all were fixed in one wave
+  and a scoped re-review found them addressed. Parked: the old-kit hash test skips `guidelines/` (the 1.1.3 fixture
+  hashed dated pages); logos, icons and social files stay hash-pinned.
+- **Also fixed on the way:** the old-kit hash test failed on any day but 2026-11-03; a caseless script (e.g. Japanese)
+  was reported as `upper`; the `research site` summary did not show `nameCase`.
+- **Step 1:** `npm run ci` (281 tests, dist up to date), `node scripts/smoke.mjs` and `claude plugin validate plugin`
+  pass.
+- **Step 2, check run** (synthetic "Lumen": a dark-first site named in capitals, paper `#0b1220`, primary `#3ddc97`,
+  `--on-light #007044`, a small version), with the built CLI against a local page:
+  - `research site` → `nameCase: {name: "LUMEN", case: "upper", seenIn: [og:site_name, json-ld, title]}`.
+  - `concept update --symbol <cwd-relative path>` stored `symbol.svg`.
+  - `verify` → `verified`, 0 failing: `symbol:fidelity-16` and `symbol:thin-detail` are `info`, the small version's
+    pass.
+  - `proposals` → `typesetBase: {font: manrope, weight: 700, case: upper}`.
+  - `finalize --accept-risk` → `insufficient-evidence`; the guidelines (md and html) carry the band.
+  - Export: 5 reversed logo files use `#007044` with no leftover `#3ddc97`; `theme-color` is the paper `#0b1220`;
+    `--lumen-on-light: #007044` in tokens.css.
+  - `cost --budget-minutes 60` then 52 recorded minutes → `warn`, "Under 8 minutes of the time budget left", while the
+    dollars ($0.54) are far below budget; `lowerBound: true`.
+- **Markilo's own kit** re-exported (`--only logos,web,social,tokens,guidelines --clean`): all 35 logo files are
+  byte-identical; only the manifest and the dated guidelines changed.
+- Version 1.3.0 set in `package.json`, `package-lock.json`, `plugin.json` and `marketplace.json`.
+- Not done: tag, GitHub release, `npm publish` (Step 4 needs the user's approval).

@@ -6,6 +6,44 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-12
+
+Fixes from a field report on 1.2.0 (a full company-website identity run). Locked identities and the logo files of
+existing kits are byte-for-byte what 1.2.0 wrote.
+
+### Added
+
+- `research site` reports `nameCase` when the name is written in capitals (or lower case) in every source that shows it,
+  so the letter case can be kept from the start.
+- Per-ground brand colours: `concept new|update --on-dark <#hex> --on-light <#hex>`. Reversed logos, social images,
+  the TV banner, the guidelines' reversed tile and dark-appearance icons use them instead of a computed shade;
+  `--<slug>-on-dark`/`--<slug>-on-light` in `tokens.css` (`onDark`/`onLight` in `tokens.json`). `concept update` warns
+  when one is under 3:1 on its ground.
+- `proposals` returns `typesetBase`: the font, weight and case each `typeset` score is measured against.
+- `cost --budget-minutes <m>`: a time budget next to the money budget; the status turns `warn`/`over` at either.
+- The guidelines open the originality section with a visible band when originality was not verified.
+- Design skill: first questions (letter case, icon or word first, network) with a rule for unattended runs; "The icon
+  stands on its own" (a beautiful app tile first, letters as the exception, no borrowed fame); draw at least four
+  icon variants and cull them as tiles; a `First read:` line in every pitch; word options
+  (`review/wordmark-options.png`) and a weight ladder in development; explicit critic, family and chat-choice steps.
+
+### Changed
+
+- `verify`: when a concept has a small version, the main symbol's 16 and 32 px checks become `info` — export draws
+  those sizes from the small version, which carries the checks.
+- `concept update --symbol|--wordmark|…` accepts a path relative to the current folder (it must still be inside the
+  concept folder) and always stores it relative to the concept.
+- `concept update --status shortlisted` keeps the chosen drawing, as `feedback --apply` does, so a choice made in chat
+  still gets `chosen-vs-now.png`.
+- Agent cost is recorded from the harness's `subagent_tokens` and `duration_ms`, not from the agent's own estimate;
+  `--session-usd` only when Claude Code shows a session total.
+- The "warmer or more human" direction is a suggestion when the brief asks for it, no longer a quota.
+
+### Fixed
+
+- The table row for `research app` in the command reference was split by unescaped `|`.
+- A test of old kits compared the dated guidelines pages and failed on any day but the fixture's.
+
 ## [1.2.0] - 2026-11-03
 
 Fixes from two field reports on 1.1.3. Locked identities and the logo files of existing kits are byte-for-byte what

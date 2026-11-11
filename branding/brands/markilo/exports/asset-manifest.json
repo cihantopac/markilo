@@ -4,7 +4,7 @@
   "name": "Markilo",
   "concept": "hallmark",
   "locked": false,
-  "generatedAt": "2026-11-03T08:44:01.283Z",
+  "generatedAt": "2026-11-11T22:26:28.311Z",
   "generator": "markilo",
   "specSources": {
     "web": [
@@ -662,8 +662,8 @@
       "purpose": "Brand usage guidelines (Markdown)",
       "derivedFrom": "brand.json",
       "format": "md",
-      "bytes": 2873,
-      "sha256": "abd365b3260bceee98088f808947542a2581aa849a269b0d43e69fde9033dabb"
+      "bytes": 3008,
+      "sha256": "80c1c3a775417aba4f41bed6b1ca7e9c709a7e6704d5b2ae1ba088cffeb99afe"
     },
     {
       "path": "guidelines/index.html",
@@ -671,8 +671,8 @@
       "purpose": "Brand usage guidelines (self-contained HTML)",
       "derivedFrom": "brand.json",
       "format": "html",
-      "bytes": 25728,
-      "sha256": "46fe5be784195564f146104b1af7c985a30a3a3de8cb555437506e6cc044d4e0"
+      "bytes": 26303,
+      "sha256": "9f6c9aa9ecae1999ef99f86ce059a578cadef618b44e84dfd30ad7b7d64152c0"
     }
   ],
   "skipped": [],
