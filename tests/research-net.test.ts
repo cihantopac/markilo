@@ -64,6 +64,26 @@ beforeAll(async () => {
         'text/html',
         page('Post', '<div id="root"></div><script></script><script></script><script></script>'),
       );
+    if (url === '/caps')
+      return send(
+        200,
+        'text/html',
+        page(
+          'TIDEPOOL — tide tables',
+          '<h1>Tide tables</h1>',
+          '<meta property="og:site_name" content="TIDEPOOL"><script type="application/ld+json">{"@type":"Organization","name":"TIDEPOOL"}</script>',
+        ),
+      );
+    if (url === '/mixed')
+      return send(
+        200,
+        'text/html',
+        page(
+          'Tidepool — tide tables',
+          '<h1>Tide tables</h1>',
+          '<meta property="og:site_name" content="Tidepool"><script type="application/ld+json">{"@type":"Organization","name":"TIDEPOOL"}</script>',
+        ),
+      );
     if (url === '/s.css')
       return send(200, 'text/css', 'body{color:#0e9f6e;font-family:"Sora",sans-serif}.a{background:#0e9f6e}');
     if (url === '/icon.svg') return send(200, 'image/svg+xml', mark('bolt'));
@@ -117,6 +137,20 @@ describe('multi-page site research', () => {
     expect(scan.fonts).toContain('Sora');
     expect(scan.headings[0]).not.toMatch(/\n/);
     expect(scan.inlineLogoSvgs).toHaveLength(1);
+  });
+});
+
+describe('name casing', () => {
+  it('reports a name written in capitals everywhere', async () => {
+    const scan = await scanSite(`${base}/caps`, { ...local, maxPages: 1 });
+    expect(scan.nameCase).toEqual({
+      name: 'TIDEPOOL',
+      case: 'upper',
+      seenIn: ['og:site_name', 'json-ld', 'title'],
+    });
+  });
+  it('says nothing when the name is mixed case or the sources disagree', async () => {
+    expect((await scanSite(`${base}/mixed`, { ...local, maxPages: 1 })).nameCase).toBeUndefined();
   });
 });
 

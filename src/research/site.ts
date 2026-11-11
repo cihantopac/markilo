@@ -129,6 +129,8 @@ export interface SiteScan {
   title?: string;
   description?: string;
   siteName?: string;
+  /** Set when the name is written entirely in capitals (or entirely lower case) in every source that shows it. */
+  nameCase?: { name: string; case: 'upper' | 'lower'; seenIn: ('og:site_name' | 'json-ld' | 'title')[] };
   themeColor?: string;
   ogImage?: string;
   headings: string[];
@@ -150,6 +152,27 @@ export interface SiteScan {
   clientRenderedPages: number;
   usedSitemap: boolean;
   untrustedNote: string;
+}
+
+function nameCaseOf(
+  siteName: string | undefined,
+  orgName: string | undefined,
+  title: string | undefined,
+): SiteScan['nameCase'] {
+  const name = siteName ?? orgName;
+  if (!name || (name.match(/\p{L}/gu) ?? []).length < 2) return undefined;
+  const titleHead = title?.split(/\s+[—|-]\s+|—|\||: /)[0]?.trim();
+  const candidates: [NonNullable<SiteScan['nameCase']>['seenIn'][number], string | undefined][] = [
+    ['og:site_name', siteName],
+    ['json-ld', orgName],
+    ['title', titleHead],
+  ];
+  const lower = name.toLowerCase();
+  const seen = candidates.filter(([, v]) => v !== undefined && v.toLowerCase() === lower);
+  const upper = seen.every(([, v]) => v === v!.toUpperCase());
+  const low = seen.every(([, v]) => v === v!.toLowerCase());
+  if (!upper && !low) return undefined;
+  return { name, case: upper ? 'upper' : 'lower', seenIn: seen.map(([k]) => k) };
 }
 
 const abs = (href: string, base: string) => {
@@ -477,6 +500,7 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
   const themeColor = cleanText(metaContent(html, 'theme-color'), 30);
   const ogImage = metaContent(html, 'og:image');
   const siteName = cleanText(metaContent(html, 'og:site_name'), 80);
+  const nameCase = nameCaseOf(siteName, org?.name, h.title);
   return {
     url: rawUrl,
     finalUrl: first.url,
@@ -485,6 +509,7 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
     ...(h.title ? { title: h.title } : {}),
     ...(h.description ? { description: h.description } : {}),
     ...(siteName ? { siteName } : {}),
+    ...(nameCase ? { nameCase } : {}),
     ...(themeColor ? { themeColor } : {}),
     ...(ogImage ? { ogImage: abs(ogImage, base) } : {}),
     headings: h.headings,
