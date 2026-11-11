@@ -76,6 +76,7 @@ describe('cli (bundled)', () => {
     expect(conceptJson().palette.onLight).toBe('#007044');
     const bad = run([...set, '--on-light', 'green'], cwd);
     expect(JSON.parse(bad.stderr).error.code).toBe('INVALID_INPUT');
+    expect(ok([...set, '--on-light', '#ccffee']).warnings[0]).toMatch(/under 3:1 on a light ground/);
     ok([...set, '--on-light', 'none']);
     expect(conceptJson().palette.onLight).toBeUndefined();
     expect(conceptJson().palette.onDark).toBe('#3ddc97');
@@ -121,6 +122,9 @@ describe('cli (bundled)', () => {
     // refuses a cwd-relative path outside the concept folder
     const out = run([...set, '--symbol', `${rel('p2')}/symbol.svg`], cwd);
     expect(JSON.parse(out.stderr).error.code).toBe('UNSAFE_PATH');
+    // through --workspace with an unresolved (symlinked) path, the stored path is still relative to the concept
+    ok([...set, '--symbol', 'symbol.svg', '--workspace', join(cwd, 'brand')]);
+    expect(conceptJson().files.symbol).toBe('symbol.svg');
     // --status shortlisted keeps the chosen drawing, as feedback --apply does
     const r = ok([...set, '--status', 'shortlisted']);
     expect(r.kept.length).toBeGreaterThan(0);

@@ -108,10 +108,10 @@ export async function wordmarkLetters(
   }
 }
 
-/** Runs every automated check on a concept and writes the reports and the review contact sheet. */
 /** Checks of the sizes export draws from the small version (≤ 32 px) when a concept has one. */
 const SMALL_SIZE_CHECKS = new Set(['fidelity-16', 'fidelity-32', 'thin-detail']);
 
+/** Runs every automated check on a concept and writes the reports and the review contact sheet. */
 export async function verifyConcept(ws: Workspace, brand: string, id: string) {
   ws.assertNotLocked(brand);
   const concept = ws.concept(brand, id);

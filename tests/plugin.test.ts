@@ -122,7 +122,7 @@ describe('craft-named directions', () => {
     expect(develop).toContain('weight ladder');
     const skill = readFileSync(join(root, 'plugin/skills/design/SKILL.md'), 'utf8');
     expect(skill).toContain('### Family');
-    expect(skill).toContain('Record a skipped critic');
+    expect(skill).toContain('record the skipped critic');
   });
   it('cli.md table rows have as many cells as the header', () => {
     const cli = readFileSync(join(root, 'plugin/skills/design/references/cli.md'), 'utf8');

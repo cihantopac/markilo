@@ -120,7 +120,7 @@ const file = (c: RunContext, p: string) => resolve(c.cwd, p);
 function conceptRelative(w: Workspace, slug: string, id: string, v: string, c: RunContext): string {
   const dir = realExisting(w.conceptDir(slug, id));
   const inFolder = w.conceptFile(slug, id, v);
-  const target = existsSync(inFolder) ? inFolder : realExisting(file(c, v));
+  const target = realExisting(existsSync(inFolder) ? inFolder : file(c, v));
   if (!existsSync(target)) throw new MarkiloError('NOT_FOUND', `${v} is not in the concept folder.`);
   const rel = portableRelative(dir, target);
   w.conceptFile(slug, id, rel); // refuses a path that leaves the concept folder (UNSAFE_PATH)
@@ -1388,9 +1388,6 @@ export const COMMANDS: CommandSpec[] = [
         if (st === 'approved')
           throw new MarkiloError('USAGE', 'Use "markilo finalize" to approve a concept.');
         next.status = st as Concept['status'];
-        // A choice given in chat keeps the drawing the user chose, as "feedback --apply" does, so proposals can
-        // later show it next to the developed version.
-        if (st === 'shortlisted') kept = keepChosen(w, slug, cur);
       }
       for (const [opt, key] of [
         ['symbol', 'symbol'],
@@ -1540,6 +1537,9 @@ export const COMMANDS: CommandSpec[] = [
           [requireCriterion(m[1]!)]: { score, rationale: m[3]!.trim() },
         };
       }
+      // A choice given in chat keeps the drawing the user chose (as it was before this call), as "feedback --apply"
+      // does, so proposals can later show it next to the developed version.
+      if (st === 'shortlisted') kept = keepChosen(w, slug, cur);
       w.saveConcept(next);
       const gate = gateOf(next);
       if (c.str('sketch-pick'))
@@ -1569,7 +1569,21 @@ export const COMMANDS: CommandSpec[] = [
       }
       if (st && st !== cur.status && (st === 'rejected' || st === 'shortlisted'))
         w.logDecision(slug, st === 'rejected' ? 'Rejected' : 'Shortlisted', `${cur.id} (${cur.title}).`);
-      return { ...next, gate, ...(kept.length ? { kept } : {}) };
+      // The designer's ground colour is used as given; say when it is too faint for that ground.
+      const faint = [
+        next.palette.onDark && contrastRatio(next.palette.onDark, '#111318') < 3
+          ? `--on-dark ${next.palette.onDark} is under 3:1 on a dark ground; export uses it as given.`
+          : undefined,
+        next.palette.onLight && contrastRatio(next.palette.onLight, '#ffffff') < 3
+          ? `--on-light ${next.palette.onLight} is under 3:1 on a light ground; export uses it as given.`
+          : undefined,
+      ].filter((x): x is string => !!x);
+      return {
+        ...next,
+        gate,
+        ...(kept.length ? { kept } : {}),
+        ...(faint.length ? { warnings: faint } : {}),
+      };
     },
   },
   {

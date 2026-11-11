@@ -42,16 +42,10 @@ export const groundColors = (p: {
   p.onDark || p.onLight
     ? {
         primary: p.primary,
-        ...(p.onDark ? { onDark: p.onDark } : {}),
-        ...(p.onLight ? { onLight: p.onLight } : {}),
+        ...(p.onDark ? { onDark: normalizeColor(p.onDark) ?? p.onDark } : {}),
+        ...(p.onLight ? { onLight: normalizeColor(p.onLight) ?? p.onLight } : {}),
       }
     : undefined;
-
-/** Replaces fills and strokes equal to `primary` with `to`. */
-export function recolorPrimary(svg: string, primary: string, to: string): string {
-  const from = normalizeColor(primary);
-  return recolorSvg(svg, (c) => (normalizeColor(c) === from ? to : undefined));
-}
 
 /**
  * Adapts artwork to a background: colors under 3:1 contrast change. Neutral inks flip to the opposite neutral;

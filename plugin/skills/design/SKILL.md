@@ -163,7 +163,7 @@ The gallery is optional. When the user answers in chat, record each decision you
 2. After a development pass (not after "finish as chosen", unless the user asks for a second opinion), one
    `markilo:design-critic` agent in `final` mode is required: it reads the developed identity and the icon or word
    options cold — what a stranger sees first in each (a person, a menu, another letter), scores and at most five
-   concrete craft fixes. Skip it only when the user declines; `Record a skipped critic` in the brief's notes with
+   concrete craft fixes. Skip it only when the user declines, and record the skipped critic in the brief's notes with
    their words, so `gate.status: not-reviewed` in the kit has a reason. Its findings are advice. Apply the fixes that improve the work without changing what the user chose, once; never critique an
    unchanged image again. Record `--phase verify`.
 3. Show the user, together: the developed identity, `chosen-vs-now.png`, the icon options with your recommendation and

@@ -386,11 +386,15 @@ describe('a colour for each ground', () => {
     });
     await verifyConcept(ws, 'nimbra', 'fold');
     await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
-    await exportBrand(ws, 'nimbra', { groups: ['logos', 'social', 'tokens'] });
+    await exportBrand(ws, 'nimbra', { groups: ['logos', 'social', 'tokens', 'guidelines'] });
     const out = ws.exportsDir('nimbra');
     // Dark-first: the reversed artwork sits on white, so it takes the green chosen for light grounds.
     const reversed = svgsUnder(out, 'logos').filter((x) => x.includes('#007044'));
     expect(reversed.length).toBeGreaterThan(0);
+    // Where the light-ground colour is used, the dark-ground primary is gone (not mixed with an adapted shade).
+    for (const x of reversed) expect(x).not.toContain('#3ddc97');
+    // The guidelines' reversed tile shows it too.
+    expect(readFileSync(join(out, 'guidelines/index.html'), 'utf8')).toContain('#007044');
     expect(svgsUnder(out, 'social').some((x) => x.includes('#007044'))).toBe(true);
     const tokens = readFileSync(join(out, 'tokens/tokens.css'), 'utf8');
     expect(tokens).toContain('--nimbra-on-light: #007044;');

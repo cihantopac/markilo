@@ -26,8 +26,9 @@ All names are prefixed with the brand slug (`--<slug>-...`).
 - Colour scales: `--<slug>-<scale>-<step>` (brand scales) and `--<slug>-neutral-<step>`, plus `--<slug>-ink` and
   `--<slug>-paper`.
 - Ground colours: `--<slug>-on-dark` and `--<slug>-on-light` (`onDark`/`onLight` in `tokens.json`), only when the
-  identity sets a different brand colour for dark or light grounds. Reversed logos, social images, the TV banner and the
-  dark favicon then use that colour instead of a computed lighter or darker shade; locked identities are never
+  identity sets a different brand colour for dark or light grounds. Reversed logos, social images, the TV banner, the
+  guidelines' reversed tile and dark-appearance app icons then use that colour instead of a computed lighter or darker
+  shade (the dark favicon only where the primary is too faint on the dark browser bar); locked identities are never
   recoloured.
 - Semantic colours: `--<slug>-success`, `-warning`, `-danger`, `-info` and the other keys of `palette.json`'s
   `semantic`. Their hues are fixed on purpose, so a success or error colour stays recognisable whatever the brand
