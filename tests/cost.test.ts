@@ -139,3 +139,35 @@ describe('cost --session-usd', () => {
     expect(f.entries[3]).toMatchObject({ usd: 0.75, agentUsdIncluded: 0.5 });
   });
 });
+
+describe('cost: a time budget', () => {
+  const at = '2026-11-12T00:00:00.000Z';
+  it('a time budget turns the status to warn and over', () => {
+    const base = { ...log([{ phase: 'explore', at, tokens: 100_000, minutes: 50 }]), budgetMinutes: 60 };
+    const warn = costSummary(base);
+    expect(warn.totalUsd).toBeLessThan(1);
+    expect(warn.status).toBe('warn');
+    expect(warn.minutesBudget).toBe(60);
+    expect(warn.minutesRemaining).toBe(10);
+    const over = costSummary({
+      ...base,
+      entries: [...base.entries, { phase: 'refine', at, tokens: 1000, minutes: 11 }],
+    });
+    expect(over.status).toBe('over');
+    expect(over.next).toMatch(/time budget/i);
+  });
+  it('a 1.2 log without a time budget reads unchanged', () => {
+    const s = costSummary(log([{ phase: 'explore', at, tokens: 100_000, minutes: 500 }]));
+    expect(s.status).toBe('ok');
+    expect('minutesBudget' in s).toBe(false);
+    expect('minutesRemaining' in s).toBe(false);
+  });
+  it('--budget-minutes sets the time budget and refuses zero or negative', () => {
+    const cwd = workspace();
+    const r = ok(['cost', '--brand', 'tidepool', '--budget-minutes', '90'], cwd);
+    expect(r.minutesBudget).toBe(90);
+    expect(JSON.parse(readFileSync(costFile(cwd), 'utf8')).budgetMinutes).toBe(90);
+    expect(code(['cost', '--brand', 'tidepool', '--budget-minutes', '0'], cwd)).toBe('USAGE');
+    expect(code(['cost', '--brand', 'tidepool', '--budget-minutes=-5'], cwd)).toBe('USAGE');
+  });
+});

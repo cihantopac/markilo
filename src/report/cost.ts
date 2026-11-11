@@ -45,6 +45,8 @@ export interface CostLog {
   budgetUsd: number;
   /** The last cumulative session total recorded with `--session-usd`; the next call records the difference. */
   sessionUsd?: number;
+  /** Optional time budget in minutes of agent work (the harness's duration_ms), set with `--budget-minutes`. */
+  budgetMinutes?: number;
   entries: CostEntry[];
 }
 
@@ -118,12 +120,20 @@ export function costSummary(log: CostLog) {
   const basis = flags.every((f) => !f) ? 'measured' : flags.every((f) => f) ? 'estimated' : 'mixed';
   // A total without any `session` entry (a missing source means `agent`) leaves out the main session's own work.
   const lowerBound = !log.entries.some((e) => e.source === 'session');
-  const status = total >= log.budgetUsd ? 'over' : total >= log.budgetUsd * WARN_AT ? 'warn' : 'ok';
+  const level = (used: number, budget: number) => (used >= budget ? 2 : used >= budget * WARN_AT ? 1 : 0);
+  const minutes = r2(phases.reduce((a, p) => a + p.minutes, 0));
+  const usdLevel = level(total, log.budgetUsd);
+  const timeLevel = log.budgetMinutes ? level(minutes, log.budgetMinutes) : 0;
+  const status = (['ok', 'warn', 'over'] as const)[Math.max(usdLevel, timeLevel)]!;
+  const byTime = timeLevel > usdLevel;
   return {
     budgetUsd: log.budgetUsd,
     totalUsd: total,
     remainingUsd: remaining,
-    minutes: r2(phases.reduce((a, p) => a + p.minutes, 0)),
+    minutes,
+    ...(log.budgetMinutes
+      ? { minutesBudget: log.budgetMinutes, minutesRemaining: r2(log.budgetMinutes - minutes) }
+      : {}),
     estimated: phases.some((p) => p.estimated),
     status,
     basis,
@@ -131,10 +141,14 @@ export function costSummary(log: CostLog) {
     note: lowerBound ? LOWER_BOUND_NOTE : undefined,
     phases,
     next:
-      status === 'over'
-        ? 'Budget reached: stop paid work, show the user what exists and ask whether to raise the budget (markilo cost --budget <usd>).'
-        : status === 'warn'
-          ? `Under $${remaining} left: finish the current step, then ask before starting another round or agent.`
-          : undefined,
+      byTime && status === 'over'
+        ? 'Time budget reached: stop starting agents, show the user what exists and ask whether to continue (markilo cost --budget-minutes <m>).'
+        : byTime && status === 'warn'
+          ? `Under ${r2(log.budgetMinutes! - minutes)} minutes of the time budget left: finish the current step, then ask before starting another round or agent.`
+          : status === 'over'
+            ? 'Budget reached: stop paid work, show the user what exists and ask whether to raise the budget (markilo cost --budget <usd>).'
+            : status === 'warn'
+              ? `Under $${remaining} left: finish the current step, then ask before starting another round or agent.`
+              : undefined,
   };
 }

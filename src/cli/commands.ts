@@ -1986,7 +1986,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Track what the creative work cost per phase (understand, explore, refine, verify, export) against a budget. Without options: the summary; status "over" means stop paid work and ask.',
     usage:
-      'cost --brand <slug> [--phase <p> (--tokens <n> | --usd <x> | --session-usd <total>) [--minutes <m>] [--rate <usd per M tokens>] [--note <text>]] [--budget <usd>]',
+      'cost --brand <slug> [--phase <p> (--tokens <n> | --usd <x> | --session-usd <total>) [--minutes <m>] [--rate <usd per M tokens>] [--note <text>]] [--budget <usd>] [--budget-minutes <m>]',
     options: {
       ...brandOpt,
       phase: { type: 'string', description: `Phase: ${PHASES.join(', ')}` },
@@ -2004,6 +2004,7 @@ export const COMMANDS: CommandSpec[] = [
       },
       note: { type: 'string', description: 'What the step was' },
       budget: { type: 'string', description: `Budget in USD (default ${DEFAULT_BUDGET_USD})` },
+      'budget-minutes': { type: 'string', description: 'Time budget in minutes of agent work (optional)' },
     },
     async run(c) {
       const w = ws(c);
@@ -2014,6 +2015,12 @@ export const COMMANDS: CommandSpec[] = [
         const b = c.num('budget')!;
         if (!(b > 0)) throw new MarkiloError('USAGE', '--budget must be a positive number of dollars.');
         log.budgetUsd = b;
+      }
+      if (c.str('budget-minutes')) {
+        const m = c.num('budget-minutes')!;
+        if (!(m > 0) || !Number.isFinite(m))
+          throw new MarkiloError('USAGE', '--budget-minutes must be a positive number of minutes.');
+        log.budgetMinutes = m;
       }
       if (c.str('session-usd') && !c.str('phase'))
         throw new MarkiloError('USAGE', '--session-usd needs --phase.');
@@ -2065,7 +2072,7 @@ export const COMMANDS: CommandSpec[] = [
           ...note,
         });
       }
-      if (c.str('budget') || c.str('phase')) writeCost(w, slug, log);
+      if (c.str('budget') || c.str('budget-minutes') || c.str('phase')) writeCost(w, slug, log);
       return costSummary(log);
     },
   },

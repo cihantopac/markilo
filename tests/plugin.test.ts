@@ -94,4 +94,9 @@ describe('craft-named directions', () => {
     expect(explore.length).toBeGreaterThan(100);
     expect(explore).toContain('When the direction names a craft');
   });
+  it('records agent cost from the harness, not from estimates', () => {
+    const concepts = readFileSync(join(root, 'plugin/skills/concepts/SKILL.md'), 'utf8');
+    expect(concepts).toContain('subagent_tokens');
+    expect(concepts).toContain('duration_ms');
+  });
 });

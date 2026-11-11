@@ -142,7 +142,9 @@ with `--out` lives outside the workspace, so `gallery`, `status` and `install-as
   as a new session). That total already covers the agents, so Markilo subtracts the agent work recorded since the last
   session entry (floored at 0) and stores the amount as `agentUsdIncluded` on the entry. It needs `--phase` and cannot
   be combined with `--tokens` or `--usd`. The stored session total (`sessionUsd`) is kept per brand: when one Claude
-  Code session works on two brands, record its total in one brand only, or note the overlap with `--note`.
+  Code session works on two brands, record its total in one brand only, or note the overlap with `--note`. Record each
+  agent from the harness's task notification (`subagent_tokens`, `duration_ms`), not from the agent's own estimate.
+  `--budget-minutes <m>` adds a time budget: the status turns `warn` at 80 % and `over` at 100 % of either budget.
 - **Not tied to one AI.** The toolchain is a plain CLI: `agent-setup` gives VS Code with Copilot, Codex and Cursor the
   same workflow ([INTEGRATIONS.md](INTEGRATIONS.md)).
 

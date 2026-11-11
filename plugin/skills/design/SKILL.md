@@ -42,10 +42,14 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
    copying. A concept with verdict `redesign` is redrawn from the idea up.
 7. **Look at your work.** After writing or changing an SVG, render it and `Read` the PNG before showing it.
 8. **Spend deliberately.** Check `markilo cost --brand <slug>` before every agent or new round; record each phase after
-   it (`markilo cost --brand <slug> --phase <p> --tokens <n> --minutes <m>`, from the agent's reported usage). At
-   `status: over`, stop paid work, show what exists and ask. Agent usage alone is a lower bound, so at the end of each
-   phase also record the session total Claude Code shows (`markilo cost --brand <slug> --phase <p> --session-usd
-   <total>`). That total already covers the agents; Markilo subtracts what they recorded. Never repeat research, critique an unchanged image again, or refine a direction the user rejected.
+   it (`markilo cost --brand <slug> --phase <p> --tokens <n> --minutes <m>`). Take the numbers from the harness's task
+   notification for that agent — `subagent_tokens` and `duration_ms` / 60000 — not from the agent's own estimate (an
+   agent cannot see its usage). At `status: over` (money or time), stop paid work, show what exists and ask. Agent
+   usage alone is a lower bound: when Claude Code shows a session total, record it at the end of each phase (`markilo
+   cost --brand <slug> --phase <p> --session-usd <total>`; it covers the agents and Markilo subtracts what they
+   recorded). When no total is shown, leave the cost marked as a lower bound and tell the user so.
+
+   Never repeat research, critique an unchanged image again, or refine a direction the user rejected.
 9. **Don't re-ask.** Check `markilo answers --brand <slug>` first; record every question and answer there.
 10. **Respond in the user's language.** Files, code and reports stay in English unless asked otherwise.
 
@@ -70,7 +74,8 @@ what is already in the workspace. `markilo status` says where the work stands an
    one optional question: _"Do you have logos, screenshots, mood boards or sketches you like or dislike?"_ Add any the
    user gives with `markilo reference add --category inspiration|dislike|existing --notes "<what they like or not>"`
    and `Read` them. No references is fine: design from the brief.
-5. Record the phase: `markilo cost --brand <slug> --phase understand …`.
+5. Record the phase: `markilo cost --brand <slug> --phase understand …`, and the user's budgets: `markilo cost --brand
+   <slug> --budget <usd> --budget-minutes <m>`.
 
 ### B. Explore: exactly three proposals
 
