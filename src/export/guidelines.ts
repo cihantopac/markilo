@@ -18,6 +18,9 @@ export interface GuidelinesInput {
   reversed: (svg: string) => string;
 }
 
+/** Opens the originality section when no competitor marks were compared (verdict insufficient-evidence). */
+const NOT_VERIFIED =
+  'Originality not verified: no competitor marks were compared. Run research (with network access) before relying on this mark.';
 const WORDMARK_ONLY_RULE =
   'The symbol is the app icon and favicon only; it is never set next to the wordmark.';
 
@@ -105,6 +108,7 @@ export function guidelinesMarkdown(g: GuidelinesInput): string {
   } else L.push('- No brand typeface recorded. The wordmark is outlined artwork.');
   if (kit.originality) {
     L.push('', '## Originality check', '');
+    if (kit.originality.verdict === 'insufficient-evidence') L.push(`> ⚠️ ${NOT_VERIFIED}`, '');
     L.push(
       `Approved with originality verdict **${kit.originality.verdict}** (confidence ${kit.originality.confidence})${kit.originality.acceptedRisk ? ', with the remaining risk explicitly accepted' : ''}. See \`${kit.originality.report}\`.`,
     );
@@ -189,7 +193,7 @@ h2{font:600 24px/1.2 var(--serif);margin:52px 0 16px;padding-top:22px;border-top
 .sw{display:grid;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:var(--shadow)}.chip{height:76px;border-radius:10px;border:1px solid var(--line)}code{font-size:13px}small{color:var(--muted)}
 .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px}.scale{display:flex;align-items:center;gap:4px;margin:6px 0}.scale span{width:90px;font-size:13px;color:var(--muted)}.scale i{flex:1;height:32px;border-radius:4px}
 ul.dont{list-style:none;padding:0;display:grid;gap:8px}ul.dont li{padding:10px 14px 10px 40px;position:relative;background:var(--card);border:1px solid var(--line);border-radius:12px}ul.dont li:before{content:"✕";position:absolute;left:15px;color:var(--bad);font-weight:700}
-.locked{padding:12px 16px;border-radius:12px;background:#fff6db;color:#4a3800;border:1px solid #f0d27a}.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:10px 14px}
+.locked{padding:12px 16px;border-radius:12px;background:#fff6db;color:#4a3800;border:1px solid #f0d27a}.band.warn{padding:12px 16px;border-radius:12px;border:1px solid var(--warn);color:var(--warn);font-weight:600}.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:10px 14px}
 @media (max-width:600px){h1{font-size:34px}main{padding-top:28px}}
 </style></head><body>
 ${topBar('Brand guidelines')}
@@ -202,7 +206,7 @@ ${kit.locked ? `<p class="locked">${t('This identity is locked and reproduced ex
 <h2>${n()}${t('Typography')}</h2><p>${kit.typography ? `${escapeText(kit.typography.family ?? kit.typography.fontId)} ${kit.typography.weight} — ${escapeText(kit.typography.license ?? '')}` : t('Outlined wordmark; no typeface required.')}</p>
 ${
   o
-    ? `<h2>${n()}${t('Originality check')}</h2><p>${t(o.acceptedRisk ? 'Approved with originality verdict {0} (confidence {1}), with the remaining risk explicitly accepted.' : 'Approved with originality verdict {0} (confidence {1}).', [o.verdict, o.confidence])}</p>${evidence(
+    ? `<h2>${n()}${t('Originality check')}</h2>${o.verdict === 'insufficient-evidence' ? `<p class="band warn">${t(NOT_VERIFIED)}</p>` : ''}<p>${t(o.acceptedRisk ? 'Approved with originality verdict {0} (confidence {1}), with the remaining risk explicitly accepted.' : 'Approved with originality verdict {0} (confidence {1}).', [o.verdict, o.confidence])}</p>${evidence(
         kit,
       )
         .map(([s, v]) => `<p class="note">${t(s, v)}</p>`)

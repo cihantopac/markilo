@@ -280,4 +280,6 @@ export const TR: Record<string, string> = {
     'Logoyu karmaşık görsellerin veya kontrastı 3:1’den düşük zeminlerin üzerine koymayın.',
   'Do not crop the symbol or place it inside another shape unless it is an approved appmark.':
     'Onaylı bir uygulama simgesi değilse simgeyi kırpmayın veya başka bir şeklin içine yerleştirmeyin.',
+  'Originality not verified: no competitor marks were compared. Run research (with network access) before relying on this mark.':
+    'Özgünlük doğrulanmadı: hiçbir rakip işaretle karşılaştırma yapılmadı. Bu işarete güvenmeden önce araştırmayı (ağ erişimiyle) çalıştırın.',
 };

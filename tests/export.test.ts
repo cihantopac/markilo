@@ -421,3 +421,32 @@ describe('a colour for each ground', () => {
     expect(hashes()).toEqual(before);
   }, 120_000);
 });
+
+describe('originality band', () => {
+  const BAND =
+    'Originality not verified: no competitor marks were compared. Run research (with network access) before relying on this mark.';
+  it('the guidelines open the originality section with a band when it was not verified', async () => {
+    const { ws } = synthBrand();
+    await verifyConcept(ws, 'nimbra', 'fold');
+    const kit = await finalizeConcept(ws, 'nimbra', 'fold', {
+      acceptRisk: true,
+      userChoice: 'Chosen in a test.',
+    });
+    expect(kit.originality?.verdict).toBe('insufficient-evidence');
+    await exportBrand(ws, 'nimbra', { groups: ['guidelines'] });
+    const g = (f: string) => readFileSync(join(ws.exportsDir('nimbra'), 'guidelines', f), 'utf8');
+    expect(g('brand-guidelines.md')).toContain(BAND);
+    expect(g('index.html')).toContain('<p class="band warn"');
+    expect(g('index.html')).toContain(BAND);
+
+    // A verified mark gets no band.
+    const saved = JSON.parse(readFileSync(kitPath(ws, 'nimbra'), 'utf8'));
+    writeFileSync(
+      kitPath(ws, 'nimbra'),
+      JSON.stringify({ ...saved, originality: { ...saved.originality, verdict: 'no-conflicts-found' } }),
+    );
+    await exportBrand(ws, 'nimbra', { groups: ['guidelines'], clean: true });
+    expect(g('brand-guidelines.md')).not.toContain(BAND);
+    expect(g('index.html')).not.toContain(BAND);
+  }, 120_000);
+});
