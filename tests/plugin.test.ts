@@ -115,4 +115,26 @@ describe('craft-named directions', () => {
     expect(explore).toContain('at least four variants');
     expect(explore).toContain('First read:');
   });
+  it('develop offers word options and a weight ladder; critic and family are explicit', () => {
+    const agent = readFileSync(join(root, 'plugin/agents/concept-designer.md'), 'utf8');
+    const develop = agent.slice(agent.indexOf('## Mode `develop'), agent.indexOf('## Never'));
+    expect(develop).toContain('review/wordmark-options.png');
+    expect(develop).toContain('weight ladder');
+    const skill = readFileSync(join(root, 'plugin/skills/design/SKILL.md'), 'utf8');
+    expect(skill).toContain('### Family');
+    expect(skill).toContain('Record a skipped critic');
+  });
+  it('cli.md table rows have as many cells as the header', () => {
+    const cli = readFileSync(join(root, 'plugin/skills/design/references/cli.md'), 'utf8');
+    const cells = (row: string) => row.replace(/\\\|/g, '').split('|').length;
+    let header = 0;
+    for (const line of cli.split('\n')) {
+      if (!line.startsWith('|')) {
+        header = 0;
+        continue;
+      }
+      if (!header) header = cells(line);
+      else expect(cells(line), line.slice(0, 80)).toBe(header);
+    }
+  });
 });

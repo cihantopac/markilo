@@ -146,13 +146,25 @@ character was lost. A small, precise change the user describes (move a detail fr
 spacing) is done directly with the toolchain (`construct`, `lockup`, `verify`), without a designer run. Record
 `--phase refine`.
 
+### Family
+
+When the brief lists a product family (several products under one parent), follow the family path in
+`references/workflow.md` → "Multi-product families": `markilo init --family`, one research pass for the family, the family proposed
+as one system and `markilo sketches` for `sketches/family.png`, then each member verified with the others.
+
+### Choices given in chat
+
+The gallery is optional. When the user answers in chat, record each decision yourself: `markilo concept update
+--status shortlisted|rejected` (a shortlist keeps the chosen drawing for `chosen-vs-now.png`) and `markilo answers`.
+
 ### E. Verify, then one decision
 
 1. `markilo verify --brand <slug> --concept <id>`: fix every failing check.
 2. After a development pass (not after "finish as chosen", unless the user asks for a second opinion), one
-   `markilo:design-critic` agent in `final` mode reads the developed identity and the icon options cold: what a
-   stranger sees first in each (a person, a menu, another letter), scores and at most five concrete craft fixes. It is
-   advice. Apply the fixes that improve the work without changing what the user chose, once; never critique an
+   `markilo:design-critic` agent in `final` mode is required: it reads the developed identity and the icon or word
+   options cold — what a stranger sees first in each (a person, a menu, another letter), scores and at most five
+   concrete craft fixes. Skip it only when the user declines; `Record a skipped critic` in the brief's notes with
+   their words, so `gate.status: not-reviewed` in the kit has a reason. Its findings are advice. Apply the fixes that improve the work without changing what the user chose, once; never critique an
    unchanged image again. Record `--phase verify`.
 3. Show the user, together: the developed identity, `chosen-vs-now.png`, the icon options with your recommendation and
    the critic's first readings (labelled as judgment), the measured checks and the originality verdict with what

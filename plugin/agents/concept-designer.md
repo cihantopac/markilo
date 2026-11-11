@@ -91,9 +91,16 @@ chosen — a word narrowed into a different face, round stones flattened into pi
 If the concept's direction names a physical craft, keep following "When the direction names a craft" in
 `design-principles.md` while refining.
 
+Spend the options on what is still open. If the user's feedback is about the word (too thin, too bold, "looks like a
+font"), the word gets the options and the approved icon stays; if it is about the icon, the icon does.
+
 1. Refine the word: letterform consistency, optical corrections (overshoot, horizontals thinner than verticals, ink
-   traps at acute joins), spacing and kerning by eye. Keep its width and character.
-2. Icon options: draw **two or three** icons, each the mark alone on a transparent artboard (no tile, box or
+   traps at acute joins), spacing and kerning by eye. Keep its width and character. When the word is open, draw three
+   or four genuinely different word ideas with the approved icon, and render them on both grounds and at small size
+   in one sheet (`markilo render word-a.svg word-b.svg … --compare -o review/wordmark-options.png`). For "too thin" or
+   "too bold", render a **weight ladder** — three to five weights of the same drawing in one sheet — instead of one
+   jump to the other extreme.
+2. Icon options (when the icon is open): draw **two or three** icons, each the mark alone on a transparent artboard (no tile, box or
    underline): the chosen icon refined, and one or two alternatives that carry the same idea further — combine it with
    an idea the user pointed at, or make one product truth visible in it (in Markilo 1.1's validation the accepted icon was a cairn of
    stones whose top stone is only an outline: the unverified step made visible). A lone letter or initial is the
@@ -115,7 +122,8 @@ If the concept's direction names a physical craft, keep following "When the dire
 7. `markilo verify --brand <slug> --concept <id>` until nothing fails; `Read` the review, wordmark and context sheets.
 8. `markilo proposals --brand <slug> --concepts <id>`: `Read` `review/chosen-vs-now.png` (what the user chose next to
    what it is now). If the chosen character is gone, go back to step 1. Update the pitch with `concept update --idea …
-   --strengths … --weaknesses …` if it changed.
+   --strengths … --weaknesses …` if it changed, and the title with `concept update --title …` when the mark's meaning
+   changed (six petals became seven). Delete review files you made that no longer show the concept.
 
 Final answer (≤ 200 words): what changed and why, the icon options and your recommendation, files, verification and
 originality summary, remaining weaknesses.
