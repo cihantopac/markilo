@@ -1826,7 +1826,8 @@ export const COMMANDS: CommandSpec[] = [
       const inputs: ProposalInput[] = [];
       const missing: string[] = [];
       const typeset: Record<string, number> = {};
-      const typesetBase: Record<string, { font: string; weight: number; case: 'as-is' | 'lower' | 'upper' }> = {};
+      const typesetBase: Record<string, { font: string; weight: number; case: 'as-is' | 'lower' | 'upper' }> =
+        {};
       const compare: Record<string, string> = {};
       const files: string[] = [];
       for (const [i, cpt] of picked.entries()) {
