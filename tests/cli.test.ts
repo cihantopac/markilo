@@ -80,6 +80,52 @@ describe('cli (bundled)', () => {
     expect(conceptJson().palette.onLight).toBeUndefined();
     expect(conceptJson().palette.onDark).toBe('#3ddc97');
   });
+  it('concept update takes paths from the cwd, stored relative, and keeps a chat choice', () => {
+    const cwd = tmp();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    ok(['init', '--name', 'Demo']);
+    ok(['brand', 'add', 'Tidepool']);
+    for (const id of ['p1', 'p2'])
+      ok([
+        'concept',
+        'new',
+        '--brand',
+        'tidepool',
+        '--id',
+        id,
+        '--title',
+        id,
+        '--direction',
+        'd',
+        '--rationale',
+        'r',
+        '--semantics',
+        'a',
+        '--primary',
+        '#1d4e89',
+      ]);
+    const rel = (id: string) => `brand/brands/tidepool/concepts/${id}`;
+    writeFileSync(join(cwd, rel('p1'), 'symbol.svg'), readFileSync(fixture('marks/fold-n.svg')));
+    writeFileSync(join(cwd, rel('p2'), 'symbol.svg'), readFileSync(fixture('marks/bars.svg')));
+    const set = ['concept', 'update', '--brand', 'tidepool', '--concept', 'p1'];
+    // accepts a cwd-relative path inside the concept folder and stores it relative
+    ok([...set, '--symbol', `${rel('p1')}/symbol.svg`]);
+    const conceptJson = () => JSON.parse(readFileSync(join(cwd, rel('p1'), 'concept.json'), 'utf8'));
+    expect(conceptJson().files.symbol).toBe('symbol.svg');
+    ok([...set, '--symbol', join(cwd, rel('p1'), 'symbol.svg')]);
+    expect(conceptJson().files.symbol).toBe('symbol.svg');
+    // refuses a cwd-relative path outside the concept folder
+    const out = run([...set, '--symbol', `${rel('p2')}/symbol.svg`], cwd);
+    expect(JSON.parse(out.stderr).error.code).toBe('UNSAFE_PATH');
+    // --status shortlisted keeps the chosen drawing, as feedback --apply does
+    const r = ok([...set, '--status', 'shortlisted']);
+    expect(r.kept.length).toBeGreaterThan(0);
+    expect(existsSync(join(cwd, rel('p1'), 'chosen', 'symbol.svg'))).toBe(true);
+  });
   it("center refuses to write into a brand's final/ folder", () => {
     const cwd = tmp();
     run(['init', '--name', 'Demo'], cwd);

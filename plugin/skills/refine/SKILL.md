@@ -13,7 +13,8 @@ Request: $ARGUMENTS
 Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts. Craft rules: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/design-principles.md`, `${CLAUDE_PLUGIN_ROOT}/skills/design/references/svg-authoring.md`.
 
 1. Collect the user's decision (`markilo feedback --brand <slug>`, or their words) and log it with `markilo answers`.
-   Never develop a concept the user dropped. `markilo cost --brand <slug>` before spending.
+   A choice given in chat is recorded with `markilo concept update --brand <slug> --concept <id> --status shortlisted`,
+   which keeps the chosen drawing for the later side-by-side. Never develop a concept the user dropped. `markilo cost --brand <slug>` before spending.
 2. If the user selected without changes and `markilo proposals --brand <slug> --concepts <id>` lists nothing missing
    and `verify` has no failing check, ask whether to finish as chosen; on yes, skip to step 5 without a designer or
    critic. A small, precise change they describe is done directly with the toolchain (`construct`, `lockup`,

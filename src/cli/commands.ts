@@ -18,7 +18,7 @@ import {
 } from '../construct/vary.js';
 import { MarkiloError } from '../core/errors.js';
 import { isDir, nowIso, readJson, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
-import { isSlug, portableRelative, slugify } from '../core/paths.js';
+import { isSlug, portableRelative, realExisting, slugify } from '../core/paths.js';
 import type {
   BrandRole,
   Brief,
@@ -112,6 +112,20 @@ const pos = (c: RunContext, i: number, label: string): string => {
   return v;
 };
 const file = (c: RunContext, p: string) => resolve(c.cwd, p);
+
+/**
+ * A file option of "concept update": a path inside the concept folder, given relative to that folder or to the
+ * current directory (or absolute). Returns it relative to the concept folder; refuses anything outside it.
+ */
+function conceptRelative(w: Workspace, slug: string, id: string, v: string, c: RunContext): string {
+  const dir = realExisting(w.conceptDir(slug, id));
+  const inFolder = w.conceptFile(slug, id, v);
+  const target = existsSync(inFolder) ? inFolder : realExisting(file(c, v));
+  if (!existsSync(target)) throw new MarkiloError('NOT_FOUND', `${v} is not in the concept folder.`);
+  const rel = portableRelative(dir, target);
+  w.conceptFile(slug, id, rel); // refuses a path that leaves the concept folder (UNSAFE_PATH)
+  return rel;
+}
 
 /** `--on-dark` / `--on-light`: the brand colour for one ground, as #hex ("none" is handled by the caller). */
 function groundColorOptions(
@@ -1369,10 +1383,14 @@ export const COMMANDS: CommandSpec[] = [
       const cur = w.concept(slug, c.req('concept'));
       const next: Concept = { ...cur, files: { ...cur.files }, palette: { ...cur.palette } };
       const st = c.str('status');
+      let kept: string[] = [];
       if (st) {
         if (st === 'approved')
           throw new MarkiloError('USAGE', 'Use "markilo finalize" to approve a concept.');
         next.status = st as Concept['status'];
+        // A choice given in chat keeps the drawing the user chose, as "feedback --apply" does, so proposals can
+        // later show it next to the developed version.
+        if (st === 'shortlisted') kept = keepChosen(w, slug, cur);
       }
       for (const [opt, key] of [
         ['symbol', 'symbol'],
@@ -1383,9 +1401,7 @@ export const COMMANDS: CommandSpec[] = [
       ] as const) {
         const v = c.str(opt);
         if (!v) continue;
-        if (!existsSync(w.conceptFile(slug, cur.id, v)))
-          throw new MarkiloError('NOT_FOUND', `${v} is not in the concept folder.`);
-        next.files[key] = v;
+        next.files[key] = conceptRelative(w, slug, cur.id, v, c);
       }
       if (c.str('primary')) next.palette.primary = c.str('primary')!;
       for (const role of ['secondary', 'accent', 'ink', 'paper'] as const) {
@@ -1553,7 +1569,7 @@ export const COMMANDS: CommandSpec[] = [
       }
       if (st && st !== cur.status && (st === 'rejected' || st === 'shortlisted'))
         w.logDecision(slug, st === 'rejected' ? 'Rejected' : 'Shortlisted', `${cur.id} (${cur.title}).`);
-      return { ...next, gate };
+      return { ...next, gate, ...(kept.length ? { kept } : {}) };
     },
   },
   {
