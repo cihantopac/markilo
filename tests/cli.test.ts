@@ -209,6 +209,30 @@ describe('cli (bundled)', () => {
     const verify = ok(['verify', '--brand', 'tidepool', '--concept', 'p1']);
     expect(JSON.stringify(verify)).toMatch(/the critique is older than the drawing/);
   }, 60_000);
+  it('finalize keeps a stand-in font under standIn for family lettering', async () => {
+    const { ws, dir } = synthBrand();
+    const cwd = dirname(ws.root);
+    expect(cwd).toBe(dir);
+    const fold = ws.concept('nimbra', 'fold');
+    ws.saveConcept({
+      ...fold,
+      typography: {
+        fontId: 'outfit',
+        weight: 600,
+        family: 'Outfit',
+        license: 'OFL-1.1',
+        lettering: 'family',
+      },
+    });
+    await verifyConcept(ws, 'nimbra', 'fold');
+    const r = run(
+      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
+      cwd,
+    );
+    expect(r.status, r.stderr).toBe(0);
+    const out = JSON.parse(r.stdout);
+    expect(out.kit.typography).toEqual({ lettering: 'family', standIn: { fontId: 'outfit', weight: 600 } });
+  }, 60_000);
   it('verify warns for a ground colour in a master', () => {
     const cwd = tmp();
     const ok = (args: string[]) => {

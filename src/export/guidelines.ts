@@ -115,7 +115,7 @@ export function guidelinesMarkdown(g: GuidelinesInput): string {
     const s = textTypeface(kit);
     if (s) L.push(`- Supporting typeface: **${s.family ?? s.fontId}**, weight ${s.weight}.`);
     L.push('- The wordmark is outlined artwork, so using the logo never requires a font.');
-  } else if (kit.typography) {
+  } else if (kit.typography?.fontId) {
     L.push(
       `- Brand typeface: **${kit.typography.family ?? kit.typography.fontId}**, weight ${kit.typography.weight}.`,
     );
@@ -222,7 +222,7 @@ ${kit.locked ? `<p class="locked">${t('This identity is locked and reproduced ex
 <h2>${n()}${t('Logo')}</h2><div class="grid">${figure(primary, gr.native, 'Primary logo')}${kit.locked || !primary ? '' : figure(g.reversed(primary), gr.opposite, 'On dark backgrounds')}${figure(g.lockupS, gr.native, 'Secondary logo')}${figure(g.symbol, gr.native, 'Symbol', 160, 160)}</div>
 <h2>${n()}${t('Clear space & minimum size')}</h2><p>${t('Keep clear space equal to the wordmark cap height on every side. Minimum: symbol 16 px / 5 mm, horizontal logo 96 px / 25 mm.')}</p>${kit.files.wordmarkSmall ? `<p>${t(WORDMARK_SMALL_BEFORE)} <code>${WORDMARK_SMALL_FILE}</code>${t(WORDMARK_SMALL_AFTER)}</p>` : ''}
 <h2>${n()}${t('Color')}</h2><div class="swatches">${swatches}</div>${scales}
-<h2>${n()}${t('Typography')}</h2><p>${kit.typography && drawn ? `${t(drawn === 'family' ? 'Wordmark: custom (family) lettering — do not retype it.' : 'Wordmark: custom lettering — do not retype it.')}${supporting ? `</p><p>${t('Supporting typeface: {0}, weight {1}.', [supporting.family ?? supporting.fontId, String(supporting.weight)])}` : ''}` : kit.typography ? `${escapeText(kit.typography.family ?? kit.typography.fontId)} ${kit.typography.weight} — ${escapeText(kit.typography.license ?? '')}` : t('Outlined wordmark; no typeface required.')}</p>
+<h2>${n()}${t('Typography')}</h2><p>${kit.typography && drawn ? `${t(drawn === 'family' ? 'Wordmark: custom (family) lettering — do not retype it.' : 'Wordmark: custom lettering — do not retype it.')}${supporting ? `</p><p>${t('Supporting typeface: {0}, weight {1}.', [supporting.family ?? supporting.fontId, String(supporting.weight)])}` : ''}` : kit.typography?.fontId ? `${escapeText(kit.typography.family ?? kit.typography.fontId)} ${kit.typography.weight} — ${escapeText(kit.typography.license ?? '')}` : t('Outlined wordmark; no typeface required.')}</p>
 ${
   o
     ? `<h2>${n()}${t('Originality check')}</h2>${o.verdict === 'insufficient-evidence' ? `<p class="band warn">${t(NOT_VERIFIED)}</p>` : ''}<p>${t(o.acceptedRisk ? 'Approved with originality verdict {0} (confidence {1}), with the remaining risk explicitly accepted.' : 'Approved with originality verdict {0} (confidence {1}).', [o.verdict, o.confidence])}</p>${evidence(

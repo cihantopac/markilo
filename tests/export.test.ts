@@ -576,6 +576,57 @@ describe('originality band', () => {
   }, 120_000);
 });
 
+describe('a stand-in font stays out of the kit typography', () => {
+  const finalizeWith = async (typography: Record<string, unknown>) => {
+    const { ws } = synthBrand();
+    const c = ws.concept('nimbra', 'fold');
+    ws.saveConcept({ ...c, typography: typography as never });
+    await verifyConcept(ws, 'nimbra', 'fold');
+    await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
+    return ws;
+  };
+  it('a family-lettered kit has no top-level fontId', async () => {
+    const ws = await finalizeWith({
+      fontId: 'outfit',
+      weight: 600,
+      family: 'Outfit',
+      license: 'OFL-1.1',
+      lettering: 'family',
+    });
+    const kit = JSON.parse(readFileSync(kitPath(ws, 'nimbra'), 'utf8'));
+    expect(kit.typography).toEqual({ lettering: 'family', standIn: { fontId: 'outfit', weight: 600 } });
+    expect(kit.typography.fontId).toBeUndefined();
+  }, 120_000);
+  it('a kit without lettering keeps fontId exactly', async () => {
+    const ws = await finalizeWith({ fontId: 'outfit', weight: 600, family: 'Outfit', license: 'OFL-1.1' });
+    const kit = JSON.parse(readFileSync(kitPath(ws, 'nimbra'), 'utf8'));
+    expect(kit.typography).toEqual({ fontId: 'outfit', weight: 600, family: 'Outfit', license: 'OFL-1.1' });
+  }, 120_000);
+  it('a 1.4 family kit still exports', async () => {
+    const ws = await finalizeWith({ fontId: 'outfit', weight: 600, family: 'Outfit', license: 'OFL-1.1' });
+    const saved = JSON.parse(readFileSync(kitPath(ws, 'nimbra'), 'utf8'));
+    writeFileSync(
+      kitPath(ws, 'nimbra'),
+      JSON.stringify({
+        ...saved,
+        typography: {
+          fontId: 'outfit',
+          weight: 600,
+          family: 'Outfit',
+          license: 'OFL-1.1',
+          lettering: 'family',
+          supporting: { fontId: 'inter', weight: 400 },
+        },
+      }),
+    );
+    await exportBrand(ws, 'nimbra', { groups: ['tokens', 'guidelines'] });
+    const md = readFileSync(join(ws.exportsDir('nimbra'), 'guidelines/brand-guidelines.md'), 'utf8');
+    expect(md).toContain('Wordmark: custom (family) lettering — do not retype it');
+    expect(md).toContain('Supporting typeface: **Inter**, weight 400');
+    expect(md).not.toContain('Brand typeface');
+  }, 120_000);
+});
+
 describe('custom lettering', () => {
   it('guidelines do not call a stand-in the brand typeface', async () => {
     const { ws } = synthBrand();
