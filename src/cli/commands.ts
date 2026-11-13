@@ -18,7 +18,7 @@ import {
 } from '../construct/vary.js';
 import { MarkiloError } from '../core/errors.js';
 import { isDir, nowIso, readJson, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
-import { isSlug, portableRelative, realExisting, slugify } from '../core/paths.js';
+import { isSlug, portableRelative, realExisting, resolveInsideReal, slugify } from '../core/paths.js';
 import type {
   BrandRole,
   Brief,
@@ -33,6 +33,7 @@ import { validateBrief } from '../core/validate.js';
 import { Workspace } from '../core/workspace.js';
 import { addFont, searchFonts } from '../design/font-catalog.js';
 import { fontInfo, listFonts, loadBundledFace, loadFontFile } from '../design/fonts.js';
+import { glyphSet, glyphSvg, hasWordMetrics, splitGlyphs, withWordMetrics } from '../design/glyphs.js';
 import { composeLockup } from '../design/lockup.js';
 import { generatePalette } from '../design/palette.js';
 import {
@@ -3432,6 +3433,77 @@ export const COMMANDS: CommandSpec[] = [
         width: Math.round(l.width),
         height: Math.round(l.height),
         clearSpace: l.clearSpace,
+      };
+    },
+  },
+  {
+    name: 'family glyphs',
+    summary:
+      "Split a family member's custom-drawn word (a reference or an SVG file) into one measured glyph per letter under work/family/glyphs/<ref>/: cap height, baseline, overshoot, stems, bars, sidebearings and terminals, in units where the cap height is 100. The reference itself is never edited.",
+    usage: 'family glyphs --brand <slug> --ref <reference id | svg path> --text <letters> [--part word|auto]',
+    options: {
+      ...brandOpt,
+      ref: { type: 'string', description: 'Reference id (see: markilo reference list) or an SVG file' },
+      text: { type: 'string', description: 'The letters of the word, one per glyph, left to right' },
+      part: {
+        type: 'string',
+        description:
+          'auto (default: a lockup loses the part that is not the word) or word (the file is a word)',
+      },
+    },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      w.brand(slug);
+      const part = c.str('part') ?? 'auto';
+      if (part !== 'auto' && part !== 'word') throw new MarkiloError('USAGE', '--part must be word or auto.');
+      const refArg = c.req('ref');
+      const known = readReferences(w, slug).references.find((r) => r.id === refArg);
+      const src = known ? resolveInsideReal(w.referencesDir(slug), known.file) : file(c, refArg);
+      if (!existsSync(src))
+        throw new MarkiloError(
+          'NOT_FOUND',
+          `No reference or file "${refArg}".`,
+          'Give a reference id (markilo reference list) or the path of an SVG.',
+        );
+      if (extname(src).toLowerCase() !== '.svg')
+        throw new MarkiloError(
+          'INVALID_INPUT',
+          'family glyphs reads SVG outlines; this reference is an image.',
+        );
+      const ref = known?.id ?? slugify(basename(src, extname(src)));
+      const svg = readText(src);
+      const split = await splitGlyphs(svg, c.req('text'), { part });
+      const familyDir = join(w.brandDir(slug), 'work', 'family');
+      const dir = join(familyDir, 'glyphs', ref);
+      const set = glyphSet(ref, portableRelative(w.brandDir(slug), src), split);
+      for (const g of set.glyphs) writeGenerated(join(dir, g.file), glyphSvg(g, set.fill));
+      writeJson(join(dir, 'glyphs.json'), set);
+      // Lockups place a symbol by the word's baseline: a word without one gets a measured copy (never the original).
+      const word = hasWordMetrics(svg) ? undefined : join(familyDir, `${ref}-word.svg`);
+      if (word) writeGenerated(word, withWordMetrics(svg, split.capHeight, split.baseline));
+      return {
+        ref,
+        text: set.text,
+        capHeight: set.capHeight,
+        baseline: set.baseline,
+        overshoot: set.overshoot,
+        stem: set.stem,
+        bar: set.bar,
+        terminals: set.terminals,
+        glyphs: set.glyphs.map(({ char, file, advance, left, right, stem, bar, terminals }) => ({
+          char,
+          file,
+          advance,
+          left,
+          right,
+          stem,
+          bar,
+          terminals,
+        })),
+        dir,
+        ...(word ? { word } : {}),
+        ...(set.dropped.length ? { dropped: set.dropped } : {}),
       };
     },
   },
