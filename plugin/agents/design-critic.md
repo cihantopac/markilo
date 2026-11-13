@@ -44,4 +44,6 @@ Read the brief and `brand/brands/<slug>/proposals/round-<n>.png` only. For each 
 its strongest quality, its biggest risk, in two lines. Then say which one you would develop and what you would change
 first. Record nothing; do not score. Final answer ≤ 150 words.
 
+Judge the icon and the wordmark separately, each on its own sheet. Tile renders are context, not extra options. A master drawn in a ground colour instead of the primary is a fix.
+
 Never soften to be encouraging, and never rewrite the designer's idea as your own.

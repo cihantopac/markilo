@@ -107,3 +107,5 @@ Topics: product, audience, market, competitor, visual-identity, typography, colo
 
 Error codes: USAGE, NOT_FOUND, EXISTS, UNSAFE_PATH, INVALID_INPUT, INVALID_SVG, NETWORK_DISABLED, NETWORK,
 ROBOTS_DISALLOWED, LOCKED, NO_WORKSPACE, INTERNAL.
+
+Practical notes (1.5). `cost --brand s --plan explore:3,develop:1,critic:1` prints `estimate { agentMinutes, wallMinutes, usd }` and `fits` against the budgets; run it before each round. `render … --width <px>` sets the PNG width for large comparisons. `render a.svg b.svg --compare --tile` adds app-tile renders; pass tiles that way, never as extra options. In shell examples quote answers with single quotes (`$` is expanded inside double quotes). Icon and wordmark go to the user on separate sheets. Masters stay in the primary colour; `verify` warns when a master uses a ground colour (`onLight`/`onDark`).

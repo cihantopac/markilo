@@ -54,6 +54,22 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
    --minutes <m> --agent <name> --part <n>` (a part whose minutes you cannot read is flagged incomplete).
 
    Never repeat research, critique an unchanged image again, or refine a direction the user rejected.
+   Before each round run `markilo cost --brand <slug> --plan explore:3,develop:1,critic:1` (the phases and agent counts
+   you are about to start) and show the `estimate` (`agentMinutes`, `wallMinutes`, `usd`) and `fits` with the budget
+   question. Say that parallel agents add up agent-minutes while wall time follows the longest. A resumed agent's usage
+   notification is cumulative: record the part as the difference from the previous notification for that agent.
+
+   **Ask icon and wordmark separately**, each on its own sheet, so the user judges one thing at a time; never put both
+   on one sheet where the options double. Designers pass tile renders with `--tile` (`render … --compare --tile`),
+   never as extra options. **Masters stay in the primary:** ground colours go in the palette (`onLight`/`onDark`),
+   never into the master files; `verify` warns when a master uses one.
+
+   **Develop requests that can be read two ways** ("read clearly", "more space"): ask one multiple-choice question
+   first (keep the form / equal sizes / more space) or run a probe; never spend a develop pass on a guess.
+
+   **References:** name the category leader in the research brief; if its logo cannot be collected, tell the user the
+   originality check does not cover it. Use `render --width <px>` for large comparisons. In shell examples, quote
+   answers with single quotes (`$` is expanded inside double quotes).
 9. **Don't re-ask.** Check `markilo answers --brand <slug>` first; record every question and answer there.
 10. **Respond in the user's language.** Files, code and reports stay in English unless asked otherwise.
 
@@ -103,6 +119,11 @@ suggested answer first:
 4. **Network and budget**: two separate consents — collect competitor marks, and search trademark registries now (or
    accept the name risk at the end). Without them originality stays `insufficient-evidence`. Put the money and time
    budget in this question.
+
+**A product joining a family** (`familyHint` is set in `research site`, or the user names one): replace the family part of question 1 and question 2 with two family questions, so the dialog still has at most four.
+(a) _"Which members show the current system?"_ — multiple choice from the `research family` members, with the ones whose `systems` say outlined (custom-drawn) pre-selected; only these are the rule.
+(b) _"Is the family word custom-drawn, and which part does this product share (parent word, suffix, none)?"_
+After the answers, when `family glyphs` finds letters this word needs missing from the current members, ask _"Do you have a newer lockup that contains the letters this word needs?"_ Then follow "A product joining an existing family" in `references/workflow.md`.
 
 If the user is away or asked not to be asked, take your suggested answers, write them into the brief's notes as
 assumptions, list them at the top of the first round's message and ask them again there.
