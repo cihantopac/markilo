@@ -1,5 +1,8 @@
+import { existsSync } from 'node:fs';
 import { MarkiloError } from '../core/errors.js';
+import { readText, sha256 } from '../core/fsx.js';
 import type { Concept } from '../core/types.js';
+import type { Workspace } from '../core/workspace.js';
 
 /** The judgment criteria the critic scores (design-critic agent), in its order. */
 export const CRITERIA = [
@@ -79,8 +82,11 @@ export const BLIND_CRITERIA = [
 ] as const;
 
 export interface GateResult {
-  /** undecided: the first look landed on the edge of the bar; two more cold looks decide (`next: second-look`). */
-  status: 'passed' | 'failed' | 'not-reviewed' | 'undecided';
+  /**
+   * undecided: the first look landed on the edge of the bar; two more cold looks decide (`next: second-look`).
+   * stale: the symbol or wordmark changed after the critic scored it; the old result is under `previous`.
+   */
+  status: 'passed' | 'failed' | 'not-reviewed' | 'undecided' | 'stale';
   /**
    * blind: the critic's scores from its first look, before reading the rationale (in the benchmark they predicted an
    * independent judge far better than the scores given after reading it); informed: older reviews without them.
@@ -95,11 +101,13 @@ export interface GateResult {
    */
   nearMiss?: true;
   /**
-   * What to do with it: present it; fix it once (the cold scores clear the bar and only the critic's no, for a reason it
-   * named, stands in the way); or reject it and spend the budget on a new direction. In Markilo's benchmark 1 of 34
-   * concepts sent back after a failed gate passed later, after three rounds; every other pass came from a first look.
+   * Advice, never a verdict on the user's choice: present it; fix what the critic named (it would not present it as
+   * is); or present it with the critic's notes (it would present it, but a score is under the bar). `second-look`: the
+   * first look is on the edge of the bar and fresh critics decide.
    */
-  next?: 'present' | 'fix' | 'reject' | 'second-look';
+  next?: 'present' | 'fix' | 'present-with-notes' | 'second-look';
+  /** The result the critique gave before the drawing changed (status `stale`). */
+  previous?: GateResult;
   /** Cold looks the verdict rests on, and how many of them passed (from the first look on; see SECOND_LOOK). */
   looks?: { passed: number; of: number };
   /** The model that gave the blind scores, when the critic recorded it. */
@@ -126,10 +134,47 @@ export const SECOND_LOOK = { edge: 6.5, below: 5.5, looks: 3 } as const;
 const lookPasses = (scores: Record<string, number>, present: boolean) =>
   present && GATE.required.every((k) => (scores[k] ?? 0) >= GATE.minimum);
 
+/** The drawing a critique judged: sha256 over the symbol file, then the wordmark file (a missing file is empty). */
+export const artHash = (symbol: string | undefined, wordmark: string | undefined): string =>
+  sha256((symbol ?? '') + (wordmark ?? ''));
+
+/** The artHash of a concept's current symbol and wordmark files. */
+export function currentArt(ws: Workspace, brand: string, c: Pick<Concept, 'id' | 'files'>): string {
+  const read = (rel?: string) => {
+    if (!rel) return undefined;
+    const f = ws.conceptFile(brand, c.id, rel);
+    return existsSync(f) ? readText(f) : undefined;
+  };
+  return artHash(read(c.files.symbol), read(c.files.wordmark));
+}
+
+export const STALE_NOTE = 'the critique is older than the drawing';
+
+/** What a failed critique advises: fix what the critic named, or present it with the critic's notes. */
+const adviceOf = (critique?: { present: boolean }): 'fix' | 'present-with-notes' =>
+  critique?.present === true ? 'present-with-notes' : 'fix';
+
+/**
+ * The critic's gate. With `art` (the concept's current artHash) and a critique that recorded the drawing it judged,
+ * a changed drawing makes the result `stale`; a critique recorded without a hash (1.3.0) is read as before.
+ */
 export function gateOf(
-  c: Pick<Concept, 'judgment' | 'critique' | 'blind' | 'reviews' | 'looks'>,
+  c: Pick<Concept, 'judgment' | 'critique' | 'blind' | 'reviews' | 'looks' | 'reviewedArt'>,
+  art?: string,
 ): GateResult {
-  if (c.blind) return blindGate(c);
+  const result = c.blind ? blindGate(c) : informedGate(c);
+  if (art === undefined || !c.reviewedArt || c.reviewedArt === art || result.status === 'not-reviewed')
+    return result;
+  return {
+    status: 'stale',
+    reasons: [
+      `${STALE_NOTE}: the symbol or wordmark changed after the critic scored it; ask for a fresh look`,
+    ],
+    previous: result,
+  };
+}
+
+function informedGate(c: Pick<Concept, 'judgment' | 'critique' | 'reviews'>): GateResult {
   // Older concepts may hold criteria under other spellings (brandFit, premium); read them by their canonical name.
   const j: Record<string, { score: number }> = {};
   for (const [k, v] of Object.entries(c.judgment ?? {})) j[criterionOf(k) ?? k] = v;
@@ -156,7 +201,7 @@ export function gateOf(
     ...(average !== undefined ? { average } : {}),
     reasons,
     ...(nearMiss ? { nearMiss: true as const } : {}),
-    next: !reasons.length ? 'present' : nearMiss && (c.reviews ?? 1) < 2 ? 'fix' : 'reject',
+    next: !reasons.length ? 'present' : adviceOf(c.critique),
   };
 }
 
@@ -191,7 +236,7 @@ function blindGate(c: Pick<Concept, 'critique' | 'blind' | 'reviews' | 'looks'>)
           ...first.reasons.filter((r) => !r.startsWith('the first look')),
           `${failedLooks} of ${looks.length} cold looks did not pass`,
         ],
-    next: ok ? 'present' : 'reject',
+    next: ok ? 'present' : adviceOf(c.critique),
     looks: { passed, of: looks.length },
   };
 }
@@ -213,11 +258,7 @@ function firstLook(c: Pick<Concept, 'critique' | 'blind' | 'reviews'>): GateResu
   else if (!c.critique.present)
     reasons.push(`a senior designer would not present it as is: ${c.critique.reason}`);
   const reviewer = c.blind!.reviewer;
-  const next: GateResult['next'] = !reasons.length
-    ? 'present'
-    : scoresClear && (c.reviews ?? 1) < 2
-      ? 'fix'
-      : 'reject';
+  const next: GateResult['next'] = !reasons.length ? 'present' : adviceOf(c.critique);
   const lowest = Math.min(...GATE.required.map((k) => b[k] ?? 0));
   const edge =
     !!c.critique &&

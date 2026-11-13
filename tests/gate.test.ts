@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import type { Concept } from '../src/core/types.js';
 import { validateBrief } from '../src/core/validate.js';
 import { finalizeConcept } from '../src/export/kit.js';
-import { criterionOf, gateOf, requireCriterion } from '../src/report/gate.js';
+import { artHash, criterionOf, gateOf, requireCriterion } from '../src/report/gate.js';
 import { verifyConcept } from '../src/report/quality.js';
 import { synthBrand, tmp } from './helpers.js';
 
@@ -102,7 +102,7 @@ describe('quality gate', () => {
           [6, false],
         ]),
       ),
-    ).toMatchObject({ status: 'failed', next: 'reject' });
+    ).toMatchObject({ status: 'failed', next: 'present-with-notes' });
     expect(
       gateOf(
         concept(5.5, true, [
@@ -113,7 +113,7 @@ describe('quality gate', () => {
     ).toBe('passed');
   });
 
-  it('says what to do next: present, fix once, or reject', () => {
+  it('says what to do next: present, fix, or present with notes — never reject', () => {
     const c = (d: number, present: boolean, reviews?: number, reviewer?: string) =>
       ({
         critique: { present, reason: 'because', at: '2026-01-01T00:00:00Z' },
@@ -127,9 +127,9 @@ describe('quality gate', () => {
     expect(gateOf(c(7, true)).next).toBe('present');
     // The cold scores clear the bar and only the critic's no stands in the way: one round on what it named.
     expect(gateOf(c(7, false, 1)).next).toBe('fix');
-    expect(gateOf(c(7, false, 2)).next).toBe('reject');
-    // A required score below the bar is the idea failing, not the execution: a new direction, not a rework.
-    expect(gateOf(c(5, false, 1)).next).toBe('reject');
+    // Advice, not a gate on the user's choice: a no is always "fix", whatever the round or the scores.
+    expect(gateOf(c(7, false, 2)).next).toBe('fix');
+    expect(gateOf(c(5, false, 1)).next).toBe('fix');
     expect(gateOf(c(7, true, 1, 'claude-opus-5-5'))).toMatchObject({
       reviewer: 'claude-opus-5-5',
       calibration: 'measured',
@@ -149,6 +149,77 @@ describe('quality gate', () => {
     // A concept recorded with camelCase keys is still gated on brand fit.
     const legacy = scored({ brandFit: 7, distinctiveness: 7, memorability: 7 }, true);
     expect(gateOf(legacy).status).toBe('passed');
+  });
+
+  it('presentable with one low score is present-with-notes', () => {
+    const blind = {
+      critique: { present: true, reason: 'ready', at: '2026-01-01T00:00:00Z' },
+      blind: {
+        scores: { distinctiveness: 5, memorability: 7, 'brand-fit': 8, craft: 7, versatility: 7 },
+        at: '2026-01-01T00:00:00Z',
+      },
+    } as unknown as Concept;
+    const r = gateOf(blind);
+    expect(r).toMatchObject({ status: 'failed', next: 'present-with-notes' });
+    expect(r.reasons.join(' ')).toMatch(/distinctiveness/);
+    const informed = gateOf(scored({ ...strong, distinctiveness: 5 }, true));
+    expect(informed).toMatchObject({ status: 'failed', next: 'present-with-notes' });
+    expect(informed.reasons.join(' ')).toMatch(/distinctiveness/);
+    expect(gateOf(scored({ ...strong, distinctiveness: 5 }, false)).next).toBe('fix');
+  });
+
+  it('no gate result says reject', () => {
+    const at = '2026-01-01T00:00:00Z';
+    const results = [];
+    for (const present of [true, false, undefined])
+      for (const d of [3, 5, 5.5, 6, 7])
+        for (const reviews of [undefined, 1, 2, 3]) {
+          results.push(gateOf({ ...scored({ ...strong, distinctiveness: d }, present), reviews } as Concept));
+          const scores = { distinctiveness: d, memorability: d, 'brand-fit': 7, craft: 6, versatility: 6 };
+          const base = {
+            ...(present === undefined ? {} : { critique: { present, reason: 'r', at } }),
+            blind: { scores, at },
+            ...(reviews ? { reviews } : {}),
+          };
+          results.push(gateOf(base as unknown as Concept));
+          for (const looks of [
+            [[5, false]],
+            [
+              [5, false],
+              [4, false],
+            ],
+            [
+              [7, true],
+              [7, true],
+            ],
+          ] as const)
+            results.push(
+              gateOf({
+                ...base,
+                looks: looks.map(([n, p]) => ({
+                  scores: { ...scores, distinctiveness: n, memorability: n },
+                  present: p,
+                  reason: 'cold',
+                  at,
+                })),
+              } as unknown as Concept),
+            );
+        }
+    for (const r of results) expect(JSON.stringify(r)).not.toMatch(/reject/i);
+  });
+
+  it('a changed drawing makes the gate stale; a 1.3 critique without a hash is not stale', () => {
+    const reviewed = { ...scored(strong, true), reviewedArt: artHash('<svg>a</svg>', undefined) } as Concept;
+    expect(gateOf(reviewed, artHash('<svg>a</svg>', undefined)).status).toBe('passed');
+    const stale = gateOf(reviewed, artHash('<svg>b</svg>', undefined));
+    expect(stale.status).toBe('stale');
+    expect(stale.previous).toMatchObject({ status: 'passed', next: 'present' });
+    expect(stale.reasons.join(' ')).toMatch(/the critique is older than the drawing/);
+    // Written by 1.3.0: no hash, so whatever the files are now, the gate reads as before.
+    expect(gateOf(scored(strong, true), artHash('<svg>b</svg>', undefined)).status).toBe('passed');
+    // The hash is the symbol then the wordmark; a missing file counts as empty.
+    expect(artHash('<svg>a</svg>', undefined)).toBe(artHash('<svg>a</svg>', ''));
+    expect(artHash('a', 'b')).not.toBe(artHash('b', 'a'));
   });
 
   it("finalize needs the user's choice, whatever the critic decided", async () => {

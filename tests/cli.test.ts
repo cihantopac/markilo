@@ -11,7 +11,8 @@ import {
 } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { fixture, tmp } from './helpers.js';
+import { verifyConcept } from '../src/report/quality.js';
+import { fixture, synthBrand, tmp } from './helpers.js';
 
 const bin = join(__dirname, '..', 'plugin', 'dist', 'markilo.mjs');
 const run = (args: string[], cwd: string) =>
@@ -152,6 +153,61 @@ describe('cli (bundled)', () => {
     );
     expect(sheet.status, sheet.stderr).toBe(0);
   });
+  it('finalize warns when the critique is on another concept', async () => {
+    const { ws, dir: cwd } = synthBrand();
+    const fold = ws.concept('nimbra', 'fold');
+    // The critique sits on a copy of the concept; the concept the user chose was never reviewed.
+    mkdirSync(ws.conceptDir('nimbra', 'fold-b'), { recursive: true });
+    copyFileSync(
+      join(ws.conceptDir('nimbra', 'fold'), 'symbol.svg'),
+      join(ws.conceptDir('nimbra', 'fold-b'), 'symbol.svg'),
+    );
+    ws.saveConcept({ ...fold, id: 'fold-b', files: { symbol: 'symbol.svg' } });
+    const { critique: _c, blind: _b, ...bare } = fold;
+    ws.saveConcept(bare);
+    await verifyConcept(ws, 'nimbra', 'fold');
+    const r = run(
+      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
+      cwd,
+    );
+    expect(r.status, r.stderr).toBe(0);
+    const out = JSON.parse(r.stdout);
+    expect(out.kit.gate.status).toBe('not-reviewed');
+    expect(out.critiqueElsewhere).toEqual(['fold-b']);
+    expect(out.warnings.join(' ')).toMatch(/not-reviewed.*fold-b/);
+  }, 60_000);
+  it('a redraw after the critique makes the gate stale, and proposals and verify say so', () => {
+    const cwd = tmp();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    ok(['init', '--name', 'Demo']);
+    ok(['brand', 'add', 'Tidepool']);
+    // biome-ignore format: one flag per pair reads better
+    ok(['concept', 'new', '--brand', 'tidepool', '--id', 'p1', '--title', 'One', '--direction', 'd', '--rationale', 'r',
+      '--semantics', 'a', '--primary', '#0b7285']);
+    const symbol = join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'p1', 'symbol.svg');
+    writeFileSync(symbol, readFileSync(fixture('marks/fold-n.svg'), 'utf8'));
+    const set = ['concept', 'update', '--brand', 'tidepool', '--concept', 'p1'];
+    const scored = ok([
+      ...set,
+      '--blind',
+      'distinctiveness=7,memorability=7,brand-fit=7,craft=7,versatility=7',
+      '--present',
+      'yes:ready',
+    ]);
+    expect(scored.reviewedArt).toMatch(/^[0-9a-f]{64}$/);
+    expect(scored.gate.status).toBe('passed');
+    writeFileSync(symbol, readFileSync(fixture('marks/fold-n.svg'), 'utf8').replace('#ff8a3d', '#e8590c'));
+    const shown = ok(['concept', 'show', '--brand', 'tidepool', '--concept', 'p1']);
+    expect(shown.gate).toMatchObject({ status: 'stale', previous: { status: 'passed' } });
+    const proposals = ok(['proposals', '--brand', 'tidepool', '--concepts', 'p1']);
+    expect(JSON.stringify(proposals)).toMatch(/the critique is older than the drawing/);
+    const verify = ok(['verify', '--brand', 'tidepool', '--concept', 'p1']);
+    expect(JSON.stringify(verify)).toMatch(/the critique is older than the drawing/);
+  }, 60_000);
   it('concept update takes paths from the cwd, stored relative, and keeps a chat choice', () => {
     const cwd = tmp();
     const ok = (args: string[]) => {

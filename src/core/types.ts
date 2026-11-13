@@ -221,4 +221,9 @@ export interface Concept {
     reviewer?: string;
     at: string;
   }[];
+  /**
+   * The drawing the critic scored: sha256 over the symbol file, then the wordmark file, when the scores or the answer
+   * were recorded. The gate reads `stale` once the files no longer match; a concept without it (1.3.0) never does.
+   */
+  reviewedArt?: string;
 }

@@ -73,7 +73,14 @@ import {
   sessionShare,
   writeCost,
 } from '../report/cost.js';
-import { BLIND_CRITERIA, criterionOf, gateOf, requireCriterion } from '../report/gate.js';
+import {
+  BLIND_CRITERIA,
+  criterionOf,
+  currentArt,
+  gateOf,
+  requireCriterion,
+  STALE_NOTE,
+} from '../report/gate.js';
 import { buildOriginalityReport, readReferences } from '../report/originality.js';
 import { verifyConcept } from '../report/quality.js';
 import { brandKeyOf, brandsOf, officialHostsFrom } from '../report/references.js';
@@ -266,7 +273,7 @@ export const COMMANDS: CommandSpec[] = [
       }
       const brands = w.manifest.brands.map((b) => {
         const concepts = w.concepts(b.slug);
-        const gates = concepts.map((x) => gateOf(x).status);
+        const gates = concepts.map((x) => gateOf(x, currentArt(w, b.slug, x)).status);
         const approved = existsSync(join(w.finalDir(b.slug), 'brand.json'));
         const exported = existsSync(join(w.exportsDir(b.slug), 'asset-manifest.json'));
         const sources = w.profile(b.slug).sources.length;
@@ -1305,26 +1312,26 @@ export const COMMANDS: CommandSpec[] = [
     usage: 'concept list --brand <slug>',
     options: brandOpt,
     async run(c) {
-      return ws(c)
-        .concepts(c.req('brand'))
-        .map((x) => {
-          const g = gateOf(x);
-          return {
-            id: x.id,
-            title: x.title,
-            status: x.status,
-            ...(x.lead === 'wordmark' ? { lead: 'wordmark' } : {}),
-            direction: x.direction,
-            files: x.files,
-            palette: x.palette,
-            gate: g.status,
-            ...(g.average !== undefined ? { criticAverage: g.average } : {}),
-            ...(g.nearMiss ? { nearMiss: true } : {}),
-            ...(g.next && (g.status === 'failed' || g.status === 'undecided') ? { next: g.next } : {}),
-            ...(g.looks ? { looks: g.looks } : {}),
-            ...(g.calibration === 'unmeasured' ? { reviewer: g.reviewer, calibration: g.calibration } : {}),
-          };
-        });
+      const w = ws(c);
+      return w.concepts(c.req('brand')).map((x) => {
+        const g = gateOf(x, currentArt(w, c.req('brand'), x));
+        return {
+          id: x.id,
+          title: x.title,
+          status: x.status,
+          ...(x.lead === 'wordmark' ? { lead: 'wordmark' } : {}),
+          direction: x.direction,
+          files: x.files,
+          palette: x.palette,
+          gate: g.status,
+          ...(g.average !== undefined ? { criticAverage: g.average } : {}),
+          ...(g.nearMiss ? { nearMiss: true } : {}),
+          ...(g.next && (g.status === 'failed' || g.status === 'undecided') ? { next: g.next } : {}),
+          ...(g.status === 'stale' ? { note: g.reasons[0] } : {}),
+          ...(g.looks ? { looks: g.looks } : {}),
+          ...(g.calibration === 'unmeasured' ? { reviewer: g.reviewer, calibration: g.calibration } : {}),
+        };
+      });
     },
   },
   {
@@ -1333,8 +1340,9 @@ export const COMMANDS: CommandSpec[] = [
     usage: 'concept show --brand <slug> --concept <id>',
     options: { ...brandOpt, concept: { type: 'string', description: 'Concept id' } },
     async run(c) {
-      const concept = ws(c).concept(c.req('brand'), c.req('concept'));
-      return { ...concept, gate: gateOf(concept) };
+      const w = ws(c);
+      const concept = w.concept(c.req('brand'), c.req('concept'));
+      return { ...concept, gate: gateOf(concept, currentArt(w, c.req('brand'), concept)) };
     },
   },
   {
@@ -1542,7 +1550,7 @@ export const COMMANDS: CommandSpec[] = [
             'USAGE',
             'A second look needs both --look <scores> and --look-present yes|no:<reason>.',
           );
-        const gate = gateOf(cur);
+        const gate = gateOf(cur, currentArt(w, slug, cur));
         if (gate.next !== 'second-look')
           throw new MarkiloError(
             'USAGE',
@@ -1587,8 +1595,15 @@ export const COMMANDS: CommandSpec[] = [
       // A choice given in chat keeps the drawing the user chose (as it was before this call), as "feedback --apply"
       // does, so proposals can later show it next to the developed version.
       if (st === 'shortlisted') kept = keepChosen(w, slug, cur);
+      // The critic's scores and answer belong to the drawing they judged: record it, so a redraw reads as stale.
+      if (
+        ['judgment', 'blind', 'present', 'look', 'look-present', 'reads-as'].some((k) =>
+          k === 'judgment' ? c.list('judgment').length : c.str(k),
+        )
+      )
+        next.reviewedArt = currentArt(w, slug, next);
       w.saveConcept(next);
-      const gate = gateOf(next);
+      const gate = gateOf(next, currentArt(w, slug, next));
       if (c.str('sketch-pick'))
         w.logDecision(
           slug,
@@ -1738,7 +1753,31 @@ export const COMMANDS: CommandSpec[] = [
         wordmarkOnly: c.bool('wordmark-only'),
         ...(c.str('user-choice') ? { userChoice: c.str('user-choice')! } : {}),
       });
-      return { kit, dir: w.finalDir(c.req('brand')), next: `markilo export --brand ${c.req('brand')}` };
+      // A critique recorded on another concept (a copy, a re-base) does not review this one: say where it is.
+      const elsewhere =
+        kit.gate?.status === 'not-reviewed'
+          ? w
+              .concepts(c.req('brand'))
+              .filter(
+                (x) =>
+                  x.id !== c.req('concept') &&
+                  (x.critique || x.blind || Object.keys(x.judgment ?? {}).length),
+              )
+              .map((x) => x.id)
+          : [];
+      return {
+        kit,
+        dir: w.finalDir(c.req('brand')),
+        ...(elsewhere.length
+          ? {
+              critiqueElsewhere: elsewhere,
+              warnings: [
+                `${c.req('concept')} is not-reviewed, but ${elsewhere.join(', ')} carr${elsewhere.length === 1 ? 'ies' : 'y'} a critique: if the critic reviewed this drawing there, record it on ${c.req('concept')} (concept update --blind … --present …).`,
+              ],
+            }
+          : {}),
+        next: `markilo export --brand ${c.req('brand')}`,
+      };
     },
   },
   {
@@ -1954,6 +1993,7 @@ export const COMMANDS: CommandSpec[] = [
         {};
       const compare: Record<string, string> = {};
       const files: string[] = [];
+      const notes: string[] = [];
       // The letter a concept carries is its own, so one proposal alone keeps the letter the board gave it.
       const roundMates = (r?: number) => all.filter((x) => r !== undefined && x.round === r);
       const letterOf = (cpt: Concept): string =>
@@ -2021,6 +2061,10 @@ export const COMMANDS: CommandSpec[] = [
           ...(cpt.palette.tile ? { tile: cpt.palette.tile } : {}),
         };
         inputs.push(input);
+        if (gateOf(cpt, currentArt(w, slug, cpt)).status === 'stale')
+          notes.push(
+            `${cpt.id}: ${STALE_NOTE} — the critic scored an earlier drawing; ask for a fresh look.`,
+          );
         order.push({ letter: letterOf(cpt), id: cpt.id, title: cpt.title, status: cpt.status });
         const out = w.conceptFile(slug, cpt.id, join('review', 'proposal.png'));
         writeGenerated(out, await renderProposal(input));
@@ -2074,6 +2118,7 @@ export const COMMANDS: CommandSpec[] = [
         /** For a concept the user chose: their choice and its current state side by side. */
         ...(Object.keys(compare).length ? { compare } : {}),
         missing,
+        ...(notes.length ? { notes } : {}),
         next: missing.length
           ? 'Complete what is missing, then render again.'
           : `Read the board, then open the gallery (markilo gallery --serve) for the user's decision.`,

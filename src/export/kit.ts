@@ -6,7 +6,7 @@ import { nowIso, readJson, readText, writeGenerated, writeJson } from '../core/f
 import { resolveInsideReal } from '../core/paths.js';
 import type { Workspace } from '../core/workspace.js';
 import { composeLockup } from '../design/lockup.js';
-import { type GateResult, gateOf } from '../report/gate.js';
+import { currentArt, type GateResult, gateOf } from '../report/gate.js';
 import { lintSvg } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
 import { inkMetrics } from './geometry.js';
@@ -124,7 +124,8 @@ export async function finalizeConcept(
       `Concept ${conceptId} has no wordmark, so it cannot be finalized with --wordmark-only.`,
       'Design a wordmark for the concept first, or finalize without --wordmark-only.',
     );
-  const gate = gateOf(concept);
+  // A critique of an earlier drawing reads `stale` here, so the kit never claims a review the drawing did not get.
+  const gate = gateOf(concept, currentArt(ws, brand, concept));
   // The user owns the creative choice: a concept is finalized only on their word. A critic's pass is advice, and
   // without the user's choice the designer would be approving its own work.
   if (!opts.userChoice?.trim()) {

@@ -123,6 +123,7 @@ export const TR: Record<string, string> = {
   'critic: above the bar': 'eleştirmen: çıtanın üstünde',
   'critic: on the edge': 'eleştirmen: sınırda',
   'critic: below the bar': 'eleştirmen: çıtanın altında',
+  'critic: older than the drawing': 'eleştirmen: çizimden eski',
   'reviewer not calibrated': 'değerlendirici kalibre edilmedi',
   'Technical checks': 'Teknik kontroller',
   'All checks pass.': 'Tüm kontroller geçti.',

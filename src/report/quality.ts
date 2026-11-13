@@ -13,6 +13,7 @@ import { inkMetrics } from '../export/geometry.js';
 import { type ContextPeer, groundFor, renderContextSheet } from '../render/context.js';
 import { renderReviewSheet, renderWordmarkSheet } from '../render/sheet.js';
 import { type ReferenceCategory, USER_REFERENCE } from '../research/competitors.js';
+import { currentArt, gateOf, STALE_NOTE } from './gate.js';
 import { buildOriginalityReport, readReferences } from './originality.js';
 
 /** Collected reference marks, direct competitors first, one per brand, for the context sheet. */
@@ -255,9 +256,13 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
   const orig = await buildOriginalityReport(ws, brand, id);
   const blocking = merged.summary.fail > 0 || orig.report.verdict === 'redesign';
   if (concept.status === 'draft' && !blocking) ws.saveConcept({ ...concept, status: 'verified' });
+  const critique = gateOf(concept, currentArt(ws, brand, concept));
   return {
     concept: id,
     status: blocking ? 'needs-work' : 'verified',
+    ...(critique.status === 'stale'
+      ? { critique: `${STALE_NOTE}: the critic scored an earlier drawing; ask for a fresh look.` }
+      : {}),
     quality: merged.summary,
     failing: merged.checks.filter((c) => c.status === 'fail').map((c) => `${c.label}: ${c.message}`),
     warnings: merged.checks.filter((c) => c.status === 'warn').map((c) => `${c.label}: ${c.message}`),

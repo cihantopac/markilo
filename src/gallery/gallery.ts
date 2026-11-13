@@ -11,7 +11,7 @@ import { roundLetters, rounds } from '../design/rounds.js';
 import { placeMark, squircle } from '../export/geometry.js';
 import { type BrandKit, kitPath } from '../export/kit.js';
 import { type GroundPalette, groundsFor, markOnGround, tileGround } from '../export/variants.js';
-import { gateOf } from '../report/gate.js';
+import { artHash, gateOf } from '../report/gate.js';
 import type { OriginalityReport } from '../report/originality.js';
 import { aspectOf, nestSvg, svgDocument } from '../svg/compose.js';
 import { escapeAttr, escapeText } from '../svg/xml.js';
@@ -39,6 +39,8 @@ interface Subject {
   /** The palette the ground resolver reads (onDark/onLight, onBrand, tile), as previews and export read it. */
   grounds: GroundPalette;
   concept?: Concept;
+  /** artHash of the concept's symbol and wordmark as they are now (a critique of an older drawing reads stale). */
+  art?: string;
   quality?: QualityReport;
   originality?: OriginalityReport;
   locked: boolean;
@@ -170,7 +172,7 @@ async function subjectCard(s: Subject, opts: { review?: boolean; letter?: string
   const alt = s.symbol ? inline(on(s.symbol, g.opposite), 64, 64) : fitInline(on(lock!, g.opposite), 120, 44);
   const sizes = s.symbol ? [16, 24, 32, 48].map((n) => inline(s.symbol!, n, n)).join('') : '';
   const avg = criticAverage(s);
-  const gate = s.concept ? gateOf(s.concept) : undefined;
+  const gate = s.concept ? gateOf(s.concept, s.art) : undefined;
   const q = s.quality?.summary;
   const o = s.originality;
   const pills = [
@@ -184,7 +186,7 @@ async function subjectCard(s: Subject, opts: { review?: boolean; letter?: string
       ? `<span class="pill ${avg >= 7 ? 'good' : avg >= 6 ? 'warn' : 'bad'}"${ta('title', 'Critic average (judgment, 0–10)')}>${t('critic {0}', [avg])}</span>`
       : '',
     gate && gate.status !== 'not-reviewed'
-      ? `<span class="pill ${gate.status === 'passed' ? 'good' : 'bad'}" title="${escapeAttr(gate.status === 'passed' ? (gate.looks ? "Passed on the majority of cold looks after a first look on the edge of the bar. In Markilo's 1.0 validation an independent judge panel rejected both such passes: treat it as worth showing, not finished." : 'Passed the critic gate') : gate.reasons.join('; '))}">${gate.status === 'passed' ? (gate.looks ? t('passed at the edge ({0} of {1} looks)', [gate.looks.passed, gate.looks.of]) : t('critic: above the bar')) : gate.status === 'undecided' ? t('critic: on the edge') : t('critic: below the bar')}</span>`
+      ? `<span class="pill ${gate.status === 'passed' ? 'good' : gate.status === 'stale' ? 'warn' : 'bad'}" title="${escapeAttr(gate.status === 'passed' ? (gate.looks ? "Passed on the majority of cold looks after a first look on the edge of the bar. In Markilo's 1.0 validation an independent judge panel rejected both such passes: treat it as worth showing, not finished." : 'Passed the critic gate') : gate.reasons.join('; '))}">${gate.status === 'passed' ? (gate.looks ? t('passed at the edge ({0} of {1} looks)', [gate.looks.passed, gate.looks.of]) : t('critic: above the bar')) : gate.status === 'undecided' ? t('critic: on the edge') : gate.status === 'stale' ? t('critic: older than the drawing') : t('critic: below the bar')}</span>`
       : '',
     gate?.calibration === 'unmeasured'
       ? `<span class="pill warn" title="${escapeAttr(`Reviewed by ${gate.reviewer}; the gate was calibrated on Claude Opus, so how well it predicts an independent judge on this model is not measured.`)}">${t('reviewer not calibrated')}</span>`
@@ -455,6 +457,7 @@ function subjectsFor(ws: Workspace, b: WorkspaceBrand): Subject[] {
       },
       grounds: c.palette,
       concept: c,
+      art: artHash(symbol, wordmark),
       ...(q ? { quality: q } : {}),
       ...(o ? { originality: o } : {}),
       locked: false,
