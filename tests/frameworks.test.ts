@@ -18,7 +18,11 @@ const project = (fixture: string) => {
 beforeAll(async () => {
   ({ ws } = synthBrand());
   await verifyConcept(ws, 'nimbra', 'fold');
-  await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
+  await finalizeConcept(ws, 'nimbra', 'fold', {
+    acceptRisk: true,
+    acceptColours: true,
+    userChoice: 'Chosen in a test.',
+  });
   await exportBrand(ws, 'nimbra');
 }, 120_000);
 

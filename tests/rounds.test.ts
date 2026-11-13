@@ -382,7 +382,17 @@ describe('wordmark-led kits', () => {
     const cwd = proposals(3);
     ok(['verify', '--brand', 'tidepool', '--concept', 'p1'], cwd);
     ok(
-      ['finalize', '--brand', 'tidepool', '--concept', 'p1', '--user-choice', 'This one', '--accept-risk'],
+      [
+        'finalize',
+        '--brand',
+        'tidepool',
+        '--concept',
+        'p1',
+        '--user-choice',
+        'This one',
+        '--accept-risk',
+        '--accept-colours',
+      ],
       cwd,
     );
     ok(['export', '--brand', 'tidepool', '--only', 'logos'], cwd);

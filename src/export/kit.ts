@@ -1,6 +1,6 @@
 import { copyFileSync, existsSync } from 'node:fs';
 import { basename, join } from 'node:path';
-import { hexToOklch, oklchToHex } from '../analyze/color.js';
+import { hexToOklch, normalizeColor, oklchToHex } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
 import { nowIso, readJson, readText, writeGenerated, writeJson } from '../core/fsx.js';
 import { resolveInsideReal } from '../core/paths.js';
@@ -9,8 +9,9 @@ import type { Workspace } from '../core/workspace.js';
 import { fontInfo } from '../design/fonts.js';
 import { composeLockup } from '../design/lockup.js';
 import { currentArt, type GateResult, gateOf } from '../report/gate.js';
-import { lintSvg } from '../svg/lint.js';
+import { lintSvg, paintOf } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
+import { localName, parseXml, walk } from '../svg/xml.js';
 import { inkMetrics } from './geometry.js';
 
 /** The approved, frozen identity that every export is derived from. Lives in brands/<slug>/final/. */
@@ -104,6 +105,8 @@ export interface BrandKit {
     /** What the verdict rests on, so guidelines can state it plainly (e.g. that no registry search was done). */
     evidence?: { visual: string; registry: string; registryCoverage: string };
   };
+  /** What was accepted knowingly at approval (e.g. master colours outside the palette, with --accept-colours). */
+  warnings?: string[];
   /** The critic gate at approval time; a concept that did not pass needs the user's own reason. */
   gate?: { status: GateResult['status']; average?: number; reasons: string[]; userChoice?: string };
 }
@@ -167,6 +170,75 @@ function inkFor(primary: string): { ink: string; dark: string } {
   return { ink: oklchToHex({ l: 0.2, c: 0.012, h }), dark: oklchToHex({ l: 0.16, c: 0.012, h }) };
 }
 
+/** The registered master files of a concept that finalize freezes. */
+const MASTER_KEYS = [
+  'symbol',
+  'wordmark',
+  'small',
+  'wordmarkSmall',
+  'lockupHorizontal',
+  'lockupStacked',
+] as const;
+
+/**
+ * The colours each master uses that the concept's palette does not hold. Allowed: the palette roles, currentColor,
+ * none, white and black, and the stops of a gradient whose end colours are allowed.
+ */
+export function masterColourCheck(
+  ws: Workspace,
+  brand: string,
+  id: string,
+): { file: string; colours: string[] }[] {
+  const cpt = ws.concept(brand, id);
+  const allowed = new Set<string>(['#ffffff', '#000000']);
+  for (const v of Object.values(cpt.palette)) {
+    const hex = typeof v === 'string' ? normalizeColor(v) : undefined;
+    if (hex) allowed.add(hex);
+  }
+  const out: { file: string; colours: string[] }[] = [];
+  for (const key of MASTER_KEYS) {
+    const rel = cpt.files[key];
+    if (!rel) continue;
+    const path = ws.conceptFile(brand, id, rel);
+    if (!existsSync(path)) continue;
+    let root: ReturnType<typeof parseXml>;
+    try {
+      root = parseXml(readText(path));
+    } catch {
+      continue;
+    }
+    const used = new Set<string>();
+    const gradEnds = new Map<unknown, string[]>();
+    walk(root, (el, parents) => {
+      const name = localName(el.name);
+      for (const prop of ['fill', 'stroke', 'stop-color', 'color', 'flood-color']) {
+        const hex = normalizeColor(paintOf(el, prop) ?? '');
+        if (!hex) continue;
+        const grad =
+          name === 'stop' ? parents.findLast((p) => /Gradient$/.test(localName(p.name))) : undefined;
+        if (!grad) used.add(hex);
+        else if (gradEnds.has(grad)) gradEnds.get(grad)!.push(hex);
+        else gradEnds.set(grad, [hex]);
+      }
+    });
+    for (const stops of gradEnds.values()) {
+      if (allowed.has(stops[0]!) && allowed.has(stops[stops.length - 1]!)) continue;
+      for (const h of stops) used.add(h);
+    }
+    const bad = [...used].filter((h) => !allowed.has(h)).sort();
+    if (bad.length) out.push({ file: rel, colours: bad });
+  }
+  return out;
+}
+
+/** One line per master: what to do about the colours it uses outside the palette. */
+export function masterColourMessages(found: { file: string; colours: string[] }[]): string[] {
+  return found.map(
+    (f) =>
+      `${f.file} uses ${f.colours.join(', ')}, which ${f.colours.length === 1 ? 'is' : 'are'} not in the palette — run \`concept update --primary <#hex>\` to recolour, or add ${f.colours.length === 1 ? 'it' : 'them'} as a role`,
+  );
+}
+
 /** Freezes an approved concept into final/: optimized masters, generated lockups and brand.json. */
 export async function finalizeConcept(
   ws: Workspace,
@@ -179,6 +251,7 @@ export async function finalizeConcept(
     notes?: string[];
     userChoice?: string;
     wordmarkOnly?: boolean;
+    acceptColours?: boolean;
   } = {},
 ): Promise<BrandKit> {
   ws.assertNotLocked(brand);
@@ -240,6 +313,14 @@ export async function finalizeConcept(
       'Collect the missing evidence and verify again, or, if the user knowingly accepts the risk, pass --accept-risk.',
     );
   }
+  // A master still drawn in a colour the palette no longer holds would reach every export unnoticed.
+  const stale = masterColourMessages(masterColourCheck(ws, brand, conceptId));
+  if (stale.length && !opts.acceptColours)
+    throw new MarkiloError(
+      'INVALID_INPUT',
+      `Concept ${conceptId} has master colours outside its palette: ${stale.join('; ')}.`,
+      'Recolour with concept update, or add the colour as a palette role. If the user knowingly keeps them, pass --accept-colours.',
+    );
   const dir = ws.finalDir(brand);
   if (existsSync(kitPath(ws, brand)) && !opts.force) {
     throw new MarkiloError(
@@ -352,6 +433,7 @@ export async function finalizeConcept(
           }
         : {}),
     },
+    ...(stale.length ? { warnings: stale } : {}),
     gate: {
       status: gate.status,
       ...(gate.average !== undefined ? { average: gate.average } : {}),

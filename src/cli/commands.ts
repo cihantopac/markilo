@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, dirname, extname, join, resolve } from 'node:path';
 import { type CalibrationMark, calibrate } from '../analyze/calibrate.js';
 import { contrastRatio, deltaE2000, normalizeColor } from '../analyze/color.js';
@@ -66,7 +66,7 @@ import { defaultFonts, exploreWordmarks } from '../design/wordmarks.js';
 import { GROUP_INFO, resolveDeliverables, suggestDeliverables } from '../export/deliverables.js';
 import { brandFinalHolding, EXPORT_GROUPS, type ExportGroup, exportBrand } from '../export/exporter.js';
 import { inkMetrics } from '../export/geometry.js';
-import { finalizeConcept, lockIdentity } from '../export/kit.js';
+import { finalizeConcept, lockIdentity, masterColourCheck, masterColourMessages } from '../export/kit.js';
 import { groundColors, tileGround } from '../export/variants.js';
 import { feedbackRequests, parseFeedback, readLatestFeedback, storeFeedback } from '../gallery/feedback.js';
 import { buildGallery } from '../gallery/gallery.js';
@@ -162,6 +162,80 @@ function groundColourWarnings(w: Workspace, brand: string, id: string): string[]
     }
   }
   return out;
+}
+
+/**
+ * Rewrites paint colours in an SVG's text: fill, stroke and stop-color, as attributes and as style declarations.
+ * Exact matches only (after normalizing), so a lighter or darker neighbour of the old colour stays as drawn.
+ */
+function recolorSvgText(
+  src: string,
+  map: Map<string, string>,
+): { text: string; counts: Map<string, number> } {
+  const counts = new Map<string, number>();
+  const swap = (value: string): string | undefined => {
+    const hex = normalizeColor(value);
+    const to = hex && map.get(hex);
+    if (!hex || !to) return undefined;
+    counts.set(hex, (counts.get(hex) ?? 0) + 1);
+    return to;
+  };
+  let text = src.replace(/(\s(?:fill|stroke|stop-color)\s*=\s*)(["'])([^"']*)\2/g, (m, pre, q, v) => {
+    const to = swap(v);
+    return to ? `${pre}${q}${to}${q}` : m;
+  });
+  text = text.replace(/(\sstyle\s*=\s*)(["'])([^"']*)\2/g, (_m, pre, q, v: string) => {
+    const inner = v.replace(
+      /((?:^|;)\s*(?:fill|stroke|stop-color)\s*:\s*)([^;]+)/gi,
+      (m2, p2, val: string) => {
+        const to = swap(val.trim());
+        return to ? `${p2}${to}` : m2;
+      },
+    );
+    return `${pre}${q}${inner}${q}`;
+  });
+  return { text, counts };
+}
+
+/** A palette role changed with `concept update`: its old colour becomes the new one in every registered file. */
+function recolorConceptFiles(
+  w: Workspace,
+  brand: string,
+  cur: Concept,
+  next: Concept,
+): { recolored: { file: string; from: string; to: string; count: number }[]; warnings: string[] } {
+  const map = new Map<string, string>();
+  const warnings: string[] = [];
+  for (const role of ['primary', 'secondary', 'accent', 'ink'] as const) {
+    const from = cur.palette[role] && normalizeColor(cur.palette[role]!);
+    const to = next.palette[role] && normalizeColor(next.palette[role]!);
+    if (!from || !to || from === to) continue;
+    map.set(from, to);
+  }
+  const recolored: { file: string; from: string; to: string; count: number }[] = [];
+  if (!map.size) return { recolored, warnings };
+  const changedFiles = new Set<string>();
+  for (const rel of new Set(Object.values(next.files).filter((f): f is string => !!f))) {
+    const path = w.conceptFile(brand, cur.id, rel);
+    if (!existsSync(path)) continue;
+    const { text, counts } = recolorSvgText(readText(path), map);
+    if (!counts.size) continue;
+    writeFileSync(path, text);
+    changedFiles.add(rel);
+    for (const [from, count] of counts) recolored.push({ file: rel, from, to: map.get(from)!, count });
+  }
+  // Files carry colours, not roles: a colour two roles shared moves for both.
+  for (const [from, to] of map) {
+    const roles = (['primary', 'secondary', 'accent', 'ink', 'paper'] as const).filter(
+      (r) => cur.palette[r] && normalizeColor(cur.palette[r]!) === from,
+    );
+    const moved = recolored.filter((r) => r.from === from).map((r) => r.file);
+    if (roles.length > 1 && moved.length)
+      warnings.push(
+        `${roles.join(' and ')} shared ${from}; ${moved.join(', ')} now use ${to} everywhere, so check the parts that were not meant to change.`,
+      );
+  }
+  return { recolored, warnings };
 }
 
 /** A word without data-baseline / data-cap-height: composeLockup has to assume its ink box is the cap box. */
@@ -1603,7 +1677,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--semantics "<a>; <b>"] [--letter <L>] [--show] [--wordmark <file>] [--symbol <file>] [--small <file>] [--small-sizes small|main] [--wordmark-small <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--no-recolor] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--semantics "<a>; <b>"] [--letter <L>] [--show] [--wordmark <file>] [--symbol <file>] [--small <file>] [--small-sizes small|main] [--wordmark-small <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1654,6 +1728,11 @@ export const COMMANDS: CommandSpec[] = [
       'look-present': {
         type: 'string',
         description: 'Second-look critic: yes|no:<reason> — would a senior designer present it as is?',
+      },
+      'no-recolor': {
+        type: 'boolean',
+        description:
+          'Keep the concept files as they are when a palette colour changes (default: the old colour is rewritten to the new one in every concept file)',
       },
       primary: { type: 'string', description: 'Primary color' },
       secondary: { type: 'string', description: 'Secondary color ("none" removes it)' },
@@ -1767,6 +1846,7 @@ export const COMMANDS: CommandSpec[] = [
       else if (sizes !== undefined)
         throw new MarkiloError('INVALID_INPUT', '--small-sizes must be small or main.');
       if (c.str('primary')) next.palette.primary = c.str('primary')!;
+      const rolesSet = ['primary', 'secondary', 'accent', 'ink'].filter((r) => c.str(r));
       for (const role of ['secondary', 'accent', 'ink', 'paper'] as const) {
         const v = c.str(role);
         if (!v) continue;
@@ -1786,6 +1866,10 @@ export const COMMANDS: CommandSpec[] = [
         else Object.assign(next.palette, groundColorOptions(c, opt));
       }
       Object.assign(next.palette, tileColorOptions(c));
+      // The masters follow the palette (an unlocked brand only; a locked identity is never recoloured).
+      let recolor: ReturnType<typeof recolorConceptFiles> = { recolored: [], warnings: [] };
+      if (rolesSet.length && !c.bool('no-recolor') && !w.brand(slug).locked)
+        recolor = recolorConceptFiles(w, slug, cur, next);
       if (c.str('on-brand') === 'none') delete next.palette.onBrand;
       if (c.str('tile') === 'none') delete next.palette.tile;
       if (c.str('construction')) next.construction = c.str('construction')!;
@@ -1973,12 +2057,15 @@ export const COMMANDS: CommandSpec[] = [
           ? `--on-brand ${next.palette.onBrand} is under 3:1 on the tile ${tileGround(next.palette)}; export uses it as given.`
           : undefined,
       ].filter((x): x is string => !!x);
+      const notes = [...faint, ...recolor.warnings];
+      const recolored = recolor.recolored.length ? { recolored: recolor.recolored } : {};
       if (c.bool('show'))
         return {
           ...next,
           gate,
           ...(kept.length ? { kept } : {}),
-          ...(faint.length ? { warnings: faint } : {}),
+          ...recolored,
+          ...(notes.length ? { warnings: notes } : {}),
         };
       const changed: string[] = [];
       const differs = (a: unknown, b: unknown) => JSON.stringify(a) !== JSON.stringify(b);
@@ -2001,7 +2088,8 @@ export const COMMANDS: CommandSpec[] = [
         changed,
         ...(judged ? { gate } : {}),
         ...(kept.length ? { kept } : {}),
-        ...(faint.length ? { warnings: faint } : {}),
+        ...recolored,
+        ...(notes.length ? { warnings: notes } : {}),
       };
     },
   },
@@ -2096,7 +2184,10 @@ export const COMMANDS: CommandSpec[] = [
     async run(c) {
       const w = ws(c);
       const result = await verifyConcept(w, c.req('brand'), c.req('concept'));
-      const warnings = groundColourWarnings(w, c.req('brand'), c.req('concept'));
+      const warnings = [
+        ...groundColourWarnings(w, c.req('brand'), c.req('concept')),
+        ...masterColourMessages(masterColourCheck(w, c.req('brand'), c.req('concept'))),
+      ];
       return warnings.length ? { ...result, warnings: [...result.warnings, ...warnings] } : result;
     },
   },
@@ -2154,7 +2245,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Approve a concept: freeze optimized masters, generate lockups (horizontal, stacked, compact; --wordmark-only skips them) and brand.json.',
     usage:
-      'finalize --brand <slug> --concept <id> --user-choice "<the user\'s words>" [--tagline <text>] [--note <usage rule>]... [--wordmark-only] [--accept-risk] [--force]',
+      'finalize --brand <slug> --concept <id> --user-choice "<the user\'s words>" [--tagline <text>] [--note <usage rule>]... [--wordmark-only] [--accept-risk] [--accept-colours] [--force]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -2174,6 +2265,11 @@ export const COMMANDS: CommandSpec[] = [
         type: 'boolean',
         description: 'User knowingly approves despite an originality verdict other than no-conflicts-found',
       },
+      'accept-colours': {
+        type: 'boolean',
+        description:
+          "The user knowingly keeps master colours that are not in the palette; they are recorded in the kit's warnings",
+      },
       'user-choice': {
         type: 'string',
         description:
@@ -2189,6 +2285,7 @@ export const COMMANDS: CommandSpec[] = [
         ...(notes.length ? { notes } : {}),
         force: c.bool('force'),
         acceptRisk: c.bool('accept-risk'),
+        acceptColours: c.bool('accept-colours'),
         wordmarkOnly: c.bool('wordmark-only'),
         ...(c.str('user-choice') ? { userChoice: c.str('user-choice')! } : {}),
       });
@@ -2197,7 +2294,9 @@ export const COMMANDS: CommandSpec[] = [
         kit,
         dir: w.finalDir(c.req('brand')),
         ...(hint.elsewhere.length ? { critiqueElsewhere: hint.elsewhere } : {}),
-        ...(hint.warning ? { warnings: [hint.warning] } : {}),
+        ...(hint.warning || kit.warnings?.length
+          ? { warnings: [...(hint.warning ? [hint.warning] : []), ...(kit.warnings ?? [])] }
+          : {}),
         next: `markilo export --brand ${c.req('brand')}`,
       };
     },
@@ -3675,10 +3774,15 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Assemble a new word from family glyphs (family glyphs) and drawn letters: a taken run keeps its own spacing; between runs and single letters the gap is the mean of the two sidebearings plus --tracking. The word records its baseline and cap height for lockups; letters with no source get a grey box and are listed in missing.',
     usage:
-      'family word --brand <slug> --text <WORD> --take <ref>:<LETTERS>[,<ref>:<LETTERS>…] [--draw <char>=<file.svg>…] [--tracking <units>] [-o <file.svg>] [--force]',
+      'family word --brand <slug> --text <WORD> --take <ref>:<LETTERS>[,<ref>:<LETTERS>…] [--draw <char>=<file.svg>…] [--tracking <units>] [--fill <#hex>] [-o <file.svg>] [--force]',
     options: {
       ...brandOpt,
       text: { type: 'string', description: 'The new word' },
+      fill: {
+        type: 'string',
+        description:
+          "The word's colour (default #111111): pass the concept's ink, so the word follows the family's dark ink, not the primary",
+      },
       take: {
         type: 'string',
         multiple: true,
@@ -3728,10 +3832,14 @@ export const COMMANDS: CommandSpec[] = [
       );
       if (!takes.length && !drawn.length)
         throw new MarkiloError('USAGE', 'Give at least one --take or --draw.');
+      const fill = c.str('fill') === undefined ? undefined : normalizeColor(c.str('fill')!);
+      if (c.str('fill') !== undefined && !fill)
+        throw new MarkiloError('INVALID_INPUT', '--fill must be a hex color, like #111111.');
       const r = await assembleWord({
         text: c.req('text'),
         takes,
         drawn,
+        ...(fill ? { fill } : {}),
         ...(c.num('tracking') !== undefined ? { tracking: c.num('tracking')! } : {}),
       });
       const { sources, warnings } = sourceStems(takes);

@@ -234,6 +234,7 @@ describe('quality gate', () => {
     ws.saveConcept({ ...c, ...scored({ ...strong, memorability: 4 }, false) });
     const kit = await finalizeConcept(ws, 'nimbra', 'fold', {
       acceptRisk: true,
+      acceptColours: true,
       userChoice: 'The owner prefers it.',
     });
     expect(kit.gate).toMatchObject({ status: 'failed', userChoice: 'The owner prefers it.' });

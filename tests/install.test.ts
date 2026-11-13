@@ -15,7 +15,11 @@ let ws: Workspace;
 beforeAll(async () => {
   ({ ws } = synthBrand());
   await verifyConcept(ws, 'nimbra', 'fold');
-  await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
+  await finalizeConcept(ws, 'nimbra', 'fold', {
+    acceptRisk: true,
+    acceptColours: true,
+    userChoice: 'Chosen in a test.',
+  });
   await exportBrand(ws, 'nimbra', { groups: ['web', 'social'] });
 }, 120_000);
 

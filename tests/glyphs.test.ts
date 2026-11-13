@@ -158,6 +158,19 @@ describe('family word', () => {
     await expect(splitGlyphs(svg, 'A')).rejects.toThrow(/more than 5000 elements/);
   });
 
+  it('writes the given fill on the word, #111111 by default', async () => {
+    const set = await nimbra();
+    const dflt = await assembleWord({ text: 'BRA', takes: [{ set, letters: 'BRA' }], drawn: [] });
+    expect(dflt.svg).toContain('<g fill="#111111"');
+    const r = await assembleWord({
+      text: 'BRA',
+      takes: [{ set, letters: 'BRA' }],
+      drawn: [],
+      fill: '#1b2140',
+    });
+    expect(r.svg).toContain('<g fill="#1b2140"');
+  });
+
   it('missing letters are listed', async () => {
     const set = await nimbra();
     const r = await assembleWord({ text: 'BRAVO', takes: [{ set, letters: 'BRA' }], drawn: [] });

@@ -222,7 +222,17 @@ describe('cli (bundled)', () => {
     ws.saveConcept(bare);
     await verifyConcept(ws, 'nimbra', 'fold');
     const r = run(
-      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
+      [
+        'finalize',
+        '--brand',
+        'nimbra',
+        '--concept',
+        'fold',
+        '--user-choice',
+        'This one.',
+        '--accept-risk',
+        '--accept-colours',
+      ],
       cwd,
     );
     expect(r.status, r.stderr).toBe(0);
@@ -244,7 +254,17 @@ describe('cli (bundled)', () => {
     );
     expect(cost.status, cost.stderr).toBe(0);
     const r = run(
-      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
+      [
+        'finalize',
+        '--brand',
+        'nimbra',
+        '--concept',
+        'fold',
+        '--user-choice',
+        'This one.',
+        '--accept-risk',
+        '--accept-colours',
+      ],
       cwd,
     );
     expect(r.status, r.stderr).toBe(0);
@@ -377,12 +397,155 @@ describe('cli (bundled)', () => {
     });
     await verifyConcept(ws, 'nimbra', 'fold');
     const r = run(
-      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
+      [
+        'finalize',
+        '--brand',
+        'nimbra',
+        '--concept',
+        'fold',
+        '--user-choice',
+        'This one.',
+        '--accept-risk',
+        '--accept-colours',
+      ],
       cwd,
     );
     expect(r.status, r.stderr).toBe(0);
     const out = JSON.parse(r.stdout);
     expect(out.kit.typography).toEqual({ lettering: 'family', standIn: { fontId: 'outfit', weight: 600 } });
+  }, 60_000);
+  it('primary change recolours the masters; --no-recolor keeps them', () => {
+    const { ws, dir: cwd } = synthBrand();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    const cdir = ws.conceptDir('nimbra', 'fold');
+    const from = readFileSync(join(cdir, 'symbol.svg'), 'utf8');
+    // A lockup in the same colour, once as an attribute and once in a style declaration; a neighbour shade stays.
+    writeFileSync(
+      join(cdir, 'lockup.svg'),
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path fill="#3B5BDB" d="M0 0h5v5z"/><path style="stroke:#3b5bdb;fill:#3b5bdc" d="M5 5h5v5z"/></svg>',
+    );
+    ok(['concept', 'update', '--brand', 'nimbra', '--concept', 'fold', '--lockup-horizontal', 'lockup.svg']);
+    const kept = ok([
+      'concept',
+      'update',
+      '--brand',
+      'nimbra',
+      '--concept',
+      'fold',
+      '--primary',
+      '#2b3a52',
+      '--no-recolor',
+    ]);
+    expect(kept.recolored).toBeUndefined();
+    expect(readFileSync(join(cdir, 'symbol.svg'), 'utf8')).toBe(from);
+    ok([
+      'concept',
+      'update',
+      '--brand',
+      'nimbra',
+      '--concept',
+      'fold',
+      '--primary',
+      '#3b5bdb',
+      '--no-recolor',
+    ]);
+    const r = ok(['concept', 'update', '--brand', 'nimbra', '--concept', 'fold', '--primary', '#2b3a52']);
+    expect(r.recolored).toEqual(
+      expect.arrayContaining([
+        { file: 'symbol.svg', from: '#3b5bdb', to: '#2b3a52', count: 2 },
+        { file: 'lockup.svg', from: '#3b5bdb', to: '#2b3a52', count: 2 },
+      ]),
+    );
+    expect(readFileSync(join(cdir, 'symbol.svg'), 'utf8')).not.toContain('#3b5bdb');
+    expect(readFileSync(join(cdir, 'symbol.svg'), 'utf8')).toContain('fill="#2b3a52"');
+    const lock = readFileSync(join(cdir, 'lockup.svg'), 'utf8');
+    expect(lock).toContain('fill="#2b3a52"');
+    expect(lock).toContain('stroke:#2b3a52;fill:#3b5bdc');
+  }, 60_000);
+  it('finalize fails on a stale master colour; --accept-colours records it', async () => {
+    const { ws, dir: cwd } = synthBrand();
+    const symbol = join(ws.conceptDir('nimbra', 'fold'), 'symbol.svg');
+    writeFileSync(symbol, readFileSync(symbol, 'utf8').replace('#ff8a3d', '#3d5a80'));
+    const fold = ws.concept('nimbra', 'fold');
+    ws.saveConcept({ ...fold, palette: { ...fold.palette, secondary: '#2b44b0', ink: '#1b2140' } });
+    await verifyConcept(ws, 'nimbra', 'fold');
+    const verify = JSON.parse(run(['verify', '--brand', 'nimbra', '--concept', 'fold'], cwd).stdout);
+    expect(verify.warnings.join(' ')).toMatch(/symbol\.svg uses #3d5a80, which is not in the palette/);
+    const args = [
+      'finalize',
+      '--brand',
+      'nimbra',
+      '--concept',
+      'fold',
+      '--user-choice',
+      'This one.',
+      '--accept-risk',
+    ];
+    const bad = run(args, cwd);
+    expect(bad.status).not.toBe(0);
+    expect(JSON.parse(bad.stderr).error.code).toBe('INVALID_INPUT');
+    expect(bad.stderr).toMatch(
+      /symbol\.svg uses #3d5a80, which is not in the palette — run `concept update --primary/,
+    );
+    const r = run([...args, '--accept-colours'], cwd);
+    expect(r.status, r.stderr).toBe(0);
+    const out = JSON.parse(r.stdout);
+    expect(out.kit.warnings.join(' ')).toMatch(/symbol\.svg uses #3d5a80/);
+    expect(out.warnings.join(' ')).toMatch(/symbol\.svg uses #3d5a80/);
+  }, 60_000);
+  it('family word --fill writes the given fill on the word', () => {
+    const { dir: cwd } = synthBrand();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    ok([
+      'family',
+      'glyphs',
+      '--brand',
+      'nimbra',
+      '--ref',
+      fixture('glyphs/nimbra-word.svg'),
+      '--text',
+      'NIMBRA',
+    ]);
+    const wm = ok([
+      'family',
+      'word',
+      '--brand',
+      'nimbra',
+      '--text',
+      'BRA',
+      '--take',
+      'nimbra-word:BRA',
+      '--fill',
+      '#1B2140',
+    ]);
+    expect(readFileSync(wm.out, 'utf8')).toContain('<g fill="#1b2140"');
+    const dflt = ok(['family', 'word', '--brand', 'nimbra', '--text', 'BRA', '--take', 'nimbra-word:BRA']);
+    expect(readFileSync(dflt.out, 'utf8')).toContain('<g fill="#111111"');
+    expect(
+      run(
+        [
+          'family',
+          'word',
+          '--brand',
+          'nimbra',
+          '--text',
+          'BRA',
+          '--take',
+          'nimbra-word:BRA',
+          '--fill',
+          'nope',
+        ],
+        cwd,
+      ).status,
+    ).not.toBe(0);
   }, 60_000);
   it('verify warns for a ground colour in a master', () => {
     const cwd = tmp();
@@ -918,7 +1081,10 @@ describe('small fixes found in use (bundled)', () => {
       '1',
     ]);
     const dir = join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'p1');
-    writeFileSync(join(dir, 'symbol.svg'), readFileSync(fixture('marks/fold-n.svg')));
+    writeFileSync(
+      join(dir, 'symbol.svg'),
+      readFileSync(fixture('marks/fold-n.svg'), 'utf8').replace(/#[0-9a-f]{6}/gi, '#1d4e89'),
+    );
     ok(['concept', 'update', '--brand', 'tidepool', '--concept', 'p1', '--symbol', 'symbol.svg']);
     ok(['verify', '--brand', 'tidepool', '--concept', 'p1']);
     const r = ok([

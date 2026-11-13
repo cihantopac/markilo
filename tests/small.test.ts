@@ -32,6 +32,7 @@ describe('small-size symbol', () => {
 
     const kit = await finalizeConcept(ws, 'nimbra', 'fold', {
       acceptRisk: true,
+      acceptColours: true,
       userChoice: 'Chosen in a test.',
     });
     expect(kit.files.symbolSmall).toBe('symbol-small.svg');
@@ -92,6 +93,7 @@ describe('small-size symbol', () => {
     expect(checks.some((x) => x.id.startsWith('small:'))).toBe(false);
     const kit = await finalizeConcept(ws, 'nimbra', 'fold', {
       acceptRisk: true,
+      acceptColours: true,
       userChoice: 'Chosen in a test.',
     });
     expect(kit.smallSizes).toBe('main');
@@ -122,6 +124,7 @@ describe('small-size symbol', () => {
     await verifyConcept(ws, 'nimbra', 'fold');
     const kit = await finalizeConcept(ws, 'nimbra', 'fold', {
       acceptRisk: true,
+      acceptColours: true,
       userChoice: 'Chosen in a test.',
     });
     expect(kit.files.wordmarkSmall).toBe('wordmark-small.svg');
