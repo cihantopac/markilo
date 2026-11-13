@@ -593,7 +593,8 @@ const sharedPrefix = (a: string, b: string) => {
 /**
  * A family hint: a `sameAs` hub (a non-social site elsewhere), sibling `data-lockup` marks on the page itself, two or
  * more outbound hosts that share a name stem (3+ letters) with the page's host or the organization name, or an
- * organization named differently from the product that matches an outbound host. Nothing is fetched.
+ * organization named differently from the product that matches an outbound host. Nothing is fetched. `hub` and
+ * `siblings` are URLs on every path.
  */
 export function familyHintOf(
   html: string,
@@ -632,14 +633,19 @@ export function familyHintOf(
       ? outboundHosts.find((h) => hostStem(h).includes(orgStem) || orgStem.includes(hostStem(h)))
       : undefined;
   if (stemmed.length >= 2 || orgHost) {
-    const siblings = stemmed.length ? stemmed : [orgHost!];
+    // hub and siblings are always URLs (origins here), as the other paths give and `research family --member` takes.
+    const origin = (h: string) => `https://${h}`;
+    const siblings = (stemmed.length ? stemmed : [orgHost!]).map(origin);
     let orgOwn = '';
     try {
       orgOwn = org?.url ? new URL(org.url).hostname.replace(/^www\./, '') : '';
     } catch {
       // not a URL
     }
-    return { hub: orgOwn && orgOwn !== host ? orgOwn : (orgHost ?? siblings[0]!), siblings };
+    return {
+      hub: orgOwn && orgOwn !== host ? origin(orgOwn) : orgHost ? origin(orgHost) : siblings[0]!,
+      siblings,
+    };
   }
   return undefined;
 }

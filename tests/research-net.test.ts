@@ -330,23 +330,38 @@ describe('familyHintOf from outbound links', () => {
   const page = 'https://nimbramail.test/';
   it('two outbound hosts sharing a name stem make a hint', () => {
     expect(familyHintOf('', undefined, page, ['nimbra-loop.test', 'nimbradock.test', 'other.test'])).toEqual({
-      hub: 'nimbra-loop.test',
-      siblings: ['nimbra-loop.test', 'nimbradock.test'],
+      hub: 'https://nimbra-loop.test',
+      siblings: ['https://nimbra-loop.test', 'https://nimbradock.test'],
     });
     expect(familyHintOf('', undefined, page, ['nimbradock.test', 'other.test'])).toBeUndefined();
   });
   it('an organization named differently from the product that matches a host makes a hint', () => {
     const org = { name: 'Nimbra', url: 'https://nimbra.test', sameAs: [] };
     expect(familyHintOf('', org, 'https://mail.example.test/', ['nimbra.test'], 'Mail')).toEqual({
-      hub: 'nimbra.test',
-      siblings: ['nimbra.test'],
+      hub: 'https://nimbra.test',
+      siblings: ['https://nimbra.test'],
     });
   });
   it('scanSite records outbound hosts, drops social ones and sets the hint', async () => {
     const scan = await scanSite(`${base}/nimbra`, { ...local, maxPages: 1 });
     expect(scan.outboundHosts).toEqual(['nimbra-loop.test', 'nimbradock.test', 'nimbrapost.test']);
     expect(scan.nameRendering).toBe('outlined');
-    expect(scan.familyHint?.siblings).toEqual(['nimbra-loop.test', 'nimbradock.test', 'nimbrapost.test']);
+    expect(scan.familyHint?.siblings).toEqual([
+      'https://nimbra-loop.test',
+      'https://nimbradock.test',
+      'https://nimbrapost.test',
+    ]);
+    // Every hint value is a URL `research family --member` takes.
+    for (const u of [scan.familyHint!.hub, ...scan.familyHint!.siblings])
+      expect(() => new URL(u)).not.toThrow();
+  });
+  it('research family reads a bare host as its https:// site', async () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Lumen' });
+    const host = new URL(base).host;
+    const r = await researchFamily(ws, 'lumen', [host], { ...local, maxPages: 1 });
+    expect(r.members[0]!.url.startsWith(`https://${host}`)).toBe(true);
+    expect(JSON.stringify(r.members[0])).not.toMatch(/Not a valid URL/);
   });
   it('family references take their id from the mark', async () => {
     const ws = Workspace.init(join(tmp(), 'brand'), 'T');

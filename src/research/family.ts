@@ -78,7 +78,11 @@ export async function researchFamily(
   const members: FamilyMember[] = [];
   const taken: string[] = [];
   const perHost = new Map<string, number>();
-  for (const url of memberUrls.slice(0, 12)) {
+  // A bare host (as an older familyHint gave) is read as its https:// site.
+  const urls = memberUrls.map((u) =>
+    /^[a-z][a-z\d+.-]*:\/\//i.test(u.trim()) ? u.trim() : `https://${u.trim()}`,
+  );
+  for (const url of urls.slice(0, 12)) {
     let host = url;
     try {
       host = new URL(url).hostname.replace(/^www\./, '');
