@@ -4,7 +4,7 @@ import { loadMark, type MarkSample, sampleFromRaster, sampleFromSvg } from '../a
 import { compareMarks } from '../analyze/similarity.js';
 import { MarkiloError } from '../core/errors.js';
 import { nowIso, sha256, writeFileSafe, writeJson } from '../core/fsx.js';
-import { resolveInsideReal, slugify } from '../core/paths.js';
+import { foldAscii, resolveInsideReal, slugify } from '../core/paths.js';
 import type { Workspace } from '../core/workspace.js';
 import { type ReferenceEntry, readReferences, referenceIndexPath } from '../report/originality.js';
 import { brandKeyOf, officialHostsFrom, sourceQualityOf } from '../report/references.js';
@@ -190,13 +190,80 @@ const extOf = (contentType: string, url: string): NewReference['ext'] | undefine
   return undefined;
 };
 
+/** Logos of clients, customers, partners or references (also Turkish: logolar, referans, müşteri) are not the site's own. */
+const THIRD_PARTY_LOGO =
+  /client|customer|partner|referen|testimonial|case-stud|logolar|referans|m[uü][sş]teri|is-?ortak|sponsor/i;
+
+export function isThirdPartyLogo(href: string, hint = ''): boolean {
+  let path = href;
+  try {
+    path = decodeURIComponent(new URL(href).pathname);
+  } catch {
+    // Keep the raw string.
+  }
+  return THIRD_PARTY_LOGO.test(path) || THIRD_PARTY_LOGO.test(hint);
+}
+
+/** example.co.uk and shop.example.co.uk share "example.co.uk"; an IP address or single label stands for itself. */
+export function registrableDomain(url: string): string | undefined {
+  let host: string;
+  try {
+    host = new URL(url).hostname.toLowerCase().replace(/\.$/, '');
+  } catch {
+    return undefined;
+  }
+  if (/^[\d.]+$/.test(host) || host.includes(':') || !host.includes('.')) return host;
+  const parts = host.split('.');
+  const sld = parts[parts.length - 2]!;
+  const take =
+    parts.length > 2 &&
+    parts[parts.length - 1]!.length === 2 &&
+    /^(co|com|org|net|gov|edu|ac|gen|web|bel|biz|info|ne|or|go)$/.test(sld)
+      ? 3
+      : 2;
+  return parts.slice(-take).join('.');
+}
+
+const GENERIC_WORD =
+  /^(logo|logos|logotype|logomark|brand|wordmark|mark|symbol|icon|icons|favicon|fav|apple|touch|android|chrome|mstile|safari|pinned|tab|site|header|footer|nav|main|primary|secondary|default|full|horizontal|vertical|stacked|white|black|dark|light|color|colour|colored|mono|inverse|reversed|small|large|big|retina|img|image|images|assets?|static|media|public|uploads?|svg|png|jpe?g|webp|ico|home|new|v\d+|\d+(x\d+)?|x\d+|[a-z])$/;
+
+/**
+ * True when an alt text, title or file name names something other than the competitor: a word that is neither the
+ * competitor's name nor a generic logo word.
+ */
+export function namesAnotherBrand(label: string, competitor: string): boolean {
+  const own = foldAscii(competitor)
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w.length >= 2);
+  const compact = own.join('');
+  const words = foldAscii(label)
+    .toLowerCase()
+    .replace(/\.[a-z0-9]{2,4}$/, '')
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w.length >= 3);
+  if (!words.length) return false;
+  if (compact && words.join('').includes(compact)) return false;
+  return words.some(
+    (w) => !GENERIC_WORD.test(w) && !own.includes(w) && !(compact.length >= 3 && compact.includes(w)),
+  );
+}
+
+const fileName = (url: string) => {
+  try {
+    return decodeURIComponent(new URL(url).pathname.split('/').pop() ?? '');
+  } catch {
+    return '';
+  }
+};
+
 export interface CompetitorResult {
   name: string;
   url: string;
   pagesRead: number;
   findingsAdded: number;
-  logo: { id: string; from: string; duplicate: boolean } | null;
-  icon: { id: string; from: string; duplicate: boolean } | null;
+  logo: { id: string; from: string; duplicate: boolean; confidence: 'high' | 'low' } | null;
+  icon: { id: string; from: string; duplicate: boolean; confidence: 'high' | 'low' } | null;
   issues: string[];
 }
 
@@ -226,8 +293,17 @@ export async function researchCompetitor(
     issues,
   };
 
-  // Logo: inline header SVG first (vector, exact), then <img> logos, then JSON-LD logo.
-  for (const svg of scan.inlineLogoSvgs) {
+  const lowNote = (confidence: 'high' | 'low') =>
+    confidence === 'low' ? ' · low confidence — check it' : '';
+  const siteDomain = registrableDomain(scan.finalUrl);
+  // Logo: the best-scored inline SVG first (vector, exact), then <img> logos, then the JSON-LD logo. Client, customer,
+  // partner and reference logos are skipped; one that names another brand or lives on another domain is low confidence.
+  for (const [i, svg] of scan.inlineLogoSvgs.entries()) {
+    const title = /<title[^>]*>([^<]*)</i.exec(svg)?.[1] ?? /aria-label=["']([^"']*)/i.exec(svg)?.[1] ?? '';
+    const confidence =
+      (scan.inlineLogoConfidence?.[i] ?? 'low') === 'high' && !namesAnotherBrand(title, competitor.name)
+        ? 'high'
+        : 'low';
     try {
       const r = await addReference(ws, brand, {
         name: competitor.name,
@@ -235,19 +311,29 @@ export async function researchCompetitor(
         bytes: new TextEncoder().encode(svg),
         ext: '.svg',
         category,
-        notes: 'logo (inline SVG)',
+        notes: `logo (inline SVG)${lowNote(confidence)}`,
       });
-      result.logo = { ...r, from: 'inline svg' };
+      result.logo = { ...r, from: 'inline svg', confidence };
       break;
     } catch (err) {
       issues.push(`inline SVG logo unusable: ${(err as Error).message.slice(0, 80)}`);
     }
   }
-  const imageUrls = [
-    ...scan.logoCandidates.map((l) => l.href),
-    ...(scan.organization?.logo ? [scan.organization.logo] : []),
-  ];
-  for (const u of result.logo ? [] : imageUrls.slice(0, 4)) {
+  const images = [
+    ...scan.logoCandidates,
+    ...(scan.organization?.logo ? [{ href: scan.organization.logo, hint: '' }] : []),
+  ].filter((l) => {
+    if (!isThirdPartyLogo(l.href, l.hint)) return true;
+    issues.push(`skipped ${l.href.slice(0, 80)}: a client, partner or reference logo`);
+    return false;
+  });
+  for (const { href: u, hint } of result.logo ? [] : images.slice(0, 4)) {
+    const confidence: 'high' | 'low' =
+      registrableDomain(u) !== siteDomain ||
+      namesAnotherBrand(hint === 'img' ? '' : hint, competitor.name) ||
+      namesAnotherBrand(fileName(u), competitor.name)
+        ? 'low'
+        : 'high';
     try {
       const bin = await fetchBinary(u, opts);
       const ext = extOf(bin.contentType, bin.url);
@@ -258,9 +344,9 @@ export async function researchCompetitor(
         bytes: bin.body,
         ext,
         category,
-        notes: 'logo (image)',
+        notes: `logo (image)${lowNote(confidence)}`,
       });
-      result.logo = { ...r, from: u };
+      result.logo = { ...r, from: u, confidence };
       break;
     } catch (err) {
       issues.push(`logo image ${u.slice(0, 80)} unusable: ${(err as Error).message.slice(0, 60)}`);
@@ -275,6 +361,10 @@ export async function researchCompetitor(
         Number(/apple/.test(b.rel)) - Number(/apple/.test(a.rel)),
     );
   for (const i of icons.slice(0, 3)) {
+    const confidence: 'high' | 'low' =
+      registrableDomain(i.href) !== siteDomain || namesAnotherBrand(fileName(i.href), competitor.name)
+        ? 'low'
+        : 'high';
     try {
       const bin = await fetchBinary(i.href, opts);
       const ext = extOf(bin.contentType, bin.url);
@@ -285,9 +375,9 @@ export async function researchCompetitor(
         bytes: bin.body,
         ext,
         category,
-        notes: `app/site icon (${i.rel}${i.sizes ? ` ${i.sizes}` : ''})`,
+        notes: `app/site icon (${i.rel}${i.sizes ? ` ${i.sizes}` : ''})${lowNote(confidence)}`,
       });
-      result.icon = { ...r, from: i.href };
+      result.icon = { ...r, from: i.href, confidence };
       break;
     } catch {
       // Try the next icon.

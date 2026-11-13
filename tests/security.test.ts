@@ -113,7 +113,7 @@ describe('malicious SVG', () => {
   });
   it('only lifts inline SVG logos that look like logos', () => {
     const html =
-      '<header><svg viewBox="0 0 10 10"><rect/></svg></header><main><svg viewBox="0 0 1 1" class="icon"/></main>';
+      '<header><svg viewBox="0 0 100 40"><rect/></svg></header><main><svg viewBox="0 0 1 1" class="icon"/></main>';
     expect(inlineLogoSvgs(html)).toHaveLength(1);
   });
 });

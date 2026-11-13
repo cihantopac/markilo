@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { createServer, type Server } from 'node:http';
 import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
@@ -8,7 +9,7 @@ import { safeGet } from '../src/net/http.js';
 import { readReferences } from '../src/report/originality.js';
 import { researchCompetitor } from '../src/research/competitors.js';
 import { researchFamily } from '../src/research/family.js';
-import { scanSite } from '../src/research/site.js';
+import { inlineLogoCandidates, scanSite } from '../src/research/site.js';
 import { researchSite } from '../src/research/site-research.js';
 import { mark, tmp } from './helpers.js';
 
@@ -100,7 +101,7 @@ beforeAll(async () => {
       return send(
         200,
         'text/html',
-        `<!doctype html><html lang="en"><head><title>Lumen</title><link rel="icon" type="image/svg+xml" href="/fav.svg"><link rel="mask-icon" href="/mask.svg" color="#7a3cf0"><link rel="stylesheet" href="/t7.css"></head><body><header><svg viewBox="0 0 10 10" class="logo"><path d="M0 0L10 10"></svg><a href="/"><svg viewBox="0 0 100 100" class="logo" aria-label="Lumen"><circle cx="50" cy="50" r="40" fill="#ff8a3d"/><script>alert(1)</script></svg></a></header><h1>Light for teams</h1></body></html>`,
+        `<!doctype html><html lang="en"><head><title>Lumen</title><link rel="icon" type="image/svg+xml" href="/fav.svg"><link rel="mask-icon" href="/mask.svg" color="#7a3cf0"><link rel="stylesheet" href="/t7.css"></head><body><header><svg viewBox="0 0 100 100" class="logo"><path d="M0 0L10 10"></svg><a href="/"><svg viewBox="0 0 100 100" class="logo" aria-label="Lumen"><circle cx="50" cy="50" r="40" fill="#ff8a3d"/><script>alert(1)</script></svg></a></header><h1>Light for teams</h1></body></html>`,
       );
     if (url === '/t7.css')
       return send(
@@ -114,6 +115,19 @@ beforeAll(async () => {
         'text/html',
         `<!doctype html><html><head><title>${url === '/hub' ? 'Tidepool' : 'Ledger'}</title><meta property="og:site_name" content="${url === '/hub' ? 'Tidepool' : 'Ledger'}"><link rel="mask-icon" href="/m.svg" color="${url === '/hub' ? '#118a55' : '#3b5bdb'}"></head><body><header><nav><svg viewBox="0 0 24 24" class="menu"><path d="M3 6h18M3 12h18"/></svg></nav></header><main><div class="hero"><svg data-lockup-art viewBox="0 0 200 60"><rect width="60" height="60" fill="${url === '/hub' ? '#118a55' : '#3b5bdb'}"/><path d="M80 10h100v40H80z" fill="#1b2140"/><script>alert(1)</script></svg></div></main></body></html>`,
       );
+    if (url === '/t9')
+      return send(
+        200,
+        'text/html',
+        `<!doctype html><html><head><title>Ledger</title><link rel="icon" sizes="192x192" href="${base.replace('127.0.0.1', 'localhost')}/icon.svg"></head><body><header><button class="menu-toggle" aria-label="Open menu"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><svg viewBox="0 0 24 24" class="icon-info"><circle cx="12" cy="12" r="10" fill="#888888"/><path d="M12 8v8"/></svg><a href="/" class="home"><svg viewBox="0 0 120 40"><rect width="40" height="40" fill="#3b5bdb"/><path d="M50 10h60v20H50z" fill="#1b2140"/></svg></a></header><h1>Books for teams</h1></body></html>`,
+      );
+    if (url === '/t9img')
+      return send(
+        200,
+        'text/html',
+        `<!doctype html><html><head><title>Ledger</title></head><body><section><img src="/img/clients/acme.png" alt="Acme logo"><img src="/img/referanslar/tidepool-logo.png" alt="Tidepool"></section><header><img src="/img/logo.svg" class="logo" alt="Ledger"></header></body></html>`,
+      );
+    if (url === '/img/logo.svg') return send(200, 'image/svg+xml', mark('bolt'));
     if (url === '/fav.svg')
       return send(
         200,
@@ -180,7 +194,7 @@ describe('site research keeps the identity it finds', () => {
     const r = await researchSite(ws, 'lumen', `${base}/t7`, { ...local, maxPages: 1, downloadAssets: true });
     expect(r.scan.inlineLogoSvgs).toHaveLength(1);
     expect(r.scan.inlineLogoSvgs[0]).not.toMatch(/script/);
-    expect(r.issues.join(' ')).toMatch(/inline SVG logo 1 skipped/);
+    expect(r.issues.join(' ')).toMatch(/inline SVG logo \d skipped: XML parse/);
     expect(r.references).toHaveLength(1);
     const refs = readReferences(ws, 'lumen').references;
     expect(refs.map((x) => x.category)).toEqual(['existing']);
@@ -264,6 +278,49 @@ describe('competitor research', () => {
     );
     expect(again.logo?.duplicate).toBe(true);
     expect(readReferences(ws, 'nimbra').references).toHaveLength(2);
+  });
+});
+
+describe('competitor logo picking', () => {
+  it('prefers the home-link mark over a menu icon and an info glyph', async () => {
+    const html = `<header><button class="menu-toggle"><svg viewBox="0 0 24 24"><path d="M3 6h18"/></svg></button><svg viewBox="0 0 24 24" class="icon-info"><circle r="9"/><path d="M12 8v8"/></svg><a href="/"><svg viewBox="0 0 120 40"><rect width="40" height="40"/></svg></a></header>`;
+    const c = inlineLogoCandidates(html);
+    expect(c).toHaveLength(1);
+    expect(c[0]).toMatchObject({ confidence: 'high' });
+    expect(c[0]!.svg).toContain('viewBox="0 0 120 40"');
+    const weak = inlineLogoCandidates(
+      '<header><svg viewBox="0 0 80 40"><rect width="80" height="40"/></svg></header>',
+    );
+    expect(weak[0]?.confidence).toBe('low');
+  });
+  it('takes the logo inside the home link, and marks an icon from another domain low confidence', async () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Nimbra' });
+    const r = await researchCompetitor(
+      ws,
+      'nimbra',
+      { name: 'Ledger', url: `${base}/t9` },
+      { ...local, maxPages: 1 },
+    );
+    expect(r.logo).toMatchObject({ from: 'inline svg', confidence: 'high' });
+    expect(r.icon?.confidence).toBe('low');
+    const refs = readReferences(ws, 'nimbra').references;
+    const logo = refs.find((x) => x.id === r.logo!.id)!;
+    expect(readFileSync(join(ws.referencesDir('nimbra'), logo.file), 'utf8')).toContain('#3b5bdb');
+    expect(refs.find((x) => x.id === r.icon!.id)?.notes).toMatch(/low confidence — check it/);
+  });
+  it('skips client and reference logos', async () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Nimbra' });
+    const r = await researchCompetitor(
+      ws,
+      'nimbra',
+      { name: 'Ledger', url: `${base}/t9img` },
+      { ...local, maxPages: 1 },
+    );
+    expect(r.logo?.from).toBe(`${base}/img/logo.svg`);
+    expect(hits).not.toContain('/img/clients/acme.png');
+    expect(hits).not.toContain('/img/referanslar/tidepool-logo.png');
   });
 });
 

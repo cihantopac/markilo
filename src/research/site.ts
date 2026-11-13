@@ -166,6 +166,8 @@ export interface SiteScan {
   inlineSvgLogos: number;
   /** Sanitized inline <svg> logos found in page headers (markup, ready for analysis). */
   inlineLogoSvgs: string[];
+  /** How sure the pick is, per inline logo: high inside a home link, named as a logo or the brand, or data-lockup*. */
+  inlineLogoConfidence: ('high' | 'low')[];
   manifest?: string;
   colors: { hex: string; count: number }[];
   /** Colours set only inside a dark theme (prefers-color-scheme: dark or [data-theme=dark]). */
@@ -345,38 +347,101 @@ function xmlAttributes(svg: string): string {
 
 const LOCKUP_HINT = /\bdata-(lockup|logo)[\w-]*/i;
 
+const UI_GLYPH =
+  /(^|[\s"'_:-])(menu|hamburger|burger|search|close|info|arrow|chevron|caret|external|flag|globe)(?=[\s"'_:-]|$)/i;
+const SHAPES = /<(path|circle|rect|ellipse|line|polyline|polygon|text|image|use)\b/gi;
+
+/** The <a> element that encloses position `index`, if any (its opening tag). */
+function enclosingLink(html: string, index: number): string | undefined {
+  const before = html.slice(Math.max(0, index - 1500), index);
+  const open = before.lastIndexOf('<a ');
+  if (open < 0 || before.indexOf('</a>', open) >= 0) return undefined;
+  return /<a\b[^>]*>/i.exec(before.slice(open))?.[0];
+}
+
+function isHomeHref(href: string, origin?: string): boolean {
+  if (/^(\.?\/|\/index\.html?|\/[a-z]{2}(-[a-z]{2})?\/?)([?#].*)?$/i.test(href)) return true;
+  if (!origin || !/^https?:/i.test(href)) return false;
+  try {
+    const u = new URL(href);
+    return u.origin === origin && (u.pathname === '/' || u.pathname === '');
+  } catch {
+    return false;
+  }
+}
+
+export interface InlineLogoCandidate {
+  svg: string;
+  score: number;
+  confidence: 'high' | 'low';
+}
+
 /**
- * Inline SVG logos: <svg> elements marked as a lockup or logo with data-lockup* / data-logo* (on the svg or its
- * wrapper) anywhere on the page; failing that, those inside <header>/<nav>, then any marked as a logo (class, id,
- * aria-label, title).
+ * Scores the inline <svg> elements that could be the site's logo. A mark inside a home link (<a href="/">), named as a
+ * logo or with the brand's name (class, id, aria-label, title) or marked data-lockup* / data-logo* scores high; a bare
+ * mark in the header scores low. Tiny single-shape glyphs (viewBox ≤ 24 on both sides) and UI glyphs (menu, search,
+ * close, info, arrow, chevron, external, flag, globe) are skipped. When the page marks its lockups, only those count.
  */
-export function inlineLogoSvgs(html: string): string[] {
-  const found: string[] = [];
-  const consider = (chunk: string, accept: (open: string, wrapper: string, svg: string) => boolean) => {
-    for (const m of chunk.matchAll(/<svg\b[\s\S]*?<\/svg>/gi)) {
-      if (found.length >= 3) return;
-      const svg = m[0];
-      if (svg.length > 150_000) continue;
-      const open = /<svg\b[^>]*>/i.exec(svg)?.[0] ?? '';
-      if (!/viewBox=/i.test(open) || !accept(open, wrapperTag(chunk, m.index), svg)) continue;
-      const xml = xmlAttributes(svg);
-      const full = xml.includes('xmlns=')
-        ? xml
-        : xml.replace(/<svg\b/i, '<svg xmlns="http://www.w3.org/2000/svg"');
-      if (!found.includes(full)) found.push(full);
-    }
-  };
-  // A page that marks its lockups says which marks are the logo: nothing else is guessed.
-  consider(html, (open, wrapper) => LOCKUP_HINT.test(open) || LOCKUP_HINT.test(wrapper));
-  if (found.length) return found;
-  const zones = [...html.matchAll(/<(header|nav)\b[\s\S]*?<\/\1>/gi)].map((m) => m[0]);
-  for (const z of zones) consider(z, () => true);
-  if (!found.length)
-    consider(
-      html,
-      (open, _w, svg) => /logo|brand|wordmark/i.test(open) || /<title>[^<]*(logo|brand)/i.test(svg),
+export function inlineLogoCandidates(
+  html: string,
+  opts: { origin?: string; brandName?: string } = {},
+): InlineLogoCandidate[] {
+  const zones = [...html.matchAll(/<(header|nav)\b[\s\S]*?<\/\1>/gi)].map((m) => [
+    m.index,
+    m.index + m[0].length,
+  ]);
+  const brand = opts.brandName
+    ?.toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, '')
+    .trim();
+  const out: (InlineLogoCandidate & { explicit: boolean; order: number })[] = [];
+  for (const m of html.matchAll(/<svg\b[\s\S]*?<\/svg>/gi)) {
+    const svg = m[0];
+    if (svg.length > 150_000) continue;
+    const open = /<svg\b[^>]*>/i.exec(svg)?.[0] ?? '';
+    const vb = /viewBox=["']\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(open);
+    if (!vb) continue;
+    const wrapper = wrapperTag(html, m.index);
+    const link = enclosingLink(html, m.index);
+    const title = /<title[^>]*>([^<]*)<\/title>/i.exec(svg)?.[1] ?? '';
+    const names =
+      [open, wrapper, link ?? '', title]
+        .join(' ')
+        .match(/\b(class|id|aria-label|title|alt|data-[\w-]+)=("[^"]*"|'[^']*')/gi)
+        ?.join(' ')
+        .concat(' ', title)
+        .toLowerCase() ?? title.toLowerCase();
+    const explicit = LOCKUP_HINT.test(open) || LOCKUP_HINT.test(wrapper);
+    const logoName = /logo|brand|wordmark/.test(names);
+    if (!explicit && !logoName && UI_GLYPH.test(names)) continue;
+    const shapes = (svg.match(SHAPES) ?? []).length;
+    if (!explicit && Number(vb[1]) <= 24 && Number(vb[2]) <= 24 && shapes <= 1) continue;
+    const home = Boolean(link && isHomeHref(/href=["']([^"']*)["']/i.exec(link)?.[1] ?? '', opts.origin));
+    const brandNamed = Boolean(
+      brand && brand.length >= 3 && names.replace(/[^\p{L}\p{N}]+/gu, '').includes(brand),
     );
-  return found.slice(0, 3);
+    const inZone = zones.some(([a, b]) => m.index >= a! && m.index < b!);
+    if (!explicit && !home && !logoName && !brandNamed && !inZone) continue;
+    const score =
+      (explicit ? 5 : 0) + (home ? 4 : 0) + (logoName ? 3 : 0) + (brandNamed ? 3 : 0) + (inZone ? 1 : 0);
+    const xml = xmlAttributes(svg);
+    const full = xml.includes('xmlns=')
+      ? xml
+      : xml.replace(/<svg\b/i, '<svg xmlns="http://www.w3.org/2000/svg"');
+    if (out.some((c) => c.svg === full)) continue;
+    out.push({ svg: full, score, confidence: score >= 3 ? 'high' : 'low', explicit, order: out.length });
+  }
+  // A page that marks its lockups says which marks are the logo: nothing else is guessed.
+  const pool = out.some((c) => c.explicit) ? out.filter((c) => c.explicit) : out;
+  return pool
+    .sort((a, b) => b.score - a.score || a.order - b.order)
+    .slice(0, 3)
+    .map(({ svg, score, confidence }) => ({ svg, score, confidence }));
+}
+
+/** The best inline SVG logo candidates, best first (see inlineLogoCandidates). */
+export function inlineLogoSvgs(html: string, opts: { origin?: string; brandName?: string } = {}): string[] {
+  return inlineLogoCandidates(html, opts).map((c) => c.svg);
 }
 
 function parseSitemap(xml: string, origin: string): string[] {
@@ -543,9 +608,17 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
   // Inline logos are sanitized here, so no page script or handler reaches the cache or the references.
   const logoIssues: string[] = [];
   const inlineSvgs: string[] = [];
-  for (const [i, svg] of inlineLogoSvgs(html).entries()) {
+  const inlineConfidence: ('high' | 'low')[] = [];
+  const org = organizationFrom(html, base);
+  const siteName = cleanText(metaContent(html, 'og:site_name'), 80);
+  const brandName = siteName ?? org?.name;
+  for (const [i, cand] of inlineLogoCandidates(html, {
+    origin,
+    ...(brandName ? { brandName } : {}),
+  }).entries()) {
     try {
-      inlineSvgs.push(sanitizeSvg(svg));
+      inlineSvgs.push(sanitizeSvg(cand.svg));
+      inlineConfidence.push(cand.confidence);
     } catch (err) {
       logoIssues.push(`inline SVG logo ${i + 1} skipped: ${(err as Error).message.slice(0, 80)}`);
     }
@@ -588,11 +661,9 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
       .slice(0, 12)
       .map(([hex, count]) => ({ hex, count }));
   };
-  const org = organizationFrom(html, base);
   const h = pages[0]!;
   const themeColor = cleanText(metaContent(html, 'theme-color'), 30);
   const ogImage = metaContent(html, 'og:image');
-  const siteName = cleanText(metaContent(html, 'og:site_name'), 80);
   const nameCase = nameCaseOf(siteName, org?.name, h.title);
   return {
     url: rawUrl,
@@ -610,6 +681,7 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
     logoCandidates: logoCandidates.slice(0, 10),
     inlineSvgLogos: inlineSvgs.length,
     inlineLogoSvgs: inlineSvgs,
+    inlineLogoConfidence: inlineConfidence,
     ...(manifestHref ? { manifest: abs(manifestHref, base) } : {}),
     colors: tally(sig.colors),
     darkColors: tally(sig.darkColors),
