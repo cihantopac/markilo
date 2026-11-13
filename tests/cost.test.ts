@@ -171,3 +171,73 @@ describe('cost: a time budget', () => {
     expect(code(['cost', '--brand', 'tidepool', '--budget-minutes=-5'], cwd)).toBe('USAGE');
   });
 });
+
+describe('cost: what it measures', () => {
+  it('two overlapping agents: agent minutes add up, wall minutes do not', () => {
+    const s = costSummary({
+      ...log([
+        { phase: 'explore', at: '2026-11-12T10:00:00.000Z', tokens: 100_000, minutes: 5 },
+        { phase: 'explore', at: '2026-11-12T10:01:00.000Z', tokens: 100_000, minutes: 5 },
+      ]),
+      budgetMinutes: 8,
+    });
+    expect(s.agentMinutes).toBe(10);
+    expect(s.minutes).toBe(10);
+    expect(s.wallMinutes).toBe(6);
+    expect(s.status).toBe('over');
+    expect(s.next).toMatch(/10 agent minutes/);
+    expect(s.next).toMatch(/6 minutes of wall-clock/);
+  });
+  it('says subagents only while the session is missing', () => {
+    const s = costSummary(log([{ phase: 'explore', at: '', usd: 2 }]));
+    expect(s.label).toBe('subagents only — the session itself is not counted');
+    expect(s.subagentUsd).toBe(2);
+    expect(s.wallMinutes).toBeUndefined();
+    const withSession = costSummary(
+      log([
+        { phase: 'explore', at: '', usd: 2 },
+        { phase: 'explore', at: '', usd: 1, source: 'session' },
+      ]),
+    );
+    expect(withSession.label).toBeUndefined();
+    expect(withSession.subagentUsd).toBe(2);
+  });
+  it('parts of one interrupted agent add up; a part without minutes is incomplete', () => {
+    const cwd = workspace();
+    const base = ['cost', '--brand', 'tidepool', '--phase', 'explore'];
+    ok([...base, '--tokens', '100000', '--minutes', '4', '--agent', 'designer-a', '--part', '1'], cwd);
+    const s = ok([...base, '--tokens', '50000', '--agent', 'designer-a', '--part', '2'], cwd);
+    expect(s.agents).toEqual([
+      expect.objectContaining({
+        agent: 'designer-a',
+        parts: 2,
+        tokens: 150_000,
+        minutes: 4,
+        minutesIncomplete: true,
+      }),
+    ]);
+    expect(s.minutesIncomplete).toBe(true);
+    const f = JSON.parse(readFileSync(costFile(cwd), 'utf8'));
+    expect(f.entries[1]).toMatchObject({ agent: 'designer-a', part: 2, minutesUnknown: true });
+    expect(f.entries[0].minutesUnknown).toBeUndefined();
+    expect(code([...base, '--tokens', '1', '--part', '2'], cwd)).toBe('INVALID_INPUT');
+    expect(code([...base, '--tokens', '1', '--agent', 'x', '--part', '0'], cwd)).toBe('INVALID_INPUT');
+  });
+  it('a 1.3 log reads unchanged', () => {
+    const entries: CostLog['entries'] = [
+      { phase: 'explore', at: '2026-11-12T10:00:00.000Z', tokens: 1_000_000, minutes: 3 },
+      { phase: 'refine', at: '2026-11-12T10:05:00.000Z', usd: 1.5, minutes: 2, source: 'session' },
+    ];
+    const s = costSummary(log(entries));
+    expect(s).toMatchObject({
+      totalUsd: 2.1,
+      minutes: 5,
+      lowerBound: false,
+      basis: 'mixed',
+      status: 'ok',
+    });
+    expect('minutesIncomplete' in s).toBe(false);
+    expect('agents' in s).toBe(false);
+    expect(s.phases.map((p) => p.phase)).toEqual(['explore', 'refine']);
+  });
+});

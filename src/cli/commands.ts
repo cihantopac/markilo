@@ -2443,7 +2443,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Track what the creative work cost per phase (understand, explore, refine, verify, export) against a budget. Without options: the summary; status "over" means stop paid work and ask.',
     usage:
-      'cost --brand <slug> [--phase <p> (--tokens <n> | --usd <x> | --session-usd <total>) [--minutes <m>] [--rate <usd per M tokens>] [--note <text>]] [--budget <usd>] [--budget-minutes <m>]',
+      'cost --brand <slug> [--phase <p> (--tokens <n> | --usd <x> | --session-usd <total>) [--minutes <m>] [--agent <name> [--part <n>]] [--rate <usd per M tokens>] [--note <text>]] [--budget <usd>] [--budget-minutes <m>]',
     options: {
       ...brandOpt,
       phase: { type: 'string', description: `Phase: ${PHASES.join(', ')}` },
@@ -2454,7 +2454,17 @@ export const COMMANDS: CommandSpec[] = [
         description:
           'The session total Claude Code shows, in USD: records the main session’s share since the last call, less the agent work recorded since then (not combinable with --tokens/--usd)',
       },
-      minutes: { type: 'string', description: 'Wall-clock minutes' },
+      minutes: { type: 'string', description: 'Agent minutes of the step (parallel agents add up)' },
+      agent: {
+        type: 'string',
+        description:
+          'The subagent this entry belongs to; the parts of one interrupted and resumed agent add up under one name',
+      },
+      part: {
+        type: 'string',
+        description:
+          'Which part of that agent this is (1, 2 …); a part without --minutes is flagged incomplete',
+      },
       rate: {
         type: 'string',
         description: `USD per million tokens for the estimate (default ${DEFAULT_RATE}, measured on Markilo 1.0 runs)`,
@@ -2491,6 +2501,16 @@ export const COMMANDS: CommandSpec[] = [
         };
         const phase = phaseOf(c.str('phase')!);
         const minutes = n('minutes');
+        const agent = c.str('agent')?.trim();
+        if (c.str('agent') !== undefined && !agent)
+          throw new MarkiloError('INVALID_INPUT', '--agent needs a name.');
+        if (c.str('part') !== undefined && !agent)
+          throw new MarkiloError('INVALID_INPUT', '--part needs --agent <name>.');
+        if (agent && c.str('session-usd'))
+          throw new MarkiloError('INVALID_INPUT', '--agent cannot be combined with --session-usd.');
+        const partNo = c.num('part');
+        if (partNo !== undefined && !(Number.isInteger(partNo) && partNo >= 1))
+          throw new MarkiloError('INVALID_INPUT', '--part must be a whole number from 1.');
         const note = c.str('note') ? { note: c.str('note')!.slice(0, 200) } : {};
         if (c.str('session-usd')) {
           if (c.str('tokens') || c.str('usd') || c.str('rate'))
@@ -2526,6 +2546,13 @@ export const COMMANDS: CommandSpec[] = [
           ...(usd !== undefined ? { usd } : {}),
           ...(minutes !== undefined ? { minutes } : {}),
           ...(rate !== undefined ? { rate } : {}),
+          ...(agent
+            ? {
+                agent,
+                part: partNo ?? log.entries.filter((e) => e.agent === agent).length + 1,
+                ...(minutes === undefined ? { minutesUnknown: true as const } : {}),
+              }
+            : {}),
           ...note,
         });
       }

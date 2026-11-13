@@ -13,7 +13,7 @@
 
 Rounds: at most two rounds of three proposals on Markilo's own initiative; a third needs the user's direction
 (`concept new --round 3 --directed "<their words>"`). Track cost per phase with `markilo cost`; the default budget is
-$12 per brand (`markilo cost --brand <slug> --budget <usd>` to change it); `--budget-minutes <m>` adds a time budget,
+$12 per brand (`markilo cost --brand <slug> --budget <usd>` to change it); `--budget-minutes <m>` adds a time budget (agent minutes: parallel agents add up; `wallMinutes` shows the clock),
 since waiting is often the cost the user feels.
 
 Append one dated line per significant decision to `brand/brands/<slug>/decisions.md` (Edit the file):

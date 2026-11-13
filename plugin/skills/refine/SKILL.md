@@ -29,7 +29,9 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    changing what the user chose — once, then verify again; do not critique an unchanged image twice. Record
    `--phase verify` from the agent's task notification (`subagent_tokens`, `duration_ms` / 60000). When Claude Code
    shows a session total, record it at the end of each phase: `markilo cost --brand <slug> --phase <p> --session-usd
-   <total>` (it covers the agents; Markilo subtracts what they recorded). Without one, the cost stays a lower bound.
+   <total>` (it covers the agents; Markilo subtracts what they recorded). Without one (an app with no session total: use its usage view or tool if it has one), the figure is
+   subagents only — the session itself is not counted. An agent interrupted by a usage limit and resumed is recorded per
+   part under one name: `markilo cost --brand <slug> --phase <p> --tokens <n> --minutes <m> --agent <name> --part <n>`.
 5. Show the user the refined identity (`markilo proposals --brand <slug> --concepts <id>`, the gallery), the measured
    checks, the originality verdict and the critic's notes labelled as judgment. Further changes go back to step 2.
 6. When the user approves: `markilo finalize --brand <slug> --concept <id> --user-choice "<their words>" --tagline "<tagline>"`

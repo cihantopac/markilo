@@ -22,6 +22,7 @@ export const DEFAULT_BUDGET_USD = 12;
 export const DEFAULT_RATE = 0.6;
 const LOWER_BOUND_NOTE =
   "Only agent work is recorded; the main session's own work is missing, so the real cost is higher. Record it with markilo cost --phase <p> --session-usd <total shown by Claude Code>.";
+const SUBAGENTS_ONLY = 'subagents only — the session itself is not counted';
 /** Share of the budget after which the report warns. */
 const WARN_AT = 0.8;
 
@@ -38,6 +39,12 @@ export interface CostEntry {
   source?: 'agent' | 'session';
   /** On a session entry: agent dollars the session total already contained, subtracted from its share. */
   agentUsdIncluded?: number;
+  /** The subagent this entry belongs to; parts of one interrupted agent share the name and add up. */
+  agent?: string;
+  /** Which part of an interrupted (resumed) agent this entry is, from 1. */
+  part?: number;
+  /** A part whose minutes could not be read from the harness: the agent minutes are then incomplete. */
+  minutesUnknown?: true;
 }
 
 export interface CostLog {
@@ -98,6 +105,17 @@ export function sessionShare(log: CostLog, total: number): { usd: number; agentU
   return { usd: r6(Math.max(0, delta - agent)), agentUsdIncluded: r6(agent) };
 }
 
+/** Minutes from the first entry's `at` to the last entry's `at` plus its minutes; undefined without readable times. */
+function wallMinutesOf(entries: CostEntry[]): number | undefined {
+  const times = entries
+    .map((e) => ({ t: Date.parse(e.at), m: e.minutes ?? 0 }))
+    .filter((x) => Number.isFinite(x.t));
+  if (!times.length) return undefined;
+  const start = Math.min(...times.map((x) => x.t));
+  const end = Math.max(...times.map((x) => x.t + x.m * 60_000));
+  return r2((end - start) / 60_000);
+}
+
 /** Totals per phase and against the budget; `stop` means the next paid step would go over it. */
 export function costSummary(log: CostLog) {
   const phases = PHASES.map((phase) => {
@@ -122,6 +140,24 @@ export function costSummary(log: CostLog) {
   const lowerBound = !log.entries.some((e) => e.source === 'session');
   const level = (used: number, budget: number) => (used >= budget ? 2 : used >= budget * WARN_AT ? 1 : 0);
   const minutes = r2(phases.reduce((a, p) => a + p.minutes, 0));
+  const wall = wallMinutesOf(log.entries);
+  const wallText = wall !== undefined ? ` (${wall} minutes of wall-clock time)` : '';
+  const agentMinutesText = `${minutes} agent minutes (parallel agents add up)`;
+  const subagentUsd = r2(
+    log.entries.filter((e) => e.source !== 'session').reduce((a, e) => a + entryUsd(e).usd, 0),
+  );
+  const named = [...new Set(log.entries.filter((e) => e.agent).map((e) => e.agent!))].map((agent) => {
+    const es = log.entries.filter((e) => e.agent === agent);
+    return {
+      agent,
+      parts: es.length,
+      tokens: es.reduce((a, e) => a + (e.tokens ?? 0), 0),
+      minutes: r2(es.reduce((a, e) => a + (e.minutes ?? 0), 0)),
+      usd: r2(es.reduce((a, e) => a + entryUsd(e).usd, 0)),
+      ...(es.some((e) => e.minutesUnknown) ? { minutesIncomplete: true } : {}),
+    };
+  });
+  const minutesIncomplete = log.entries.some((e) => e.minutesUnknown);
   const usdLevel = level(total, log.budgetUsd);
   const timeLevel = log.budgetMinutes ? level(minutes, log.budgetMinutes) : 0;
   const status = (['ok', 'warn', 'over'] as const)[Math.max(usdLevel, timeLevel)]!;
@@ -131,6 +167,11 @@ export function costSummary(log: CostLog) {
     totalUsd: total,
     remainingUsd: remaining,
     minutes,
+    agentMinutes: minutes,
+    ...(wall !== undefined ? { wallMinutes: wall } : {}),
+    ...(minutesIncomplete ? { minutesIncomplete: true } : {}),
+    subagentUsd,
+    ...(named.length ? { agents: named } : {}),
     ...(log.budgetMinutes
       ? { minutesBudget: log.budgetMinutes, minutesRemaining: r2(log.budgetMinutes - minutes) }
       : {}),
@@ -139,12 +180,13 @@ export function costSummary(log: CostLog) {
     basis,
     lowerBound,
     note: lowerBound ? LOWER_BOUND_NOTE : undefined,
+    ...(lowerBound ? { label: SUBAGENTS_ONLY } : {}),
     phases,
     next:
       byTime && status === 'over'
-        ? 'Time budget reached: stop starting agents, show the user what exists and ask whether to continue (markilo cost --budget-minutes <m>).'
+        ? `Time budget reached (${agentMinutesText}${wallText}): stop starting agents, show the user what exists and ask whether to continue (markilo cost --budget-minutes <m>).`
         : byTime && status === 'warn'
-          ? `Under ${r2(log.budgetMinutes! - minutes)} minutes of the time budget left: finish the current step, then ask before starting another round or agent.`
+          ? `Under ${r2(log.budgetMinutes! - minutes)} agent minutes of the time budget left (${agentMinutesText}${wallText}): finish the current step, then ask before starting another round or agent.`
           : status === 'over'
             ? 'Budget reached: stop paid work, show the user what exists and ask whether to raise the budget (markilo cost --budget <usd>).'
             : status === 'warn'
