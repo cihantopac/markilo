@@ -152,6 +152,7 @@ import { researchFamily } from '../research/family.js';
 import { scanMonorepo } from '../research/monorepo.js';
 import { addFinding, addSource, mergeRepoScan, summarizeProfile } from '../research/profile.js';
 import { DEFAULT_MAX_FILES, scanRepo, summarizeScan } from '../research/repo.js';
+import type { SiteScan } from '../research/site.js';
 import { researchSite } from '../research/site-research.js';
 import { lintSvg } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
@@ -165,6 +166,33 @@ declare const __MARKILO_VERSION__: string;
 export const VERSION = typeof __MARKILO_VERSION__ === 'string' ? __MARKILO_VERSION__ : '0.0.0-dev';
 
 const ws = (c: RunContext) => Workspace.locate(c.cwd, c.str('workspace'));
+/** The default `research site` output: the scan's essentials, including every family signal. */
+export function siteDigest(scan: SiteScan, identityColors: unknown) {
+  return {
+    url: scan.finalUrl,
+    pagesRead: scan.pages.map((x) => new URL(x.url).pathname),
+    usedSitemap: scan.usedSitemap,
+    title: scan.title,
+    description: scan.description,
+    organization: scan.organization,
+    ...(scan.nameCase ? { nameCase: scan.nameCase } : {}),
+    colors: scan.colors.slice(0, 6).map((x) => x.hex),
+    ...(scan.darkColors.length ? { darkColors: scan.darkColors.slice(0, 6).map((x) => x.hex) } : {}),
+    ...(scan.iconColors.length ? { iconColors: scan.iconColors.map((x) => x.hex) } : {}),
+    identityColors,
+    fonts: scan.fonts,
+    icons: scan.icons.length,
+    logos: { img: scan.logoCandidates.length, inlineSvg: scan.inlineSvgLogos },
+    clientRenderedPages: scan.clientRenderedPages,
+    accessIssues: scan.accessIssues.length,
+    // The family signals are the reason to read this digest first: never drop them.
+    ...(scan.nameRendering ? { nameRendering: scan.nameRendering } : {}),
+    ...(scan.outboundHosts?.length ? { outboundHosts: scan.outboundHosts } : {}),
+    ...(scan.familyHint ? { familyHint: scan.familyHint } : {}),
+    untrustedNote: scan.untrustedNote,
+  };
+}
+
 /** Masters that draw a ground colour (onLight / onDark) without the primary: exports pick the ground colour themselves. */
 function groundColourWarnings(w: Workspace, brand: string, id: string): string[] {
   const cpt = w.concept(brand, id);
@@ -840,27 +868,7 @@ export const COMMANDS: CommandSpec[] = [
         downloadAssets: c.bool('download-assets'),
       });
       const scan = r.scan;
-      const digest = c.bool('full')
-        ? scan
-        : {
-            url: scan.finalUrl,
-            pagesRead: scan.pages.map((x) => new URL(x.url).pathname),
-            usedSitemap: scan.usedSitemap,
-            title: scan.title,
-            description: scan.description,
-            organization: scan.organization,
-            ...(scan.nameCase ? { nameCase: scan.nameCase } : {}),
-            colors: scan.colors.slice(0, 6).map((x) => x.hex),
-            ...(scan.darkColors.length ? { darkColors: scan.darkColors.slice(0, 6).map((x) => x.hex) } : {}),
-            ...(scan.iconColors.length ? { iconColors: scan.iconColors.map((x) => x.hex) } : {}),
-            identityColors: r.identityColors,
-            fonts: scan.fonts,
-            icons: scan.icons.length,
-            logos: { img: scan.logoCandidates.length, inlineSvg: scan.inlineSvgLogos },
-            clientRenderedPages: scan.clientRenderedPages,
-            accessIssues: scan.accessIssues.length,
-            untrustedNote: scan.untrustedNote,
-          };
+      const digest = c.bool('full') ? scan : siteDigest(scan, r.identityColors);
       return {
         source: r.sourceId,
         findingsAdded: r.findingsAdded,

@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { normalizeColor } from '../src/analyze/color.js';
+import { siteDigest } from '../src/cli/commands.js';
 import { writeJson } from '../src/core/fsx.js';
 import { Workspace } from '../src/core/workspace.js';
 import { safeGet } from '../src/net/http.js';
@@ -430,6 +431,13 @@ describe('name casing', () => {
     expect(
       (await researchSite(ws, 'caps', `${base}/caps`, { ...local, maxPages: 1 })).suggest,
     ).toBeUndefined();
+  });
+  it('the default research site digest keeps the family signals', async () => {
+    const scan = await scanSite(`${base}/nimbra`, { ...local, maxPages: 1 });
+    const d = siteDigest(scan, []);
+    expect(d.nameRendering).toBe('outlined');
+    expect(d.outboundHosts).toEqual(expect.arrayContaining(['nimbra-loop.test']));
+    expect(d.familyHint?.siblings.length).toBeGreaterThanOrEqual(2);
   });
   it('says nothing when the name is mixed case or the sources disagree', async () => {
     expect((await scanSite(`${base}/mixed`, { ...local, maxPages: 1 })).nameCase).toBeUndefined();
