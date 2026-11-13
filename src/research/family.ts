@@ -49,7 +49,7 @@ function svgColors(svg: string): string[] {
 
 /**
  * Reads the sites of a product family (the hub and its members) where the family's rule actually lives: each member's
- * inline lockups and logos become `family` references named after the member, and its brand colours are listed so a
+ * inline lockups and logos become `family` references named `<host>-<n>`, and its brand colours are listed so a
  * new member can take a free one. Robots.txt is respected by the site scan; inline SVG is sanitized before it is saved.
  */
 export async function researchFamily(
@@ -94,8 +94,10 @@ export async function researchFamily(
       const issues = [...scan.logoIssues];
       for (const [i, svg] of scan.inlineLogoSvgs.entries()) {
         try {
+          const refName = `${host}-${perHost.set(host, (perHost.get(host) ?? 0) + 1).get(host)}`;
           const r = await addReference(ws, brand, {
-            name: `${host}-${perHost.set(host, (perHost.get(host) ?? 0) + 1).get(host)}`,
+            name: refName,
+            id: refName,
             source: scan.finalUrl,
             bytes: new TextEncoder().encode(svg),
             ext: '.svg',

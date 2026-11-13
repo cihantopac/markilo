@@ -392,6 +392,13 @@ export function inlineLogoCandidates(
   html: string,
   opts: { origin?: string; brandName?: string } = {},
 ): InlineLogoCandidate[] {
+  return locatedLogoCandidates(html, opts).map(({ svg, score, confidence }) => ({ svg, score, confidence }));
+}
+
+function locatedLogoCandidates(
+  html: string,
+  opts: { origin?: string; brandName?: string },
+): (InlineLogoCandidate & { at: number })[] {
   const zones = [...html.matchAll(/<(header|nav)\b[\s\S]*?<\/\1>/gi)].map((m) => [
     m.index,
     m.index + m[0].length,
@@ -400,7 +407,7 @@ export function inlineLogoCandidates(
     ?.toLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, '')
     .trim();
-  const out: (InlineLogoCandidate & { explicit: boolean; order: number })[] = [];
+  const out: (InlineLogoCandidate & { explicit: boolean; order: number; at: number })[] = [];
   for (const m of html.matchAll(/<svg\b[\s\S]*?<\/svg>/gi)) {
     const svg = m[0];
     if (svg.length > 150_000) continue;
@@ -435,14 +442,21 @@ export function inlineLogoCandidates(
       ? xml
       : xml.replace(/<svg\b/i, '<svg xmlns="http://www.w3.org/2000/svg"');
     if (out.some((c) => c.svg === full)) continue;
-    out.push({ svg: full, score, confidence: score >= 3 ? 'high' : 'low', explicit, order: out.length });
+    out.push({
+      svg: full,
+      score,
+      confidence: score >= 3 ? 'high' : 'low',
+      explicit,
+      order: out.length,
+      at: m.index,
+    });
   }
   // A page that marks its lockups says which marks are the logo: nothing else is guessed.
   const pool = out.some((c) => c.explicit) ? out.filter((c) => c.explicit) : out;
   return pool
     .sort((a, b) => b.score - a.score || a.order - b.order)
     .slice(0, 3)
-    .map(({ svg, score, confidence }) => ({ svg, score, confidence }));
+    .map(({ svg, score, confidence, at }) => ({ svg, score, confidence, at }));
 }
 
 /** The best inline SVG logo candidates, best first (see inlineLogoCandidates). */
@@ -459,10 +473,14 @@ export function nameRenderingOf(
   html: string,
   opts: { origin?: string; brandName?: string } = {},
 ): NameRendering {
-  const top = inlineLogoCandidates(html, opts)[0];
+  const top = locatedLogoCandidates(html, opts)[0];
   if (top) {
     if (/<text\b/i.test(top.svg)) return 'live-text';
-    if (/<(path|circle|rect|ellipse|polygon|polyline)\b/i.test(top.svg)) return 'outlined';
+    if (/<(path|circle|rect|ellipse|polygon|polyline)\b/i.test(top.svg)) {
+      // An icon beside a live-text name is not an outlined name: the name must be what the SVG draws.
+      if (!textBesideSvg(html, top.at)) return 'outlined';
+      return 'live-text';
+    }
   }
   const zone = [...html.matchAll(/<(header|nav)\b[\s\S]*?<\/\1>/gi)].map((m) => m[0]).join('\n') || html;
   for (const m of zone.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)) {
@@ -479,6 +497,28 @@ export function nameRenderingOf(
     if (/[\p{L}\p{N}]/u.test(m[3]!)) return 'live-text';
   if (/<img\b[^>]*(logo|brand|wordmark)/i.test(zone)) return 'image';
   return 'unknown';
+}
+
+/** Letters or digits next to the SVG at `at`, inside its home link or logo container (tags and the SVG itself stripped). */
+function textBesideSvg(html: string, at: number): boolean {
+  const before = html.slice(Math.max(0, at - 1500), at);
+  const end = html.slice(at).search(/<\/svg>/i);
+  if (end < 0) return false;
+  const after = html.slice(at + end + 6, at + end + 6 + 1500);
+  let container = '';
+  const open = before.lastIndexOf('<a ');
+  if (open >= 0 && before.indexOf('</a>', open) < 0) {
+    const close = after.indexOf('</a>');
+    container = before.slice(open).replace(/^<a\b[^>]*>/i, '') + (close >= 0 ? after.slice(0, close) : '');
+  } else {
+    const wrap = /<(div|span|p|h1|a|header)\b[^>]*(?:logo|brand|wordmark)[^>]*>(?![\s\S]*<\/\1>)/i.exec(
+      before,
+    );
+    if (!wrap) return false;
+    const close = new RegExp(`</${wrap[1]}>`, 'i').exec(after);
+    container = before.slice(wrap.index + wrap[0].length) + (close ? after.slice(0, close.index) : after);
+  }
+  return /[\p{L}\p{N}]/u.test(container.replace(/<svg\b[\s\S]*?<\/svg>/gi, '').replace(/<[^>]*>/g, ''));
 }
 
 const SOCIAL_HOSTS =

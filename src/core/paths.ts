@@ -8,7 +8,8 @@ export function slugify(input: string): string {
   const slug = folded
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-    .slice(0, 64);
+    .slice(0, 64)
+    .replace(/-+$/g, '');
   if (!slug) throw new MarkiloError('INVALID_INPUT', `Cannot derive a slug from "${input}".`);
   return slug;
 }

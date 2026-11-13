@@ -10,7 +10,7 @@ import { safeGet } from '../src/net/http.js';
 import { readReferences, referenceIndexPath } from '../src/report/originality.js';
 import { researchCompetitor } from '../src/research/competitors.js';
 import { researchFamily } from '../src/research/family.js';
-import { inlineLogoCandidates, scanSite } from '../src/research/site.js';
+import { inlineLogoCandidates, nameRenderingOf, scanSite } from '../src/research/site.js';
 import { researchSite } from '../src/research/site-research.js';
 import { mark, tmp } from './helpers.js';
 
@@ -271,6 +271,26 @@ describe('research family on a reference added before', () => {
   });
 });
 
+describe('nameRenderingOf', () => {
+  const icon = '<svg viewBox="0 0 40 40"><path d="M2 2h20v20H2z"/><circle cx="30" cy="30" r="8"/></svg>';
+  const word =
+    '<svg viewBox="0 0 200 40"><path d="M2 2h20v36H2z"/><path d="M30 2h20v36H30z"/><path d="M60 2h20v36H60z"/></svg>';
+  const render = (inner: string) => nameRenderingOf(`<header><a href="/">${inner}</a></header>`);
+  it('an icon next to a live-text name is live-text', () => {
+    expect(render(`${icon}<span>Ledger</span>`)).toBe('live-text');
+    expect(render(`${icon} Ledger`)).toBe('live-text');
+  });
+  it('a drawn word or an icon alone stays outlined', () => {
+    expect(render(word)).toBe('outlined');
+    expect(render(icon)).toBe('outlined');
+  });
+  it('an icon in a logo container beside a text node is live-text', () => {
+    expect(nameRenderingOf(`<header><div class="logo">${icon}<span>Ledger</span></div></header>`)).toBe(
+      'live-text',
+    );
+  });
+});
+
 describe('family naming systems', () => {
   const fam = async (urls: string[]) => {
     const ws = Workspace.init(join(tmp(), 'brand'), 'T');
@@ -297,6 +317,7 @@ describe('family naming systems', () => {
     ws.addBrand({ name: 'Lumen' });
     await researchFamily(ws, 'lumen', [`${base}/drawn`], { ...local, maxPages: 1 });
     expect(readReferences(ws, 'lumen').references.map((x) => x.name)).toEqual(['127.0.0.1-1']);
+    expect(readReferences(ws, 'lumen').references.map((x) => x.id)).toEqual(['127-0-0-1-1']);
   });
   it('sameAs hub sets familyHint', async () => {
     const scan = await scanSite(`${base}/hub2`, { ...local, maxPages: 1 });

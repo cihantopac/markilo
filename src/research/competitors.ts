@@ -40,6 +40,8 @@ export const USER_REFERENCE: ReferenceCategory[] = ['inspiration', 'dislike', 'e
 
 export interface NewReference {
   name: string;
+  /** Explicit reference id (a slug); default is derived from the name and the running count. */
+  id?: string;
   source: string;
   bytes: Uint8Array;
   ext: '.svg' | '.png' | '.jpg' | '.ico';
@@ -99,7 +101,7 @@ export async function addReference(
   const hash = sha256(bytes);
   const dup = idx.references.find((r) => r.notes?.includes(`sha256:${hash.slice(0, 16)}`));
   if (dup) return { id: dup.id, duplicate: true };
-  let id = slugify(`${ref.name}-${idx.references.length + 1}`);
+  let id = ref.id ? slugify(ref.id) : slugify(`${ref.name}-${idx.references.length + 1}`);
   while (idx.references.some((r) => r.id === id)) id = `${id}-x`;
   writeFileSafe(join(ws.referencesDir(brand), `${id}${ext}`), bytes, { force: true });
   idx.references.push({

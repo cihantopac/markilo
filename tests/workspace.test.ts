@@ -10,6 +10,7 @@ describe('paths', () => {
   it('slugifies with diacritic folding', () => {
     expect(slugify('Şirket Ürün İkon')).toBe('sirket-urun-ikon');
     expect(() => slugify('!!!')).toThrow();
+    expect(slugify(`${'a'.repeat(63)}-b`)).toBe('a'.repeat(63));
   });
   it('refuses paths that escape the root', () => {
     const root = tmp();
