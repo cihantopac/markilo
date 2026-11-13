@@ -470,3 +470,6 @@ The reports also praised parts that should stay as they are:
   `onLight` in colour logos and the kit typography were checked by their tests (Tasks 6, 7), not in this run.
 - `npm run ci` 381/381, `node scripts/smoke.mjs` passed, `claude plugin validate plugin` passed. Markilo's own kit
   re-exported: logo files byte-identical; the manifest changed.
+
+**Released 2026-11-13.** Tag `markilo--v1.5.0` at `8f8ddf7`, GitHub release published; `npm pack` shasum
+`08b369c42fba742e24b869d5184e8d575cea6b7d` (287 files). npm publish by the user.
