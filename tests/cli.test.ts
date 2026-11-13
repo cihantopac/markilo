@@ -176,6 +176,47 @@ describe('cli (bundled)', () => {
     expect(out.critiqueElsewhere).toEqual(['fold-b']);
     expect(out.warnings.join(' ')).toMatch(/not-reviewed.*fold-b/);
   }, 60_000);
+  it("finalize says the critic's scores were not recorded", async () => {
+    const { ws, dir: cwd } = synthBrand();
+    for (const c of ws.concepts('nimbra')) {
+      const { critique: _c, blind: _b, judgment: _j, ...bare } = c;
+      ws.saveConcept(bare as typeof c);
+    }
+    await verifyConcept(ws, 'nimbra', 'fold');
+    const cost = run(
+      ['cost', '--brand', 'nimbra', '--phase', 'verify', '--usd', '0.4', '--agent', 'design-critic'],
+      cwd,
+    );
+    expect(cost.status, cost.stderr).toBe(0);
+    const r = run(
+      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
+      cwd,
+    );
+    expect(r.status, r.stderr).toBe(0);
+    const out = JSON.parse(r.stdout);
+    expect(out.kit.gate.status).toBe('not-reviewed');
+    expect(out.critiqueElsewhere).toBeUndefined();
+    expect(out.warnings.join(' ')).toMatch(
+      /a critic ran \(design-critic, .+\) but its scores were not recorded.*concept update --blind/,
+    );
+  }, 60_000);
+  it('proposals points at a critique on another concept', async () => {
+    const { ws, dir: cwd } = synthBrand();
+    const fold = ws.concept('nimbra', 'fold');
+    mkdirSync(ws.conceptDir('nimbra', 'fold-b'), { recursive: true });
+    copyFileSync(
+      join(ws.conceptDir('nimbra', 'fold'), 'symbol.svg'),
+      join(ws.conceptDir('nimbra', 'fold-b'), 'symbol.svg'),
+    );
+    ws.saveConcept({ ...fold, id: 'fold-b', files: { symbol: 'symbol.svg' } });
+    const { critique: _c, blind: _b, judgment: _j, ...bare } = fold;
+    ws.saveConcept(bare as typeof fold);
+    const r = run(['proposals', '--brand', 'nimbra', '--concepts', 'fold'], cwd);
+    expect(r.status, r.stderr).toBe(0);
+    const out = JSON.parse(r.stdout);
+    expect(out.critiqueElsewhere).toEqual({ fold: ['fold-b'] });
+    expect(out.notes.join(' ')).toMatch(/not-reviewed.*fold-b/);
+  }, 60_000);
   it('a redraw after the critique makes the gate stale, and proposals and verify say so', () => {
     const cwd = tmp();
     const ok = (args: string[]) => {

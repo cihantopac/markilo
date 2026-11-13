@@ -248,6 +248,40 @@ async function loadReferences(w: Workspace, brand: string): Promise<Reference[]>
 const recipeName = (role: string | undefined, ext: string) =>
   `construction${role && role !== 'symbol' ? `-${role}` : ''}.${ext}`;
 
+/**
+ * Where a not-reviewed concept's critique is. A critique recorded on another concept (a copy, a re-base) does not
+ * review this one; a verify-phase critic entry in the cost log with no critique on any concept means the critic ran
+ * but its scores were never recorded.
+ */
+function notReviewedHint(
+  w: Workspace,
+  slug: string,
+  id: string,
+  status: string | undefined,
+): { elsewhere: string[]; warning?: string } {
+  if (status !== 'not-reviewed') return { elsewhere: [] };
+  const all = w.concepts(slug);
+  const has = (x: Concept) => x.critique || x.blind || Object.keys(x.judgment ?? {}).length;
+  const elsewhere = all.filter((x) => x.id !== id && has(x)).map((x) => x.id);
+  if (elsewhere.length)
+    return {
+      elsewhere,
+      warning: `${id} is not-reviewed, but ${elsewhere.join(', ')} carr${elsewhere.length === 1 ? 'ies' : 'y'} a critique: if the critic reviewed this drawing there, record it on ${id} (concept update --blind … --present …).`,
+    };
+  if (all.some(has)) return { elsewhere };
+  const ran = readCost(w, slug)
+    .entries.filter(
+      (e) => e.phase === 'verify' && `${e.agent ?? ''} ${e.note ?? ''}`.toLowerCase().includes('critic'),
+    )
+    .at(-1);
+  return ran
+    ? {
+        elsewhere,
+        warning: `a critic ran (${ran.agent ?? 'unnamed agent'}, ${ran.at}) but its scores were not recorded — record them with \`concept update --blind … --present …\`.`,
+      }
+    : { elsewhere };
+}
+
 export const COMMANDS: CommandSpec[] = [
   // ------------------------------------------------------------ workspace
   {
@@ -2090,29 +2124,12 @@ export const COMMANDS: CommandSpec[] = [
         wordmarkOnly: c.bool('wordmark-only'),
         ...(c.str('user-choice') ? { userChoice: c.str('user-choice')! } : {}),
       });
-      // A critique recorded on another concept (a copy, a re-base) does not review this one: say where it is.
-      const elsewhere =
-        kit.gate?.status === 'not-reviewed'
-          ? w
-              .concepts(c.req('brand'))
-              .filter(
-                (x) =>
-                  x.id !== c.req('concept') &&
-                  (x.critique || x.blind || Object.keys(x.judgment ?? {}).length),
-              )
-              .map((x) => x.id)
-          : [];
+      const hint = notReviewedHint(w, c.req('brand'), c.req('concept'), kit.gate?.status);
       return {
         kit,
         dir: w.finalDir(c.req('brand')),
-        ...(elsewhere.length
-          ? {
-              critiqueElsewhere: elsewhere,
-              warnings: [
-                `${c.req('concept')} is not-reviewed, but ${elsewhere.join(', ')} carr${elsewhere.length === 1 ? 'ies' : 'y'} a critique: if the critic reviewed this drawing there, record it on ${c.req('concept')} (concept update --blind … --present …).`,
-              ],
-            }
-          : {}),
+        ...(hint.elsewhere.length ? { critiqueElsewhere: hint.elsewhere } : {}),
+        ...(hint.warning ? { warnings: [hint.warning] } : {}),
         next: `markilo export --brand ${c.req('brand')}`,
       };
     },
@@ -2333,6 +2350,7 @@ export const COMMANDS: CommandSpec[] = [
       const compare: Record<string, string> = {};
       const files: string[] = [];
       const notes: string[] = [];
+      const critiqueElsewhere: Record<string, string[]> = {};
       // The letter a concept carries is its own, so one proposal alone keeps the letter the board gave it.
       const roundMates = (r?: number) => all.filter((x) => r !== undefined && x.round === r);
       const letterOf = (cpt: Concept): string =>
@@ -2415,7 +2433,11 @@ export const COMMANDS: CommandSpec[] = [
           ...(cpt.palette.tile ? { tile: cpt.palette.tile } : {}),
         };
         inputs.push(input);
-        if (gateOf(cpt, currentArt(w, slug, cpt)).status === 'stale')
+        const gate = gateOf(cpt, currentArt(w, slug, cpt));
+        const hint = notReviewedHint(w, slug, cpt.id, gate.status);
+        if (hint.elsewhere.length) critiqueElsewhere[cpt.id] = hint.elsewhere;
+        if (hint.warning) notes.push(hint.warning);
+        if (gate.status === 'stale')
           notes.push(
             `${cpt.id}: ${STALE_NOTE} — the critic scored an earlier drawing; ask for a fresh look.`,
           );
@@ -2466,6 +2488,7 @@ export const COMMANDS: CommandSpec[] = [
             }
           : {}),
         ...(conflicts.length ? { letterConflicts: conflicts } : {}),
+        ...(Object.keys(critiqueElsewhere).length ? { critiqueElsewhere } : {}),
         board: board ?? null,
         files,
         /** How closely each wordmark matches its typeface set plainly (1 = untouched). */
