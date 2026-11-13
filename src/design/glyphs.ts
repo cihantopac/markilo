@@ -714,6 +714,72 @@ export function glyphSet(ref: string, source: string, split: GlyphSplit): GlyphS
   };
 }
 
+/** Glyphs that look like a bad split: an advance over 1.8x the median, or a sidebearing over 0.35 cap. */
+export function glyphWarnings(glyphs: GlyphInfo[], part: 'auto' | 'word'): string[] {
+  if (!glyphs.length) return [];
+  const sorted = glyphs.map((g) => g.advance).sort((a, b) => a - b);
+  const mid = sorted.length >> 1;
+  const median = sorted.length % 2 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
+  const hint = part === 'auto' ? ' The symbol may be merged into the word — try `--part word`.' : '';
+  const out: string[] = [];
+  for (const g of glyphs) {
+    const why: string[] = [];
+    if (g.advance > 1.8 * median) why.push(`advance ${r2(g.advance)} is over 1.8x the median ${r2(median)}`);
+    for (const [side, v] of [
+      ['left', g.left],
+      ['right', g.right],
+    ] as const)
+      if (v > 35) why.push(`${side} sidebearing ${r2(v)} is over 0.35 cap`);
+    if (why.length) out.push(`${g.char}: ${why.join('; ')}.${hint}`);
+  }
+  return out;
+}
+
+export interface WordSource {
+  ref: string;
+  letters: string;
+  stem: number | null;
+  bar: number | null;
+}
+
+const medianOf = (v: number[]): number | null => {
+  if (!v.length) return null;
+  const s = [...v].sort((a, b) => a - b);
+  const m = s.length >> 1;
+  return r2(s.length % 2 ? s[m]! : (s[m - 1]! + s[m]!) / 2);
+};
+
+/** Stem and bar of each source's taken letters (cap units), and a warning when two sources differ by over 15 %. */
+export function sourceStems(takes: { set: GlyphSet; letters: string }[]): {
+  sources: WordSource[];
+  warnings: string[];
+} {
+  const sources = takes.map(({ set, letters }) => {
+    const chars = [...letters];
+    const at = set.text.indexOf(letters);
+    const picked =
+      at >= 0 ? set.glyphs.slice(at, at + chars.length) : set.glyphs.filter((g) => chars.includes(g.char));
+    const stem = medianOf(picked.map((g) => g.stem).filter((v): v is number => v !== null));
+    const bar = medianOf(picked.map((g) => g.bar).filter((v): v is number => v !== null));
+    return { ref: set.ref, letters, stem: stem ?? set.stem, bar: bar ?? set.bar };
+  });
+  const warnings: string[] = [];
+  for (let i = 0; i < sources.length; i++)
+    for (let j = i + 1; j < sources.length; j++) {
+      const a = sources[i]!;
+      const b = sources[j]!;
+      if (a.stem === null || b.stem === null || a.ref === b.ref) continue;
+      const lo = Math.min(a.stem, b.stem);
+      const hi = Math.max(a.stem, b.stem);
+      const pct = Math.round(((hi - lo) / hi) * 100);
+      if ((hi - lo) / hi > 0.15) {
+        const [x, y] = a.stem <= b.stem ? [a, b] : [b, a];
+        warnings.push(`stems differ between ${x.ref} (${x.stem}) and ${y.ref} (${y.stem}) — ${pct} %`);
+      }
+    }
+  return { sources, warnings };
+}
+
 /** The source SVG (sanitized) with the measured baseline and cap height recorded on its root, for lockups. */
 export function withWordMetrics(svg: string, capHeight: number, baseline: number): string {
   const root = sanitizeTree(parseXml(svg));
