@@ -73,7 +73,12 @@ import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarit
 import { suggestNiceClasses, trademarkSearchPlan } from '../name/trademark.js';
 import { type ProposalInput, renderProposal, renderRoundBoard } from '../render/proposal.js';
 import { renderPng } from '../render/resvg.js';
-import { renderCompareSheet, renderReviewSheet } from '../render/sheet.js';
+import {
+  paletteSheetSvg,
+  renderCompareSheet,
+  renderFamilySheet,
+  renderReviewSheet,
+} from '../render/sheet.js';
 import {
   costSummary,
   DEFAULT_BUDGET_USD,
@@ -3720,12 +3725,20 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Render an SVG to PNG, or a review contact sheet (sizes 16–256 on light/dark/mono) with --sheet.',
     usage:
-      'render <in.svg> -o <out.png> [--width <px>] [--bg <#hex>] [--sheet] | render <a.svg> <b.svg>… --compare [--paper <#hex>] -o <out.png>  (--sheet / --compare: [--primary <#hex> --on-dark|--on-light <#hex>])',
+      'render <in.svg> -o <out.png> [--width <px>] [--bg <#hex>] [--sheet] | render <a.svg> <b.svg>… --compare [--paper <#hex>] [--tile] -o <out.png> | render <new-word.svg> --family <ref-word.svg>[,<ref-word.svg>] -o <out.png> [--width 1600]  (--sheet / --compare: [--primary <#hex> --on-dark|--on-light <#hex>])',
     options: {
       out: { type: 'string', short: 'o', description: 'Output PNG' },
-      width: { type: 'string', description: 'Width in px (default 512)' },
+      width: { type: 'string', description: 'Output width in px (default 512; 1600 with --family)' },
       bg: { type: 'string', description: 'Background color' },
       sheet: { type: 'boolean', description: 'Render a review contact sheet' },
+      family: {
+        type: 'string',
+        description: 'Reference word(s), comma-separated: stack them above the new word at one cap height',
+      },
+      tile: {
+        type: 'boolean',
+        description: '--compare: add a brand-tile row per option (ground: --primary, else a default blue)',
+      },
       compare: {
         type: 'boolean',
         description: 'Compare several sketches side by side (16–256 px, both grounds)',
@@ -3750,6 +3763,19 @@ export const COMMANDS: CommandSpec[] = [
           );
         palette = { primary, ...grounds };
       }
+      if (c.str('family')) {
+        const refs = c.list('family');
+        const words = [
+          ...refs.map((p) => ({ label: `${basename(p)} (parent)`, svg: readText(file(c, p)) })),
+          {
+            label: `${basename(pos(c, 0, 'new-word.svg'))} (new)`,
+            svg: readText(file(c, pos(c, 0, 'new-word.svg'))),
+          },
+        ];
+        const png = await renderFamilySheet(words, c.num('width', 1600)!);
+        writeGenerated(file(c, c.req('out')), png);
+        return { out: c.req('out'), words: words.length, bytes: png.length };
+      }
       if (c.bool('compare')) {
         if (c.positionals.length < 2 || c.positionals.length > 8)
           throw new MarkiloError('USAGE', '--compare takes 2 to 8 SVG files.');
@@ -3761,6 +3787,7 @@ export const COMMANDS: CommandSpec[] = [
           c.str('paper') ?? '#ffffff',
           'Options',
           palette,
+          { tile: c.bool('tile') },
         );
         writeGenerated(file(c, c.req('out')), png);
         return { out: c.req('out'), sketches: c.positionals.length, bytes: png.length };
@@ -3858,13 +3885,57 @@ export const COMMANDS: CommandSpec[] = [
     name: 'palette',
     summary:
       'Generate OKLCH tonal scales, neutrals, semantic colors and WCAG contrast pairs from brand colors.',
-    usage: 'palette <#primary> [--secondary <#hex>] [--accent <#hex>] [-o <palette.json>]',
+    usage:
+      'palette <#primary> [--secondary <#hex>] [--accent <#hex>] [-o <palette.json>] | palette --sheet --brand <slug> --concept <id> --palettes <#hex,#hex[,…]> -o <out.png>',
     options: {
+      ...brandOpt,
+      sheet: {
+        type: 'boolean',
+        description:
+          'Compare candidate primaries: symbol on its tile, lockup on paper and on dark, one column each',
+      },
+      concept: { type: 'string', description: '--sheet: the concept whose symbol and lockup are shown' },
+      palettes: { type: 'string', description: '--sheet: candidate primary colours, comma-separated' },
       secondary: { type: 'string', description: 'Secondary color' },
       accent: { type: 'string', description: 'Accent color' },
       out: { type: 'string', short: 'o', description: 'Write JSON here' },
     },
     async run(c) {
+      if (c.bool('sheet')) {
+        const w = ws(c);
+        const brand = c.req('brand');
+        const concept = w.concept(brand, c.req('concept'));
+        const candidates = c.list('palettes').map((v) => {
+          const hex = normalizeColor(v);
+          if (!hex) throw new MarkiloError('INVALID_INPUT', `"${v}" is not a color.`);
+          return hex;
+        });
+        if (candidates.length < 1 || candidates.length > 6)
+          throw new MarkiloError('USAGE', '--palettes takes 1 to 6 colors.');
+        if (!concept.files.symbol)
+          throw new MarkiloError('USAGE', `Concept ${concept.id} needs a symbol for a palette sheet.`);
+        const symbol = readText(w.conceptFile(brand, concept.id, concept.files.symbol));
+        let lockup: string;
+        if (concept.files.lockupHorizontal) {
+          lockup = readText(w.conceptFile(brand, concept.id, concept.files.lockupHorizontal));
+        } else if (concept.files.wordmark) {
+          lockup = composeLockup(symbol, readText(w.conceptFile(brand, concept.id, concept.files.wordmark)), {
+            layout: 'horizontal',
+            symbolInk: (await inkMetrics(symbol)).bbox,
+          }).svg;
+        } else lockup = symbol;
+        const { primary, ...rest } = concept.palette;
+        const sheet = paletteSheetSvg({
+          symbol,
+          lockup,
+          primary: normalizeColor(primary) ?? primary,
+          palette: rest,
+          candidates,
+        });
+        const png = await renderPng(sheet, { width: Number(/width="(\d+)"/.exec(sheet)![1]) });
+        writeGenerated(file(c, c.req('out')), png);
+        return { out: c.req('out'), palettes: candidates, bytes: png.length };
+      }
       const p = generatePalette({
         primary: pos(c, 0, '#primary'),
         ...(c.str('secondary') ? { secondary: c.str('secondary')! } : {}),

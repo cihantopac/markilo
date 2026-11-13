@@ -170,6 +170,44 @@ describe('cli (bundled)', () => {
     );
     expect(sheet.status, sheet.stderr).toBe(0);
   });
+  it('render --family, palette --sheet and render --compare --tile write sheets', () => {
+    const { dir: cwd } = synthBrand();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    const word = fixture('glyphs/nimbra-word.svg');
+    const png = (f: string) => readFileSync(join(cwd, f)).subarray(0, 4).toString('latin1');
+    expect(ok(['render', word, '--family', word, '-o', 'fam.png']).words).toBe(2);
+    expect(png('fam.png')).toBe('\x89PNG');
+    const sheet = ok([
+      'palette',
+      '--sheet',
+      '--brand',
+      'nimbra',
+      '--concept',
+      'fold',
+      '--palettes',
+      '#c2255c,#0b7285',
+      '-o',
+      'pal.png',
+    ]);
+    expect(sheet.palettes).toEqual(['#c2255c', '#0b7285']);
+    expect(png('pal.png')).toBe('\x89PNG');
+    const bad = run(
+      ['palette', '--sheet', '--brand', 'nimbra', '--concept', 'fold', '--palettes', 'pink', '-o', 'x.png'],
+      cwd,
+    );
+    expect(JSON.parse(bad.stderr).error.code).toBe('INVALID_INPUT');
+    const rose =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20 20h60v60H20z" fill="#c2255c"/></svg>';
+    writeFileSync(join(cwd, 'a.svg'), rose);
+    writeFileSync(join(cwd, 'b.svg'), rose);
+    ok(['render', 'a.svg', 'b.svg', '--compare', '-o', 'p.png']);
+    ok(['render', 'a.svg', 'b.svg', '--compare', '--tile', '--primary', '#c2255c', '-o', 't.png']);
+    expect(readFileSync(join(cwd, 'p.png')).equals(readFileSync(join(cwd, 't.png')))).toBe(false);
+  }, 60_000);
   it('finalize warns when the critique is on another concept', async () => {
     const { ws, dir: cwd } = synthBrand();
     const fold = ws.concept('nimbra', 'fold');

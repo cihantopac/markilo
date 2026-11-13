@@ -34,7 +34,7 @@ You have three ways to make artwork; use whichever serves the idea, and combine 
 3. **Typeset outlines** (`markilo wordmark`, `markilo wordmarks` to compare faces) as the starting point for a word.
 
 To look at anything: `markilo render <file.svg> -o <file.png> --width 1200` (add `--bg '#hex'` for dark), then `Read`
-the PNG. Compare several with `markilo render a.svg b.svg --compare -o cmp.png`. Look at every drawing before you keep
+the PNG. Compare several with `markilo render a.svg b.svg --compare -o cmp.png` (`--tile` adds a tile row per option; `--family ref.svg` stacks a new word under its parent at one cap height; `palette --sheet --palettes '#a,#b'` compares colours). Look at every drawing before you keep
 it, and redraw what you would not show a client.
 
 ## Mode `explore <concept id>` — one proposal of a round
