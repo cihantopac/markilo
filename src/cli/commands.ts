@@ -1654,6 +1654,86 @@ export const COMMANDS: CommandSpec[] = [
     },
   },
   {
+    name: 'concept adopt',
+    summary:
+      "Continue a concept from another concept's drawing: copy its files in, record it, and re-pin the chosen state.",
+    usage:
+      'concept adopt --brand <slug> --concept <id> --from <other id> [--files symbol,wordmark,small,lockup]',
+    options: {
+      ...brandOpt,
+      concept: {
+        type: 'string',
+        description: 'The concept the user chose (it keeps its id, palette and pitch)',
+      },
+      from: { type: 'string', description: 'The concept whose drawing the user wants to continue from' },
+      files: {
+        type: 'string',
+        description:
+          'Which files to take, separated by ",": symbol, wordmark, small, lockup (default: all four)',
+      },
+    },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      const cur = w.concept(slug, c.req('concept'));
+      const fromId = c.req('from');
+      if (cur.status === 'approved')
+        throw new MarkiloError(
+          'LOCKED',
+          `${cur.id} is approved; its drawing is final.`,
+          'Develop a new concept from it instead of changing the approved one.',
+        );
+      if (fromId === cur.id) throw new MarkiloError('USAGE', '--from must name another concept.');
+      const src = w.concept(slug, fromId);
+      const slots = {
+        symbol: ['symbol'],
+        wordmark: ['wordmark'],
+        small: ['small'],
+        lockup: ['lockupHorizontal', 'lockupStacked'],
+      } as const;
+      const names = c.list('files').length ? c.list('files') : Object.keys(slots);
+      const bad = names.filter((n) => !(n in slots));
+      if (bad.length)
+        throw new MarkiloError(
+          'INVALID_INPUT',
+          `--files ${bad.join(', ')} is not a file kind.`,
+          'Use symbol, wordmark, small or lockup, separated by ",".',
+        );
+      const next: Concept = { ...cur, files: { ...cur.files } };
+      const copied: string[] = [];
+      const taken: string[] = [];
+      for (const name of names as (keyof typeof slots)[]) {
+        let any = false;
+        for (const key of slots[name]) {
+          const rel = src.files[key];
+          // conceptFile refuses a path that leaves either concept folder (UNSAFE_PATH), as concept update does.
+          const from = rel && w.conceptFile(slug, src.id, rel);
+          if (!rel || !from || !existsSync(from)) continue;
+          const to = w.conceptFile(slug, cur.id, rel);
+          mkdirSync(dirname(to), { recursive: true });
+          copyFileSync(from, to);
+          next.files[key] = rel;
+          copied.push(rel);
+          any = true;
+        }
+        if (any) taken.push(name);
+      }
+      if (!copied.length)
+        throw new MarkiloError('NOT_FOUND', `${src.id} has no ${names.join(', ')} file to adopt.`);
+      // The adopted word was set in the other concept's typeface: measure and describe it against that one.
+      if (taken.includes('wordmark') && src.typography) next.typography = { ...src.typography };
+      next.adoptedFrom = { concept: src.id, files: taken, at: nowIso() };
+      w.saveConcept(next);
+      const chosen = keepChosen(w, slug, next, { repin: true });
+      w.logDecision(
+        slug,
+        'Adopted',
+        `${cur.id} (${cur.title}) continues from the ${taken.join(', ')} of ${src.id} (${src.title}); chosen/ now holds that drawing.`,
+      );
+      return { concept: cur.id, copied, chosen };
+    },
+  },
+  {
     name: 'verify',
     summary:
       'Run every automated check on a concept: lint, small-size legibility, balance, monochrome, contrast, genericity, similarity, diversity, name. Writes reports and a review sheet PNG.',
@@ -2080,7 +2160,9 @@ export const COMMANDS: CommandSpec[] = [
           const smallWas = kept(cpt.files.small);
           const then: ProposalInput = {
             ...input,
-            caption: 'As the user chose it',
+            caption: cpt.adoptedFrom
+              ? `As the user chose it (from ${cpt.adoptedFrom.concept})`
+              : 'As the user chose it',
             ...(was.symbol ? { symbol: was.symbol } : {}),
             ...(was.wordmark ? { wordmark: was.wordmark } : {}),
           };

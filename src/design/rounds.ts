@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { MarkiloError } from '../core/errors.js';
 import type { Concept } from '../core/types.js';
@@ -103,10 +103,20 @@ export const CHOSEN_DIR = 'chosen';
 /**
  * Keeps a copy of a concept's files as the user chose them (the first time they select or ask to change it). In
  * Markilo 1.1's validation, development twice lost what the user had picked — a word narrowed, round stones flattened
- * into pills — and only a side-by-side made that visible.
+ * into pills — and only a side-by-side made that visible. `repin` replaces an earlier copy.
  */
-export function keepChosen(ws: Workspace, slug: string, concept: Concept): string[] {
+export function keepChosen(
+  ws: Workspace,
+  slug: string,
+  concept: Concept,
+  opts: { repin?: boolean } = {},
+): string[] {
   const dir = ws.conceptFile(slug, concept.id, CHOSEN_DIR);
+  // repin: the user's choice moved to another drawing (`concept adopt`): what they chose is that drawing now.
+  if (opts.repin) {
+    rmSync(dir, { recursive: true, force: true });
+    rmSync(ws.conceptFile(slug, concept.id, join('review', 'chosen-vs-now.png')), { force: true });
+  }
   if (existsSync(dir)) return [];
   const kept: string[] = [];
   for (const rel of Object.values(concept.files)) {

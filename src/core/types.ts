@@ -226,4 +226,9 @@ export interface Concept {
    * were recorded. The gate reads `stale` once the files no longer match; a concept without it (1.3.0) never does.
    */
   reviewedArt?: string;
+  /**
+   * The user asked to continue from another concept's drawing (`concept adopt`): which concept, which files, when.
+   * `chosen/` then holds the adopted drawing.
+   */
+  adoptedFrom?: { concept: string; files: string[]; at: string };
 }

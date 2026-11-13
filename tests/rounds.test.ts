@@ -292,6 +292,58 @@ describe('the chosen concept', () => {
   }, 60_000);
 });
 
+describe('concept adopt', () => {
+  it('adopt copies the drawing and re-pins chosen', () => {
+    const cwd = proposals(3);
+    const concepts = join(cwd, 'brand', 'brands', 'tidepool', 'concepts');
+    copyFileSync(fixture('marks/leaf-letter.svg'), join(concepts, 'p3', 'symbol.svg'));
+    ok(['concept', 'update', '--brand', 'tidepool', '--concept', 'p2', '--status', 'shortlisted'], cwd);
+    expect(existsSync(join(concepts, 'p2', 'chosen', 'symbol.svg'))).toBe(true);
+    const r = ok(
+      ['concept', 'adopt', '--brand', 'tidepool', '--concept', 'p2', '--from', 'p3', '--files', 'symbol'],
+      cwd,
+    );
+    expect(r.concept).toBe('p2');
+    expect(r.copied).toEqual(['symbol.svg']);
+    expect(r.chosen).toContain('symbol.svg');
+    const other = readFileSync(join(concepts, 'p3', 'symbol.svg'), 'utf8');
+    expect(readFileSync(join(concepts, 'p2', 'symbol.svg'), 'utf8')).toBe(other);
+    expect(readFileSync(join(concepts, 'p2', 'chosen', 'symbol.svg'), 'utf8')).toBe(other);
+    const saved = JSON.parse(readFileSync(join(concepts, 'p2', 'concept.json'), 'utf8'));
+    expect(saved.adoptedFrom).toMatchObject({ concept: 'p3', files: ['symbol'] });
+    expect(readFileSync(join(cwd, 'brand', 'brands', 'tidepool', 'decisions.md'), 'utf8')).toMatch(
+      /Adopted.*p2.*p3/,
+    );
+    // The adopted drawing is the user's choice now: nothing drifted yet.
+    expect(ok(['proposals', '--brand', 'tidepool', '--concepts', 'p2'], cwd).compare).toBeUndefined();
+    expect(existsSync(join(concepts, 'p2', 'review', 'chosen-vs-now.png'))).toBe(false);
+    copyFileSync(fixture('marks/fold-n.svg'), join(concepts, 'p2', 'symbol.svg'));
+    expect(existsSync(ok(['proposals', '--brand', 'tidepool', '--concepts', 'p2'], cwd).compare.p2)).toBe(
+      true,
+    );
+  }, 60_000);
+  it('adopt refuses an approved concept and an unknown --from', () => {
+    const cwd = proposals(2);
+    const adopt = (id: string, from: string) =>
+      run(['concept', 'adopt', '--brand', 'tidepool', '--concept', id, '--from', from], cwd);
+    const unknown = adopt('p1', 'p9');
+    expect(unknown.status).not.toBe(0);
+    expect(JSON.parse(unknown.stderr).error.code).toBe('NOT_FOUND');
+    const same = adopt('p1', 'p1');
+    expect(JSON.parse(same.stderr).error.code).toBe('USAGE');
+    const bad = run(
+      ['concept', 'adopt', '--brand', 'tidepool', '--concept', 'p1', '--from', 'p2', '--files', 'logo'],
+      cwd,
+    );
+    expect(JSON.parse(bad.stderr).error.code).toBe('INVALID_INPUT');
+    const json = join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'p1', 'concept.json');
+    writeFileSync(json, JSON.stringify({ ...JSON.parse(readFileSync(json, 'utf8')), status: 'approved' }));
+    const locked = adopt('p1', 'p2');
+    expect(locked.status).not.toBe(0);
+    expect(JSON.parse(locked.stderr).error.code).toBe('LOCKED');
+  }, 60_000);
+});
+
 describe('wordmark-led kits', () => {
   it('export the word itself as the primary logo, not a symbol + word lockup', () => {
     const cwd = proposals(3);
