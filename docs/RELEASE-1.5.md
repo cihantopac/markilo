@@ -60,7 +60,7 @@ claim was checked against the code at `100cfa5`. The findings are summarized in 
 
 Two designers ran `concept new --round 1` in the same millisecond and both concepts got "A"; `proposals.order` read A, A,
 B. `concept new` reads the next free letter and then writes (`commands.ts:1421`) with nothing in between.
-`roundLetters` only assigns letters to concepts *without* one (`rounds.ts:55-70`), so a stored duplicate is shown twice.
+`roundLetters` only assigns letters to concepts _without_ one (`rounds.ts:55-70`), so a stored duplicate is shown twice.
 
 **Files:**
 
@@ -420,13 +420,13 @@ wordmark were asked together on a sheet that doubled the options.
 
 ## Not in 1.5.0
 
-| Request                                                              | Why not now                                                                                                                                                       |
-| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A construction helper that draws missing letters (flare, brackets)   | Needs calibration against real family letters; one run's rule was "too extreme" when applied fully. Task 2 measures stems, bars and terminals; designers draw. |
-| `render --size`                                                      | `render --width` already sets the size; Task 4 makes it visible.                                                                                                 |
-| Automatic category-leader detection in `verify`                      | Markilo has no list of leaders per category. Task 10 has the research brief name one and the user told when it is missing.                                       |
-| App Store (`research app --store ios`) NETWORK error                 | Not reproduced; may be the iTunes API's rate limit. Revisit with a captured error.                                                                               |
-| `brief update` accepting "#hex (note)"                               | The error message was clear; notes go in `--note`.                                                                                                               |
+| Request                                                            | Why not now                                                                                                                                                    |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A construction helper that draws missing letters (flare, brackets) | Needs calibration against real family letters; one run's rule was "too extreme" when applied fully. Task 2 measures stems, bars and terminals; designers draw. |
+| `render --size`                                                    | `render --width` already sets the size; Task 4 makes it visible.                                                                                               |
+| Automatic category-leader detection in `verify`                    | Markilo has no list of leaders per category. Task 10 has the research brief name one and the user told when it is missing.                                     |
+| App Store (`research app --store ios`) NETWORK error               | Not reproduced; may be the iTunes API's rate limit. Revisit with a captured error.                                                                             |
+| `brief update` accepting "#hex (note)"                             | The error message was clear; notes go in `--note`.                                                                                                             |
 
 ## Sources
 
@@ -434,15 +434,15 @@ Two field reports on 1.4.0 (2026-11-13), both products joining one family whose 
 explore agents, 3 develop passes, 2 critics, ≈ 129 agent-minutes, ≈ 6.5 h wall (mostly user wait), two family words
 built by hand-written scripts, one duplicate round letter. Each claim was checked against the code at `100cfa5`.
 
-| Finding                                                                                   | Hits | Task  |
-| ----------------------------------------------------------------------------------------- | ---- | ----- |
-| Two designers got the same round letter                                                   | 1    | 1     |
-| No glyph tools for family lettering; words built by hand (also asked on 1.3.0)            | 2    | 2, 3  |
-| Shared family word without baseline; lockup misplaced                                     | 1    | 3     |
-| No word-vs-family or palette sheet; `<text>` dropped; tiles counted as options             | 2    | 4     |
+| Finding                                                                                  | Hits | Task  |
+| ---------------------------------------------------------------------------------------- | ---- | ----- |
+| Two designers got the same round letter                                                  | 1    | 1     |
+| No glyph tools for family lettering; words built by hand (also asked on 1.3.0)           | 2    | 2, 3  |
+| Shared family word without baseline; lockup misplaced                                    | 1    | 3     |
+| No word-vs-family or palette sheet; `<text>` dropped; tiles counted as options           | 2    | 4     |
 | Old live-text system taken as the family rule; site font offered for drawn words; names  | 2    | 5, 10 |
-| `*-color` logos ignore `onLight`; a master in a ground colour                             | 1    | 6     |
-| Stand-in font in the kit's typography                                                     | 2    | 7     |
+| `*-color` logos ignore `onLight`; a master in a ground colour                            | 1    | 6     |
+| Stand-in font in the kit's typography                                                    | 2    | 7     |
 | Finalize said "no critique recorded" after a critic ran                                  | 1    | 8     |
 | Time budget too small, no estimate; resumed usage is cumulative; `--as-reference` silent | 2    | 9, 10 |
 | Develop request reinterpreted; icon and word asked together                              | 1    | 10    |
