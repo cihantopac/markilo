@@ -402,6 +402,33 @@ describe('a colour for each ground', () => {
     expect(tokens).not.toContain('--nimbra-on-dark:');
   }, 120_000);
 
+  it('color logos use onLight on paper', async () => {
+    const { ws } = synthBrand();
+    const cdir = ws.conceptDir('nimbra', 'fold');
+    writeFileSync(
+      join(cdir, 'symbol.svg'),
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20 20h30v60H20zM60 20l20 30-20 30z" fill="#e0a22a"/></svg>',
+    );
+    const c = ws.concept('nimbra', 'fold');
+    ws.saveConcept({ ...c, palette: { primary: '#e0a22a', paper: '#ffffff', onLight: '#a86f00' } });
+    await verifyConcept(ws, 'nimbra', 'fold');
+    await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
+    await exportBrand(ws, 'nimbra', { groups: ['logos'] });
+    const out = ws.exportsDir('nimbra');
+    const color = readFileSync(join(out, 'logos/symbol/symbol-color.svg'), 'utf8');
+    expect(color).toContain('#a86f00');
+    expect(color).not.toContain('#e0a22a');
+    // The overview's colour row is drawn from the recoloured art (the reversed row keeps the primary on dark).
+    const { data } = decodeImage(readFileSync(join(out, 'logos/overview.png')));
+    const seen = new Set<string>();
+    for (let i = 0; i < data.length; i += 4)
+      if (data[i + 3] === 255)
+        seen.add(
+          `#${[data[i]!, data[i + 1]!, data[i + 2]!].map((v) => v.toString(16).padStart(2, '0')).join('')}`,
+        );
+    expect(seen.has('#a86f00')).toBe(true);
+  }, 120_000);
+
   it('does not recolour a locked brand', async () => {
     const { ws } = synthBrand();
     const symbolPath = join(tmp(), 'symbol.svg');

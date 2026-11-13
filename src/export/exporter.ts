@@ -164,7 +164,11 @@ async function exportLogos(ctx: Ctx) {
       : [
           [
             'color',
-            art,
+            // The colour chosen for the brand's own ground (onLight on paper, onDark on a dark brand) replaces the
+            // primary; a palette without it keeps the art as drawn.
+            (grounds(kit).darkFirst ? kit.palette.onDark : kit.palette.onLight)
+              ? markOnGround(art, grounds(kit).native, kit.palette)
+              : art,
             `full color, for ${grounds(kit).darkFirst ? 'dark' : 'light'} backgrounds like ${grounds(kit).native}`,
           ],
           [

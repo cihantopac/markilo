@@ -53,7 +53,7 @@ import { GROUP_INFO, resolveDeliverables, suggestDeliverables } from '../export/
 import { brandFinalHolding, EXPORT_GROUPS, type ExportGroup, exportBrand } from '../export/exporter.js';
 import { inkMetrics } from '../export/geometry.js';
 import { finalizeConcept, lockIdentity } from '../export/kit.js';
-import { tileGround } from '../export/variants.js';
+import { groundColors, tileGround } from '../export/variants.js';
 import { feedbackRequests, parseFeedback, readLatestFeedback, storeFeedback } from '../gallery/feedback.js';
 import { buildGallery } from '../gallery/gallery.js';
 import { serveGallery } from '../gallery/serve.js';
@@ -116,6 +116,33 @@ declare const __MARKILO_VERSION__: string;
 export const VERSION = typeof __MARKILO_VERSION__ === 'string' ? __MARKILO_VERSION__ : '0.0.0-dev';
 
 const ws = (c: RunContext) => Workspace.locate(c.cwd, c.str('workspace'));
+/** Masters that draw a ground colour (onLight / onDark) without the primary: exports pick the ground colour themselves. */
+function groundColourWarnings(w: Workspace, brand: string, id: string): string[] {
+  const cpt = w.concept(brand, id);
+  const g = groundColors(cpt.palette);
+  if (!g) return [];
+  const primary = normalizeColor(g.primary);
+  const out: string[] = [];
+  for (const rel of [cpt.files.symbol, cpt.files.wordmark, cpt.files.lockupHorizontal]) {
+    if (!rel) continue;
+    const file = w.conceptFile(brand, id, rel);
+    if (!existsSync(file)) continue;
+    const used = new Set(lintSvg(readText(file)).stats.colors.map((x) => normalizeColor(x) ?? x));
+    if (used.has(primary ?? g.primary)) continue;
+    for (const [ground, hex] of [
+      ['light', g.onLight],
+      ['dark', g.onDark],
+    ] as const) {
+      const key = hex && normalizeColor(hex);
+      if (key && used.has(key))
+        out.push(
+          `the master ${rel} uses the ${ground} colour ${key}; keep masters in the primary and let exports pick the ground colour`,
+        );
+    }
+  }
+  return out;
+}
+
 const brandOpt = { brand: { type: 'string', short: 'b', description: 'Brand slug' } } as const;
 const pos = (c: RunContext, i: number, label: string): string => {
   const v = c.positionals[i];
@@ -1969,7 +1996,10 @@ export const COMMANDS: CommandSpec[] = [
     usage: 'verify --brand <slug> --concept <id>',
     options: { ...brandOpt, concept: { type: 'string', description: 'Concept id' } },
     async run(c) {
-      return verifyConcept(ws(c), c.req('brand'), c.req('concept'));
+      const w = ws(c);
+      const result = await verifyConcept(w, c.req('brand'), c.req('concept'));
+      const warnings = groundColourWarnings(w, c.req('brand'), c.req('concept'));
+      return warnings.length ? { ...result, warnings: [...result.warnings, ...warnings] } : result;
     },
   },
   {
