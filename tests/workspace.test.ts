@@ -1,9 +1,18 @@
-import { existsSync, mkdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+  utimesSync,
+  writeFileSync,
+} from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { writeFileSafe } from '../src/core/fsx.js';
 import { resolveInside, slugify } from '../src/core/paths.js';
-import { Workspace } from '../src/core/workspace.js';
+import { Workspace, withBrandLock } from '../src/core/workspace.js';
 import { tmp } from './helpers.js';
 
 describe('paths', () => {
@@ -77,5 +86,48 @@ describe('workspace', () => {
   });
   it('reports a helpful error when there is no workspace', () => {
     expect(() => Workspace.locate(tmp())).toThrow(/No Markilo workspace/);
+  });
+});
+
+describe('withBrandLock', () => {
+  const setup = () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Lumen' });
+    return { ws, lock: join(ws.brandDir('lumen'), '.lock') };
+  };
+  it('takes over a stale lock by renaming it, leaving nothing behind', () => {
+    const { ws, lock } = setup();
+    writeFileSync(lock, 'old');
+    const old = new Date(Date.now() - 60_000);
+    utimesSync(lock, old, old);
+    expect(withBrandLock(ws, 'lumen', () => existsSync(lock))).toBe(true);
+    expect(existsSync(lock)).toBe(false);
+    expect(readdirSync(ws.brandDir('lumen')).filter((f) => f.includes('.lock'))).toEqual([]);
+  });
+  it('a fresh lock held by someone else is never removed, and times out as LOCKED', () => {
+    const { ws, lock } = setup();
+    writeFileSync(lock, 'someone-else');
+    expect(() => withBrandLock(ws, 'lumen', () => 1)).toThrow(/Another Markilo command/);
+    expect(readFileSync(lock, 'utf8')).toBe('someone-else');
+  }, 15_000);
+  it('releases when fn throws, and does not mask the result when the lock is already gone', () => {
+    const { ws, lock } = setup();
+    expect(() =>
+      withBrandLock(ws, 'lumen', () => {
+        throw new Error('boom');
+      }),
+    ).toThrow('boom');
+    expect(existsSync(lock)).toBe(false);
+    expect(
+      withBrandLock(ws, 'lumen', () => {
+        rmSync(lock);
+        return 'done';
+      }),
+    ).toBe('done');
+  });
+  it('does not accept an async function', () => {
+    const { ws } = setup();
+    // @ts-expect-error a Promise-returning function would be released before it finishes
+    void withBrandLock(ws, 'lumen', async () => 1);
   });
 });

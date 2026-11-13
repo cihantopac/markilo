@@ -1,12 +1,16 @@
+import { randomBytes } from 'node:crypto';
 import {
   appendFileSync,
   closeSync,
   existsSync,
+  linkSync,
   openSync,
   readdirSync,
   readFileSync,
+  renameSync,
   rmSync,
   statSync,
+  writeSync,
 } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { MarkiloError } from './errors.js';
@@ -290,37 +294,77 @@ const LOCK_STALE_MS = 30_000;
 /**
  * Runs `fn` while holding `brands/<slug>/.lock`, created exclusively (O_EXCL) so two Markilo processes working on the
  * same brand take turns. Waits up to 5 s (retrying every 25 ms); a lock older than 30 s is left over from a crashed
- * run and is replaced. The lock is always removed afterwards.
+ * run and is taken over by renaming it away (only the process that wins the rename goes on to create a new lock).
+ * Windows reports a lock that is being deleted as EPERM/EACCES: that is "busy", like EEXIST. The lock is released in
+ * `finally` (only if it is still ours) and a failure to remove it never masks `fn`'s result. `fn` must be synchronous:
+ * an async function would be released before it finished.
  */
-export function withBrandLock<T>(w: Workspace, slug: string, fn: () => T): T {
+export function withBrandLock<T>(
+  w: Workspace,
+  slug: string,
+  fn: () => T & (T extends PromiseLike<unknown> ? never : unknown),
+): T {
   const lock = join(w.brandDir(slug), '.lock');
+  const nonce = `${process.pid}.${randomBytes(6).toString('hex')}`;
   const until = Date.now() + LOCK_WAIT_MS;
+  const busy = (err: unknown) =>
+    ['EEXIST', 'EPERM', 'EACCES', 'EBUSY'].includes((err as NodeJS.ErrnoException).code ?? '');
+  const timeout = () =>
+    new MarkiloError(
+      'LOCKED',
+      `Another Markilo command is working on brand "${slug}" (${lock}).`,
+      'Run the command again in a moment; if no other command is running, delete that file.',
+    );
   for (;;) {
     try {
-      closeSync(openSync(lock, 'wx'));
+      const fd = openSync(lock, 'wx');
+      try {
+        writeSync(fd, nonce);
+      } catch (e) {
+        rmSync(lock, { force: true });
+        throw e;
+      } finally {
+        closeSync(fd);
+      }
       break;
     } catch (err) {
-      if ((err as NodeJS.ErrnoException).code !== 'EEXIST') throw err;
+      if (!busy(err)) throw err;
+      if (Date.now() > until) {
+        if ((err as NodeJS.ErrnoException).code === 'EEXIST') throw timeout();
+        throw err;
+      }
       try {
         if (Date.now() - statSync(lock).mtimeMs > LOCK_STALE_MS) {
-          rmSync(lock, { force: true });
+          // Rename, never delete: of several waiters that saw the same stale file, exactly one wins the rename.
+          const aside = `${lock}.${nonce}.stale`;
+          renameSync(lock, aside);
+          try {
+            if (Date.now() - statSync(aside).mtimeMs <= LOCK_STALE_MS) {
+              // A fresh lock replaced the stale one between our two calls: put it back.
+              try {
+                linkSync(aside, lock);
+              } catch {
+                // another lock already stands: nothing more to restore
+              }
+            }
+          } finally {
+            rmSync(aside, { force: true });
+          }
           continue;
         }
       } catch {
-        continue; // released between the two calls: try again at once
+        continue; // released or taken over between the calls: try again at once
       }
-      if (Date.now() > until)
-        throw new MarkiloError(
-          'LOCKED',
-          `Another Markilo command is working on brand "${slug}" (${lock}).`,
-          'Run the command again in a moment; if no other command is running, delete that file.',
-        );
       Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, LOCK_RETRY_MS);
     }
   }
   try {
     return fn();
   } finally {
-    rmSync(lock, { force: true });
+    try {
+      if (readFileSync(lock, 'utf8') === nonce) rmSync(lock, { force: true });
+    } catch {
+      // already gone (ENOENT) or not removable: the result of fn is what matters
+    }
   }
 }
