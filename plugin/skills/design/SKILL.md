@@ -60,14 +60,19 @@ what is already in the workspace. `markilo status` says where the work stands an
 
 ### A. Understand (cheap, mostly local)
 
-1. `markilo status` (`found: false` → `markilo init` + `markilo brand add`). For a repository:
+1. `markilo status` (`found: false` → `markilo init` + `markilo brand add`; for a URL, run `research site` first and
+   take the name's spelling from its `nameCase`, or fix it later with `markilo brand update --name`). For a repository:
    `markilo research repo <path> --brand <slug>` (several sites/apps → `research monorepo`, see
    `references/workflow.md`). For a URL, with the user's OK: `research site <url> --brand <slug> --allow-network`.
-   `Read` the README, any existing logo and one or two screenshots of the product's interface: its colours and type
-   are equity.
+   `Read` the README, any existing logo and one or two screenshots of the product's interface. Its colours and type
+   are candidates for equity, not equity: ask whether to keep the current colour (first questions). For a product
+   inside an existing family whose rule lives on other sites, `markilo research family --brand <slug> --member <url>…`
+   saves the members' lockups as `family` references (see Family below).
 2. Competitors: reuse what the profile already has. Only when it has none and the user approves network use, collect
    about five category marks once (`research competitors`, or the `markilo:brand-researcher` agent for a broader
-   brief). Do not repeat it in later rounds.
+   brief). Do not repeat it in later rounds. `Read` every collected reference before using it: a menu icon, a flag,
+   a client's logo or the parent company's mark is not the competitor's logo — remove it (`reference remove`) or fix its
+   category (`reference update`). A logo saved with `low confidence` must be checked.
 3. Write a concise brief (`markilo brief update --brand <slug> --file …`): product, audience, positioning, the stance
    (what the identity should feel like and must not), things to avoid, existing equity, deliverables.
 4. Ask only what you cannot infer — at most three questions, together, each with your suggested answer, starting
@@ -79,17 +84,24 @@ what is already in the workspace. `markilo status` says where the work stands an
 
 ### First questions
 
-Skipping these cost a whole round in real use. Ask them in one message, each with your suggested answer as a button:
+Skipping these cost whole rounds in real use: two rounds (≈880 k tokens) went to a kind of mark and a colour the user
+never wanted. Ask them in one dialog of at most four questions, multiple choice with an "Other" field, each with your
+suggested answer first:
 
-1. **Letter case** of the name: CAPITALS, lower case or Mixed. Suggest what `research site` reports in `nameCase`;
-   record the answer in the brief's `mustKeep`.
-2. **Icon or word first**: which one the user will judge the identity by.
-3. **Network**: may research collect competitor marks and search registries? Without it originality stays
-   `insufficient-evidence`.
+1. **Mode and scope**: refresh, redesign, a product icon only, or new. Ask in the same question for earlier work
+   (another Markilo workspace, a designer's files) and references. For a product inside a family, also ask which
+   members define the rule and which are out of date — never take every sibling mark as the rule.
+2. **The mark**: its kind — abstract (depicts nothing), from a letter, an object or figure, or a character — and
+   whether the user will judge the identity by the icon or the word (**Icon or word first**). **Letter case** comes
+   from `nameCase`; ask it here only when research found none.
+3. **Feel and colour**: corporate, dynamic, warm or bold; and **keep the current colour?** Never assume the current
+   colour is equity.
+4. **Network and budget**: two separate consents — collect competitor marks, and search trademark registries now (or
+   accept the name risk at the end). Without them originality stays `insufficient-evidence`. Put the money and time
+   budget in this question.
 
-Ask the money and time budget in the same message. If the user is away or asked not to be asked, take your suggested
-answers, write them into the brief's notes as assumptions, list them at the top of the first round's message and ask
-them again there.
+If the user is away or asked not to be asked, take your suggested answers, write them into the brief's notes as
+assumptions, list them at the top of the first round's message and ask them again there.
 
 ### B. Explore: exactly three proposals
 
@@ -97,7 +109,12 @@ them again there.
    (word or symbol); the typeface class or lettering approach; the move you see in _these_ letters (look at the name:
    which pairs could join, which counters, terminals or rounds repeat, where the rhythm is); the icon idea; colour.
    They must differ in kind (`references/design-principles.md` → "Three proposals"); at least one is wordmark-led
-   unless the brief says otherwise. A direction warmer or more human than the category is a good option when the
+   unless the brief says otherwise or the word is locked by a family. For icon-led work at least one direction depicts
+   nothing (abstract). When the name holds an object or idea (loop, link, dock…), one direction treats it directly and
+   boldly: the cliché filter does not drop the idea the name itself carries. A letter that becomes a figure is
+   allowed. Give the designers a concrete bar to beat — the most crafted mark in the family or the user's references
+   — not only principles. A reference is for measure and context, not form: one direction per round stays independent
+   of it, and you read back your interpretation of it to the user. A direction warmer or more human than the category is a good option when the
    brief's personality asks for it, not a quota. Every icon must first stand on its own as a beautiful app tile
    (`design-principles.md` → "The icon stands on its own"). In a later round, start from what the user rejected and
    why.
@@ -105,7 +122,8 @@ them again there.
    mode with `--round <n>`, its direction, the brief summary, what to avoid, the existing interface colours and the
    user's references (paths and what they said). One agent per proposal is deliberate: in Markilo 1.1's first
    validation a single agent drawing all three spent about eight tool calls on each and returned two untouched
-   typefaces.
+   typefaces. Each designer keeps its scripts and drafts under `concepts/<id>/work/`, never in a shared scratch folder.
+   In a long round, show the user the first finished proposal while the others work.
 3. When they return, record their usage (`--phase explore`), run `markilo proposals --brand <slug>` and `Read`
    `proposals/round-<n>.png`. Read each pitch's `First read:` line against the board: if a mark recalls a well-known
    logo or symbol, say so to the user with the round. `missing` lists anything a proposal still lacks — a word that is still its typeface as
@@ -114,17 +132,27 @@ them again there.
 
 ### C. The user chooses
 
-Open the gallery (gallery skill: `markilo gallery --serve` in the background, or the offline file) and present the
-three side by side: for each, one sentence on the idea, one strength, one risk — honestly, including what you think
-is weakest. Tell the user they can **select** one, ask for **changes**, **combine** parts of two ("combine with
+Present the round **in the board's order**, each as `A · <title>` exactly as `proposals.order` lists it — never in the
+order you started the designers. Twice a user named a proposal by position, and the wrong concept was developed once
+and finalized and exported once. For each: one sentence on the idea, one strength, one risk — honestly, including what
+you think is weakest. In the desktop app, send `proposals/round-<n>.png` into the chat; the gallery (gallery skill) is
+optional, and `gallery --serve` stops when the session ends. Regenerate the gallery each round. Tell the user they can **select** one, ask for **changes**, **combine** parts of two ("combine with
 another" on each), or **reject all three** with a note. Read the decisions with `markilo feedback --brand <slug>` and,
 after confirming your summary with the user, `--apply`.
 
-- **Rejected all three** → one more round of three (`--round 2`) built on their note and what they disliked. Show the
-  first round's lessons in the brief you give the designer.
+- **Before develop or finalize**, read the choice back: `<letter> · <title> · <id>`.
+- **Rejected all three** → ask what to change as multiple choice (kind of mark, feel, colour, lettering, fill): a user
+  who says "I don't know" can still pick; an open question is the last resort. Then a **sketch round** before
+  polishing: one designer draws 9–12 rough icon ideas on one `markilo sketches` sheet — no lockups, verify, pitch or
+  critic — and the user points at one or two. Only those get a polished round (`--round 2`), with the first round's
+  lessons in the brief.
+- **"Not chosen, but curious"** about a dropped proposal → a probe: 2–3 icon options for it, nothing else (no lockups,
+  verify or critic).
 - **Rejected the second round too** → stop exploring on your own. Ask the user for direction (a reference, a word, a
   sketch, an existing identity they admire). A third round needs `--round 3 --directed "<their words>"`.
 - Do not develop or critique proposals the user dropped.
+- **"Finish now"** → tell running designers to follow their early-close protocol (concept-designer → "Finish now"),
+  then finalize what exists; what was not drawn is listed as missing, not improvised.
 
 ### D. Finish as chosen, or develop — ask, don't assume
 
@@ -142,7 +170,13 @@ proportions and character): refined letterforms, spacing and optical balance, tw
 (`review/icon-options.png`, at least one that is not a letter) with its recommendation as `symbol.svg`, a small version
 if needed, lockups and colour. `feedback --apply` kept the drawing as the user chose it; `markilo proposals --brand
 <slug> --concepts <id>` renders `review/chosen-vs-now.png` — `Read` it, and send the designer back once if the chosen
-character was lost. A small, precise change the user describes (move a detail from the icon into a letter, a colour, a
+character was lost **and the user did not ask for that change**. A transformation the user asked for (a heavier
+weight, crescents turned into an even band) is shown to the user before any taste-based send-back: twice the rule
+rejected exactly what the user wanted. Small sizes go to the small version; the main weight stays within ±10 % of the
+chosen drawing unless the user asked otherwise. When the user builds on another concept's drawing ("continue from
+that one"), `markilo concept adopt --concept <chosen> --from <other> --files symbol,wordmark` copies it and re-pins the
+chosen state. Colour is its own cheap decision: offer the chosen mark in 3–4 palettes (`markilo palette`, `markilo
+render`) before a designer run. A small, precise change the user describes (move a detail from the icon into a letter, a colour, a
 spacing) is done directly with the toolchain (`construct`, `lockup`, `verify`), without a designer run. Record
 `--phase refine`.
 
@@ -151,6 +185,11 @@ spacing) is done directly with the toolchain (`construct`, `lockup`, `verify`), 
 When the brief lists a product family (several products under one parent), follow the family path in
 `references/workflow.md` → "Multi-product families": `markilo init --family`, one research pass for the family, the family proposed
 as one system and `markilo sketches` for `sketches/family.png`, then each member verified with the others.
+
+When the product **joins an existing family** (the rule lives in the members' lockups), follow "A product joining an
+existing family" in the same file: `research family` with the members the user named as current, the shared parts
+(parent word, suffix lettering, lockup metrics) drawn once in `work/family/` and given to every designer, and
+`concept update --lettering family` so `typeset` is skipped and the guidelines name no stand-in typeface.
 
 ### Choices given in chat
 
@@ -164,7 +203,8 @@ The gallery is optional. When the user answers in chat, record each decision you
    `markilo:design-critic` agent in `final` mode is required: it reads the developed identity and the icon or word
    options cold — what a stranger sees first in each (a person, a menu, another letter), scores and at most five
    concrete craft fixes. Skip it only when the user declines, and record the skipped critic in the brief's notes with
-   their words, so `gate.status: not-reviewed` in the kit has a reason. Its findings are advice. Apply the fixes that improve the work without changing what the user chose, once; never critique an
+   their words, so `gate.status: not-reviewed` in the kit has a reason. Its findings are advice: the gate says
+   `present`, `fix` or `present-with-notes`, never reject, and `stale` once the drawing changed after the critique. Apply the fixes that improve the work without changing what the user chose, once; never critique an
    unchanged image again. Record `--phase verify`.
 3. Show the user, together: the developed identity, `chosen-vs-now.png`, the icon options with your recommendation and
    the critic's first readings (labelled as judgment), the measured checks and the originality verdict with what
@@ -173,6 +213,9 @@ The gallery is optional. When the user answers in chat, record each decision you
    originality verdict is `no-conflicts-found`; for `insufficient-evidence` or `needs-review`, say so in that same
    message and add `--accept-risk` only on their explicit yes. Never present `insufficient-evidence` as "original". When they
    want the word alone, add `--wordmark-only`: no symbol lockups, and the symbol stays the app icon and favicon.
+   Before finalize, ask the tile colours: the mark on a brand-filled tile (`concept update --on-brand <#hex|auto>`) and
+   the tile ground (`--tile`). Colour rules said only in `finalize --note` reach the guidelines, not the files — set the
+   palette fields. Ask whether small sizes use the small version or the main symbol (`--small-sizes small|main`).
 
 ### F. Export and deliver
 

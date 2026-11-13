@@ -185,6 +185,19 @@ temperature. Write those down and design from them. Never reproduce a referenced
 references are compared in the originality check like any competitor mark. A sketch from the user is an idea to
 develop, credited to them. Without references, design from the brief — references help, they are never required.
 
+A reference is for measure and context — proportion, weight, density, the level of craft — not for form. One
+direction per round stays independent of it. A concrete bar beats an abstract principle: when the family or the user
+has a crafted mark, study it as the level your drawing must reach.
+
+## Abstract directions and the name's own idea
+
+Feature-led briefs pull icons towards pictures of the product (a room, a door, faces); in real use six such icons in a
+row were rejected. For icon-led work, at least one direction depicts nothing: an abstract form with one clear idea of
+rhythm, tension or construction, still drawn, never primitive geometry (a ring, a dot, a quarter circle as the whole
+idea). The opposite failure also happened: when the name itself holds an object or concept (loop, link, dock), the
+cliché filter removed exactly the idea the user wanted. One direction treats the name's idea directly and boldly; the
+craft makes it ownable, not avoidance.
+
 ## Avoid (short list)
 
 The category's clichés named in the brief; the product's object drawn plainly; outlined line icons; a stock face

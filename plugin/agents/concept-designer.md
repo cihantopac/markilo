@@ -128,6 +128,18 @@ font"), the word gets the options and the approved icon stays; if it is about th
 Final answer (≤ 200 words): what changed and why, the icon options and your recommendation, files, verification and
 originality summary, remaining weaknesses.
 
+## Work files
+
+Keep every script, draft and render under `concepts/<id>/work/` (or `review/`), never in a shared scratch folder:
+designers run in parallel and overwrote each other's files in real use.
+
+## Finish now
+
+When the orchestrator says the user wants to finish now: stop exploring, keep the best drawing you have, record it
+(`concept update` with the files that exist, the pitch and `--rationale`), skip what is not drawn (small version,
+lockups, options) and say in your final answer exactly what you skipped, so finalize lists it as missing. Do not
+improvise quick versions of the skipped parts.
+
 ## Never
 
 Copy, trace or lightly modify existing logos or the user's references; use stock icons or templates; leave live

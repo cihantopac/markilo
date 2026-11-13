@@ -124,6 +124,35 @@ describe('craft-named directions', () => {
     expect(skill).toContain('### Family');
     expect(skill).toContain('record the skipped critic');
   });
+  it('1.4 skill text: first questions, round letters, sketch rounds, family joining, requested change', () => {
+    const skill = readFileSync(join(root, 'plugin/skills/design/SKILL.md'), 'utf8');
+    for (const t of [
+      'Mode and scope',
+      'keep the current colour?',
+      'search trademark registries now',
+      "in the board's order",
+      'proposals.order',
+      '<letter> · <title> · <id>',
+      'sketch round',
+      '"Not chosen, but curious"',
+      '"Finish now"',
+      'did not ask for that change',
+      'concept adopt',
+      'research family',
+      '--on-brand',
+    ])
+      expect(skill).toContain(t);
+    const principles = readFileSync(
+      join(root, 'plugin/skills/design/references/design-principles.md'),
+      'utf8',
+    );
+    expect(principles).toContain("## Abstract directions and the name's own idea");
+    const workflow = readFileSync(join(root, 'plugin/skills/design/references/workflow.md'), 'utf8');
+    expect(workflow).toContain('## A product joining an existing family');
+    const agent = readFileSync(join(root, 'plugin/agents/concept-designer.md'), 'utf8');
+    expect(agent).toContain('## Finish now');
+    expect(agent).toContain('concepts/<id>/work/');
+  });
   it('cli.md table rows have as many cells as the header', () => {
     const cli = readFileSync(join(root, 'plugin/skills/design/references/cli.md'), 'utf8');
     const cells = (row: string) => row.replace(/\\\|/g, '').split('|').length;

@@ -12,6 +12,10 @@ Request: $ARGUMENTS
 
 Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `markilo`). Run every toolchain command as its own Bash call, written out in full (`node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command> …`). Do not wrap it in shell variables, `cd`, `&&` chains or pipes: the plugin pre-approves exactly that form, so anything else triggers permission prompts.
 
+In the Claude desktop app users answer in chat: send `proposals/round-<n>.png` (and other review PNGs) into the chat
+and record their answers yourself; the served gallery is optional and stops when the session ends. Regenerate the
+gallery each round. Name proposals by their board letter and title (`A · <title>`), as `proposals.order` lists them.
+
 1. Preferred: start `markilo gallery --serve` as a **background** Bash command (it keeps running). Its first output
    line has `serving`: a `http://127.0.0.1:<port>/…?t=<token>` URL. Give the user that URL. The server only listens
    on this computer, needs the token, serves only the gallery and exported artwork, and stops by itself when idle.

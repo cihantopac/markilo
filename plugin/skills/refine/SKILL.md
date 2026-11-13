@@ -17,10 +17,14 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    which keeps the chosen drawing for the later side-by-side. Never develop a concept the user dropped. `markilo cost --brand <slug>` before spending.
 2. If the user selected without changes and `markilo proposals --brand <slug> --concepts <id>` lists nothing missing
    and `verify` has no failing check, ask whether to finish as chosen; on yes, skip to step 5 without a designer or
-   critic. A small, precise change they describe is done directly with the toolchain (`construct`, `lockup`,
+   critic. Read the choice back first (`<letter> · <title> · <id>`, from `proposals.order`). When they want to continue
+   from another concept's drawing, `markilo concept adopt --brand <slug> --concept <id> --from <other> --files
+   symbol,wordmark` copies it and re-pins the chosen state. A small, precise change they describe is done directly with the toolchain (`construct`, `lockup`,
    `verify`). Otherwise: one `markilo:concept-designer` agent in `develop <concept id>` mode with the user's changes, pinned spots, or the
    combination (it creates a new concept for a combination). Record `--phase refine` with its usage.
 3. `markilo verify --brand <slug> --concept <id>` until nothing fails; `Read` the review, wordmark and context sheets. When the `letters` check says it did not run (a freeform or hand-edited wordmark), read the 32 px wordmark render letter by letter and write down what you read before the brand name; a split or misread letter is fixed before the critic. When `balance` says the mark leans, `markilo center in.svg -o out.svg` shifts it to the optical centre (never run on a locked brand's masters).
+   A transformation the user asked for is shown to them before you send the designer back on taste; "character lost"
+   applies only to changes nobody asked for.
 4. After a development pass only, one `markilo:design-critic` agent in `final <concept id>` mode. Apply the fixes that improve the work without
    changing what the user chose — once, then verify again; do not critique an unchanged image twice. Record
    `--phase verify` from the agent's task notification (`subagent_tokens`, `duration_ms` / 60000). When Claude Code
