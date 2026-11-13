@@ -6,6 +6,7 @@ import {
   readdirSync,
   readFileSync,
   realpathSync,
+  rmSync,
   symlinkSync,
   writeFileSync,
 } from 'node:fs';
@@ -13,6 +14,7 @@ import { dirname, join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { parseCommand } from '../src/cli/args.js';
 import { findCommand } from '../src/cli/commands.js';
+import { loadKit } from '../src/export/kit.js';
 import { decodeImage } from '../src/render/png.js';
 import { verifyConcept } from '../src/report/quality.js';
 import { fixture, synthBrand, tmp } from './helpers.js';
@@ -535,7 +537,7 @@ describe('cli (bundled)', () => {
     expect(bad.status).not.toBe(0);
     expect(JSON.parse(bad.stderr).error.code).toBe('INVALID_INPUT');
     expect(bad.stderr).toMatch(
-      /symbol\.svg uses #ff8a3d, which is not in the palette — run `concept update --primary/,
+      /symbol\.svg uses #ff8a3d, which is not in the palette — run `concept update --recolor-from #ff8a3d --<role> <#hex>`/,
     );
     const r = run([...fin, '--accept-colours'], cwd);
     expect(r.status, r.stderr).toBe(0);
@@ -552,8 +554,161 @@ describe('cli (bundled)', () => {
     );
     expect(r.status, r.stderr).toBe(0);
     const out = JSON.parse(r.stdout);
-    expect(out.kit.warnings.join(' ')).toMatch(/symbol\.svg uses #2b44b0, which is not a palette role/);
-    expect(out.kit.warnings.join(' ')).not.toMatch(/run `concept update/);
+    // An off-palette shade is a note for this run; brand.json keeps only what was knowingly accepted.
+    expect(out.kit.warnings).toBeUndefined();
+    expect(
+      JSON.parse(readFileSync(join(cwd, 'brand', 'brands', 'nimbra', 'final', 'brand.json'), 'utf8'))
+        .warnings,
+    ).toBeUndefined();
+    expect(out.warnings.join(' ')).toMatch(/symbol\.svg uses #2b44b0, which is not a palette role/);
+    expect(out.warnings.join(' ')).not.toMatch(/run `concept update/);
+  }, 60_000);
+  it('finalize --force leaves no master the new kit does not list', async () => {
+    const { ws, dir: cwd } = synthBrand();
+    const cdir = ws.conceptDir('nimbra', 'fold');
+    copyFileSync(join(cdir, 'symbol.svg'), join(cdir, 'symbol-small.svg'));
+    const upd = ['concept', 'update', '--brand', 'nimbra', '--concept', 'fold'];
+    expect(run([...upd, '--small', 'symbol-small.svg'], cwd).status).toBe(0);
+    await verifyConcept(ws, 'nimbra', 'fold');
+    const fin = [
+      'finalize',
+      '--brand',
+      'nimbra',
+      '--concept',
+      'fold',
+      '--user-choice',
+      'This one.',
+      '--accept-risk',
+    ];
+    expect(run(fin, cwd).status).toBe(0);
+    const final = join(cwd, 'brand', 'brands', 'nimbra', 'final');
+    expect(existsSync(join(final, 'symbol-small.svg'))).toBe(true);
+    // The user now wants the main symbol at small sizes: the small file is no longer part of the kit.
+    ws.saveConcept({ ...ws.concept('nimbra', 'fold'), status: 'shortlisted', smallSizes: 'main' });
+    const r = run([...fin, '--force'], cwd);
+    expect(r.status, r.stderr).toBe(0);
+    expect(JSON.parse(r.stdout).kit.files.symbolSmall).toBeUndefined();
+    expect(existsSync(join(final, 'symbol-small.svg'))).toBe(false);
+    expect(existsSync(join(final, 'symbol.svg'))).toBe(true);
+  }, 60_000);
+  it('an old kit whose gate says `failed` reads as below-threshold and still exports', async () => {
+    const { ws, dir: cwd } = synthBrand();
+    await verifyConcept(ws, 'nimbra', 'fold');
+    const fin = run(
+      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
+      cwd,
+    );
+    expect(fin.status, fin.stderr).toBe(0);
+    const kitFile = join(cwd, 'brand', 'brands', 'nimbra', 'final', 'brand.json');
+    const kit = JSON.parse(readFileSync(kitFile, 'utf8'));
+    writeFileSync(kitFile, JSON.stringify({ ...kit, gate: { ...kit.gate, status: 'failed' } }, null, 2));
+    expect(loadKit(ws, 'nimbra').gate?.status).toBe('below-threshold');
+    const r = run(['export', '--brand', 'nimbra', '--only', 'web'], cwd);
+    expect(r.status, r.stderr).toBe(0);
+  }, 60_000);
+  it('the stale-colour remedy works: --recolor-from rewrites it to a role that keeps its colour', async () => {
+    const { ws, dir: cwd } = synthBrand();
+    const upd = ['concept', 'update', '--brand', 'nimbra', '--concept', 'fold'];
+    expect(run([...upd, '--accent', '#e5484d', '--no-recolor'], cwd).status).toBe(0);
+    // The accent keeps its value: a plain --accent call finds nothing to recolour.
+    expect(JSON.parse(run([...upd, '--accent', '#e5484d'], cwd).stdout).recolored).toBeUndefined();
+    const bad = run([...upd, '--recolor-from', '#ff8a3d'], cwd);
+    expect(JSON.parse(bad.stderr).error.code).toBe('USAGE');
+    const r = run([...upd, '--recolor-from', '#FF8A3D', '--accent', '#e5484d'], cwd);
+    expect(r.status, r.stderr).toBe(0);
+    expect(JSON.parse(r.stdout).recolored).toEqual([
+      expect.objectContaining({ file: 'symbol.svg', from: '#ff8a3d', to: '#e5484d' }),
+    ]);
+    expect(readFileSync(join(ws.conceptDir('nimbra', 'fold'), 'symbol.svg'), 'utf8')).not.toMatch(/#ff8a3d/i);
+    await verifyConcept(ws, 'nimbra', 'fold');
+    const fin = run(
+      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
+      cwd,
+    );
+    expect(fin.status, fin.stderr).toBe(0);
+  }, 60_000);
+  it('recolour, then revert to chosen: the restored drawing follows the palette and finalizes', async () => {
+    const { ws, dir: cwd } = synthBrand();
+    const upd = ['concept', 'update', '--brand', 'nimbra', '--concept', 'fold'];
+    const cdir = ws.conceptDir('nimbra', 'fold');
+    expect(run([...upd, '--status', 'shortlisted'], cwd).status).toBe(0);
+    expect(JSON.parse(readFileSync(join(cdir, 'chosen', 'files.json'), 'utf8')).palette.primary).toBe(
+      '#3b5bdb',
+    );
+    expect(run([...upd, '--primary', '#2b3a52'], cwd).status).toBe(0);
+    const r = run(['concept', 'revert', '--brand', 'nimbra', '--concept', 'fold', '--to', 'chosen'], cwd);
+    expect(r.status, r.stderr).toBe(0);
+    const out = JSON.parse(r.stdout);
+    expect(out.recolored).toEqual([{ file: 'symbol.svg', from: '#3b5bdb', to: '#2b3a52', count: 2 }]);
+    expect(readFileSync(join(cdir, 'symbol.svg'), 'utf8')).not.toContain('#3b5bdb');
+    await verifyConcept(ws, 'nimbra', 'fold');
+    const verify = JSON.parse(run(['verify', '--brand', 'nimbra', '--concept', 'fold'], cwd).stdout);
+    expect(verify.warnings.join(' ')).not.toMatch(/not in the palette/);
+    const fin = run(
+      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
+      cwd,
+    );
+    expect(fin.status, fin.stderr).toBe(0);
+  }, 60_000);
+  it('revert with a chosen/ kept before 1.6 restores by name and warns that it did not recolour', () => {
+    const { ws, dir: cwd } = synthBrand();
+    const upd = ['concept', 'update', '--brand', 'nimbra', '--concept', 'fold'];
+    const cdir = ws.conceptDir('nimbra', 'fold');
+    expect(run([...upd, '--status', 'shortlisted'], cwd).status).toBe(0);
+    rmSync(join(cdir, 'chosen', 'files.json'));
+    expect(run([...upd, '--primary', '#2b3a52'], cwd).status).toBe(0);
+    const r = run(['concept', 'revert', '--brand', 'nimbra', '--concept', 'fold', '--to', 'chosen'], cwd);
+    expect(r.status, r.stderr).toBe(0);
+    const out = JSON.parse(r.stdout);
+    expect(out.restored).toEqual(expect.arrayContaining(['symbol.svg', 'wordmark.svg']));
+    expect(out.recolored).toBeUndefined();
+    expect(out.warnings.join(' ')).toMatch(/kept before 1\.6 without its palette/);
+    expect(readFileSync(join(cdir, 'symbol.svg'), 'utf8')).toContain('#3b5bdb');
+  }, 60_000);
+  it('a rejected option leaves the files as they were (recolour is written last)', () => {
+    const { ws, dir: cwd } = synthBrand();
+    const cdir = ws.conceptDir('nimbra', 'fold');
+    const before = readFileSync(join(cdir, 'symbol.svg'), 'utf8');
+    for (const extra of [
+      ['--present', 'maybe'],
+      ['--blind', 'craft=7'],
+      ['--judgment', 'bad'],
+      ['--semantics', ';'],
+    ]) {
+      const r = run(
+        ['concept', 'update', '--brand', 'nimbra', '--concept', 'fold', '--primary', '#2b3a52', ...extra],
+        cwd,
+      );
+      expect(r.status, extra.join(' ')).not.toBe(0);
+      expect(readFileSync(join(cdir, 'symbol.svg'), 'utf8')).toBe(before);
+      expect(ws.concept('nimbra', 'fold').palette.primary).toBe('#3b5bdb');
+    }
+  }, 60_000);
+  it('a critique of a changed drawing starts clean: no judgment, answer or looks of the old drawing', () => {
+    const { ws, dir: cwd } = synthBrand();
+    const upd = ['concept', 'update', '--brand', 'nimbra', '--concept', 'fold'];
+    const blind = 'distinctiveness=7,memorability=7,brand-fit=7,craft=7,versatility=7';
+    const first = run(
+      [...upd, '--blind', blind, '--present', 'yes:good', '--judgment', 'craft=8:clean'],
+      cwd,
+    );
+    expect(first.status, first.stderr).toBe(0);
+    const reviews = ws.concept('nimbra', 'fold').reviews;
+    // The drawing changes; the new critic records only its blind scores in this call.
+    copyFileSync(fixture('marks/leaf-letter.svg'), join(ws.conceptDir('nimbra', 'fold'), 'symbol.svg'));
+    const r = run([...upd, '--blind', blind, '--show'], cwd);
+    expect(r.status, r.stderr).toBe(0);
+    const out = JSON.parse(r.stdout);
+    expect(out.judgment).toBeUndefined();
+    expect(out.critique).toBeUndefined();
+    expect(out.looks).toBeUndefined();
+    expect(out.critiques).toHaveLength(1);
+    expect(out.critiques[0].judgment.craft.score).toBe(8);
+    expect(out.gate.status).not.toBe('passed');
+    // Its first answer counts as a new review; a follow-up call on the same drawing keeps this call's scores.
+    const next = JSON.parse(run([...upd, '--present', 'yes:fine', '--show'], cwd).stdout);
+    expect(next.blind.scores.craft).toBe(7);
+    expect(next.reviews).toBe((reviews ?? 0) + 1);
   }, 60_000);
   it('family word --fill writes the given fill on the word', () => {
     const { dir: cwd } = synthBrand();

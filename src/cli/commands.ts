@@ -14,7 +14,7 @@ import { contrastRatio, deltaE2000, normalizeColor } from '../analyze/color.js';
 import { checkLetters, letterAdvice } from '../analyze/letters.js';
 import { loadMark, sampleFromSvg } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
-import { FORM_CHANGE_LIMIT, formChangeWarning, silhouetteIoU } from '../analyze/silhouette.js';
+import { FORM_CHANGE_LIMIT, formChangeWarning, formIoU } from '../analyze/silhouette.js';
 import { compareMarks, genericity } from '../analyze/similarity.js';
 import { carriesTile, TYPESET_LIMIT, typesetLikeness, wordmarkFont } from '../analyze/typeset.js';
 import { type ConstructionSpec, compileSpec, constructionSvg, memberOf } from '../construct/compile.js';
@@ -46,7 +46,7 @@ import type {
   Source,
   SourceReliability,
 } from '../core/types.js';
-import { validateBrief } from '../core/validate.js';
+import { validateBrief, validateConcept } from '../core/validate.js';
 import { Workspace, withBrandLock } from '../core/workspace.js';
 import { addFont, searchFonts } from '../design/font-catalog.js';
 import { fontInfo, listFonts, loadBundledFace, loadFontFile } from '../design/fonts.js';
@@ -69,11 +69,13 @@ import {
   AUTONOMOUS_ROUNDS,
   CHOSEN_DIR,
   checkRound,
+  chosenFile,
   keepChosen,
   letterAt,
   letterConflicts,
   nextLetter,
   ROUND_SIZE,
+  readChosenIndex,
   roundLetters,
   roundOrder,
   rounds,
@@ -119,6 +121,7 @@ import {
 } from '../report/cost.js';
 import {
   archiveCritique,
+  artHash,
   BLIND_CRITERIA,
   criterionOf,
   currentArt,
@@ -222,45 +225,63 @@ function recolorSvgText(
   return { text, counts };
 }
 
-/** A palette role changed with `concept update`: its old colour becomes the new one in every registered file. */
-function recolorConceptFiles(
+/** Old colour → new colour for each drawing role whose colour moved from one palette to the other. */
+function paletteRoleMap(from: Concept['palette'], to: Concept['palette']): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const role of ['primary', 'secondary', 'accent', 'ink'] as const) {
+    const a = from[role] && normalizeColor(from[role]!);
+    const b = to[role] && normalizeColor(to[role]!);
+    if (!a || !b || a === b) continue;
+    map.set(a, b);
+  }
+  return map;
+}
+
+interface RecolorPlan {
+  recolored: { file: string; from: string; to: string; count: number }[];
+  warnings: string[];
+  /** The new texts, written only once the whole change is accepted (applyRecolor). */
+  writes: { path: string; text: string }[];
+}
+
+/**
+ * The palette moved (`concept update`, or a revert to a drawing chosen under an older palette): each old colour
+ * becomes the new one in the given files. Computed in memory; nothing is written here.
+ */
+function planRecolor(
   w: Workspace,
   brand: string,
-  cur: Concept,
-  next: Concept,
-): { recolored: { file: string; from: string; to: string; count: number }[]; warnings: string[] } {
-  const map = new Map<string, string>();
-  const warnings: string[] = [];
-  for (const role of ['primary', 'secondary', 'accent', 'ink'] as const) {
-    const from = cur.palette[role] && normalizeColor(cur.palette[role]!);
-    const to = next.palette[role] && normalizeColor(next.palette[role]!);
-    if (!from || !to || from === to) continue;
-    map.set(from, to);
-  }
-  const recolored: { file: string; from: string; to: string; count: number }[] = [];
-  if (!map.size) return { recolored, warnings };
-  const changedFiles = new Set<string>();
-  for (const rel of new Set(Object.values(next.files).filter((f): f is string => !!f))) {
-    const path = w.conceptFile(brand, cur.id, rel);
+  id: string,
+  files: string[],
+  map: Map<string, string>,
+  fromPalette: Concept['palette'],
+): RecolorPlan {
+  const plan: RecolorPlan = { recolored: [], warnings: [], writes: [] };
+  if (!map.size) return plan;
+  for (const rel of new Set(files)) {
+    const path = w.conceptFile(brand, id, rel);
     if (!existsSync(path)) continue;
     const { text, counts } = recolorSvgText(readText(path), map);
     if (!counts.size) continue;
-    writeFileSync(path, text);
-    changedFiles.add(rel);
-    for (const [from, count] of counts) recolored.push({ file: rel, from, to: map.get(from)!, count });
+    plan.writes.push({ path, text });
+    for (const [from, count] of counts) plan.recolored.push({ file: rel, from, to: map.get(from)!, count });
   }
   // Files carry colours, not roles: a colour two roles shared moves for both.
   for (const [from, to] of map) {
     const roles = (['primary', 'secondary', 'accent', 'ink', 'paper'] as const).filter(
-      (r) => cur.palette[r] && normalizeColor(cur.palette[r]!) === from,
+      (r) => fromPalette[r] && normalizeColor(fromPalette[r]!) === from,
     );
-    const moved = recolored.filter((r) => r.from === from).map((r) => r.file);
+    const moved = plan.recolored.filter((r) => r.from === from).map((r) => r.file);
     if (roles.length > 1 && moved.length)
-      warnings.push(
+      plan.warnings.push(
         `${roles.join(' and ')} shared ${from}; ${moved.join(', ')} now use ${to} everywhere, so check the parts that were not meant to change.`,
       );
   }
-  return { recolored, warnings };
+  return plan;
+}
+
+function applyRecolor(plan: RecolorPlan): void {
+  for (const { path, text } of plan.writes) writeFileSync(path, text);
 }
 
 /** A word without data-baseline / data-cap-height: composeLockup has to assume its ink box is the cap box. */
@@ -1778,6 +1799,11 @@ export const COMMANDS: CommandSpec[] = [
         description:
           'Keep the concept files as they are when a palette colour changes (default: the old colour is rewritten to the new one in every concept file)',
       },
+      'recolor-from': {
+        type: 'string',
+        description:
+          'A stale colour (#hex) still drawn in the files: rewrite it to the one role colour given in the same call (--primary, --secondary, --accent or --ink), even when that role does not change',
+      },
       primary: { type: 'string', description: 'Primary color' },
       secondary: { type: 'string', description: 'Secondary color ("none" removes it)' },
       accent: { type: 'string', description: 'Accent color ("none" removes it)' },
@@ -1919,9 +1945,51 @@ export const COMMANDS: CommandSpec[] = [
       }
       Object.assign(next.palette, tileColorOptions(c));
       // The masters follow the palette (an unlocked brand only; a locked identity is never recoloured).
-      let recolor: ReturnType<typeof recolorConceptFiles> = { recolored: [], warnings: [] };
-      if (rolesSet.length && !c.bool('no-recolor') && !w.brand(slug).locked)
-        recolor = recolorConceptFiles(w, slug, cur, next);
+      // Planned here, written only after every other option was accepted (just before the concept is saved).
+      let recolor: RecolorPlan = { recolored: [], warnings: [], writes: [] };
+      const recolorFrom = c.str('recolor-from');
+      const staleFrom = recolorFrom !== undefined ? normalizeColor(recolorFrom) : undefined;
+      if (recolorFrom !== undefined) {
+        if (!staleFrom) throw new MarkiloError('INVALID_INPUT', '--recolor-from must be a hex color.');
+        if (rolesSet.length !== 1 || c.bool('no-recolor'))
+          throw new MarkiloError(
+            'USAGE',
+            '--recolor-from needs exactly one role colour to recolour to, and no --no-recolor.',
+            'For example: concept update --recolor-from #3b5bdb --primary #2b3a52',
+          );
+        if (w.brand(slug).locked)
+          throw new MarkiloError('LOCKED', `${slug} is locked; its files are never recoloured.`);
+      }
+      if (rolesSet.length && !c.bool('no-recolor') && !w.brand(slug).locked) {
+        const map = paletteRoleMap(cur.palette, next.palette);
+        if (staleFrom) {
+          const role = rolesSet[0] as 'primary' | 'secondary' | 'accent' | 'ink';
+          const to = normalizeColor(next.palette[role] ?? '');
+          if (!to || to === staleFrom)
+            throw new MarkiloError('USAGE', `--recolor-from ${staleFrom} is the ${role} colour itself.`);
+          map.set(staleFrom, to);
+        }
+        const files = Object.values(next.files).filter((f): f is string => !!f);
+        recolor = planRecolor(w, slug, cur.id, files, map, cur.palette);
+      }
+      // The drawing as it will be once this call is saved (planned recolours included).
+      const plannedArt = () => {
+        const read = (rel?: string) => {
+          if (!rel) return undefined;
+          const path = w.conceptFile(slug, cur.id, rel);
+          const planned = recolor.writes.find((x) => x.path === path);
+          return planned ? planned.text : existsSync(path) ? readText(path) : undefined;
+        };
+        return artHash(read(next.files.symbol), read(next.files.wordmark));
+      };
+      const critiquing = ['judgment', 'blind', 'present', 'look', 'look-present', 'reads-as'].some((k) =>
+        k === 'judgment' ? c.list('judgment').length : c.str(k),
+      );
+      // A critique of a changed drawing starts clean: the old drawing's verdict goes to the history (archiveCritique
+      // below), and none of its scores, answer or looks carry over into the new drawing's record.
+      const freshCritique = critiquing && !!cur.reviewedArt && cur.reviewedArt !== plannedArt();
+      if (freshCritique)
+        for (const k of ['judgment', 'critique', 'blind', 'looks', 'readsAs'] as const) delete next[k];
       if (c.str('on-brand') === 'none') delete next.palette.onBrand;
       if (c.str('tile') === 'none') delete next.palette.tile;
       // A colour that stopped being a role is remembered, so a master still drawn in it reads as stale at finalize.
@@ -1988,7 +2056,7 @@ export const COMMANDS: CommandSpec[] = [
       Object.assign(next, letteringOptions(c, next.typography));
       const presentAs = (answer: string, reason: string) => {
         // A new drawing has no answer yet (construct clears it): this is the critic's first verdict on it.
-        if (!cur.critique) next.reviews = (cur.reviews ?? 0) + 1;
+        if (!next.critique) next.reviews = (cur.reviews ?? 0) + 1;
         next.critique = { present: /^y/i.test(answer), reason: reason.trim(), at: nowIso() };
       };
       if (c.str('present')) {
@@ -2064,20 +2132,20 @@ export const COMMANDS: CommandSpec[] = [
           [requireCriterion(m[1]!)]: { score, rationale: m[3]!.trim() },
         };
       }
-      // A choice given in chat keeps the drawing the user chose (as it was before this call), as "feedback --apply"
-      // does, so proposals can later show it next to the developed version.
-      if (st === 'shortlisted') kept = keepChosen(w, slug, cur);
       // The critic's scores and answer belong to the drawing they judged: record it, so a redraw reads as stale.
-      if (
-        ['judgment', 'blind', 'present', 'look', 'look-present', 'reads-as'].some((k) =>
-          k === 'judgment' ? c.list('judgment').length : c.str(k),
-        )
-      ) {
-        const art = currentArt(w, slug, next);
+      if (critiquing) {
+        const art = plannedArt();
         // The critique of another drawing stays in the history, so it can return with that drawing.
         archiveCritique(cur, next, art);
         next.reviewedArt = art;
       }
+      // Every option was accepted: check the record as saveConcept will, then write the recoloured files and save.
+      const issues = validateConcept(next);
+      if (issues.length) throw new MarkiloError('INVALID_INPUT', `Invalid concept: ${issues.join('; ')}`);
+      // A choice given in chat keeps the drawing the user chose (as it was before this call), as "feedback --apply"
+      // does, so proposals can later show it next to the developed version.
+      if (st === 'shortlisted') kept = keepChosen(w, slug, cur);
+      applyRecolor(recolor);
       w.saveConcept(next);
       const gate = gateOf(next, currentArt(w, slug, next));
       if (c.str('sketch-pick'))
@@ -2270,31 +2338,82 @@ export const COMMANDS: CommandSpec[] = [
           `${cur.id} has no chosen/ copy to go back to.`,
           'chosen/ is made when the user first selects the concept (concept update --status shortlisted).',
         );
-      const kept = new Set(readdirSync(chosenDir));
+      // chosen/files.json (1.6) maps each key to its stored copy; an older chosen/ is matched by the current names.
+      const index = readChosenIndex(w, slug, cur.id);
       const next: Concept = { ...cur, files: { ...cur.files } };
+      const keys = new Set([
+        ...(Object.keys(cur.files) as (keyof Concept['files'])[]),
+        ...(index ? (Object.keys(index.files) as (keyof Concept['files'])[]) : []),
+      ]);
+      const copies = new Map<string, string>();
+      const aside: string[] = [];
+      for (const key of keys) {
+        const from = chosenFile(w, slug, cur, key, index);
+        const rel = cur.files[key];
+        if (from) {
+          // Back to the key's current path (a renamed master keeps its new name), or the chosen name if it is gone.
+          const to = rel ?? from.split(/[/\\]/).pop()!;
+          next.files[key] = to;
+          copies.set(to, from);
+        } else if (rel) {
+          // Not part of what the user chose: unregister it, and put it aside instead of deleting it.
+          delete next.files[key];
+          aside.push(rel);
+        }
+      }
+      // Everything is checked before a file moves: a failure leaves the folder and concept.json as they were.
+      const issues = validateConcept(next);
+      if (issues.length)
+        throw new MarkiloError(
+          'INVALID_INPUT',
+          `Reverting ${cur.id} would leave an invalid concept: ${issues.join('; ')}.`,
+          'Nothing was changed. Register the missing master with concept update, then revert again.',
+        );
+      for (const [key, rel] of Object.entries(next.files) as [string, string | undefined][]) {
+        if (!rel || copies.has(rel) || existsSync(w.conceptFile(slug, cur.id, rel))) continue;
+        throw new MarkiloError(
+          'NOT_FOUND',
+          `Reverting ${cur.id} would leave files.${key} pointing at ${rel}, which does not exist.`,
+          'Nothing was changed.',
+        );
+      }
+      // The drawing was chosen under the palette of that day: it follows the palette changed since, as
+      // `concept update` recolours (exact matches only). An unlocked brand only.
+      const warnings: string[] = [];
+      let recolorMap = new Map<string, string>();
+      if (!w.brand(slug).locked) {
+        if (index?.palette) recolorMap = paletteRoleMap(index.palette, cur.palette);
+        else
+          warnings.push(
+            'chosen/ was kept before 1.6 without its palette, so the restored files were not recoloured; run verify, and recolour a stale colour with concept update --recolor-from <#old> --<role> <#hex>.',
+          );
+      }
+      const recolored: RecolorPlan['recolored'] = [];
+      const texts = new Map<string, string>();
+      for (const [rel, from] of copies) {
+        const { text, counts } = recolorSvgText(readText(from), recolorMap);
+        texts.set(rel, text);
+        for (const [hex, count] of counts)
+          recolored.push({ file: rel, from: hex, to: recolorMap.get(hex)!, count });
+      }
       const restored: string[] = [];
       const unregistered: string[] = [];
       const stamp = nowIso().replace(/[:.]/g, '-');
       let movedTo: string | undefined;
-      for (const [key, rel] of Object.entries(cur.files) as [keyof Concept['files'], string | undefined][]) {
-        if (!rel) continue;
-        const base = rel.split('/').pop()!;
-        const target = w.conceptFile(slug, cur.id, rel);
-        if (kept.has(base)) {
-          mkdirSync(dirname(target), { recursive: true });
-          copyFileSync(join(chosenDir, base), target);
-          restored.push(rel);
-          continue;
-        }
-        // Not part of what the user chose: unregister it, and put it aside instead of deleting it.
-        delete next.files[key];
+      for (const rel of new Set(aside)) {
         unregistered.push(rel);
-        if (existsSync(target)) {
-          const aside = join(w.conceptFile(slug, cur.id, 'rejected'), stamp);
-          mkdirSync(aside, { recursive: true });
-          renameSync(target, join(aside, base));
-          movedTo = join('rejected', stamp);
-        }
+        const target = w.conceptFile(slug, cur.id, rel);
+        if (copies.has(rel) || !existsSync(target)) continue;
+        const dir = join(w.conceptFile(slug, cur.id, 'rejected'), stamp);
+        mkdirSync(dir, { recursive: true });
+        renameSync(target, join(dir, rel.split('/').pop()!));
+        movedTo = join('rejected', stamp);
+      }
+      for (const [rel, text] of texts) {
+        const target = w.conceptFile(slug, cur.id, rel);
+        mkdirSync(dirname(target), { recursive: true });
+        writeFileSync(target, text);
+        restored.push(rel);
       }
       rmSync(w.conceptFile(slug, cur.id, join('review', 'chosen-vs-now.png')), { force: true });
       w.saveConcept(next);
@@ -2310,7 +2429,9 @@ export const COMMANDS: CommandSpec[] = [
         restored,
         unregistered,
         ...(movedTo ? { movedTo } : {}),
+        ...(recolored.length ? { recolored } : {}),
         ...(critique ? { critique: `restored the critique of ${critique.at}` } : {}),
+        ...(warnings.length ? { warnings } : {}),
       };
     },
   },
@@ -2429,13 +2550,17 @@ export const COMMANDS: CommandSpec[] = [
         ...(c.str('user-choice') ? { userChoice: c.str('user-choice')! } : {}),
       });
       const hint = notReviewedHint(w, c.req('brand'), c.req('concept'), kit.gate?.status);
+      // Off-palette shades are a note for this run only; brand.json keeps what was knowingly accepted.
+      const offPalette = masterColourMessages({
+        stale: [],
+        offPalette: masterColourCheck(w, c.req('brand'), c.req('concept')).offPalette,
+      });
+      const warnings = [...(hint.warning ? [hint.warning] : []), ...(kit.warnings ?? []), ...offPalette];
       return {
         kit,
         dir: w.finalDir(c.req('brand')),
         ...(hint.elsewhere.length ? { critiqueElsewhere: hint.elsewhere } : {}),
-        ...(hint.warning || kit.warnings?.length
-          ? { warnings: [...(hint.warning ? [hint.warning] : []), ...(kit.warnings ?? [])] }
-          : {}),
+        ...(warnings.length ? { warnings } : {}),
         next: `markilo export --brand ${c.req('brand')}`,
       };
     },
@@ -2765,14 +2890,15 @@ export const COMMANDS: CommandSpec[] = [
         writeGenerated(out, await renderProposal(input));
         files.push(out);
         // After the user chose this concept: what they chose next to what it is now, so drift is seen, not guessed.
-        const kept = (rel?: string) => {
-          const f = rel && w.conceptFile(slug, cpt.id, join(CHOSEN_DIR, rel.split('/').pop()!));
-          return f && existsSync(f) ? readText(f) : undefined;
+        const chosenIndex = readChosenIndex(w, slug, cpt.id);
+        const kept = (key: keyof Concept['files']) => {
+          const f = chosenFile(w, slug, cpt, key, chosenIndex);
+          return f ? readText(f) : undefined;
         };
-        const was = { symbol: kept(cpt.files.symbol), wordmark: kept(cpt.files.wordmark) };
+        const was = { symbol: kept('symbol'), wordmark: kept('wordmark') };
         if ((was.symbol || was.wordmark) && (was.symbol !== symbol || was.wordmark !== wordmark)) {
-          const lockupWas = kept(cpt.files.lockupHorizontal);
-          const smallWas = kept(cpt.files.small);
+          const lockupWas = kept('lockupHorizontal');
+          const smallWas = kept('small');
           const then: ProposalInput = {
             ...input,
             caption: cpt.adoptedFrom
@@ -2793,7 +2919,7 @@ export const COMMANDS: CommandSpec[] = [
             const now = kind === 'symbol' ? symbol : wordmark;
             if (!was[kind] || !now) continue;
             try {
-              const iou = Math.round((await silhouetteIoU(was[kind]!, now)) * 100) / 100;
+              const iou = Math.round((await formIoU(kind, was[kind]!, now)) * 100) / 100;
               change[kind] = iou;
               if (iou < FORM_CHANGE_LIMIT) warnings.push(`${cpt.id}: ${formChangeWarning(kind, iou)}`);
             } catch {

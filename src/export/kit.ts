@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync } from 'node:fs';
+import { copyFileSync, existsSync, rmSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { hexToOklch, normalizeColor, oklchToHex } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
@@ -247,13 +247,24 @@ export function masterColourMessages(found: MasterColours): string[] {
   return [
     ...found.stale.map(
       (f) =>
-        `${f.file} uses ${list(f)}, which ${plural(f) ? 'are' : 'is'} not in the palette — run \`concept update --primary <#hex>\` to recolour, or add ${plural(f) ? 'them' : 'it'} as a role`,
+        `${f.file} uses ${list(f)}, which ${plural(f) ? 'are' : 'is'} not in the palette — run \`concept update --recolor-from ${f.colours[0]} --<role> <#hex>\`${plural(f) ? ' once per colour' : ''} to recolour ${plural(f) ? 'them' : 'it'} to a role colour, or add ${plural(f) ? 'them' : 'it'} as a role`,
     ),
     ...found.offPalette.map(
       (f) => `${f.file} uses ${list(f)}, which ${plural(f) ? 'are' : 'is'} not a palette role`,
     ),
   ];
 }
+
+/** The master files finalize writes into final/ (everything else there is export output). */
+const FINAL_MASTERS = [
+  'symbol.svg',
+  'wordmark.svg',
+  'symbol-small.svg',
+  'wordmark-small.svg',
+  'lockup-horizontal.svg',
+  'lockup-stacked.svg',
+  'lockup-compact.svg',
+] as const;
 
 /** Freezes an approved concept into final/: optimized masters, generated lockups and brand.json. */
 export async function finalizeConcept(
@@ -332,12 +343,14 @@ export async function finalizeConcept(
   // A master still drawn in a colour the palette no longer holds would reach every export unnoticed.
   const colours = masterColourCheck(ws, brand, conceptId);
   const stale = masterColourMessages({ stale: colours.stale, offPalette: [] });
-  const colourWarnings = masterColourMessages(colours);
+  // brand.json records what was knowingly accepted (stale colours under --accept-colours); an off-palette shade is
+  // a note in verify and the finalize output only.
+  const colourWarnings = stale;
   if (stale.length && !opts.acceptColours)
     throw new MarkiloError(
       'INVALID_INPUT',
       `Concept ${conceptId} has master colours the palette no longer holds: ${stale.join('; ')}.`,
-      'Recolour with concept update, or add the colour as a palette role. If the user knowingly keeps them, pass --accept-colours.',
+      'Recolour with concept update --recolor-from <#old> --<role> <#hex> (the role may keep its colour), or add the colour as a palette role. If the user knowingly keeps them, pass --accept-colours.',
     );
   const dir = ws.finalDir(brand);
   if (existsSync(kitPath(ws, brand)) && !opts.force) {
@@ -402,6 +415,10 @@ export async function finalizeConcept(
     files.lockupStacked = 'lockup-stacked.svg';
   if (compose && lockup(undefined, 'lockup-compact.svg', 'horizontal', 1, 0.4))
     files.lockupCompact = 'lockup-compact.svg';
+  // A kit replaced with --force: a master the earlier kit wrote and this one does not list (a small symbol now that
+  // small sizes use the main one, say) is removed, so final/ holds exactly what brand.json lists.
+  const listed = new Set(Object.values(files));
+  for (const name of FINAL_MASTERS) if (!listed.has(name)) rmSync(join(dir, name), { force: true });
 
   const { ink, dark } = inkFor(concept.palette.primary);
   const kit: BrandKit = {
@@ -579,6 +596,8 @@ export async function composeLockedLockups(
   const symbol = readText(join(dir, kit.files.symbol));
   const wordmark = readText(join(dir, kit.files.wordmark));
   const added: string[] = [];
+  // Both lockups are composed before either is written, so a failure leaves no unlisted file in final/.
+  const made: { out: string; key: 'lockupHorizontal' | 'lockupStacked'; svg: string }[] = [];
   try {
     const symbolInk = (await inkMetrics(symbol)).bbox;
     for (const [layout, out, key] of [
@@ -590,12 +609,15 @@ export async function composeLockedLockups(
         symbolInk,
         title: ws.brand(brand).name,
       });
-      writeGenerated(join(dir, out), l.svg);
-      kit.files[key] = out;
-      added.push(out);
+      made.push({ out, key, svg: l.svg });
     }
   } catch (e) {
     return { added: [], skipped: e instanceof Error ? e.message : String(e) };
+  }
+  for (const { out, key, svg } of made) {
+    writeGenerated(join(dir, out), svg);
+    kit.files[key] = out;
+    added.push(out);
   }
   writeJson(kitPath(ws, brand), kit);
   return { added, kit };

@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync, rmSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { MarkiloError } from '../core/errors.js';
 import type { Concept } from '../core/types.js';
@@ -121,11 +121,51 @@ export function checkRound(ws: Workspace, slug: string, round: number, directed?
 
 /** Where the drawing the user chose is kept, so development can be compared with it. */
 export const CHOSEN_DIR = 'chosen';
+/** In chosen/: which stored file each `files` key had, and the palette, at the moment the user chose (1.6). */
+export const CHOSEN_INDEX = 'files.json';
+
+export interface ChosenIndex {
+  /** `files` key → the file's name inside chosen/. */
+  files: Partial<Record<keyof Concept['files'], string>>;
+  /** The concept palette when the user chose it: a revert recolours from it to the palette of the day. */
+  palette?: Concept['palette'];
+}
+
+/** The chosen/ index, or undefined for a chosen/ folder made before 1.6 (files only, matched by name). */
+export function readChosenIndex(ws: Workspace, slug: string, id: string): ChosenIndex | undefined {
+  const p = ws.conceptFile(slug, id, join(CHOSEN_DIR, CHOSEN_INDEX));
+  if (!existsSync(p)) return undefined;
+  try {
+    const v = JSON.parse(readFileSync(p, 'utf8')) as ChosenIndex;
+    return v && typeof v === 'object' && v.files && typeof v.files === 'object' ? v : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * The stored chosen/ file for a `files` key: by the index, else (an old chosen/ folder) by the current file's name.
+ * Undefined when nothing was kept for it.
+ */
+export function chosenFile(
+  ws: Workspace,
+  slug: string,
+  concept: Concept,
+  key: keyof Concept['files'],
+  index = readChosenIndex(ws, slug, concept.id),
+): string | undefined {
+  const name = index ? index.files[key] : concept.files[key]?.split('/').pop();
+  if (!name || /[/\\]/.test(name) || name === CHOSEN_INDEX) return undefined;
+  const f = ws.conceptFile(slug, concept.id, join(CHOSEN_DIR, name));
+  return existsSync(f) ? f : undefined;
+}
 
 /**
  * Keeps a copy of a concept's files as the user chose them (the first time they select or ask to change it). In
  * Markilo 1.1's validation, development twice lost what the user had picked — a word narrowed, round stones flattened
- * into pills — and only a side-by-side made that visible. `repin` replaces an earlier copy.
+ * into pills — and only a side-by-side made that visible. `repin` replaces an earlier copy. chosen/files.json maps
+ * each `files` key to its stored copy and records the palette, so a revert restores by key even after a rename and
+ * follows a palette change made since.
  */
 export function keepChosen(
   ws: Workspace,
@@ -141,11 +181,21 @@ export function keepChosen(
   }
   if (existsSync(dir)) return [];
   const kept: string[] = [];
-  for (const rel of Object.values(concept.files)) {
+  const index: ChosenIndex = { files: {}, palette: { ...concept.palette } };
+  const stored = new Map<string, string>();
+  for (const [key, rel] of Object.entries(concept.files) as [keyof Concept['files'], string | undefined][]) {
     if (!rel || !existsSync(ws.conceptFile(slug, concept.id, rel))) continue;
+    let name = rel.split('/').pop()!;
+    // Two keys with different files of the same name: the second is stored under its key.
+    if (name === CHOSEN_INDEX || (stored.has(name) && stored.get(name) !== rel)) name = `${key}-${name}`;
     mkdirSync(dir, { recursive: true });
-    copyFileSync(ws.conceptFile(slug, concept.id, rel), join(dir, rel.split('/').pop()!));
-    kept.push(rel);
+    if (!stored.has(name)) {
+      copyFileSync(ws.conceptFile(slug, concept.id, rel), join(dir, name));
+      stored.set(name, rel);
+      kept.push(rel);
+    }
+    index.files[key] = name;
   }
+  if (kept.length) writeFileSync(join(dir, CHOSEN_INDEX), `${JSON.stringify(index, null, 2)}\n`);
   return kept;
 }

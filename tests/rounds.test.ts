@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, readFileSync, utimesSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, readFileSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { Workspace } from '../src/core/workspace.js';
@@ -336,6 +336,49 @@ describe('concept revert', () => {
     expect(readFileSync(join(cwd, 'brand', 'brands', 'tidepool', 'decisions.md'), 'utf8')).toMatch(
       /Reverted.*p2.*back/,
     );
+  }, 60_000);
+  it('restores by key: a renamed master and a key unregistered since come back', () => {
+    const cwd = proposals(2);
+    const dir = join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'p2');
+    const set = ['concept', 'update', '--brand', 'tidepool', '--concept', 'p2'];
+    copyFileSync(fixture('marks/bars.svg'), join(dir, 'symbol-small.svg'));
+    ok([...set, '--small', 'symbol-small.svg'], cwd);
+    ok([...set, '--status', 'shortlisted'], cwd);
+    expect(JSON.parse(readFileSync(join(dir, 'chosen', 'files.json'), 'utf8')).files).toEqual({
+      symbol: 'symbol.svg',
+      wordmark: 'wordmark.svg',
+      small: 'symbol-small.svg',
+    });
+    const chosen = readFileSync(join(dir, 'chosen', 'symbol.svg'), 'utf8');
+    // Development registers the symbol under a new name and drops the small version.
+    copyFileSync(fixture('marks/leaf-letter.svg'), join(dir, 'symbol-dev.svg'));
+    ok([...set, '--symbol', 'symbol-dev.svg', '--small', 'none'], cwd);
+    const r = ok(['concept', 'revert', '--brand', 'tidepool', '--concept', 'p2', '--to', 'chosen'], cwd);
+    expect(r.restored).toEqual(expect.arrayContaining(['symbol-dev.svg', 'symbol-small.svg']));
+    expect(r.unregistered).toEqual([]);
+    const files = JSON.parse(readFileSync(join(dir, 'concept.json'), 'utf8')).files;
+    expect(files.symbol).toBe('symbol-dev.svg');
+    expect(files.small).toBe('symbol-small.svg');
+    expect(readFileSync(join(dir, 'symbol-dev.svg'), 'utf8')).toBe(chosen);
+  }, 60_000);
+  it('validates before moving anything: a revert that would leave no master changes nothing', () => {
+    const cwd = proposals(1);
+    const ws = Workspace.locate(cwd);
+    const dir = join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'p1');
+    const cur = ws.concept('tidepool', 'p1');
+    ws.saveConcept({ ...cur, files: { symbol: 'symbol.svg' } });
+    ok(['concept', 'update', '--brand', 'tidepool', '--concept', 'p1', '--status', 'shortlisted'], cwd);
+    // A chosen/ folder from before 1.6 (no files.json) only matches by the current name.
+    rmSync(join(dir, 'chosen', 'files.json'));
+    copyFileSync(fixture('marks/leaf-letter.svg'), join(dir, 'symbol-dev.svg'));
+    ok(['concept', 'update', '--brand', 'tidepool', '--concept', 'p1', '--symbol', 'symbol-dev.svg'], cwd);
+    const before = readFileSync(join(dir, 'concept.json'), 'utf8');
+    const bad = run(['concept', 'revert', '--brand', 'tidepool', '--concept', 'p1', '--to', 'chosen'], cwd);
+    expect(bad.status).not.toBe(0);
+    expect(JSON.parse(bad.stderr).error.code).toBe('INVALID_INPUT');
+    expect(existsSync(join(dir, 'symbol-dev.svg'))).toBe(true);
+    expect(existsSync(join(dir, 'rejected'))).toBe(false);
+    expect(readFileSync(join(dir, 'concept.json'), 'utf8')).toBe(before);
   }, 60_000);
   it('refuses without a chosen copy; --small none unregisters', () => {
     const cwd = proposals(1);
