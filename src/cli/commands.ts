@@ -95,18 +95,11 @@ import {
   researchCompetitor,
 } from '../research/competitors.js';
 import { scanMonorepo } from '../research/monorepo.js';
-import {
-  addFinding,
-  addSource,
-  mergeRepoScan,
-  mergeSiteScan,
-  summarizeProfile,
-} from '../research/profile.js';
+import { addFinding, addSource, mergeRepoScan, summarizeProfile } from '../research/profile.js';
 import { DEFAULT_MAX_FILES, scanRepo, summarizeScan } from '../research/repo.js';
-import { fetchBinary, scanSite } from '../research/site.js';
+import { researchSite } from '../research/site-research.js';
 import { lintSvg } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
-import { sanitizeSvg } from '../svg/sanitize.js';
 import { type AgentTarget, agentSetup, ROLE_IDS, type Role } from './agents.js';
 import type { CommandSpec, RunContext } from './args.js';
 import { FRAMEWORKS, type Framework, planFrameworkInstall } from './frameworks.js';
@@ -600,49 +593,12 @@ export const COMMANDS: CommandSpec[] = [
       const w = ws(c);
       const slug = c.req('brand');
       const net = { allowNetwork: c.bool('allow-network'), allowPrivate: c.bool('allow-private') };
-      const scan = await scanSite(pos(c, 0, 'url'), { ...net, maxPages: c.num('pages', 8)! });
-      const p = w.profile(slug);
-      const merged = mergeSiteScan(p, scan);
-      const saved: string[] = [];
-      if (c.bool('download-assets')) {
-        const host = new URL(scan.finalUrl).hostname.replace(/[^a-z0-9.-]/gi, '_');
-        scan.inlineLogoSvgs.forEach((svg, i) => {
-          const out = join(w.cacheDir(slug), host, `inline-logo-${i}.svg`);
-          writeGenerated(out, sanitizeSvg(svg));
-          saved.push(out);
-        });
-        const urls = [
-          ...scan.icons.map((i) => i.href),
-          ...scan.logoCandidates.map((l) => l.href),
-          ...(scan.organization?.logo ? [scan.organization.logo] : []),
-          ...(scan.ogImage ? [scan.ogImage] : []),
-        ].slice(0, 12);
-        for (const [i, u] of urls.entries()) {
-          try {
-            const bin = await fetchBinary(u, net);
-            if (bin.status >= 400 || !/image\//.test(bin.contentType)) continue;
-            const ext = bin.contentType.includes('svg')
-              ? '.svg'
-              : bin.contentType.includes('png')
-                ? '.png'
-                : bin.contentType.includes('jpeg')
-                  ? '.jpg'
-                  : bin.contentType.includes('icon')
-                    ? '.ico'
-                    : '.bin';
-            const out = join(w.cacheDir(slug), host, `${String(i).padStart(2, '0')}-asset${ext}`);
-            writeGenerated(out, ext === '.svg' ? sanitizeSvg(new TextDecoder().decode(bin.body)) : bin.body);
-            saved.push(out);
-          } catch {
-            // Skip assets that fail; the page scan already succeeded.
-          }
-        }
-      }
-      w.saveProfile(slug, p);
-      writeJson(
-        join(w.cacheDir(slug), `site-${new URL(scan.finalUrl).hostname.replace(/[^a-z0-9.-]/gi, '_')}.json`),
-        scan,
-      );
+      const r = await researchSite(w, slug, pos(c, 0, 'url'), {
+        ...net,
+        maxPages: c.num('pages', 8)!,
+        downloadAssets: c.bool('download-assets'),
+      });
+      const scan = r.scan;
       const digest = c.bool('full')
         ? scan
         : {
@@ -654,6 +610,9 @@ export const COMMANDS: CommandSpec[] = [
             organization: scan.organization,
             ...(scan.nameCase ? { nameCase: scan.nameCase } : {}),
             colors: scan.colors.slice(0, 6).map((x) => x.hex),
+            ...(scan.darkColors.length ? { darkColors: scan.darkColors.slice(0, 6).map((x) => x.hex) } : {}),
+            ...(scan.iconColors.length ? { iconColors: scan.iconColors.map((x) => x.hex) } : {}),
+            identityColors: r.identityColors,
             fonts: scan.fonts,
             icons: scan.icons.length,
             logos: { img: scan.logoCandidates.length, inlineSvg: scan.inlineSvgLogos },
@@ -662,11 +621,13 @@ export const COMMANDS: CommandSpec[] = [
             untrustedNote: scan.untrustedNote,
           };
       return {
-        source: merged.source.id,
-        findingsAdded: merged.added,
-        gapsAdded: merged.gaps,
+        source: r.sourceId,
+        findingsAdded: r.findingsAdded,
+        gapsAdded: r.gapsAdded,
         scan: digest,
-        cachedAssets: saved.length,
+        cachedAssets: r.saved.length,
+        ...(r.references.length ? { references: r.references } : {}),
+        ...(r.issues.length ? { issues: r.issues } : {}),
       };
     },
   },

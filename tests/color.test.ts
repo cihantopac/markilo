@@ -8,6 +8,7 @@ import {
   wcagRating,
 } from '../src/analyze/color.js';
 import { generatePalette, tonalScale } from '../src/design/palette.js';
+import { extractCssSignals } from '../src/research/repo.js';
 
 describe('color', () => {
   it('normalizes CSS colors', () => {
@@ -16,6 +17,25 @@ describe('color', () => {
     expect(normalizeColor('white')).toBe('#ffffff');
     expect(normalizeColor('none')).toBeUndefined();
     expect(normalizeColor('url(#g)')).toBeUndefined();
+  });
+  it('reads hsl(), oklch() and oklab()', () => {
+    expect(normalizeColor('hsl(210 80% 40%)')).toBe('#1466b8');
+    expect(normalizeColor('hsl(0, 100%, 50%)')).toBe('#ff0000');
+    expect(normalizeColor('hsla(120deg 100% 25% / 0.5)')).toBe('#008000');
+    const red = normalizeColor('oklch(0.62 0.2 25)')!;
+    expect(red).toBe(oklchToHex({ l: 0.62, c: 0.2, h: 25 }));
+    expect(hexToOklch(red).h).toBeGreaterThan(15);
+    expect(hexToOklch(red).h).toBeLessThan(35);
+    expect(normalizeColor('oklch(62% 0.2 25 / 80%)')).toBe(red);
+    // Out of gamut: chroma is reduced until it fits, never clipped to a different hue.
+    expect(normalizeColor('oklch(0.7 0.5 145)')).toMatch(/^#[0-9a-f]{6}$/);
+    const lab = normalizeColor('oklab(0.62 0.18 0.08)')!;
+    expect(
+      deltaE2000(
+        lab,
+        oklchToHex({ l: 0.62, c: Math.hypot(0.18, 0.08), h: (Math.atan2(0.08, 0.18) * 180) / Math.PI }),
+      ),
+    ).toBeLessThan(0.5);
   });
   it('computes WCAG contrast', () => {
     expect(contrastRatio('#000000', '#ffffff')).toBeCloseTo(21, 5);
@@ -46,5 +66,22 @@ describe('palette', () => {
   });
   it('rejects invalid input', () => {
     expect(() => generatePalette({ primary: 'blue' })).toThrow(/#rrggbb/);
+  });
+});
+
+describe('css signals', () => {
+  it('resolves custom properties and reports the dark theme apart', () => {
+    const sig = extractCssSignals(
+      `:root{--brand-hue:345;--accent:hsl(210 80% 40%);--ink:var(--accent)}
+      .a{color:oklch(0.6 0.2 var(--brand-hue))}.b{border-color:var(--ink)}.c{color:var(--missing, #0e9f6e)}
+      @media (prefers-color-scheme: dark){:root{--accent:#334455}.a{color:#112233}}
+      [data-theme="dark"] .b{color:#223344}`,
+    );
+    const hue = normalizeColor('oklch(0.6 0.2 345)')!;
+    expect(sig.colors).toContain(hue);
+    expect(sig.colors).toContain('#1466b8');
+    expect(sig.colors).toContain('#0e9f6e');
+    expect(sig.colors).not.toContain('#112233');
+    expect(sig.darkColors).toEqual(expect.arrayContaining(['#334455', '#112233', '#223344']));
   });
 });

@@ -274,6 +274,15 @@ export function mergeSiteScan(
         .join(', ')}`,
     );
   if (scan.fonts.length) obs('typography', `Fonts in CSS: ${scan.fonts.join(', ')}`);
+  if (scan.darkColors?.length)
+    obs(
+      'color',
+      `Dark theme CSS colors: ${scan.darkColors
+        .slice(0, 6)
+        .map((c) => c.hex)
+        .join(', ')}`,
+    );
+  for (const c of scan.iconColors ?? []) obs('color', `Icon color (${c.from}): ${c.hex}`);
   if (scan.icons.length)
     obs(
       'visual-identity',
@@ -317,9 +326,19 @@ export function mergeSiteScan(
       `${who}${failed} page(s) or stylesheets of ${new URL(scan.finalUrl).hostname} could not be read (${[...new Set(scan.accessIssues.map((a) => a.reason))].slice(0, 3).join(', ')}).`,
     );
   if (!competitor) {
-    for (const c of scan.colors)
-      if (!p.existingIdentity.colors.some((x) => x.hex === c.hex))
-        p.existingIdentity.colors.push({ hex: c.hex, count: c.count, source: source.id });
+    const ident = p.existingIdentity;
+    const color = (hex: string, count: number, note?: string) => {
+      if (!ident.colors.some((x) => x.hex === hex))
+        ident.colors.push({ hex, count, source: source.id, ...(note ? { note } : {}) });
+    };
+    for (const c of scan.iconColors ?? []) color(c.hex, 1, 'icon colour');
+    for (const c of scan.colors) color(c.hex, c.count);
+    for (const c of scan.darkColors ?? []) color(c.hex, c.count, 'dark theme');
+    (scan.inlineLogoSvgs ?? []).forEach((_svg, i) => {
+      const path = `${scan.finalUrl}#inline-logo-${i + 1}`;
+      if (!ident.logos.some((x) => x.path === path))
+        ident.logos.push({ path, kind: 'inline-svg', source: source.id });
+    });
     for (const f of scan.fonts)
       if (!p.existingIdentity.fonts.some((x) => x.family === f))
         p.existingIdentity.fonts.push({ family: f, source: source.id });

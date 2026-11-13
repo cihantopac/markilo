@@ -1,5 +1,7 @@
+import { normalizeColor } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
 import { safeGet } from '../net/http.js';
+import { sanitizeSvg } from '../svg/sanitize.js';
 import { extractCssSignals } from './repo.js';
 
 export { USER_AGENT } from '../net/http.js';
@@ -80,6 +82,31 @@ export function robotsAllows(robots: string, path: string, agent = 'markilobot')
 }
 
 /**
+ * A robots.txt check for assets (icons, logos, images) fetched after a page scan: one robots.txt read per origin.
+ * An unreadable robots.txt allows everything, as for pages.
+ */
+export function robotsGate(opts: FetchOptions): (url: string) => Promise<boolean> {
+  const cache = new Map<string, Promise<string>>();
+  return async (url: string) => {
+    let u: URL;
+    try {
+      u = new URL(url);
+    } catch {
+      return false;
+    }
+    if (!cache.has(u.origin))
+      cache.set(
+        u.origin,
+        fetchText(`${u.origin}/robots.txt`, { ...opts, maxBytes: 300_000 })
+          .then((r) => (r.status < 400 ? r.text : ''))
+          .catch(() => ''),
+      );
+    const robots = await cache.get(u.origin)!;
+    return !robots || robotsAllows(robots, u.pathname);
+  };
+}
+
+/**
  * Text taken from web pages is untrusted data. It is flattened, stripped of control characters and markup, and capped,
  * so it can be shown to the model as a quoted fact but cannot smuggle long instructions or formatting.
  */
@@ -141,6 +168,12 @@ export interface SiteScan {
   inlineLogoSvgs: string[];
   manifest?: string;
   colors: { hex: string; count: number }[];
+  /** Colours set only inside a dark theme (prefers-color-scheme: dark or [data-theme=dark]). */
+  darkColors: { hex: string; count: number }[];
+  /** Colours declared for the site's icons: mask-icon color, msapplication-TileColor. */
+  iconColors: { hex: string; from: string }[];
+  /** Inline logos that could not be parsed or sanitized, and were left out. */
+  logoIssues: string[];
   fonts: string[];
   stylesheetsRead: string[];
   language?: string;
@@ -444,6 +477,7 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
   const html = first.text;
   const base = first.url;
   const icons: SiteScan['icons'] = [];
+  const iconColors: SiteScan['iconColors'] = [];
   for (const m of html.matchAll(/<link\b[^>]*>/gi)) {
     const tag = m[0];
     const rel = /rel=["']([^"']+)["']/i.exec(tag)?.[1]?.toLowerCase() ?? '';
@@ -451,7 +485,13 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
     if (!href || !/icon|mask-icon/.test(rel)) continue;
     const sizes = /sizes=["']([^"']+)["']/i.exec(tag)?.[1];
     icons.push({ rel, href: abs(href, base), ...(sizes ? { sizes } : {}) });
+    const color = normalizeColor(/\scolor=["']([^"']+)["']/i.exec(tag)?.[1] ?? '');
+    if (color && !iconColors.some((c) => c.hex === color))
+      iconColors.push({ hex: color, from: `${rel} color` });
   }
+  const tile = normalizeColor(metaContent(html, 'msapplication-TileColor') ?? '');
+  if (tile && !iconColors.some((c) => c.hex === tile))
+    iconColors.push({ hex: tile, from: 'msapplication-TileColor' });
   const manifestHref = /<link[^>]+rel=["']manifest["'][^>]*href=["']([^"']+)["']/i.exec(html)?.[1];
   const logoCandidates: SiteScan['logoCandidates'] = [];
   for (const [u, page] of htmlByUrl) {
@@ -465,7 +505,16 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
         });
     }
   }
-  const inlineSvgs = inlineLogoSvgs(html);
+  // Inline logos are sanitized here, so no page script or handler reaches the cache or the references.
+  const logoIssues: string[] = [];
+  const inlineSvgs: string[] = [];
+  for (const [i, svg] of inlineLogoSvgs(html).entries()) {
+    try {
+      inlineSvgs.push(sanitizeSvg(svg));
+    } catch (err) {
+      logoIssues.push(`inline SVG logo ${i + 1} skipped: ${(err as Error).message.slice(0, 80)}`);
+    }
+  }
   let css = '';
   for (const page of htmlByUrl.values()) {
     css += [...page.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)].map((m) => m[1]).join('\n');
@@ -495,8 +544,15 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
     .flatMap((p) => p.match(/fonts\.googleapis\.com[^"']+/g) ?? [])
     .map((x) => `url(${x})`);
   const sig = extractCssSignals(`${css}\n${googleFonts.join('\n')}`);
-  const counts = new Map<string, number>();
-  for (const c of sig.colors) counts.set(c, (counts.get(c) ?? 0) + 1);
+  const tally = (list: string[]) => {
+    const counts = new Map<string, number>();
+    for (const c of list) counts.set(c, (counts.get(c) ?? 0) + 1);
+    return [...counts.entries()]
+      .filter(([c]) => c !== '#ffffff' && c !== '#000000')
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 12)
+      .map(([hex, count]) => ({ hex, count }));
+  };
   const org = organizationFrom(html, base);
   const h = pages[0]!;
   const themeColor = cleanText(metaContent(html, 'theme-color'), 30);
@@ -520,11 +576,10 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
     inlineSvgLogos: inlineSvgs.length,
     inlineLogoSvgs: inlineSvgs,
     ...(manifestHref ? { manifest: abs(manifestHref, base) } : {}),
-    colors: [...counts.entries()]
-      .filter(([c]) => c !== '#ffffff' && c !== '#000000')
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 12)
-      .map(([hex, count]) => ({ hex, count })),
+    colors: tally(sig.colors),
+    darkColors: tally(sig.darkColors),
+    iconColors,
+    logoIssues,
     fonts: [...new Set(sig.fonts)]
       .map((f) => cleanText(f, 60)!)
       .filter(Boolean)

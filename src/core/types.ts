@@ -65,7 +65,8 @@ export interface Finding {
 
 export interface ExistingIdentity {
   logos: { path: string; kind: string; source: string }[];
-  colors: { hex: string; count: number; source: string }[];
+  /** note: where the colour was seen when it is not the default theme ("dark theme", "icon colour"). */
+  colors: { hex: string; count: number; source: string; note?: string }[];
   fonts: { family: string; source: string }[];
 }
 

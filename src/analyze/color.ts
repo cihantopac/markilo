@@ -38,7 +38,41 @@ export function normalizeColor(value: string): string | undefined {
     };
     return rgbToHex({ r: ch(m[1]!), g: ch(m[2]!), b: ch(m[3]!) });
   }
+  m = /^hsla?\(\s*(-?[\d.]+)(deg|turn|rad)?[\s,]+([\d.]+)%?[\s,]+([\d.]+)%?/.exec(v);
+  if (m) return hslToHex(angle(m[1]!, m[2]), Number.parseFloat(m[3]!) / 100, Number.parseFloat(m[4]!) / 100);
+  m = /^okl(ch|ab)\(\s*(-?[\d.]+%?)\s+(-?[\d.]+%?)\s+(-?[\d.]+)(%|deg|turn|rad)?\s*(\/[^)]*)?\)/.exec(v);
+  if (m) {
+    const num = (s: string, pct: number) =>
+      s.endsWith('%') ? (Number.parseFloat(s) / 100) * pct : Number.parseFloat(s);
+    const l = num(m[2]!, 1);
+    if (!Number.isFinite(l)) return undefined;
+    if (m[1] === 'ch') {
+      const c = Math.max(0, num(m[3]!, 0.4));
+      return oklchToHex({ l: clamp01(l), c, h: angle(m[4]!, m[5]) });
+    }
+    const a = num(m[3]!, 0.4);
+    const b = m[5] === '%' ? (Number.parseFloat(m[4]!) / 100) * 0.4 : Number.parseFloat(m[4]!);
+    const h = (Math.atan2(b, a) * 180) / Math.PI;
+    return oklchToHex({ l: clamp01(l), c: Math.hypot(a, b), h: h < 0 ? h + 360 : h });
+  }
   return undefined;
+}
+
+/** A CSS angle in degrees, normalized to 0–360. */
+function angle(value: string, unit?: string): number {
+  const n = Number.parseFloat(value);
+  const deg = unit === 'turn' ? n * 360 : unit === 'rad' ? (n * 180) / Math.PI : n;
+  return ((deg % 360) + 360) % 360;
+}
+
+/** HSL (hue in degrees, saturation and lightness 0–1) → #rrggbb. */
+export function hslToHex(h: number, s: number, l: number): string {
+  const sat = clamp01(s);
+  const lig = clamp01(l);
+  const k = (n: number) => (n + h / 30) % 12;
+  const a = sat * Math.min(lig, 1 - lig);
+  const f = (n: number) => lig - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1));
+  return rgbToHex({ r: f(0) * 255, g: f(8) * 255, b: f(4) * 255 });
 }
 
 export function hexToRgb(hex: string): Rgb {

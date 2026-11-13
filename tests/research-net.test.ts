@@ -2,11 +2,13 @@ import { createServer, type Server } from 'node:http';
 import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { normalizeColor } from '../src/analyze/color.js';
 import { Workspace } from '../src/core/workspace.js';
 import { safeGet } from '../src/net/http.js';
 import { readReferences } from '../src/report/originality.js';
 import { researchCompetitor } from '../src/research/competitors.js';
 import { scanSite } from '../src/research/site.js';
+import { researchSite } from '../src/research/site-research.js';
 import { mark, tmp } from './helpers.js';
 
 let server: Server;
@@ -93,6 +95,24 @@ beforeAll(async () => {
     if (url === '/s.css')
       return send(200, 'text/css', 'body{color:#0e9f6e;font-family:"Sora",sans-serif}.a{background:#0e9f6e}');
     if (url === '/icon.svg') return send(200, 'image/svg+xml', mark('bolt'));
+    if (url === '/t7')
+      return send(
+        200,
+        'text/html',
+        `<!doctype html><html lang="en"><head><title>Lumen</title><link rel="icon" type="image/svg+xml" href="/fav.svg"><link rel="mask-icon" href="/mask.svg" color="#7a3cf0"><link rel="stylesheet" href="/t7.css"></head><body><header><svg viewBox="0 0 10 10" class="logo"><path d="M0 0L10 10"></svg><a href="/"><svg viewBox="0 0 100 100" class="logo" aria-label="Lumen"><circle cx="50" cy="50" r="40" fill="#ff8a3d"/><script>alert(1)</script></svg></a></header><h1>Light for teams</h1></body></html>`,
+      );
+    if (url === '/t7.css')
+      return send(
+        200,
+        'text/css',
+        ':root{--brand-hue:345;--accent:hsl(210 80% 40%)}.a{color:oklch(0.62 0.2 25)}.b{color:oklch(0.6 0.2 var(--brand-hue))}.c{background:var(--accent)}@media (prefers-color-scheme: dark){.a{color:#112233}}',
+      );
+    if (url === '/fav.svg')
+      return send(
+        200,
+        'image/svg+xml',
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#7a3cf0"/></svg>',
+      );
     if (url === '/loop') return send(302, 'text/plain', '', { location: '/loop' });
     if (url === '/to-ftp') return send(302, 'text/plain', '', { location: 'ftp://example.com/x' });
     return send(404, 'text/plain', 'nope');
@@ -143,6 +163,38 @@ describe('multi-page site research', () => {
     expect(scan.fonts).toContain('Sora');
     expect(scan.headings[0]).not.toMatch(/\n/);
     expect(scan.inlineLogoSvgs).toHaveLength(1);
+  });
+});
+
+describe('site research keeps the identity it finds', () => {
+  it('survives a broken inline SVG and keeps logos, icon, oklch, hsl and dark-theme colours', async () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Lumen' });
+    const r = await researchSite(ws, 'lumen', `${base}/t7`, { ...local, maxPages: 1, downloadAssets: true });
+    expect(r.scan.inlineLogoSvgs).toHaveLength(1);
+    expect(r.scan.inlineLogoSvgs[0]).not.toMatch(/script/);
+    expect(r.issues.join(' ')).toMatch(/inline SVG logo 1 skipped/);
+    expect(r.references).toHaveLength(1);
+    const refs = readReferences(ws, 'lumen').references;
+    expect(refs.map((x) => x.category)).toEqual(['existing']);
+    expect(r.scan.iconColors).toEqual([{ hex: '#7a3cf0', from: 'mask-icon color' }]);
+    const hexes = r.scan.colors.map((c) => c.hex);
+    expect(hexes).toContain(normalizeColor('oklch(0.62 0.2 25)'));
+    expect(hexes).toContain(normalizeColor('oklch(0.6 0.2 345)'));
+    expect(hexes).toContain('#1466b8');
+    expect(r.scan.darkColors.map((c) => c.hex)).toEqual(['#112233']);
+    const p = ws.profile('lumen');
+    expect(p.existingIdentity.logos).toEqual([
+      expect.objectContaining({ kind: 'inline-svg', path: `${base}/t7#inline-logo-1` }),
+    ]);
+    expect(p.existingIdentity.colors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ hex: '#7a3cf0', note: 'icon colour' }),
+        expect.objectContaining({ hex: '#112233', note: 'dark theme' }),
+      ]),
+    );
+    expect(r.identityColors).toMatchObject({ favicon: '#7a3cf0', headerLogo: '#ff8a3d' });
+    expect(p.findings.some((f) => f.statement.startsWith('identity inconsistency'))).toBe(true);
   });
 });
 

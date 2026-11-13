@@ -140,12 +140,79 @@ function readmeSummary(text: string): { title?: string; summary?: string } {
   return { ...(title ? { title } : {}), ...(summary ? { summary } : {}) };
 }
 
-export function extractCssSignals(css: string): { colors: string[]; fonts: string[] } {
-  const colors: string[] = [];
-  for (const m of css.matchAll(/#[0-9a-fA-F]{3,8}\b|rgba?\([^)]*\)/g)) {
-    const c = normalizeColor(m[0]);
-    if (c) colors.push(c);
+const COLOR_TOKEN = /#[0-9a-fA-F]{3,8}\b|(?:rgba?|hsla?|oklch|oklab)\([^()]*\)/g;
+const DARK_MEDIA = /@media[^{]*prefers-color-scheme\s*:\s*dark[^{]*\{/gi;
+const DARK_RULE = /[^{}]*\[data-theme\s*=\s*["']?dark["']?\][^{}]*\{[^{}]*\}/gi;
+
+/** Splits CSS into the default (light) part and the dark-theme part: prefers-color-scheme: dark and [data-theme=dark]. */
+function splitDarkCss(css: string): { light: string; dark: string } {
+  const dark: string[] = [];
+  let light = '';
+  let last = 0;
+  for (const m of css.matchAll(DARK_MEDIA)) {
+    if (m.index < last) continue;
+    let depth = 1;
+    let i = m.index + m[0].length;
+    while (i < css.length && depth > 0) {
+      if (css[i] === '{') depth++;
+      else if (css[i] === '}') depth--;
+      i++;
+    }
+    light += css.slice(last, m.index);
+    dark.push(css.slice(m.index + m[0].length, i - 1));
+    last = i;
   }
+  light += css.slice(last);
+  light = light.replace(DARK_RULE, (rule) => {
+    dark.push(rule);
+    return '';
+  });
+  return { light, dark: dark.join('\n') };
+}
+
+/** Custom properties declared on :root or html (and, for the dark part, any rule in it). */
+function customProperties(css: string, anyRule: boolean): Map<string, string> {
+  const vars = new Map<string, string>();
+  for (const m of css.matchAll(/([^{}]*)\{([^{}]*)\}/g)) {
+    if (!anyRule && !/(^|[\s,>])(:root|html)\b/i.test(m[1]!)) continue;
+    for (const d of m[2]!.matchAll(/(--[\w-]+)\s*:\s*([^;]+)/g)) vars.set(d[1]!, d[2]!.trim());
+  }
+  return vars;
+}
+
+/** Replaces var(--x[, fallback]) with its value; values may themselves use one more var() level. */
+function resolveVars(css: string, vars: Map<string, string>): string {
+  const once = (s: string, depth: number): string =>
+    s.replace(
+      /var\(\s*(--[\w-]+)\s*(?:,\s*([^()]*(?:\([^()]*\))?[^()]*))?\)/g,
+      (all, name: string, fb?: string) => {
+        const v = vars.get(name) ?? fb?.trim();
+        if (v === undefined) return all;
+        return depth > 0 ? once(v, depth - 1) : v;
+      },
+    );
+  return once(css, 1);
+}
+
+function colorsIn(css: string): string[] {
+  const out: string[] = [];
+  for (const m of css.matchAll(COLOR_TOKEN)) {
+    const c = normalizeColor(m[0]);
+    if (c) out.push(c);
+  }
+  return out;
+}
+
+/**
+ * Colours and fonts in CSS. Hex, rgb(), hsl(), oklch() and oklab() are read; var(--x) is resolved from :root/html
+ * custom properties (one level of nesting). Colours inside a dark theme are reported apart, in darkColors.
+ */
+export function extractCssSignals(css: string): { colors: string[]; darkColors: string[]; fonts: string[] } {
+  const { light, dark } = splitDarkCss(css);
+  const rootVars = customProperties(light, false);
+  const darkVars = new Map([...rootVars, ...customProperties(dark, true)]);
+  const colors = colorsIn(resolveVars(light, rootVars));
+  const darkColors = dark ? colorsIn(resolveVars(dark, darkVars)) : [];
   const fonts: string[] = [];
   for (const m of css.matchAll(/font-family\s*:\s*([^;}{]+)/gi)) {
     const first = m[1]!
@@ -159,7 +226,7 @@ export function extractCssSignals(css: string): { colors: string[]; fonts: strin
     for (const fam of m[1]!.split('&family='))
       fonts.push(decodeURIComponent(fam.split(':')[0]!).replace(/\+/g, ' '));
   }
-  return { colors, fonts };
+  return { colors, darkColors, fonts };
 }
 
 export function extractHtmlSignals(html: string) {
@@ -263,7 +330,8 @@ export function scanRepo(rootInput: string, opts: { maxFiles?: number } = {}): R
     ) {
       try {
         const text = readFileSync(file, 'utf8');
-        const colors = [...new Set(extractCssSignals(text).colors)].slice(0, 12);
+        const sig = extractCssSignals(text);
+        const colors = [...new Set([...sig.colors, ...sig.darkColors])].slice(0, 12);
         const title = firstMatch(/^#\s+(.+)$/m, text);
         scan.designDocs.push({ path: rel, ...(title ? { title } : {}), colors });
       } catch {
@@ -391,7 +459,7 @@ export function scanRepo(rootInput: string, opts: { maxFiles?: number } = {}): R
         ext === '.astro';
       if (isStyleLike) {
         const sig = extractCssSignals(text);
-        for (const c of sig.colors) {
+        for (const c of [...sig.colors, ...sig.darkColors]) {
           const e = colorCount.get(c) ?? { count: 0, files: new Set<string>() };
           e.count++;
           e.files.add(rel);
