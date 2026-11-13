@@ -57,18 +57,28 @@ export function letterAt(i: number): string {
  */
 export function roundLetters(inRound: Concept[]): Map<string, string> {
   const out = new Map<string, string>();
-  const used = new Set(inRound.flatMap((c) => (c.letter ? [c.letter] : [])));
-  let i = 0;
+  const missing: Concept[] = [];
+  // A stored letter an earlier-created concept already holds counts as missing: it is shown once, as the next free one.
   for (const c of assignmentOrder(inRound)) {
-    if (c.letter) {
-      out.set(c.id, c.letter);
-      continue;
-    }
+    if (c.letter && ![...out.values()].includes(c.letter)) out.set(c.id, c.letter);
+    else missing.push(c);
+  }
+  const used = new Set(out.values());
+  let i = 0;
+  for (const c of missing) {
     while (used.has(letterAt(i))) i++;
     used.add(letterAt(i));
     out.set(c.id, letterAt(i));
   }
   return out;
+}
+
+/** Concepts whose stored letter is not the one they show, because an earlier-created concept holds it. */
+export function letterConflicts(inRound: Concept[]): { id: string; stored: string; shown: string }[] {
+  const shown = roundLetters(inRound);
+  return roundOrder(inRound).flatMap((c) =>
+    c.letter && shown.get(c.id) !== c.letter ? [{ id: c.id, stored: c.letter, shown: shown.get(c.id)! }] : [],
+  );
 }
 
 /** The next letter not yet shown inside a round's concepts. */

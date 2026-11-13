@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, readFileSync, utimesSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { Workspace } from '../src/core/workspace.js';
@@ -544,5 +544,84 @@ describe('cost tracking', () => {
       JSON.parse(run(['cost', '--brand', 'tidepool', '--phase', 'dreaming', '--usd', '1'], cwd).stderr).error
         .code,
     ).toBe('USAGE');
+  });
+});
+
+describe('round letters under concurrency', () => {
+  const newArgs = (id: string) => [
+    'concept',
+    'new',
+    '--brand',
+    'tidepool',
+    '--id',
+    id,
+    '--title',
+    id,
+    '--direction',
+    'd',
+    '--rationale',
+    'r',
+    '--semantics',
+    'a',
+    '--primary',
+    '#1d4e89',
+    '--round',
+    '1',
+  ];
+
+  it('parallel concept new gets distinct letters', async () => {
+    const { spawn } = await import('node:child_process');
+    const cwd = proposals(0);
+    const exits = await Promise.all(
+      ['p1', 'p2', 'p3'].map(
+        (id) =>
+          new Promise<number | null>((done) => {
+            const child = spawn(process.execPath, [bin, ...newArgs(id)], { cwd, stdio: 'ignore' });
+            child.on('close', done);
+          }),
+      ),
+    );
+    expect(exits).toEqual([0, 0, 0]);
+    const w = Workspace.locate(cwd);
+    const letters = ['p1', 'p2', 'p3'].map((id) => w.concept('tidepool', id).letter);
+    expect([...letters].sort()).toEqual(['A', 'B', 'C']);
+    expect(existsSync(join(cwd, 'brand', 'brands', 'tidepool', '.lock'))).toBe(false);
+  });
+
+  it('a stored duplicate letter is shown once', () => {
+    const cwd = proposals(2, ['first', 'second']);
+    const w = Workspace.locate(cwd);
+    const a = w.concept('tidepool', 'first');
+    const b = w.concept('tidepool', 'second');
+    a.createdAt = '2026-01-01T00:00:00.000Z';
+    b.createdAt = '2026-01-02T00:00:00.000Z';
+    a.letter = 'A';
+    b.letter = 'A';
+    w.saveConcept(a);
+    w.saveConcept(b);
+    const r = ok(['proposals', '--brand', 'tidepool'], cwd);
+    expect(r.order.map((o: { letter: string; id: string }) => `${o.letter}:${o.id}`)).toEqual([
+      'A:first',
+      'B:second',
+    ]);
+    expect(r.letterConflicts).toEqual([{ id: 'second', stored: 'A', shown: 'B' }]);
+    expect(r.notes.join(' ')).toContain('second is shown as B');
+    // Keeping the shown letter makes the conflict go away; a taken letter is refused.
+    expect(
+      run(['concept', 'update', '--brand', 'tidepool', '--concept', 'second', '--letter', 'A'], cwd).status,
+    ).not.toBe(0);
+    ok(['concept', 'update', '--brand', 'tidepool', '--concept', 'second', '--letter', 'B'], cwd);
+    expect(ok(['proposals', '--brand', 'tidepool'], cwd).letterConflicts).toBeUndefined();
+  });
+
+  it('a stale lock is replaced', () => {
+    const cwd = proposals(0);
+    const lock = join(cwd, 'brand', 'brands', 'tidepool', '.lock');
+    writeFileSync(lock, '');
+    const old = new Date(Date.now() - 60_000);
+    utimesSync(lock, old, old);
+    ok(newArgs('p1'), cwd);
+    expect(Workspace.locate(cwd).concept('tidepool', 'p1').letter).toBe('A');
+    expect(existsSync(lock)).toBe(false);
   });
 });

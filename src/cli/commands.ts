@@ -30,7 +30,7 @@ import type {
   SourceReliability,
 } from '../core/types.js';
 import { validateBrief } from '../core/validate.js';
-import { Workspace } from '../core/workspace.js';
+import { Workspace, withBrandLock } from '../core/workspace.js';
 import { addFont, searchFonts } from '../design/font-catalog.js';
 import { fontInfo, listFonts, loadBundledFace, loadFontFile } from '../design/fonts.js';
 import { composeLockup } from '../design/lockup.js';
@@ -41,6 +41,7 @@ import {
   checkRound,
   keepChosen,
   letterAt,
+  letterConflicts,
   nextLetter,
   ROUND_SIZE,
   roundLetters,
@@ -1409,62 +1410,66 @@ export const COMMANDS: CommandSpec[] = [
           `Try --id ${slugify(id.replace(/([a-z0-9])([A-Z])/g, '$1-$2'))}.`,
         );
       const dir = w.conceptDir(slug, id);
-      if (existsSync(join(dir, 'concept.json')))
-        throw new MarkiloError('EXISTS', `Concept ${id} already exists.`);
       const font = c.str('font');
       const lead = c.str('lead');
       if (lead && lead !== 'symbol' && lead !== 'wordmark')
         throw new MarkiloError('USAGE', '--lead must be symbol or wordmark.');
       const round = c.str('round') ? c.num('round')! : undefined;
-      if (round !== undefined) checkRound(w, slug, round, c.str('directed'));
-      const letter =
-        round !== undefined ? nextLetter(w.concepts(slug).filter((x) => x.round === round)) : undefined;
-      const concept: Concept = {
-        schema: 'markilo/concept@1',
-        id,
-        brand: slug,
-        ...(lead === 'wordmark' ? { lead } : {}),
-        ...(round !== undefined ? { round } : {}),
-        ...(letter ? { letter } : {}),
-        ...(round !== undefined && c.str('directed') ? { directed: c.str('directed')! } : {}),
-        title: c.req('title'),
-        direction: c.req('direction'),
-        rationale: c.req('rationale'),
-        semantics: c.list('semantics'),
-        ...(c.str('construction') ? { construction: c.str('construction')! } : {}),
-        palette: {
-          primary: c.req('primary'),
-          ...Object.fromEntries(
-            (['secondary', 'accent', 'ink', 'paper'] as const)
-              .filter((k) => c.str(k))
-              .map((k) => [k, c.str(k)!]),
-          ),
-          ...groundColorOptions(c),
-          ...tileColorOptions(c),
-        },
-        ...(font
-          ? {
-              typography: {
-                fontId: font,
-                weight: c.num('weight', 600)!,
-                family: fontInfo(font).family,
-                license: fontInfo(font).license,
-              },
-            }
-          : {}),
-        files: { symbol: 'symbol.svg' },
-        status: 'draft',
-        createdAt: nowIso(),
-        updatedAt: nowIso(),
-      };
-      mkdirSync(dir, { recursive: true });
-      w.saveConcept(concept);
-      return {
-        concept: id,
-        dir,
-        write: [join(dir, 'symbol.svg')],
-        next: `markilo verify --brand ${slug} --concept ${id}`,
-      };
+      // Reading the round, picking the letter and writing concept.json happen under one lock, so designers who start
+      // together never get the same letter.
+      return withBrandLock(w, slug, () => {
+        if (existsSync(join(dir, 'concept.json')))
+          throw new MarkiloError('EXISTS', `Concept ${id} already exists.`);
+        if (round !== undefined) checkRound(w, slug, round, c.str('directed'));
+        const letter =
+          round !== undefined ? nextLetter(w.concepts(slug).filter((x) => x.round === round)) : undefined;
+        const concept: Concept = {
+          schema: 'markilo/concept@1',
+          id,
+          brand: slug,
+          ...(lead === 'wordmark' ? { lead } : {}),
+          ...(round !== undefined ? { round } : {}),
+          ...(letter ? { letter } : {}),
+          ...(round !== undefined && c.str('directed') ? { directed: c.str('directed')! } : {}),
+          title: c.req('title'),
+          direction: c.req('direction'),
+          rationale: c.req('rationale'),
+          semantics: c.list('semantics'),
+          ...(c.str('construction') ? { construction: c.str('construction')! } : {}),
+          palette: {
+            primary: c.req('primary'),
+            ...Object.fromEntries(
+              (['secondary', 'accent', 'ink', 'paper'] as const)
+                .filter((k) => c.str(k))
+                .map((k) => [k, c.str(k)!]),
+            ),
+            ...groundColorOptions(c),
+            ...tileColorOptions(c),
+          },
+          ...(font
+            ? {
+                typography: {
+                  fontId: font,
+                  weight: c.num('weight', 600)!,
+                  family: fontInfo(font).family,
+                  license: fontInfo(font).license,
+                },
+              }
+            : {}),
+          files: { symbol: 'symbol.svg' },
+          status: 'draft',
+          createdAt: nowIso(),
+          updatedAt: nowIso(),
+        };
+        mkdirSync(dir, { recursive: true });
+        w.saveConcept(concept);
+        return {
+          concept: id,
+          dir,
+          write: [join(dir, 'symbol.svg')],
+          next: `markilo verify --brand ${slug} --concept ${id}`,
+        };
+      });
     },
   },
   {
@@ -1510,7 +1515,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--semantics "<a>; <b>"] [--show] [--wordmark <file>] [--symbol <file>] [--small <file>] [--small-sizes small|main] [--wordmark-small <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--semantics "<a>; <b>"] [--letter <L>] [--show] [--wordmark <file>] [--symbol <file>] [--small <file>] [--small-sizes small|main] [--wordmark-small <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1610,6 +1615,11 @@ export const COMMANDS: CommandSpec[] = [
       strengths: { type: 'string', description: 'Proposal: key strengths, separated by ";"' },
       weaknesses: { type: 'string', description: 'Proposal: honest risks and weaknesses, separated by ";"' },
       semantics: { type: 'string', description: 'The meanings the mark carries, separated by ";"' },
+      letter: {
+        type: 'string',
+        description:
+          "The concept's round letter (A, B, …), refused when another concept of the round shows it",
+      },
       show: { type: 'boolean', description: 'Print the whole updated concept instead of what changed' },
     },
     async run(c) {
@@ -1619,6 +1629,22 @@ export const COMMANDS: CommandSpec[] = [
       const next: Concept = { ...cur, files: { ...cur.files }, palette: { ...cur.palette } };
       const st = c.str('status');
       let kept: string[] = [];
+      const wantLetter = c.str('letter');
+      if (wantLetter !== undefined) {
+        if (cur.round === undefined)
+          throw new MarkiloError('USAGE', '--letter applies to a concept of an exploration round.');
+        if (!/^[A-Z]+$/.test(wantLetter))
+          throw new MarkiloError('INVALID_INPUT', '--letter must be capital letters, like B.');
+        const others = w.concepts(slug).filter((x) => x.round === cur.round && x.id !== cur.id);
+        const holder = [...roundLetters(others)].find(([, l]) => l === wantLetter)?.[0];
+        if (holder)
+          throw new MarkiloError(
+            'USAGE',
+            `Letter ${wantLetter} is already used by ${holder} in round ${cur.round}.`,
+            'Pick a letter no other concept of the round shows.',
+          );
+        next.letter = wantLetter;
+      }
       if (st) {
         if (st === 'approved')
           throw new MarkiloError('USAGE', 'Use "markilo finalize" to approve a concept.');
@@ -2322,6 +2348,15 @@ export const COMMANDS: CommandSpec[] = [
           byCreation.join() !== [...byCreation].sort((x, y) => (x < y ? -1 : 1)).join()
         );
       });
+      const conflicts = [...new Set(picked.map((x) => x.round))].flatMap((r) =>
+        r === undefined
+          ? []
+          : letterConflicts(roundMates(r)).filter((x) => picked.some((p) => p.id === x.id)),
+      );
+      for (const x of conflicts)
+        notes.push(
+          `two concepts stored the same letter; ${x.id} is shown as ${x.shown} — run \`concept update --letter\` to keep it`,
+        );
       const order: { letter: string; id: string; title: string; status: string }[] = [];
       for (const cpt of ids.length
         ? picked
@@ -2430,6 +2465,7 @@ export const COMMANDS: CommandSpec[] = [
                 'Letters follow the order the concepts were created in, not their ids (changed in 1.4).',
             }
           : {}),
+        ...(conflicts.length ? { letterConflicts: conflicts } : {}),
         board: board ?? null,
         files,
         /** How closely each wordmark matches its typeface set plainly (1 = untouched). */

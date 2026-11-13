@@ -1,4 +1,13 @@
-import { appendFileSync, existsSync, readdirSync, readFileSync } from 'node:fs';
+import {
+  appendFileSync,
+  closeSync,
+  existsSync,
+  openSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+} from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { MarkiloError } from './errors.js';
 import { isDir, nowIso, readJson, writeFileSafe, writeJson } from './fsx.js';
@@ -271,5 +280,47 @@ export class Workspace {
         'Locked brands can be analyzed, shown in galleries and exported from their provided masters only.',
       );
     }
+  }
+}
+
+const LOCK_RETRY_MS = 25;
+const LOCK_WAIT_MS = 5000;
+const LOCK_STALE_MS = 30_000;
+
+/**
+ * Runs `fn` while holding `brands/<slug>/.lock`, created exclusively (O_EXCL) so two Markilo processes working on the
+ * same brand take turns. Waits up to 5 s (retrying every 25 ms); a lock older than 30 s is left over from a crashed
+ * run and is replaced. The lock is always removed afterwards.
+ */
+export function withBrandLock<T>(w: Workspace, slug: string, fn: () => T): T {
+  const lock = join(w.brandDir(slug), '.lock');
+  const until = Date.now() + LOCK_WAIT_MS;
+  for (;;) {
+    try {
+      closeSync(openSync(lock, 'wx'));
+      break;
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== 'EEXIST') throw err;
+      try {
+        if (Date.now() - statSync(lock).mtimeMs > LOCK_STALE_MS) {
+          rmSync(lock, { force: true });
+          continue;
+        }
+      } catch {
+        continue; // released between the two calls: try again at once
+      }
+      if (Date.now() > until)
+        throw new MarkiloError(
+          'LOCKED',
+          `Another Markilo command is working on brand "${slug}" (${lock}).`,
+          'Run the command again in a moment; if no other command is running, delete that file.',
+        );
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, LOCK_RETRY_MS);
+    }
+  }
+  try {
+    return fn();
+  } finally {
+    rmSync(lock, { force: true });
   }
 }
