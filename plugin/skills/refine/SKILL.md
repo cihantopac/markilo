@@ -19,7 +19,7 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    and `verify` has no failing check, ask whether to finish as chosen; on yes, skip to step 5 without a designer or
    critic. Read the choice back first (`<letter> · <title> · <id>`, from `proposals.order`). When they want to continue
    from another concept's drawing, `markilo concept adopt --brand <slug> --concept <id> --from <other> --files
-   symbol,wordmark` copies it and re-pins the chosen state. A small, precise change they describe is done directly with the toolchain (`construct`, `lockup`,
+   symbol,wordmark` copies it and re-pins the chosen state. To undo a rejected pass, `markilo concept revert --brand <slug> --concept <id> --to chosen --note "<their words>"` restores `chosen/` and unregisters the small version and lockups made since (kept in `rejected/`); `concept update --small none` drops a small version alone. A small, precise change they describe is done directly with the toolchain (`construct`, `lockup`,
    `verify`). Otherwise: one `markilo:concept-designer` agent in `develop <concept id>` mode with the user's changes, pinned spots, or the
    combination (it creates a new concept for a combination). Record `--phase refine` with its usage.
    **Before any develop pass, ask the scope as one multiple-choice question** (record it with `markilo answers`):

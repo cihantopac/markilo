@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync } from 'node:fs';
 import { basename, dirname, extname, join, resolve } from 'node:path';
 import { type CalibrationMark, calibrate } from '../analyze/calibrate.js';
 import { contrastRatio, deltaE2000, normalizeColor } from '../analyze/color.js';
@@ -1632,7 +1632,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--semantics "<a>; <b>"] [--letter <L>] [--show] [--wordmark <file>] [--symbol <file>] [--small <file>] [--small-sizes small|main] [--wordmark-small <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--semantics "<a>; <b>"] [--letter <L>] [--show] [--wordmark <file>] [--symbol <file>] [--small <file|none>] [--small-sizes small|main] [--wordmark-small <file|none>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1791,6 +1791,11 @@ export const COMMANDS: CommandSpec[] = [
       ] as const) {
         const v = c.str(opt);
         if (!v) continue;
+        // "none" unregisters the small version (the file stays in the concept folder).
+        if (v === 'none' && (key === 'small' || key === 'wordmarkSmall')) {
+          delete next.files[key];
+          continue;
+        }
         next.files[key] = conceptRelative(w, slug, cur.id, v, c);
       }
       const sizes = c.str('small-sizes');
@@ -2123,6 +2128,79 @@ export const COMMANDS: CommandSpec[] = [
         `${cur.id} (${cur.title}) continues from the ${taken.join(', ')} of ${src.id} (${src.title}); chosen/ now holds that drawing.`,
       );
       return { concept: cur.id, copied, chosen };
+    },
+  },
+  {
+    name: 'concept revert',
+    summary:
+      "Put a concept's drawing back to what the user chose (chosen/): restores the files, unregisters what was added since.",
+    usage: 'concept revert --brand <slug> --concept <id> --to chosen [--note "<the user\'s words>"]',
+    options: {
+      ...brandOpt,
+      concept: { type: 'string', description: 'Concept id' },
+      to: { type: 'string', description: 'What to go back to: chosen' },
+      note: { type: 'string', description: "The user's words, recorded in decisions.md" },
+    },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      const cur = w.concept(slug, c.req('concept'));
+      if (c.req('to') !== 'chosen') throw new MarkiloError('INVALID_INPUT', '--to must be chosen.');
+      if (cur.status === 'approved')
+        throw new MarkiloError(
+          'LOCKED',
+          `${cur.id} is approved; its drawing is final.`,
+          'Develop a new concept from it instead of changing the approved one.',
+        );
+      const chosenDir = w.conceptFile(slug, cur.id, CHOSEN_DIR);
+      if (!existsSync(chosenDir))
+        throw new MarkiloError(
+          'NOT_FOUND',
+          `${cur.id} has no chosen/ copy to go back to.`,
+          'chosen/ is made when the user first selects the concept (concept update --status shortlisted).',
+        );
+      const kept = new Set(readdirSync(chosenDir));
+      const next: Concept = { ...cur, files: { ...cur.files } };
+      const restored: string[] = [];
+      const unregistered: string[] = [];
+      const stamp = nowIso().replace(/[:.]/g, '-');
+      let movedTo: string | undefined;
+      for (const [key, rel] of Object.entries(cur.files) as [keyof Concept['files'], string | undefined][]) {
+        if (!rel) continue;
+        const base = rel.split('/').pop()!;
+        const target = w.conceptFile(slug, cur.id, rel);
+        if (kept.has(base)) {
+          mkdirSync(dirname(target), { recursive: true });
+          copyFileSync(join(chosenDir, base), target);
+          restored.push(rel);
+          continue;
+        }
+        // Not part of what the user chose: unregister it, and put it aside instead of deleting it.
+        delete next.files[key];
+        unregistered.push(rel);
+        if (existsSync(target)) {
+          const aside = join(w.conceptFile(slug, cur.id, 'rejected'), stamp);
+          mkdirSync(aside, { recursive: true });
+          renameSync(target, join(aside, base));
+          movedTo = join('rejected', stamp);
+        }
+      }
+      rmSync(w.conceptFile(slug, cur.id, join('review', 'chosen-vs-now.png')), { force: true });
+      w.saveConcept(next);
+      const critique = restoreCritique(w, slug, next);
+      const note = c.str('note');
+      w.logDecision(
+        slug,
+        'Reverted',
+        `${cur.id} (${cur.title}) is back to the drawing the user chose${note ? `: ${note}` : '.'}${unregistered.length ? ` Unregistered: ${unregistered.join(', ')}${movedTo ? ` (moved to ${movedTo}/)` : ''}.` : ''}${critique ? ` Restored the critique of ${critique.at}.` : ''}`,
+      );
+      return {
+        concept: cur.id,
+        restored,
+        unregistered,
+        ...(movedTo ? { movedTo } : {}),
+        ...(critique ? { critique: `restored the critique of ${critique.at}` } : {}),
+      };
     },
   },
   {

@@ -271,7 +271,9 @@ export async function finalizeConcept(
   const wordmark = take(concept.files.wordmark, 'wordmark.svg');
   if (symbol) files.symbol = 'symbol.svg';
   if (wordmark) files.wordmark = 'wordmark.svg';
-  if (symbol && take(concept.files.small, 'symbol-small.svg')) files.symbolSmall = 'symbol-small.svg';
+  // The user chose the main symbol at small sizes: the small file is unused, so it is neither copied nor listed.
+  if (symbol && concept.smallSizes !== 'main' && take(concept.files.small, 'symbol-small.svg'))
+    files.symbolSmall = 'symbol-small.svg';
   if (wordmark && take(concept.files.wordmarkSmall, 'wordmark-small.svg'))
     files.wordmarkSmall = 'wordmark-small.svg';
   const lockup = (

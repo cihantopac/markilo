@@ -95,6 +95,9 @@ describe('small-size symbol', () => {
       userChoice: 'Chosen in a test.',
     });
     expect(kit.smallSizes).toBe('main');
+    // The unused small file is neither listed in the kit nor copied into final/.
+    expect(kit.files.symbolSmall).toBeUndefined();
+    expect(existsSync(join(ws.finalDir('nimbra'), 'symbol-small.svg'))).toBe(false);
     const result = await exportBrand(ws, 'nimbra', { groups: ['web'] });
     expect(result.assets.find((a) => a.path === 'web/favicon.svg')?.derivedFrom).toBe('symbol.svg');
     expect(result.assets.find((a) => a.path === 'web/favicon.ico')?.derivedFrom).toBe('symbol.svg');
