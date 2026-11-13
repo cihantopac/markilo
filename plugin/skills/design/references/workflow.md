@@ -89,6 +89,21 @@ The family's rule lives in members that already exist, often on other sites; Mar
    "custom (family) lettering", never a stand-in font as the brand typeface.
 5. Pick the product colour from outside `takenColors` unless the user asked for a shared one.
 
+### Family lettering workflow
+
+When `research site` reports `nameRendering: 'outlined'` or `research family` reports `systems.outlined`, the words are
+custom-drawn:
+
+1. `markilo family glyphs --brand <slug> --ref <reference id> --text <letters>` on each current member (measures stem,
+   bar, terminals and sidebearings in cap units).
+2. `markilo family word --brand <slug> --text <WORD> --take <ref>:<LETTERS>[,…]` assembles the word from those letters.
+3. Designers draw only the `missing` letters at cap 100 (baseline 0), using the measured stem, bar and terminals, and
+   pass them with `--draw <char>=<file.svg>`.
+4. Show a `render <new.svg> --family <ref.svg>[,…]` sheet to yourself and fix it before any proposal shows the word.
+
+Never download or substitute the site font when `systems` says the words are drawn: a stand-in font is not the family's
+lettering. When letters stay missing, ask the user for a newer lockup that contains them.
+
 ## Using Markilo from another project
 
 The workspace lives in the user's project at `./brand` (add it to their VCS or not — their choice; raw

@@ -153,6 +153,44 @@ describe('craft-named directions', () => {
     expect(agent).toContain('## Finish now');
     expect(agent).toContain('concepts/<id>/work/');
   });
+  it('carries the 1.5 family, develop, sheet and time guidance', () => {
+    const read = (p: string) => readFileSync(join(root, p), 'utf8');
+    const skill = read('plugin/skills/design/SKILL.md');
+    const workflow = read('plugin/skills/design/references/workflow.md');
+    const cli = read('plugin/skills/design/references/cli.md');
+    const refine = read('plugin/skills/refine/SKILL.md');
+    const designer = read('plugin/agents/concept-designer.md');
+    const critic = read('plugin/agents/design-critic.md');
+    for (const t of [
+      'Which members show the current system?',
+      'Is the family word custom-drawn',
+      'Do you have a newer lockup that contains the letters this word needs?',
+      'Ask icon and wordmark separately',
+      'Masters stay in the primary',
+      'cost --brand <slug> --plan',
+      'agent-minutes',
+      'cumulative',
+      'category leader',
+      'originality check does not cover it',
+      'single quotes',
+    ])
+      expect(skill, t).toContain(t);
+    for (const t of [
+      'family glyphs',
+      'family word',
+      'draw only the `missing` letters',
+      '--family <ref.svg>',
+      'Never download or substitute the site font',
+    ])
+      expect(workflow, t).toContain(t);
+    for (const t of ['family glyphs', 'family word', '--plan', '--width', '--tile', 'single quotes'])
+      expect(cli, t).toContain(t);
+    expect(refine).toContain('read two ways');
+    expect(refine).toContain('cumulative');
+    for (const t of ['draw only the `missing` letters', '--tile', 'Masters stay in the primary'])
+      expect(designer, t).toContain(t);
+    expect(critic).toContain('icon and the wordmark separately');
+  });
   it('cli.md table rows have as many cells as the header', () => {
     const cli = readFileSync(join(root, 'plugin/skills/design/references/cli.md'), 'utf8');
     const cells = (row: string) => row.replace(/\\\|/g, '').split('|').length;

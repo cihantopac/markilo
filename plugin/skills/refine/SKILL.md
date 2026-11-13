@@ -22,6 +22,9 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    symbol,wordmark` copies it and re-pins the chosen state. A small, precise change they describe is done directly with the toolchain (`construct`, `lockup`,
    `verify`). Otherwise: one `markilo:concept-designer` agent in `develop <concept id>` mode with the user's changes, pinned spots, or the
    combination (it creates a new concept for a combination). Record `--phase refine` with its usage.
+   When the change can be read two ways ("read clearly" could mean pebbles or equal waves), ask one multiple-choice
+   question first (keep the form / equal sizes / more space) or run a probe; never spend a develop pass on a guess.
+   A resumed agent's usage notification is cumulative: record the part as the difference from the previous one.
 3. `markilo verify --brand <slug> --concept <id>` until nothing fails; `Read` the review, wordmark and context sheets. When the `letters` check says it did not run (a freeform or hand-edited wordmark), read the 32 px wordmark render letter by letter and write down what you read before the brand name; a split or misread letter is fixed before the critic. When `balance` says the mark leans, `markilo center in.svg -o out.svg` shifts it to the optical centre (never run on a locked brand's masters).
    A transformation the user asked for is shown to them before you send the designer back on taste; "character lost"
    applies only to changes nobody asked for.
