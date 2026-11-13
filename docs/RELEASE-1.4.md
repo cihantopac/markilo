@@ -588,3 +588,8 @@ The reports also praised parts that should stay as they are:
 - **Markilo's own kit** re-exported (`--only logos,web,social,tokens,guidelines --clean`): all logo files are
   byte-identical; only the manifest and the dated guidelines changed.
 - Version 1.4.0 set in `package.json`, `package-lock.json`, `plugin.json` and `marketplace.json`.
+
+**Released 2026-11-13.** Tag `markilo--v1.4.0` at `3c7216c`, GitHub release "Markilo 1.4.0" (Latest), and npm
+`markilo@1.4.0`, verified from the registry: `latest` is `1.4.0`, `gitHead` is `3c7216c`, shasum
+`4dc6e9ef823c72f20a112ee5bfab7dbcda23a3f2` matches the local pack (287 files), and `npx markilo@1.4.0 --version` prints
+`1.4.0`.
