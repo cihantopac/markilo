@@ -95,11 +95,13 @@ import {
   writeCost,
 } from '../report/cost.js';
 import {
+  archiveCritique,
   BLIND_CRITERIA,
   criterionOf,
   currentArt,
   gateOf,
   requireCriterion,
+  restoreCritique,
   STALE_NOTE,
 } from '../report/gate.js';
 import {
@@ -1580,7 +1582,7 @@ export const COMMANDS: CommandSpec[] = [
           gate: g.status,
           ...(g.average !== undefined ? { criticAverage: g.average } : {}),
           ...(g.nearMiss ? { nearMiss: true } : {}),
-          ...(g.next && (g.status === 'failed' || g.status === 'undecided') ? { next: g.next } : {}),
+          ...(g.next && (g.status === 'below-threshold' || g.status === 'undecided') ? { next: g.next } : {}),
           ...(g.status === 'stale' ? { note: g.reasons[0] } : {}),
           ...(g.looks ? { looks: g.looks } : {}),
           ...(g.calibration === 'unmeasured' ? { reviewer: g.reviewer, calibration: g.calibration } : {}),
@@ -1713,7 +1715,10 @@ export const COMMANDS: CommandSpec[] = [
     async run(c) {
       const w = ws(c);
       const slug = c.req('brand');
-      const cur = w.concept(slug, c.req('concept'));
+      let cur = w.concept(slug, c.req('concept'));
+      // The drawing is byte-identical to one an earlier critic scored: that critique is current again.
+      const restored = restoreCritique(w, slug, cur);
+      if (restored) cur = w.concept(slug, cur.id);
       const next: Concept = { ...cur, files: { ...cur.files }, palette: { ...cur.palette } };
       const st = c.str('status');
       let kept: string[] = [];
@@ -1928,8 +1933,12 @@ export const COMMANDS: CommandSpec[] = [
         ['judgment', 'blind', 'present', 'look', 'look-present', 'reads-as'].some((k) =>
           k === 'judgment' ? c.list('judgment').length : c.str(k),
         )
-      )
-        next.reviewedArt = currentArt(w, slug, next);
+      ) {
+        const art = currentArt(w, slug, next);
+        // The critique of another drawing stays in the history, so it can return with that drawing.
+        archiveCritique(cur, next, art);
+        next.reviewedArt = art;
+      }
       w.saveConcept(next);
       const gate = gateOf(next, currentArt(w, slug, next));
       if (c.str('sketch-pick'))
@@ -1977,6 +1986,7 @@ export const COMMANDS: CommandSpec[] = [
         return {
           ...next,
           gate,
+          ...(restored ? { restored: `restored the critique of ${restored.at.slice(0, 10)}` } : {}),
           ...(kept.length ? { kept } : {}),
           ...(faint.length ? { warnings: faint } : {}),
         };
@@ -1999,7 +2009,8 @@ export const COMMANDS: CommandSpec[] = [
         id: next.id,
         status: next.status,
         changed,
-        ...(judged ? { gate } : {}),
+        ...(judged || restored ? { gate } : {}),
+        ...(restored ? { restored: `restored the critique of ${restored.at.slice(0, 10)}` } : {}),
         ...(kept.length ? { kept } : {}),
         ...(faint.length ? { warnings: faint } : {}),
       };

@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The critic gate status `failed` is now `below-threshold` (the critique is advice, not a rejection; `next` is
+  unchanged). Kits written before 1.6 with `gate.status: "failed"` are read as `below-threshold`.
+
+### Fixed
+
+- A critique is kept in `concept.critiques[]` with the drawing it judged. When the artwork returns byte-identical to
+  that drawing, the critique is current again (the gate leaves `stale`) and `concept update` says "restored the critique
+  of <date>". The critic agent now checks that its scores were recorded (`gate` is not `not-reviewed`) before saying so.
+
 ## [1.5.0] - 2026-11-13
 
 Fixes from two field reports on 1.4.0, both products joining a family whose words are custom-drawn. Locked identities

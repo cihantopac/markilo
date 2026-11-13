@@ -84,9 +84,10 @@ export const BLIND_CRITERIA = [
 export interface GateResult {
   /**
    * undecided: the first look landed on the edge of the bar; two more cold looks decide (`next: second-look`).
+   * below-threshold: a score or the critic's answer is under the bar (advice; 1.5 and older kits call it `failed`).
    * stale: the symbol or wordmark changed after the critic scored it; the old result is under `previous`.
    */
-  status: 'passed' | 'failed' | 'not-reviewed' | 'undecided' | 'stale';
+  status: 'passed' | 'below-threshold' | 'not-reviewed' | 'undecided' | 'stale';
   /**
    * blind: the critic's scores from its first look, before reading the rationale (in the benchmark they predicted an
    * independent judge far better than the scores given after reading it); informed: older reviews without them.
@@ -106,6 +107,8 @@ export interface GateResult {
    * first look is on the edge of the bar and fresh critics decide.
    */
   next?: 'present' | 'fix' | 'present-with-notes' | 'second-look';
+  /** The date of an earlier critique that is current again because the drawing returned to what it judged. */
+  restored?: string;
   /** The result the critique gave before the drawing changed (status `stale`). */
   previous?: GateResult;
   /** Cold looks the verdict rests on, and how many of them passed (from the first look on; see SECOND_LOOK). */
@@ -159,9 +162,13 @@ const adviceOf = (critique?: { present: boolean }): 'fix' | 'present-with-notes'
  * a changed drawing makes the result `stale`; a critique recorded without a hash (1.3.0) is read as before.
  */
 export function gateOf(
-  c: Pick<Concept, 'judgment' | 'critique' | 'blind' | 'reviews' | 'looks' | 'reviewedArt'>,
+  c: Pick<Concept, 'judgment' | 'critique' | 'blind' | 'reviews' | 'looks' | 'reviewedArt' | 'critiques'>,
   art?: string,
 ): GateResult {
+  if (art !== undefined && c.reviewedArt && c.reviewedArt !== art) {
+    const old = matchingCritique(c, art);
+    if (old) return { ...gateOf({ ...c, ...fieldsOf(old), reviewedArt: art }, art), restored: old.at };
+  }
   const result = c.blind ? blindGate(c) : informedGate(c);
   if (art === undefined || !c.reviewedArt || c.reviewedArt === art || result.status === 'not-reviewed')
     return result;
@@ -172,6 +179,70 @@ export function gateOf(
     ],
     previous: result,
   };
+}
+
+type Snapshot = NonNullable<Concept['critiques']>[number];
+
+const fieldsOf = (e: Snapshot) => ({
+  judgment: e.judgment,
+  critique: e.critique,
+  blind: e.blind,
+  reviews: e.reviews,
+  looks: e.looks,
+});
+
+/** The latest earlier critique that judged exactly this drawing. */
+function matchingCritique(c: Pick<Concept, 'critiques'>, art: string): Snapshot | undefined {
+  return [...(c.critiques ?? [])].reverse().find((e) => e.reviewedArt === art);
+}
+
+/** What the concept's current critique is, as a history entry; undefined when it holds none or none is tied to a drawing. */
+export function critiqueSnapshot(c: Concept): Snapshot | undefined {
+  const has = c.critique || c.blind || Object.keys(c.judgment ?? {}).length;
+  if (!has || !c.reviewedArt || c.reviewedArt === 'adopted') return undefined;
+  const at = [c.critique?.at, c.blind?.at, ...(c.looks ?? []).map((l) => l.at)].filter(Boolean).sort().at(-1);
+  return {
+    reviewedArt: c.reviewedArt,
+    at: at ?? new Date().toISOString(),
+    ...(c.judgment ? { judgment: c.judgment } : {}),
+    ...(c.critique ? { critique: c.critique } : {}),
+    ...(c.blind ? { blind: c.blind } : {}),
+    ...(c.reviews !== undefined ? { reviews: c.reviews } : {}),
+    ...(c.looks ? { looks: c.looks } : {}),
+  };
+}
+
+/** `next` with the current critique moved into `critiques` (kept only when it judged another drawing than `art`). */
+export function archiveCritique(cur: Concept, next: Concept, art: string): void {
+  const snap = critiqueSnapshot(cur);
+  const kept = (cur.critiques ?? []).filter((e) => e.reviewedArt !== snap?.reviewedArt);
+  next.critiques = snap && snap.reviewedArt !== art ? [...kept, snap] : (cur.critiques ?? []);
+  if (!next.critiques.length) delete next.critiques;
+}
+
+/**
+ * When the concept's drawing is byte-identical to one an earlier critique judged, make that critique current again
+ * (the one it replaces goes to the history) and save. Returns what it restored, or undefined when nothing matched.
+ */
+export function restoreCritique(
+  ws: Workspace,
+  brand: string,
+  concept: Concept,
+): { at: string; reviewedArt: string } | undefined {
+  const art = currentArt(ws, brand, concept);
+  if (concept.reviewedArt === art) return undefined;
+  const old = matchingCritique(concept, art);
+  if (!old) return undefined;
+  const next: Concept = { ...concept };
+  for (const k of ['judgment', 'critique', 'blind', 'reviews', 'looks'] as const) delete next[k];
+  Object.assign(next, fieldsOf(old), { reviewedArt: art });
+  for (const k of ['judgment', 'critique', 'blind', 'reviews', 'looks'] as const)
+    if (next[k] === undefined) delete next[k];
+  const snap = critiqueSnapshot(concept);
+  next.critiques = [...(concept.critiques ?? []).filter((e) => e !== old), ...(snap ? [snap] : [])];
+  if (!next.critiques.length) delete next.critiques;
+  ws.saveConcept(next);
+  return { at: old.at, reviewedArt: art };
 }
 
 function informedGate(c: Pick<Concept, 'judgment' | 'critique' | 'reviews'>): GateResult {
@@ -196,7 +267,7 @@ function informedGate(c: Pick<Concept, 'judgment' | 'critique' | 'reviews'>): Ga
     reasons.push(`a senior designer would not present it as is: ${c.critique.reason}`);
   const nearMiss = reasons.length === 1 && reasons[0]!.startsWith('average') && c.critique?.present === true;
   return {
-    status: reasons.length ? 'failed' : 'passed',
+    status: reasons.length ? 'below-threshold' : 'passed',
     basis: 'informed',
     ...(average !== undefined ? { average } : {}),
     reasons,
@@ -229,7 +300,7 @@ function blindGate(c: Pick<Concept, 'critique' | 'blind' | 'reviews' | 'looks'>)
   const ok = passed >= need;
   return {
     ...first,
-    status: ok ? 'passed' : 'failed',
+    status: ok ? 'passed' : 'below-threshold',
     reasons: ok
       ? []
       : [
@@ -265,7 +336,7 @@ function firstLook(c: Pick<Concept, 'critique' | 'blind' | 'reviews'>): GateResu
     ((!reasons.length && lowest <= SECOND_LOOK.edge) ||
       (c.critique.present && !scoresClear && lowest >= SECOND_LOOK.below));
   return {
-    status: reasons.length ? 'failed' : 'passed',
+    status: reasons.length ? 'below-threshold' : 'passed',
     basis: 'blind',
     ...(average !== undefined ? { average } : {}),
     reasons,
