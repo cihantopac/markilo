@@ -100,3 +100,40 @@ describe('optical centring', () => {
     await expect(centerOptically(tight)).rejects.toMatchObject({ code: 'INVALID_INPUT' });
   });
 });
+
+describe('arcs stay exact', () => {
+  type P = [number, number];
+  const lerp = (a: P, b: P, t: number): P => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+
+  it('a circle through booleanOp stays a circle', () => {
+    const d = booleanOp('union', ['M50 0A50 50 0 1 1 50 100A50 50 0 1 1 50 0Z']);
+    const samples: P[] = [];
+    let cur: P = [0, 0];
+    for (const m of d.matchAll(/([MLCQ])([^MLCQZ]*)/g)) {
+      const n = m[2]!
+        .trim()
+        .split(/[\s,]+/)
+        .map(Number);
+      const pts: P[] = [];
+      for (let i = 0; i + 1 < n.length; i += 2) pts.push([n[i]!, n[i + 1]!]);
+      if (m[1] === 'M' || m[1] === 'L') cur = pts[0]!;
+      else {
+        // de Casteljau on the control polygon (quadratic or cubic).
+        const poly = [cur, ...pts];
+        for (let i = 1; i <= 16; i++) {
+          let level = poly;
+          while (level.length > 1) level = level.slice(1).map((q, k) => lerp(level[k]!, q, i / 16));
+          samples.push(level[0]!);
+        }
+        cur = pts[pts.length - 1]!;
+      }
+    }
+    expect(samples.length).toBeGreaterThanOrEqual(64);
+    for (const [x, y] of samples) expect(Math.abs(Math.hypot(x - 50, y - 50) - 50)).toBeLessThan(0.1);
+    const b = boundsOf(d);
+    expect(b.x).toBeCloseTo(0, 1);
+    expect(b.y).toBeCloseTo(0, 1);
+    expect(b.x + b.w).toBeCloseTo(100, 1);
+    expect(b.y + b.h).toBeCloseTo(100, 1);
+  });
+});
