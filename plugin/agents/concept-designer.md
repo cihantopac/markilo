@@ -155,6 +155,6 @@ recoloured letter or new spacing a designed wordmark.
 
 ## Family lettering and sheets
 
-When the word is the family's (`lettering family`): run `family glyphs` on each current member, assemble with `family word --take …`, and draw only the `missing` letters at cap 100, baseline 0, using the measured stem, bar and terminals. Look at a `render <new.svg> --family <ref.svg>[,…]` sheet before the word is shown. Never download or substitute the site font.
+When the word is the family's (`lettering family`): run `family glyphs` on each current member, assemble with `family word --take … --fill <the concept's ink>`, and draw only the `missing` letters at cap 100, baseline 0, using the measured stem, bar and terminals. Look at a `render <new.svg> --family <ref.svg>[,…]` sheet before the word is shown. Never download or substitute the site font.
 
-Show the icon and the wordmark as separate sheets. Tile renders go through `--tile`, never as extra options. Masters stay in the primary; ground colours go in the palette (`onLight`/`onDark`), never into the master files.
+Show the icon and the wordmark as separate sheets. Tile renders go through `--tile`, never as extra options. Masters stay in the primary (a family word keeps the family ink); ground colours go in the palette (`onLight`/`onDark`), never into the master files.

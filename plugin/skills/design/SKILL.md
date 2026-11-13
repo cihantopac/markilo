@@ -62,7 +62,8 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
    **Ask icon and wordmark separately**, each on its own sheet, so the user judges one thing at a time; never put both
    on one sheet where the options double. Designers pass tile renders with `--tile` (`render … --compare --tile`),
    never as extra options. **Masters stay in the primary:** ground colours go in the palette (`onLight`/`onDark`),
-   never into the master files; `verify` warns when a master uses one.
+   never into the master files; `verify` warns when a master uses one. The one exception is a family word, which keeps the
+   family ink: pass the concept's ink to `family word --fill <#hex>` (default #111111).
 
    **Develop requests that can be read two ways** ("read clearly", "more space"): ask one multiple-choice question
    first (keep the form / equal sizes / more space) or run a probe; never spend a develop pass on a guess.
@@ -130,7 +131,7 @@ suggested answer first:
 
 **A product joining a family** (`familyHint` is set in `research site`, or the user names one): replace the family part of question 1 and question 2 with two family questions, so the dialog still has at most four.
 (a) _"Which members show the current system?"_ — multiple choice from the `research family` members, with the ones whose `systems` say outlined (custom-drawn) pre-selected; only these are the rule.
-(b) _"Is the family word custom-drawn, and which part does this product share (parent word, suffix, none)?"_
+(b) _"Is the family word custom-drawn, and which part does this product share (parent word, suffix, none)?"_ Offer the users' own pattern as a ready option: _the parent's letters exactly · the letters the siblings already have · draw the rest in the same style_ (both users typed this rule themselves).
 After the answers, when `family word` lists `missing` letters (letters the current members do not have), ask _"Do you have a newer lockup that contains the letters this word needs?"_ Then follow "A product joining an existing family" in `references/workflow.md`.
 
 If the user is away or asked not to be asked, take your suggested answers, write them into the brief's notes as
@@ -174,6 +175,7 @@ another" on each), or **reject all three** with a note. Read the decisions with 
 after confirming your summary with the user, `--apply`.
 
 - **Before develop or finalize**, read the choice back: `<letter> · <title> · <id>`.
+- **Recommended options.** Keep "(Recommended)" on the first option and say in one line that the user's choice overrides it; users chose against the designer twice and that is expected.
 - **Rejected all three** → ask what to change as multiple choice (kind of mark, feel, colour, lettering, fill): a user
   who says "I don't know" can still pick; an open question is the last resort. Then a **sketch round** before
   polishing: one designer draws 9–12 rough icon ideas on one `markilo sketches` sheet — no lockups, verify, pitch or
@@ -208,7 +210,7 @@ weight, crescents turned into an even band) is shown to the user before any tast
 rejected exactly what the user wanted. Small sizes go to the small version; the main weight stays within ±10 % of the
 chosen drawing unless the user asked otherwise. When the user builds on another concept's drawing ("continue from
 that one"), `markilo concept adopt --concept <chosen> --from <other> --files symbol,wordmark` copies it and re-pins the
-chosen state. Colour is its own cheap decision: offer the chosen mark in 3–4 palettes (`markilo palette`, `markilo
+chosen state. After any palette change (`concept update --primary|--secondary|--accent|--ink`) read the `recolored` list in the result and never edit SVG colours by hand; `--no-recolor` leaves the files alone. `finalize` fails only on stale colours (a former palette value no longer in the palette) unless `--accept-colours`; other off-palette colours are warnings. Colour is its own cheap decision: offer the chosen mark in 3–4 palettes (`markilo palette`, `markilo
 render`) before a designer run. A small, precise change the user describes (move a detail from the icon into a letter, a colour, a
 spacing) is done directly with the toolchain (`construct`, `lockup`, `verify`), without a designer run. Record
 `--phase refine`.
