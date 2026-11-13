@@ -152,6 +152,8 @@ export function loadKit(
     if (typeof v !== 'string' || !HEX.test(v))
       throw new MarkiloError('INVALID_INPUT', `final/brand.json palette.${k} must be #rrggbb.`);
   }
+  // 1.5 and older kits call a gate under the bar `failed`: the same thing as `below-threshold`.
+  if ((kit.gate?.status as string | undefined) === 'failed') kit.gate!.status = 'below-threshold';
   return {
     ...kit,
     read(file) {

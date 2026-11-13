@@ -25,10 +25,10 @@ describe('quality gate', () => {
   const strong = { 'brand-fit': 7, distinctiveness: 7, memorability: 7, craft: 6 };
   it('passes only with the required scores, the average and a yes', () => {
     expect(gateOf(scored(strong, true))).toMatchObject({ status: 'passed', average: 6.75, reasons: [] });
-    expect(gateOf(scored(strong, false)).status).toBe('failed');
+    expect(gateOf(scored(strong, false)).status).toBe('below-threshold');
     expect(gateOf(scored(strong)).reasons.join(' ')).toMatch(/present it as is/);
     const weak = gateOf(scored({ ...strong, distinctiveness: 5 }, true));
-    expect(weak.status).toBe('failed');
+    expect(weak.status).toBe('below-threshold');
     expect(weak.reasons.join(' ')).toMatch(/distinctiveness 5/);
     expect(gateOf(scored({ 'brand-fit': 6, distinctiveness: 6, memorability: 6 }, true)).reasons).toEqual([
       'average 6 < 6.5',
@@ -36,7 +36,7 @@ describe('quality gate', () => {
     expect(gateOf({} as Concept).status).toBe('not-reviewed');
     // A near miss: only the average is short and the critic would present it — one targeted round, same bar.
     const near = gateOf(scored({ 'brand-fit': 7, distinctiveness: 6, memorability: 6, craft: 6 }, true));
-    expect(near).toMatchObject({ status: 'failed', nearMiss: true });
+    expect(near).toMatchObject({ status: 'below-threshold', nearMiss: true });
     expect(gateOf(scored({ ...strong, distinctiveness: 5 }, true)).nearMiss).toBeUndefined();
     expect(
       gateOf(scored({ 'brand-fit': 7, distinctiveness: 6, memorability: 6, craft: 6 }, false)).nearMiss,
@@ -55,7 +55,7 @@ describe('quality gate', () => {
     // The informed scores are low, but the gate reads the blind ones (they predict an independent judge better).
     expect(gateOf(blind(7, 7, 8, true))).toMatchObject({ status: 'passed', basis: 'blind' });
     expect(gateOf(blind(6, 5, 7, true)).reasons.join(' ')).toMatch(/memorability 5 < 6 \(blind\)/);
-    expect(gateOf(blind(7, 7, 7, false)).status).toBe('failed');
+    expect(gateOf(blind(7, 7, 7, false)).status).toBe('below-threshold');
     expect(gateOf(scored({ 'brand-fit': 7, distinctiveness: 7, memorability: 7 }, true)).basis).toBe(
       'informed',
     );
@@ -81,7 +81,7 @@ describe('quality gate', () => {
     expect(gateOf(concept(6, true)).reasons.join(' ')).toMatch(/2 more cold looks/);
     // Just under the bar with a yes is on the edge too: a noisy no should not lose a good mark.
     expect(gateOf(concept(5.5, true)).next).toBe('second-look');
-    expect(gateOf(concept(5, true)).status).toBe('failed');
+    expect(gateOf(concept(5, true)).status).toBe('below-threshold');
     // Clear decisions need no second look.
     expect(gateOf(concept(7, true)).status).toBe('passed');
     expect(gateOf(concept(6, false)).next).toBe('fix');
@@ -102,7 +102,7 @@ describe('quality gate', () => {
           [6, false],
         ]),
       ),
-    ).toMatchObject({ status: 'failed', next: 'present-with-notes' });
+    ).toMatchObject({ status: 'below-threshold', next: 'present-with-notes' });
     expect(
       gateOf(
         concept(5.5, true, [
@@ -160,10 +160,10 @@ describe('quality gate', () => {
       },
     } as unknown as Concept;
     const r = gateOf(blind);
-    expect(r).toMatchObject({ status: 'failed', next: 'present-with-notes' });
+    expect(r).toMatchObject({ status: 'below-threshold', next: 'present-with-notes' });
     expect(r.reasons.join(' ')).toMatch(/distinctiveness/);
     const informed = gateOf(scored({ ...strong, distinctiveness: 5 }, true));
-    expect(informed).toMatchObject({ status: 'failed', next: 'present-with-notes' });
+    expect(informed).toMatchObject({ status: 'below-threshold', next: 'present-with-notes' });
     expect(informed.reasons.join(' ')).toMatch(/distinctiveness/);
     expect(gateOf(scored({ ...strong, distinctiveness: 5 }, false)).next).toBe('fix');
   });
@@ -208,6 +208,22 @@ describe('quality gate', () => {
     for (const r of results) expect(JSON.stringify(r)).not.toMatch(/reject/i);
   });
 
+  it('restoreCritique-style history: an earlier critique is current again when its drawing returns; old kits read failed', () => {
+    const a = artHash('<svg>a</svg>', undefined);
+    const b = artHash('<svg>b</svg>', undefined);
+    const good = scored(strong, true);
+    const now = {
+      ...scored({ ...strong, memorability: 3 }, false),
+      reviewedArt: b,
+      critiques: [
+        { reviewedArt: a, at: '2026-11-01T10:00:00Z', judgment: good.judgment, critique: good.critique },
+      ],
+    } as Concept;
+    expect(gateOf(now, b).status).toBe('below-threshold');
+    expect(gateOf(now, a)).toMatchObject({ status: 'passed', restored: '2026-11-01T10:00:00Z' });
+    expect(gateOf(now, artHash('<svg>c</svg>', undefined)).status).toBe('stale');
+  });
+
   it('a changed drawing makes the gate stale; a 1.3 critique without a hash is not stale', () => {
     const reviewed = { ...scored(strong, true), reviewedArt: artHash('<svg>a</svg>', undefined) } as Concept;
     expect(gateOf(reviewed, artHash('<svg>a</svg>', undefined)).status).toBe('passed');
@@ -236,7 +252,7 @@ describe('quality gate', () => {
       acceptRisk: true,
       userChoice: 'The owner prefers it.',
     });
-    expect(kit.gate).toMatchObject({ status: 'failed', userChoice: 'The owner prefers it.' });
+    expect(kit.gate).toMatchObject({ status: 'below-threshold', userChoice: 'The owner prefers it.' });
   }, 60_000);
 });
 
@@ -300,7 +316,7 @@ describe('cli: critique and research', () => {
     const out = JSON.parse(alias.stdout);
     expect(out.critique).toMatchObject({ present: false, reason: 'Reads as a bar chart' });
     expect(out.judgment?.presentable).toBeUndefined();
-    expect(out.gate.status).toBe('failed');
+    expect(out.gate.status).toBe('below-threshold');
     const b = run(
       [
         'concept',
@@ -323,7 +339,9 @@ describe('cli: critique and research', () => {
         cwd,
       ).status,
     ).toBe(64);
-    expect(JSON.parse(run(['concept', 'list', '--brand', 'gate-test'], cwd).stdout)[0].gate).toBe('failed');
+    expect(JSON.parse(run(['concept', 'list', '--brand', 'gate-test'], cwd).stdout)[0].gate).toBe(
+      'below-threshold',
+    );
     const reviewed = run(
       ['concept', 'update', '--brand', 'gate-test', '--concept', 'a', '--reviewer', 'gpt-5.5'],
       cwd,
