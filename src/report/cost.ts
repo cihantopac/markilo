@@ -301,10 +301,10 @@ export function planEstimate(log: CostLog, plan: Partial<Record<PlanKind, number
   const rr = (p: [number, number]): [number, number] => [r2(p[0]), r2(p[1])];
   const summary = costSummary(log);
   const shortUsd = r2(Math.max(0, usd[1] - summary.remainingUsd));
+  // Like with like: the time budget counts busy time (parallel agents overlap and count once), so the round's busy
+  // time — the estimate's wallMinutes, the longest agent of each kind — is what it adds, not the summed agent minutes.
   const shortMin =
-    summary.minutesRemaining !== undefined
-      ? r2(Math.max(0, agentMin[1] - summary.minutesRemaining))
-      : undefined;
+    summary.minutesRemaining !== undefined ? r2(Math.max(0, wall[1] - summary.minutesRemaining)) : undefined;
   const fits = shortUsd === 0 && (shortMin ?? 0) === 0;
   const sources = new Set(kinds.map((k) => (k.source === 'defaults' ? 'defaults' : 'history')));
   return {
@@ -322,7 +322,7 @@ export function planEstimate(log: CostLog, plan: Partial<Record<PlanKind, number
     fits,
     ...(fits
       ? {}
-      : { shortfall: { usd: shortUsd, ...(shortMin !== undefined ? { agentMinutes: shortMin } : {}) } }),
-    note: 'Compared against the upper end of the estimate. Dollars are for subagents only; the session itself is not counted.',
+      : { shortfall: { usd: shortUsd, ...(shortMin !== undefined ? { busyMinutes: shortMin } : {}) } }),
+    note: 'Compared against the upper end of the estimate: dollars against the remaining dollars, the busy time (wallMinutes) against the remaining busy minutes. Dollars are for subagents only; the session itself is not counted.',
   };
 }

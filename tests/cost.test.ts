@@ -306,7 +306,22 @@ describe('cost --plan', () => {
     expect(planEstimate(log([]), plan).fits).toBe(true);
     const tight = planEstimate({ ...log([]), budgetUsd: 0.5, budgetMinutes: 40 }, plan);
     expect(tight.fits).toBe(false);
-    expect(tight.shortfall).toEqual({ usd: 0.27, agentMinutes: 36 });
+    // Busy time against busy time: the round adds its wallMinutes (44 at the upper end), not 76 agent minutes.
+    expect(tight.shortfall).toEqual({ usd: 0.27, busyMinutes: 4 });
     expect(() => parsePlan('paint:2')).toThrow(/Unknown agent kind/);
+  });
+  it('three parallel agents fit when their busy time fits, though their agent minutes add up past it', () => {
+    const at = new Date().toISOString();
+    // 60 busy minutes budgeted, 40 used: 20 remain. Three explore agents of 10-16 minutes each run side by side.
+    const used = { ...log([{ phase: 'explore', at, minutes: 40 }]), budgetMinutes: 60 };
+    const p = planEstimate(used, { explore: 3 });
+    expect(p.minutesRemaining).toBe(20);
+    expect(p.estimate.agentMinutes).toEqual([30, 48]);
+    expect(p.estimate.wallMinutes).toEqual([10, 16]);
+    expect(p.fits).toBe(true);
+    expect(p.shortfall).toBeUndefined();
+    const short = planEstimate({ ...used, budgetMinutes: 50 }, { explore: 3 });
+    expect(short.fits).toBe(false);
+    expect(short.shortfall).toEqual({ usd: 0, busyMinutes: 6 });
   });
 });
