@@ -13,6 +13,7 @@ import { dirname, join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { parseCommand } from '../src/cli/args.js';
 import { findCommand } from '../src/cli/commands.js';
+import { decodeImage } from '../src/render/png.js';
 import { verifyConcept } from '../src/report/quality.js';
 import { fixture, synthBrand, tmp } from './helpers.js';
 
@@ -208,6 +209,30 @@ describe('cli (bundled)', () => {
     ok(['render', 'a.svg', 'b.svg', '--compare', '--tile', '--primary', '#c2255c', '-o', 't.png']);
     expect(readFileSync(join(cwd, 'p.png')).equals(readFileSync(join(cwd, 't.png')))).toBe(false);
   }, 60_000);
+  it('render --compare --tile --primary draws the tile row in that colour', async () => {
+    const cwd = tmp();
+    const rose =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M30 30h40v40H30z" fill="#ffffff"/></svg>';
+    writeFileSync(join(cwd, 'a.svg'), rose);
+    writeFileSync(join(cwd, 'b.svg'), rose);
+    const f = findCommand(['render'])!;
+    await f.spec.run(
+      parseCommand(
+        f.spec,
+        ['a.svg', 'b.svg', '--compare', '--tile', '--primary', '#d4561c', '-o', 't.png'],
+        cwd,
+      ),
+    );
+    const img = decodeImage(readFileSync(join(cwd, 't.png')));
+    // The tile ground is the third row of each sketch; scan the left margin of the sheet for it.
+    const counts = new Map<string, number>();
+    for (let y = 0; y < img.height; y++) {
+      const i = (y * img.width + img.width - 3) * 4;
+      const hex = [0, 1, 2].map((k) => img.data[i + k]!.toString(16).padStart(2, '0')).join('');
+      counts.set(hex, (counts.get(hex) ?? 0) + 1);
+    }
+    expect(counts.get('d4561c') ?? 0).toBeGreaterThan(50);
+  }, 30_000);
   it('finalize warns when the critique is on another concept', async () => {
     const { ws, dir: cwd } = synthBrand();
     const fold = ws.concept('nimbra', 'fold');
