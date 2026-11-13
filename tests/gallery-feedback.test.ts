@@ -132,13 +132,11 @@ describe('gallery: round letters', () => {
       ws.saveConcept({ ...base, id, title, round: 1, letter, createdAt });
     }
     const html = readFileSync((await buildGallery(ws)).path, 'utf8');
-    const at = (t: string) => html.indexOf(`<span class="letter">`, html.indexOf(`</span>${t}</h3>`) - 40);
     expect(html).toMatch(/<span class="letter">A<\/span>Zeta idea/);
     expect(html).toMatch(/<span class="letter">B<\/span>Alpha idea/);
     expect(html).toMatch(/<span class="letter">C<\/span>Mid idea/);
     expect(html.indexOf('Zeta idea')).toBeLessThan(html.indexOf('Alpha idea'));
     expect(html.indexOf('Alpha idea')).toBeLessThan(html.indexOf('Mid idea'));
-    expect(at('Mid idea')).toBeGreaterThan(0);
   });
 });
 

@@ -7,7 +7,7 @@ import { portableRelative, resolveInsideReal } from '../core/paths.js';
 import type { Concept, WorkspaceBrand } from '../core/types.js';
 import type { Workspace } from '../core/workspace.js';
 import { composeLockup } from '../design/lockup.js';
-import { letterAt, rounds } from '../design/rounds.js';
+import { roundLetters, rounds } from '../design/rounds.js';
 import { placeMark, squircle } from '../export/geometry.js';
 import { type BrandKit, kitPath } from '../export/kit.js';
 import { adaptToGround, groundsFor, onFillVariant } from '../export/variants.js';
@@ -523,14 +523,12 @@ export async function buildGallery(
     const rejected: string[] = [];
     // Proposals are grouped by round, the latest first; each round can be rejected as a whole.
     const byRound = new Map<number, string[]>();
-    const grouped = rounds(subjects.flatMap((s) => (s.concept ? [s.concept] : [])));
     const letters = new Map<string, string>();
     const rank = new Map<string, number>();
-    for (const g of grouped)
-      for (const [i, c] of g.concepts.entries()) {
-        letters.set(c.id, c.letter ?? letterAt(i));
-        rank.set(c.id, rank.size);
-      }
+    for (const g of rounds(ws.concepts(b.slug))) {
+      for (const [id, l] of roundLetters(g.concepts)) letters.set(id, l);
+      for (const c of g.concepts) rank.set(c.id, rank.size);
+    }
     const ordered = [...subjects].sort(
       (a, b) => (rank.get(a.concept?.id ?? '') ?? -1) - (rank.get(b.concept?.id ?? '') ?? -1),
     );

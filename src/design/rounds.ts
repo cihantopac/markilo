@@ -23,11 +23,14 @@ export function rounds(concepts: Concept[]): { round: number; concepts: Concept[
  * no letters). Everything that presents a round to the user goes through this, so a letter means one concept.
  */
 export function roundOrder(concepts: Concept[]): Concept[] {
+  const lettered = (c: Concept) => (c.letter === undefined ? 1 : 0);
   return [...concepts].sort(
     (a, b) =>
-      (a.letter ?? '~').localeCompare(b.letter ?? '~') ||
-      a.createdAt.localeCompare(b.createdAt) ||
-      a.id.localeCompare(b.id),
+      lettered(a) - lettered(b) ||
+      (a.letter ?? '').length - (b.letter ?? '').length ||
+      (a.letter ?? '').localeCompare(b.letter ?? '', 'en', { sensitivity: 'variant' }) ||
+      (a.createdAt < b.createdAt ? -1 : a.createdAt > b.createdAt ? 1 : 0) ||
+      (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
   );
 }
 
@@ -36,9 +39,29 @@ export function letterAt(i: number): string {
   return i < 26 ? String.fromCharCode(65 + i) : `${letterAt(Math.floor(i / 26) - 1)}${letterAt(i % 26)}`;
 }
 
-/** The next letter not yet used inside a round's concepts. */
+/**
+ * The letter each concept of ONE round shows: its own, or for a concept written by 1.3.0 (no letter) the next free
+ * letter, in roundOrder. Board, captions, gallery and `concept new` all use this, so a letter never repeats.
+ */
+export function roundLetters(inRound: Concept[]): Map<string, string> {
+  const out = new Map<string, string>();
+  const used = new Set(inRound.flatMap((c) => (c.letter ? [c.letter] : [])));
+  let i = 0;
+  for (const c of roundOrder(inRound)) {
+    if (c.letter) {
+      out.set(c.id, c.letter);
+      continue;
+    }
+    while (used.has(letterAt(i))) i++;
+    used.add(letterAt(i));
+    out.set(c.id, letterAt(i));
+  }
+  return out;
+}
+
+/** The next letter not yet shown inside a round's concepts. */
 export function nextLetter(inRound: Concept[]): string {
-  const used = new Set(inRound.map((c) => c.letter));
+  const used = new Set(roundLetters(inRound).values());
   let i = 0;
   while (used.has(letterAt(i))) i++;
   return letterAt(i);

@@ -43,6 +43,7 @@ import {
   letterAt,
   nextLetter,
   ROUND_SIZE,
+  roundLetters,
   roundOrder,
   rounds,
 } from '../design/rounds.js';
@@ -1910,14 +1911,26 @@ export const COMMANDS: CommandSpec[] = [
       const compare: Record<string, string> = {};
       const files: string[] = [];
       // The letter a concept carries is its own, so one proposal alone keeps the letter the board gave it.
-      const letterOf = (cpt: Concept): string => {
-        if (cpt.letter) return cpt.letter;
-        const mates = roundOrder(all.filter((x) => x.round !== undefined && x.round === cpt.round));
-        const at = mates.findIndex((x) => x.id === cpt.id);
-        return letterAt(Math.max(at, 0));
-      };
+      const roundMates = (r?: number) => all.filter((x) => r !== undefined && x.round === r);
+      const letterOf = (cpt: Concept): string =>
+        cpt.round === undefined
+          ? letterAt(picked.indexOf(cpt))
+          : roundLetters(roundMates(cpt.round)).get(cpt.id)!;
+      // A round written by 1.3.0 has no letters; when creation order differs from id order the letters moved.
+      const orderNote = [...new Set(picked.map((x) => x.round))].some((r) => {
+        const mates = roundMates(r);
+        const byCreation = roundOrder(mates).map((x) => x.id);
+        return (
+          mates.some((x) => !x.letter) &&
+          byCreation.join() !== [...byCreation].sort((x, y) => (x < y ? -1 : 1)).join()
+        );
+      });
       const order: { letter: string; id: string; title: string; status: string }[] = [];
-      for (const cpt of picked) {
+      for (const cpt of ids.length
+        ? picked
+        : [...picked].sort(
+            (x, y) => letterOf(x).length - letterOf(y).length || letterOf(x).localeCompare(letterOf(y)),
+          )) {
         const symbol = read(cpt, cpt.files.symbol);
         const wordmark = read(cpt, cpt.files.wordmark);
         if (!symbol && !wordmark) {
@@ -1995,9 +2008,15 @@ export const COMMANDS: CommandSpec[] = [
       if (board) writeGenerated(board, await renderRoundBoard(inputs));
       return {
         round: ids.length ? null : round,
-        proposals: picked.map((x) => x.id),
+        proposals: order.map((x) => x.id),
         /** The letters on the board and in the gallery: say "B" and this is the concept. */
         order,
+        ...(orderNote
+          ? {
+              orderNote:
+                'Letters follow the order the concepts were created in, not their ids (changed in 1.4).',
+            }
+          : {}),
         board: board ?? null,
         files,
         /** How closely each wordmark matches its typeface set plainly (1 = untouched). */

@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { Workspace } from '../src/core/workspace.js';
 import { parseFeedback, storeFeedback } from '../src/gallery/feedback.js';
 import { costSummary, DEFAULT_BUDGET_USD } from '../src/report/cost.js';
 import { fixture, tmp } from './helpers.js';
@@ -80,6 +81,7 @@ describe('exploration rounds', () => {
       'B:alpha',
       'C:mid',
     ]);
+    expect(r.orderNote).toBeUndefined(); // letters from 1.4: no note
     expect(r.order[0]).toEqual({ letter: 'A', id: 'zeta', title: 'Proposal 1', status: 'draft' });
   });
 
@@ -109,6 +111,53 @@ describe('exploration rounds', () => {
     // A concept without a letter, shown alone, takes its position in its round.
     const one = ok(['proposals', '--brand', 'tidepool', '--concepts', 'mid'], cwd);
     expect(one.order[0].letter).toBe('C');
+  });
+
+  it('extending a 1.3.0 round gives distinct letters, and proposals says the order changed', () => {
+    const cwd = proposals(2, ['zeta', 'alpha']);
+    const w = Workspace.locate(cwd);
+    for (const [i, id] of ['zeta', 'alpha'].entries()) {
+      const c = w.concept('tidepool', id);
+      delete c.letter;
+      c.createdAt = `2026-01-0${i + 1}T00:00:00.000Z`;
+      w.saveConcept(c);
+    }
+    ok(
+      [
+        'concept',
+        'new',
+        '--brand',
+        'tidepool',
+        '--id',
+        'aaa',
+        '--title',
+        'x',
+        '--direction',
+        'd',
+        '--rationale',
+        'r',
+        '--semantics',
+        'a',
+        '--primary',
+        '#1d4e89',
+        '--round',
+        '1',
+      ],
+      cwd,
+    );
+    copyFileSync(
+      fixture('marks/fold-n.svg'),
+      join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'aaa', 'symbol.svg'),
+    );
+    const r = ok(['proposals', '--brand', 'tidepool'], cwd);
+    expect(r.order.map((o: { letter: string; id: string }) => `${o.letter}:${o.id}`)).toEqual([
+      'A:zeta',
+      'B:alpha',
+      'C:aaa',
+    ]);
+    expect(r.orderNote).toMatch(/not their ids/);
+    // Old concepts keep the letters they showed; the new one took the free one.
+    expect(Workspace.locate(cwd).concept('tidepool', 'aaa').letter).toBe('C');
   });
 
   it('allows three proposals per round, no skipped round, and a third round only on the user’s direction', () => {
