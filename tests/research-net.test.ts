@@ -8,9 +8,9 @@ import { writeJson } from '../src/core/fsx.js';
 import { Workspace } from '../src/core/workspace.js';
 import { safeGet } from '../src/net/http.js';
 import { readReferences, referenceIndexPath } from '../src/report/originality.js';
-import { researchCompetitor } from '../src/research/competitors.js';
+import { isThirdPartyLogo, researchCompetitor } from '../src/research/competitors.js';
 import { researchFamily } from '../src/research/family.js';
-import { inlineLogoCandidates, nameRenderingOf, scanSite } from '../src/research/site.js';
+import { familyHintOf, inlineLogoCandidates, nameRenderingOf, scanSite } from '../src/research/site.js';
 import { researchSite } from '../src/research/site-research.js';
 import { mark, tmp } from './helpers.js';
 
@@ -132,6 +132,12 @@ beforeAll(async () => {
         `<!doctype html><html><head><title>${name}</title><meta property="og:site_name" content="${name}"><link rel="stylesheet" href="/typed.css">${ld}</head><body><header>${logo}</header><h1>Hello</h1></body></html>`,
       );
     }
+    if (url === '/nimbra')
+      return send(
+        200,
+        'text/html',
+        `<!doctype html><html><head><title>Nimbra Mail</title><meta property="og:site_name" content="Nimbra Mail"><script type="application/ld+json">{"@type":"Organization","name":"Nimbra"}</script></head><body><header><a href="/"><svg data-lockup-art="nimbra-loop" role="img" viewBox="0 0 200 40"><g transform="translate(2 0)"><path fill="currentColor" d="M0 0h20v40H0z"/></g><path fill="currentColor" d="M30 0h20v40H30z"/></svg><span class="sr-only">Nimbra Mail</span></a></header><footer><a href="https://nimbra-loop.test/">Loop</a><a href="https://www.nimbradock.test/x">Dock</a><a href="https://nimbrapost.test">Post</a><a href="https://x.com/nimbra">X</a></footer></body></html>`,
+      );
     if (url === '/typed.css') return send(200, 'text/css', 'body{font-family:"Sora",sans-serif}');
     if (url === '/t9')
       return send(
@@ -144,6 +150,18 @@ beforeAll(async () => {
         200,
         'text/html',
         `<!doctype html><html><head><title>Ledger</title></head><body><section><img src="/img/clients/acme.png" alt="Acme logo"><img src="/img/referanslar/tidepool-logo.png" alt="Tidepool"></section><header><img src="/img/logo.svg" class="logo" alt="Ledger"></header></body></html>`,
+      );
+    if (url === '/t10')
+      return send(
+        200,
+        'text/html',
+        `<!doctype html><html><head><title>Acme</title></head><body><header><a href="/"><svg viewBox="0 0 24 24" aria-label="TikTok"><path d="M0 0h24v24H0z"/></svg></a><img src="/img/otherbrandlogos/g2.svg" alt="G2"><img src="/img/social/tiktok.svg" alt="TikTok"><img src="/img/badge-top.svg" alt="Top"></header></body></html>`,
+      );
+    if (url === '/t10x')
+      return send(
+        200,
+        'text/html',
+        `<!doctype html><html><head><title>Acme</title></head><body><header><a href="/"><svg viewBox="0 0 24 24" class="icon-close"><path d="M0 0l24 24"/></svg></a><a href="/"><svg viewBox="0 0 24 24"><title>Menu</title><path d="M0 0h24"/></svg></a></header></body></html>`,
       );
     if (url === '/img/logo.svg') return send(200, 'image/svg+xml', mark('bolt'));
     if (url === '/fav.svg')
@@ -293,6 +311,49 @@ describe('nameRenderingOf', () => {
       'live-text',
     );
   });
+  it('a drawn word beside a visually hidden name is outlined', () => {
+    expect(render(`${word}<span class="sr-only">Ledger</span>`)).toBe('outlined');
+    expect(render(`${word}<span style="position:absolute;clip:rect(0 0 0 0)">Ledger</span>`)).toBe(
+      'outlined',
+    );
+    expect(render(`${icon}<span class="visually-hidden">Ledger</span>`)).toBe('outlined');
+    expect(render(`${icon}<span class="sr-only">x</span><span>Ledger</span>`)).toBe('live-text');
+  });
+  it('a marked or role=img filled drawing in the home link is outlined even beside text', () => {
+    const marked =
+      '<svg data-lockup-art role="img" viewBox="0 0 120 40"><path fill="currentColor" d="M0 0h20v40H0z"/></svg>';
+    expect(render(marked)).toBe('outlined');
+  });
+});
+
+describe('familyHintOf from outbound links', () => {
+  const page = 'https://nimbramail.test/';
+  it('two outbound hosts sharing a name stem make a hint', () => {
+    expect(familyHintOf('', undefined, page, ['nimbra-loop.test', 'nimbradock.test', 'other.test'])).toEqual({
+      hub: 'nimbra-loop.test',
+      siblings: ['nimbra-loop.test', 'nimbradock.test'],
+    });
+    expect(familyHintOf('', undefined, page, ['nimbradock.test', 'other.test'])).toBeUndefined();
+  });
+  it('an organization named differently from the product that matches a host makes a hint', () => {
+    const org = { name: 'Nimbra', url: 'https://nimbra.test', sameAs: [] };
+    expect(familyHintOf('', org, 'https://mail.example.test/', ['nimbra.test'], 'Mail')).toEqual({
+      hub: 'nimbra.test',
+      siblings: ['nimbra.test'],
+    });
+  });
+  it('scanSite records outbound hosts, drops social ones and sets the hint', async () => {
+    const scan = await scanSite(`${base}/nimbra`, { ...local, maxPages: 1 });
+    expect(scan.outboundHosts).toEqual(['nimbra-loop.test', 'nimbradock.test', 'nimbrapost.test']);
+    expect(scan.nameRendering).toBe('outlined');
+    expect(scan.familyHint?.siblings).toEqual(['nimbra-loop.test', 'nimbradock.test', 'nimbrapost.test']);
+  });
+  it('family references take their id from the mark', async () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Nimbra' });
+    await researchFamily(ws, 'nimbra', [`${base}/nimbra`], { ...local, maxPages: 1 });
+    expect(readReferences(ws, 'nimbra').references.map((x) => x.id)).toEqual(['nimbra-loop-1']);
+  });
 });
 
 describe('family naming systems', () => {
@@ -432,6 +493,44 @@ describe('competitor logo picking', () => {
     expect(r.logo?.from).toBe(`${base}/img/logo.svg`);
     expect(hits).not.toContain('/img/clients/acme.png');
     expect(hits).not.toContain('/img/referanslar/tidepool-logo.png');
+  });
+});
+
+describe('competitor logos that are not the competitor own', () => {
+  it('skips badges, social and UI icons and reports the competitor as missing a logo', async () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Nimbra' });
+    const r = await researchCompetitor(
+      ws,
+      'nimbra',
+      { name: 'Acme', url: `${base}/t10` },
+      { ...local, maxPages: 1 },
+    );
+    expect(r.logo).toBeNull();
+    expect(hits).not.toContain('/img/otherbrandlogos/g2.svg');
+    expect(hits).not.toContain('/img/social/tiktok.svg');
+    expect(hits).not.toContain('/img/badge-top.svg');
+    const x = await researchCompetitor(
+      ws,
+      'nimbra',
+      { name: 'Acme', url: `${base}/t10x` },
+      { ...local, maxPages: 1 },
+    );
+    expect(x.logo).toBeNull();
+  });
+  it('rejects paths and names by pattern', () => {
+    for (const h of [
+      '/a/g2.svg',
+      '/capterra-4.png',
+      '/x/trustpilot.svg',
+      '/otherbrandlogos/x.svg',
+      '/i/x-twitter.svg',
+      '/i/linkedin.png',
+      '/i/youtube.svg',
+    ])
+      expect(isThirdPartyLogo(`https://e.test${h}`)).toBe(true);
+    expect(isThirdPartyLogo('https://e.test/img/g2x-logo.svg')).toBe(false);
+    expect(isThirdPartyLogo('https://e.test/img/logo.svg')).toBe(false);
   });
 });
 

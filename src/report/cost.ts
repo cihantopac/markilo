@@ -105,15 +105,32 @@ export function sessionShare(log: CostLog, total: number): { usd: number; agentU
   return { usd: r6(Math.max(0, delta - agent)), agentUsdIncluded: r6(agent) };
 }
 
-/** Minutes from the first entry's `at` to the last entry's `at` plus its minutes; undefined without readable times. */
-function wallMinutesOf(entries: CostEntry[]): number | undefined {
-  const times = entries
-    .map((e) => ({ t: Date.parse(e.at), m: e.minutes ?? 0 }))
-    .filter((x) => Number.isFinite(x.t));
-  if (!times.length) return undefined;
-  const start = Math.min(...times.map((x) => x.t));
-  const end = Math.max(...times.map((x) => x.t + x.m * 60_000));
-  return r2((end - start) / 60_000);
+/**
+ * An entry's `at` is stamped when it is recorded, which is when the agent's work ended, so its working interval is
+ * `[at - minutes, at]`. `elapsed` is the span from the earliest start to the latest end (waiting included); `busy` is
+ * the union of the intervals (waiting and overlap excluded). Undefined without readable times.
+ */
+function timeSpansOf(entries: CostEntry[]): { busy: number; elapsed: number } | undefined {
+  const spans = entries
+    .map((e) => ({ end: Date.parse(e.at), m: e.minutes ?? 0 }))
+    .filter((x) => Number.isFinite(x.end))
+    .map((x) => ({ start: x.end - x.m * 60_000, end: x.end }))
+    .sort((a, b) => a.start - b.start);
+  if (!spans.length) return undefined;
+  let busy = 0;
+  let curStart = spans[0]!.start;
+  let curEnd = spans[0]!.end;
+  for (const sp of spans.slice(1)) {
+    if (sp.start <= curEnd) curEnd = Math.max(curEnd, sp.end);
+    else {
+      busy += curEnd - curStart;
+      curStart = sp.start;
+      curEnd = sp.end;
+    }
+  }
+  busy += curEnd - curStart;
+  const elapsed = Math.max(...spans.map((x) => x.end)) - spans[0]!.start;
+  return { busy: r2(busy / 60_000), elapsed: r2(elapsed / 60_000) };
 }
 
 /** Totals per phase and against the budget; `stop` means the next paid step would go over it. */
@@ -140,8 +157,14 @@ export function costSummary(log: CostLog) {
   const lowerBound = !log.entries.some((e) => e.source === 'session');
   const level = (used: number, budget: number) => (used >= budget ? 2 : used >= budget * WARN_AT ? 1 : 0);
   const minutes = r2(phases.reduce((a, p) => a + p.minutes, 0));
-  const wall = wallMinutesOf(log.entries);
-  const wallText = wall !== undefined ? ` (${wall} minutes of wall-clock time)` : '';
+  const spans = timeSpansOf(log.entries);
+  const elapsed = spans?.elapsed;
+  // Entries without a readable time stamp still count, by their minutes.
+  const unstamped = r2(
+    log.entries.filter((e) => !Number.isFinite(Date.parse(e.at))).reduce((a, e) => a + (e.minutes ?? 0), 0),
+  );
+  const busy = spans ? r2(spans.busy + unstamped) : undefined;
+  const wallText = busy !== undefined ? ` (${busy} busy minutes, ${elapsed} elapsed including waiting)` : '';
   const agentMinutesText = `${minutes} agent minutes (parallel agents add up)`;
   const subagentUsd = r2(
     log.entries.filter((e) => e.source !== 'session').reduce((a, e) => a + entryUsd(e).usd, 0),
@@ -159,7 +182,9 @@ export function costSummary(log: CostLog) {
   });
   const minutesIncomplete = log.entries.some((e) => e.minutesUnknown);
   const usdLevel = level(total, log.budgetUsd);
-  const timeLevel = log.budgetMinutes ? level(minutes, log.budgetMinutes) : 0;
+  // The time budget counts working time (busy), not the user's waiting or overlapping agents twice.
+  const timeUsed = busy ?? minutes;
+  const timeLevel = log.budgetMinutes ? level(timeUsed, log.budgetMinutes) : 0;
   const status = (['ok', 'warn', 'over'] as const)[Math.max(usdLevel, timeLevel)]!;
   const byTime = timeLevel > usdLevel;
   return {
@@ -168,12 +193,12 @@ export function costSummary(log: CostLog) {
     remainingUsd: remaining,
     minutes,
     agentMinutes: minutes,
-    ...(wall !== undefined ? { wallMinutes: wall } : {}),
+    ...(busy !== undefined ? { busyMinutes: busy, elapsedMinutes: elapsed, wallMinutes: elapsed } : {}),
     ...(minutesIncomplete ? { minutesIncomplete: true } : {}),
     subagentUsd,
     ...(named.length ? { agents: named } : {}),
     ...(log.budgetMinutes
-      ? { minutesBudget: log.budgetMinutes, minutesRemaining: r2(log.budgetMinutes - minutes) }
+      ? { minutesBudget: log.budgetMinutes, minutesRemaining: r2(log.budgetMinutes - timeUsed) }
       : {}),
     estimated: phases.some((p) => p.estimated),
     status,
@@ -186,7 +211,7 @@ export function costSummary(log: CostLog) {
       byTime && status === 'over'
         ? `Time budget reached (${agentMinutesText}${wallText}): stop starting agents, show the user what exists and ask whether to continue (markilo cost --budget-minutes <m>).`
         : byTime && status === 'warn'
-          ? `Under ${r2(log.budgetMinutes! - minutes)} agent minutes of the time budget left (${agentMinutesText}${wallText}): finish the current step, then ask before starting another round or agent.`
+          ? `Under ${r2(log.budgetMinutes! - timeUsed)} busy minutes of the time budget left (${agentMinutesText}${wallText}): finish the current step, then ask before starting another round or agent.`
           : status === 'over'
             ? 'Budget reached: stop paid work, show the user what exists and ask whether to raise the budget (markilo cost --budget <usd>).'
             : status === 'warn'

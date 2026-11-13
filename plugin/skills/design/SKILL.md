@@ -49,9 +49,9 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
    cost --brand <slug> --phase <p> --session-usd <total>`; it covers the agents and Markilo subtracts what they
    recorded). In an app that shows no session total, record `--session-usd` from the app's usage view or tool when one
    exists; otherwise say the dollar figure is subagents only — the session itself is not counted (`cost` labels it so).
-   `--minutes` are agent minutes: parallel agents add up, and `cost` also shows the wall minutes. An agent stopped by a
+   `--minutes` are agent minutes: parallel agents add up; `cost` also shows `busyMinutes` (working time, which the time budget uses) and `elapsedMinutes` (including waiting). An agent stopped by a
    usage limit and resumed is recorded once per part under one name: `cost --brand <slug> --phase <p> --tokens <n>
-   --minutes <m> --agent <name> --part <n>` (a part whose minutes you cannot read is flagged incomplete).
+   --minutes <m> --agent <name> --part <n>` (a part whose minutes you cannot read is flagged incomplete). For a resumed agent, record the minutes of each part (`duration_ms` is per part), and the tokens either as the difference from the previous part's `subagent_tokens` (which are cumulative) or as the total once at the end, never both.
 
    Never repeat research, critique an unchanged image again, or refine a direction the user rejected.
    Before each round run `markilo cost --brand <slug> --plan explore:3,develop:1,critic:1` (the phases and agent counts
@@ -66,6 +66,14 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
 
    **Develop requests that can be read two ways** ("read clearly", "more space"): ask one multiple-choice question
    first (keep the form / equal sizes / more space) or run a probe; never spend a develop pass on a guess.
+
+   **Develop scope:** before a develop pass ask once: craft only (optics, spacing, small sizes; form unchanged,
+   recommended) / a small revision of named parts / the form may change. If the user cannot say what is missing, offer
+   three visual probes instead of a diagnosis question. The critic's fixes are labelled `craft` (apply once) or
+   `silhouette` (shown as before/after, applied only on the user's yes). Liked traits are recorded in `answers` as
+   `protect: …` and passed to critic and designer; a forbidden reading is passed to the critic and named if it is the
+   critic's first read. `proposals` reports `formChange` (IoU against `chosen/`); below 0.85 show `chosen-vs-now` and
+   ask. Advice, never a gate.
 
    **References:** name the category leader in the research brief; if its logo cannot be collected, tell the user the
    originality check does not cover it. Use `render --width <px>` for large comparisons. In shell examples, quote

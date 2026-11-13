@@ -34,6 +34,16 @@ judge by the same standard the designer worked to.
    "open the R–e pair by ~4 % of cap height", "the leg of the R is heavier than the stems; match 92 units", "the icon's
    counter closes at 16 px: widen to ≥ 80 units", "the teal fails 3:1 on the dark header". Say which ones matter most.
    Do not propose a different concept: the user chose this one.
+   **Label every fix** `craft` (invisible at a glance: spacing, optics, weight within a few percent, small-size
+   detail) or `silhouette` (changes what the mark is: a cut moved, a terminal reshaped, a tail made angular, a drop
+   made a ring). The caller applies `craft` fixes and shows `silhouette` fixes to the user as probes. If the caller
+   passes `protect:` traits, no fix may touch them; if it passes a forbidden reading, say in your first readings whether
+   you read it.
+
+4. **Record your own scores, then check them.** The `concept update` calls above are yours to run. Read the JSON each
+   returns: it must have `ok` and a `gate.status` that is not `not-reviewed`. If it errors or the gate stays
+   `not-reviewed`, report that error instead of saying the scores were recorded. A critique stays on file with the
+   drawing it judged: when an identical drawing returns, the result says "restored the critique of <date>".
 
 Final answer (≤ 200 words): first readings, cold scores and yes/no, the fixes in priority order, and anything that
 looks like an existing mark or a cliché even if automated similarity was low. Mark everything as judgment.

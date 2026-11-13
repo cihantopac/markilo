@@ -248,6 +248,19 @@ export interface Concept {
    */
   reviewedArt?: string;
   /**
+   * Earlier critiques, each with the drawing it judged (`reviewedArt`). Recording a critique on a changed drawing keeps
+   * the previous one here; when the drawing returns to a hash listed here, that critique is current again.
+   */
+  critiques?: {
+    reviewedArt: string;
+    at: string;
+    judgment?: Concept['judgment'];
+    critique?: Concept['critique'];
+    blind?: Concept['blind'];
+    reviews?: number;
+    looks?: Concept['looks'];
+  }[];
+  /**
    * The user asked to continue from another concept's drawing (`concept adopt`): which concept, which files, when.
    * `chosen/` then holds the adopted drawing.
    */

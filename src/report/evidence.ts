@@ -22,6 +22,38 @@ export const EVIDENCE_CRITERIA = {
   names: { minimal: 1, adequate: 3 },
 } as const;
 
+/** Trademark registry hosts (matched by hostname suffix) and the registry id each counts as. */
+const REGISTRY_HOSTS: [string, string][] = [
+  ['uspto.gov', 'uspto'],
+  ['euipo.europa.eu', 'euipo'],
+  ['tmdn.org', 'tmview'],
+  ['wipo.int', 'wipo-gbd'],
+  ['turkpatent.gov.tr', 'turkpatent'],
+  ['ipo.gov.uk', 'ukipo'],
+  ['j-platpat.inpit.go.jp', 'jpo'],
+  ['inpit.go.jp', 'jpo'],
+  ['jpo.go.jp', 'jpo'],
+  ['cnipa.gov.cn', 'cnipa'],
+];
+
+function registryIdOfUrl(ref: string): string | undefined {
+  let host: string;
+  try {
+    host = new URL(ref).hostname.toLowerCase();
+  } catch {
+    return undefined;
+  }
+  return REGISTRY_HOSTS.find(([h]) => host === h || host.endsWith(`.${h}`))?.[1];
+}
+
+function decodeSafe(s: string): string {
+  try {
+    return decodeURIComponent(s.replace(/\+/g, ' '));
+  } catch {
+    return s;
+  }
+}
+
 export interface EvidenceDimension {
   coverage: Coverage;
   have: string;
@@ -92,12 +124,23 @@ export function assessEvidence(input: {
   }
 
   const name = norm(input.brandName);
-  const searches = input.sources.filter(
-    (s) =>
-      s.type === 'registry' &&
-      s.registry &&
-      norm(s.registry.query).includes(name.slice(0, Math.max(3, name.length - 2))),
-  );
+  const needle = name.slice(0, Math.max(3, name.length - 2));
+  // A web search of a trademark registry (logged as `search`) counts as a registry search; the query is read from
+  // the logged registry data when there is any, else from the URL and notes.
+  const regOf = (s: (typeof input.sources)[number]) => {
+    if (s.type === 'registry' && s.registry) return s.registry;
+    if (s.type !== 'search') return undefined;
+    const id = registryIdOfUrl(s.ref);
+    if (!id) return undefined;
+    return s.registry ?? { id, query: decodeSafe(`${s.ref} ${s.notes ?? ''}`) };
+  };
+  const searches = input.sources
+    .map((s) => ({ s, r: regOf(s) }))
+    .filter(
+      (x): x is { s: (typeof x)['s']; r: NonNullable<typeof x.r> } =>
+        !!x.r && norm(x.r.query).includes(needle),
+    )
+    .map((x) => ({ ...x.s, registry: x.r }));
   const registries = new Set(searches.map((s) => s.registry!.id));
   const international = EVIDENCE_CRITERIA.registry.adequate.international.some((r) => registries.has(r));
   const classesSearched = new Set(searches.flatMap((s) => s.registry!.classes ?? []));

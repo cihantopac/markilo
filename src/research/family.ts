@@ -52,6 +52,21 @@ function svgColors(svg: string): string[] {
  * inline lockups and logos become `family` references named `<host>-<n>`, and its brand colours are listed so a
  * new member can take a free one. Robots.txt is respected by the site scan; inline SVG is sanitized before it is saved.
  */
+/** A name the mark carries itself: data-lockup-art value, aria-label or <title>, slugged. */
+function markName(svg: string): string | undefined {
+  const open = /<svg\b[^>]*>/i.exec(svg)?.[0] ?? '';
+  const raw =
+    /\bdata-lockup-art=["']([^"']+)["']/i.exec(open)?.[1] ??
+    /\baria-label=["']([^"']+)["']/i.exec(open)?.[1] ??
+    /<title[^>]*>([^<]+)<\/title>/i.exec(svg)?.[1];
+  const slug = raw
+    ?.toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
+  return slug || undefined;
+}
+
 export async function researchFamily(
   ws: Workspace,
   brand: string,
@@ -94,7 +109,8 @@ export async function researchFamily(
       const issues = [...scan.logoIssues];
       for (const [i, svg] of scan.inlineLogoSvgs.entries()) {
         try {
-          const refName = `${host}-${perHost.set(host, (perHost.get(host) ?? 0) + 1).get(host)}`;
+          const stem = markName(svg) ?? host;
+          const refName = `${stem}-${perHost.set(stem, (perHost.get(stem) ?? 0) + 1).get(stem)}`;
           const r = await addReference(ws, brand, {
             name: refName,
             id: refName,

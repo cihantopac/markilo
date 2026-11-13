@@ -297,6 +297,11 @@ describe('the chosen concept', () => {
     copyFileSync(fixture('marks/leaf-letter.svg'), join(dir, 'symbol.svg'));
     const r = ok(['proposals', '--brand', 'tidepool', '--concepts', 'p2'], cwd);
     expect(existsSync(r.compare.p2)).toBe(true);
+    // leaf-letter is a different form than what was chosen: the result measures it and warns.
+    expect(r.formChange.p2.symbol).toBeLessThan(0.85);
+    expect(r.warnings.join('\n')).toMatch(
+      /p2: the symbol's form changed from what the user chose \(IoU 0\.\d\d\) — show chosen-vs-now and ask before going on/,
+    );
     // A second selection does not overwrite what the user first chose.
     expect(ok(['feedback', '--brand', 'tidepool', '--apply'], cwd).applied).not.toContain(
       'tidepool/p2 → kept as chosen (chosen/)',

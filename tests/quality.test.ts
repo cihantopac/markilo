@@ -33,6 +33,31 @@ describe('quality checks', () => {
   });
 });
 
+describe('verify messages', () => {
+  const check = async (svg: string, id: string) =>
+    (await assessQuality(svg, 't')).checks.find((c) => c.id === id);
+  it('prints the artboard fit with one decimal, so 79.6 does not read as the 80 boundary', async () => {
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><rect x="102" y="102" width="796" height="796" fill="#111"/></svg>';
+    const c = await check(svg, 'artboard-fit');
+    expect(c?.status).toBe('warn');
+    expect(c?.message).toMatch(/79\.\d %/);
+  });
+  it('does not ask a one-colour lockup for palette separation or lightness contrast', async () => {
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="10" y="10" width="30" height="30" fill="#14181f"/><rect x="50" y="50" width="40" height="30" fill="#000000"/></svg>';
+    const sep = await check(svg, 'palette-separation');
+    expect(sep?.status).toBe('pass');
+    expect(sep?.message).toContain('single-colour lockup');
+    expect(await check(svg, 'lightness-contrast')).toBeUndefined();
+  });
+  it('still checks a two-colour mark', async () => {
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="10" y="10" width="40" height="80" fill="#1d4ed8"/><rect x="50" y="10" width="40" height="80" fill="#7c3aed"/></svg>';
+    expect((await check(svg, 'palette-separation'))?.message).not.toContain('single-colour');
+  });
+});
+
 describe('the letter check says whether it ran', () => {
   async function wordmarkWorkspace() {
     const { ws } = synthBrand();

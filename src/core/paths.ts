@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { existsSync, realpathSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, normalize, relative, resolve, sep } from 'node:path';
 import { MarkiloError } from './errors.js';
@@ -12,6 +13,18 @@ export function slugify(input: string): string {
     .replace(/-+$/g, '');
   if (!slug) throw new MarkiloError('INVALID_INPUT', `Cannot derive a slug from "${input}".`);
   return slug;
+}
+
+/**
+ * A slug for a name that may have no Latin letters or digits ("日本語"): the plain slug, else `brand-` and the first six
+ * hex digits of the name's sha1. `derived` says the hash form was used.
+ */
+export function slugifyOrHash(name: string): { slug: string; hashed: boolean } {
+  try {
+    return { slug: slugify(name), hashed: false };
+  } catch {
+    return { slug: `brand-${createHash('sha1').update(name).digest('hex').slice(0, 6)}`, hashed: true };
+  }
 }
 
 const FOLD: Record<string, string> = {

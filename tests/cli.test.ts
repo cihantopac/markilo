@@ -13,6 +13,7 @@ import { dirname, join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { parseCommand } from '../src/cli/args.js';
 import { findCommand } from '../src/cli/commands.js';
+import { decodeImage } from '../src/render/png.js';
 import { verifyConcept } from '../src/report/quality.js';
 import { fixture, synthBrand, tmp } from './helpers.js';
 
@@ -208,6 +209,30 @@ describe('cli (bundled)', () => {
     ok(['render', 'a.svg', 'b.svg', '--compare', '--tile', '--primary', '#c2255c', '-o', 't.png']);
     expect(readFileSync(join(cwd, 'p.png')).equals(readFileSync(join(cwd, 't.png')))).toBe(false);
   }, 60_000);
+  it('render --compare --tile --primary draws the tile row in that colour', async () => {
+    const cwd = tmp();
+    const rose =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M30 30h40v40H30z" fill="#ffffff"/></svg>';
+    writeFileSync(join(cwd, 'a.svg'), rose);
+    writeFileSync(join(cwd, 'b.svg'), rose);
+    const f = findCommand(['render'])!;
+    await f.spec.run(
+      parseCommand(
+        f.spec,
+        ['a.svg', 'b.svg', '--compare', '--tile', '--primary', '#d4561c', '-o', 't.png'],
+        cwd,
+      ),
+    );
+    const img = decodeImage(readFileSync(join(cwd, 't.png')));
+    // The tile ground is the third row of each sketch; scan the left margin of the sheet for it.
+    const counts = new Map<string, number>();
+    for (let y = 0; y < img.height; y++) {
+      const i = (y * img.width + img.width - 3) * 4;
+      const hex = [0, 1, 2].map((k) => img.data[i + k]!.toString(16).padStart(2, '0')).join('');
+      counts.set(hex, (counts.get(hex) ?? 0) + 1);
+    }
+    expect(counts.get('d4561c') ?? 0).toBeGreaterThan(50);
+  }, 30_000);
   it('finalize warns when the critique is on another concept', async () => {
     const { ws, dir: cwd } = synthBrand();
     const fold = ws.concept('nimbra', 'fold');
@@ -359,6 +384,54 @@ describe('cli (bundled)', () => {
     expect(JSON.stringify(proposals)).toMatch(/the critique is older than the drawing/);
     const verify = ok(['verify', '--brand', 'tidepool', '--concept', 'p1']);
     expect(JSON.stringify(verify)).toMatch(/the critique is older than the drawing/);
+  }, 60_000);
+  it('an identical drawing brings the earlier critique back after a redraw and a second critique', () => {
+    const cwd = tmp();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    ok(['init', '--name', 'Demo']);
+    ok(['brand', 'add', 'Tidepool']);
+    // biome-ignore format: one flag per pair reads better
+    ok(['concept', 'new', '--brand', 'tidepool', '--id', 'p1', '--title', 'One', '--direction', 'd', '--rationale', 'r',
+      '--semantics', 'a', '--primary', '#0b7285']);
+    const symbol = join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'p1', 'symbol.svg');
+    const v1 = readFileSync(fixture('marks/fold-n.svg'), 'utf8');
+    writeFileSync(symbol, v1);
+    const set = ['concept', 'update', '--brand', 'tidepool', '--concept', 'p1'];
+    ok([
+      ...set,
+      '--blind',
+      'distinctiveness=7,memorability=7,brand-fit=7,craft=7,versatility=7',
+      '--present',
+      'yes:ready',
+    ]);
+    writeFileSync(symbol, v1.replace('#ff8a3d', '#e8590c'));
+    expect(ok(['concept', 'show', '--brand', 'tidepool', '--concept', 'p1']).gate.status).toBe('stale');
+    // Back to V1 byte for byte: the critique still on file matches again.
+    writeFileSync(symbol, v1);
+    const back = ok(['concept', 'show', '--brand', 'tidepool', '--concept', 'p1']);
+    expect(back.gate).toMatchObject({ status: 'passed' });
+    // A critique of the other drawing keeps V1's in the history; returning to V1 restores it and says so.
+    writeFileSync(symbol, v1.replace('#ff8a3d', '#e8590c'));
+    ok([
+      ...set,
+      '--blind',
+      'distinctiveness=4,memorability=4,brand-fit=4,craft=4,versatility=4',
+      '--present',
+      'no:weak',
+    ]);
+    expect(ok(['concept', 'show', '--brand', 'tidepool', '--concept', 'p1']).gate.status).toBe(
+      'below-threshold',
+    );
+    writeFileSync(symbol, v1);
+    const r = ok([...set, '--show']);
+    expect(r.restored).toMatch(/^restored the critique of \d{4}-/);
+    expect(r.gate.status).toBe('passed');
+    expect(r.blind.scores.craft).toBe(7);
+    expect(r.critiques).toHaveLength(1);
   }, 60_000);
   it('finalize keeps a stand-in font under standIn for family lettering', async () => {
     const { ws, dir } = synthBrand();
