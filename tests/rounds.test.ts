@@ -309,6 +309,48 @@ describe('the chosen concept', () => {
   }, 60_000);
 });
 
+describe('concept revert', () => {
+  it('goes back to the chosen drawing and unregisters what was added since', () => {
+    const cwd = proposals(2);
+    const concepts = join(cwd, 'brand', 'brands', 'tidepool', 'concepts');
+    const dir = join(concepts, 'p2');
+    ok(['concept', 'update', '--brand', 'tidepool', '--concept', 'p2', '--status', 'shortlisted'], cwd);
+    const chosen = readFileSync(join(dir, 'chosen', 'symbol.svg'), 'utf8');
+    copyFileSync(fixture('marks/leaf-letter.svg'), join(dir, 'symbol.svg'));
+    copyFileSync(fixture('marks/bars.svg'), join(dir, 'symbol-small.svg'));
+    ok(['concept', 'update', '--brand', 'tidepool', '--concept', 'p2', '--small', 'symbol-small.svg'], cwd);
+    ok(['proposals', '--brand', 'tidepool', '--concepts', 'p2'], cwd);
+    expect(existsSync(join(dir, 'review', 'chosen-vs-now.png'))).toBe(true);
+    const r = ok(
+      ['concept', 'revert', '--brand', 'tidepool', '--concept', 'p2', '--to', 'chosen', '--note', 'back'],
+      cwd,
+    );
+    expect(r.restored).toContain('symbol.svg');
+    expect(r.unregistered).toEqual(['symbol-small.svg']);
+    expect(r.movedTo).toMatch(/^rejected\//);
+    expect(readFileSync(join(dir, 'symbol.svg'), 'utf8')).toBe(chosen);
+    expect(existsSync(join(dir, 'symbol-small.svg'))).toBe(false);
+    expect(existsSync(join(dir, r.movedTo, 'symbol-small.svg'))).toBe(true);
+    expect(existsSync(join(dir, 'review', 'chosen-vs-now.png'))).toBe(false);
+    expect(JSON.parse(readFileSync(join(dir, 'concept.json'), 'utf8')).files.small).toBeUndefined();
+    expect(readFileSync(join(cwd, 'brand', 'brands', 'tidepool', 'decisions.md'), 'utf8')).toMatch(
+      /Reverted.*p2.*back/,
+    );
+  }, 60_000);
+  it('refuses without a chosen copy; --small none unregisters', () => {
+    const cwd = proposals(1);
+    const set = ['concept', 'update', '--brand', 'tidepool', '--concept', 'p1'];
+    const bad = run(['concept', 'revert', '--brand', 'tidepool', '--concept', 'p1', '--to', 'chosen'], cwd);
+    expect(JSON.parse(bad.stderr).error.code).toBe('NOT_FOUND');
+    const dir = join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'p1');
+    copyFileSync(fixture('marks/bars.svg'), join(dir, 'symbol-small.svg'));
+    ok([...set, '--small', 'symbol-small.svg'], cwd);
+    ok([...set, '--small', 'none'], cwd);
+    expect(JSON.parse(readFileSync(join(dir, 'concept.json'), 'utf8')).files.small).toBeUndefined();
+    expect(existsSync(join(dir, 'symbol-small.svg'))).toBe(true);
+  }, 60_000);
+});
+
 describe('concept adopt', () => {
   it('adopt copies the drawing and re-pins chosen', () => {
     const cwd = proposals(3);
