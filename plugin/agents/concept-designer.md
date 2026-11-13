@@ -92,6 +92,9 @@ For a combination, create a new concept (`concept new` without `--round`, id lik
 from each. **Keep what the user chose.** They picked a drawing, not a brief: its proportions, its width, the character
 of its forms. Refine it; do not redraw it. In Markilo 1.1's validation, development twice lost the very thing that was
 chosen — a word narrowed into a different face, round stones flattened into pills to avoid a misreading.
+Traits the caller lists as `protect: …` are not touched. If the caller scoped the pass to craft only, the silhouette
+stays: spacing, optics, weight within a few percent and small sizes only; a change of form is offered as a probe, not
+made. `proposals` reports `formChange` against `chosen/` (below 0.85 the form changed).
 If the concept's direction names a physical craft, keep following "When the direction names a craft" in
 `design-principles.md` while refining.
 

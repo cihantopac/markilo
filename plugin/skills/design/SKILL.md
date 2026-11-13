@@ -67,6 +67,14 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
    **Develop requests that can be read two ways** ("read clearly", "more space"): ask one multiple-choice question
    first (keep the form / equal sizes / more space) or run a probe; never spend a develop pass on a guess.
 
+   **Develop scope:** before a develop pass ask once: craft only (optics, spacing, small sizes; form unchanged,
+   recommended) / a small revision of named parts / the form may change. If the user cannot say what is missing, offer
+   three visual probes instead of a diagnosis question. The critic's fixes are labelled `craft` (apply once) or
+   `silhouette` (shown as before/after, applied only on the user's yes). Liked traits are recorded in `answers` as
+   `protect: …` and passed to critic and designer; a forbidden reading is passed to the critic and named if it is the
+   critic's first read. `proposals` reports `formChange` (IoU against `chosen/`); below 0.85 show `chosen-vs-now` and
+   ask. Advice, never a gate.
+
    **References:** name the category leader in the research brief; if its logo cannot be collected, tell the user the
    originality check does not cover it. Use `render --width <px>` for large comparisons. In shell examples, quote
    answers with single quotes (`$` is expanded inside double quotes).

@@ -5,6 +5,7 @@ import { contrastRatio, deltaE2000, normalizeColor } from '../analyze/color.js';
 import { checkLetters, letterAdvice } from '../analyze/letters.js';
 import { loadMark, sampleFromSvg } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
+import { FORM_CHANGE_LIMIT, formChangeWarning, silhouetteIoU } from '../analyze/silhouette.js';
 import { compareMarks, genericity } from '../analyze/similarity.js';
 import { carriesTile, TYPESET_LIMIT, typesetLikeness, wordmarkFont } from '../analyze/typeset.js';
 import { type ConstructionSpec, compileSpec, constructionSvg, memberOf } from '../construct/compile.js';
@@ -2441,6 +2442,7 @@ export const COMMANDS: CommandSpec[] = [
         { font: string; weight: number; case: 'as-is' | 'lower' | 'upper' } | { skipped: string }
       > = {};
       const compare: Record<string, string> = {};
+      const formChange: Record<string, { symbol?: number; wordmark?: number }> = {};
       const files: string[] = [];
       const notes: string[] = [];
       const critiqueElsewhere: Record<string, string[]> = {};
@@ -2566,6 +2568,19 @@ export const COMMANDS: CommandSpec[] = [
           const cmp = w.conceptFile(slug, cpt.id, join('review', 'chosen-vs-now.png'));
           writeGenerated(cmp, await renderRoundBoard([then, { ...input, caption: 'Now' }]));
           compare[cpt.id] = cmp;
+          const change: { symbol?: number; wordmark?: number } = {};
+          for (const kind of ['symbol', 'wordmark'] as const) {
+            const now = kind === 'symbol' ? symbol : wordmark;
+            if (!was[kind] || !now) continue;
+            try {
+              const iou = Math.round((await silhouetteIoU(was[kind]!, now)) * 100) / 100;
+              change[kind] = iou;
+              if (iou < FORM_CHANGE_LIMIT) warnings.push(`${cpt.id}: ${formChangeWarning(kind, iou)}`);
+            } catch {
+              // An unrenderable drawing is reported by the other checks.
+            }
+          }
+          if (Object.keys(change).length) formChange[cpt.id] = change;
         }
       }
       const board =
@@ -2594,6 +2609,8 @@ export const COMMANDS: CommandSpec[] = [
         typesetBase,
         /** For a concept the user chose: their choice and its current state side by side. */
         ...(Object.keys(compare).length ? { compare } : {}),
+        /** Silhouette overlap (0..1) of the chosen drawing and the current one; below 0.85 the form changed. */
+        ...(Object.keys(formChange).length ? { formChange } : {}),
         missing,
         ...(notes.length ? { notes } : {}),
         ...(warnings.length ? { warnings } : {}),
