@@ -259,7 +259,8 @@ its scores, but the gate stayed `not-reviewed`.
 - **Gate wording.** The gate status `failed` becomes `below-threshold`. Readers accept `failed` from older kits as
   the same thing, and the CHANGELOG notes the rename under Changed. `next` is unchanged.
 - **The critic records its own scores.** The critic agent ends by running `concept update --blind … --present …` and
-  checks the JSON for `ok` and a `gate` that is not `not-reviewed`. If the check fails, it reports the error instead
+  checks that it exits 0 with `changed` and a `gate` that is not `not-reviewed` (there is no `ok` field; errors go to
+  stderr as `{ error }`). If the check fails, it reports the error instead
   of saying "recorded".
 
 - [ ] **Step 1: Failing tests:** score → change art → stale → restore the identical art → the gate is back with the old

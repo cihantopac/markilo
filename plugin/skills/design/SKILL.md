@@ -56,8 +56,7 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
    Never repeat research, critique an unchanged image again, or refine a direction the user rejected.
    Before each round run `markilo cost --brand <slug> --plan explore:3,develop:1,critic:1` (the phases and agent counts
    you are about to start) and show the `estimate` (`agentMinutes`, `wallMinutes`, `usd`) and `fits` with the budget
-   question. Say that parallel agents add up agent-minutes while wall time follows the longest. A resumed agent's usage
-   notification is cumulative: record the part as the difference from the previous notification for that agent.
+   question. Say that parallel agents add up agent-minutes while wall time follows the longest.
 
    **Ask icon and wordmark separately**, each on its own sheet, so the user judges one thing at a time; never put both
    on one sheet where the options double. Designers pass tile renders with `--tile` (`render … --compare --tile`),
