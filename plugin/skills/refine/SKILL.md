@@ -31,7 +31,6 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    the critic; if the critic's first read matches it, say so when you present the result.
    When the change can be read two ways ("read clearly" could mean pebbles or equal waves), ask one multiple-choice
    question first (keep the form / equal sizes / more space) or run a probe; never spend a develop pass on a guess.
-   A resumed agent's usage notification is cumulative: record the part as the difference from the previous one.
 3. `markilo verify --brand <slug> --concept <id>` until nothing fails; `Read` the review, wordmark and context sheets. When the `letters` check says it did not run (a freeform or hand-edited wordmark), read the 32 px wordmark render letter by letter and write down what you read before the brand name; a split or misread letter is fixed before the critic. When `balance` says the mark leans, `markilo center in.svg -o out.svg` shifts it to the optical centre (never run on a locked brand's masters).
    A transformation the user asked for is shown to them before you send the designer back on taste; "character lost"
    applies only to changes nobody asked for.
@@ -44,7 +43,9 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    shows a session total, record it at the end of each phase: `markilo cost --brand <slug> --phase <p> --session-usd
    <total>` (it covers the agents; Markilo subtracts what they recorded). Without one (an app with no session total: use its usage view or tool if it has one), the figure is
    subagents only — the session itself is not counted. An agent interrupted by a usage limit and resumed is recorded per
-   part under one name: `markilo cost --brand <slug> --phase <p> --tokens <n> --minutes <m> --agent <name> --part <n>`.
+   part under one name: `markilo cost --brand <slug> --phase <p> --tokens <n> --minutes <m> --agent <name> --part <n>`:
+   the minutes of each part (`duration_ms` is per part), and the tokens either as the difference from the previous
+   part's `subagent_tokens` (which are cumulative) or as the total once at the end, never both.
 5. Show the user the refined identity (`markilo proposals --brand <slug> --concepts <id>`, the gallery), the measured
    checks, the originality verdict and the critic's notes labelled as judgment. Further changes go back to step 2.
 6. When the user approves: `markilo finalize --brand <slug> --concept <id> --user-choice "<their words>" --tagline "<tagline>"`

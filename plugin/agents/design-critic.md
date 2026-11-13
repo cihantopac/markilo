@@ -40,9 +40,10 @@ judge by the same standard the designer worked to.
    passes `protect:` traits, no fix may touch them; if it passes a forbidden reading, say in your first readings whether
    you read it.
 
-4. **Record your own scores, then check them.** The `concept update` calls above are yours to run. Read the JSON each
-   returns: it must have `ok` and a `gate.status` that is not `not-reviewed`. If it errors or the gate stays
-   `not-reviewed`, report that error instead of saying the scores were recorded. A critique stays on file with the
+4. **Record your own scores, then check them.** The `concept update` calls above are yours to run. A recorded call
+   exits 0 and prints JSON whose `changed` lists what you recorded (`blind`, `critique`, `judgment`, `looks`) and whose
+   `gate.status` is not `not-reviewed`. A failed call exits non-zero with `{ "error": … }` on stderr: report that error
+   instead of saying the scores were recorded; do the same when `gate` is missing or stays `not-reviewed`. A critique stays on file with the
    drawing it judged: when an identical drawing returns, the result says "restored the critique of <date>".
 
 Final answer (≤ 200 words): first readings, cold scores and yes/no, the fixes in priority order, and anything that

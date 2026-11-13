@@ -153,6 +153,24 @@ describe('craft-named directions', () => {
     expect(agent).toContain('## Finish now');
     expect(agent).toContain('concepts/<id>/work/');
   });
+  it('1.6 review: the critic checks real fields, one resumed-agent rule, current gate names', () => {
+    const read = (p: string) => readFileSync(join(root, p), 'utf8');
+    const critic = read('plugin/agents/design-critic.md');
+    // concept update prints { id, status, changed, gate? }; there is no `ok`.
+    expect(critic).not.toMatch(/must have `ok`/);
+    expect(critic).toMatch(/`changed`/);
+    expect(critic).toMatch(/`gate\.status` is not `not-reviewed`/);
+    for (const p of ['plugin/skills/design/SKILL.md', 'plugin/skills/refine/SKILL.md']) {
+      const text = read(p);
+      expect(text, p).not.toMatch(
+        /difference from the previous notification|difference from the previous one/,
+      );
+      expect(text.match(/cumulative/g) ?? [], p).toHaveLength(1);
+    }
+    const cli = read('plugin/skills/design/references/cli.md');
+    expect(cli).not.toMatch(/`gate` \(`passed`, `failed`/);
+    expect(cli).toMatch(/`below-threshold`, `undecided`, `stale`/);
+  });
   it('carries the 1.5 family, develop, sheet and time guidance', () => {
     const read = (p: string) => readFileSync(join(root, p), 'utf8');
     const skill = read('plugin/skills/design/SKILL.md');
