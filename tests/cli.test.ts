@@ -234,6 +234,42 @@ describe('cli (bundled)', () => {
     expect(out.critiqueElsewhere).toEqual({ fold: ['fold-b'] });
     expect(out.notes.join(' ')).toMatch(/not-reviewed.*fold-b/);
   }, 60_000);
+  it('family glyphs and family word build a word with a baseline; proposals warns for a word without one', () => {
+    const { ws, dir: cwd } = synthBrand();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    const wordFile = fixture('glyphs/nimbra-word.svg');
+    const g = ok(['family', 'glyphs', '--brand', 'nimbra', '--ref', wordFile, '--text', 'NIMBRA']);
+    expect(g.ref).toBe('nimbra-word');
+    expect(g.glyphs.map((x: { file: string }) => x.file)).toEqual([
+      'N.svg',
+      'I.svg',
+      'M.svg',
+      'B.svg',
+      'R.svg',
+      'A.svg',
+    ]);
+    expect(existsSync(join(g.dir, 'glyphs.json'))).toBe(true);
+    expect(readFileSync(g.word, 'utf8')).toMatch(/data-baseline="60"/);
+    const bad = run(['family', 'glyphs', '--brand', 'nimbra', '--ref', wordFile, '--text', 'NIMBR'], cwd);
+    expect(bad.status).not.toBe(0);
+    expect(JSON.parse(bad.stderr).error.groups).toHaveLength(6);
+    const wm = ok(['family', 'word', '--brand', 'nimbra', '--text', 'BRAVO', '--take', 'nimbra-word:BRA']);
+    expect(wm.missing).toEqual(['V', 'O']);
+    expect(readFileSync(wm.out, 'utf8')).toContain('data-lettering="family"');
+    // The concept's word is drawn without metrics: proposals and svg lint say so.
+    const conceptWord = join(ws.conceptDir('nimbra', 'fold'), 'wordmark.svg');
+    writeFileSync(conceptWord, readFileSync(wordFile, 'utf8'));
+    const p = ok(['proposals', '--brand', 'nimbra', '--concepts', 'fold']);
+    expect(p.warnings.join(' ')).toMatch(/fold: the word has no baseline; lockups will guess its position/);
+    const lint = ok(['svg', 'lint', conceptWord]);
+    expect(lint.results[0].issues.map((i: { rule: string }) => i.rule)).toContain('word-baseline');
+    writeFileSync(conceptWord, readFileSync(wm.out, 'utf8'));
+    expect(ok(['proposals', '--brand', 'nimbra', '--concepts', 'fold']).warnings).toBeUndefined();
+  }, 60_000);
   it('a redraw after the critique makes the gate stale, and proposals and verify say so', () => {
     const cwd = tmp();
     const ok = (args: string[]) => {

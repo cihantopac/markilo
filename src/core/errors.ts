@@ -19,12 +19,15 @@ export type ErrorCode =
 export class MarkiloError extends Error {
   readonly code: ErrorCode;
   readonly hint: string | undefined;
+  /** Extra fields printed with the error (for example the groups an ambiguous glyph split found). */
+  readonly details: Record<string, unknown> | undefined;
 
-  constructor(code: ErrorCode, message: string, hint?: string) {
+  constructor(code: ErrorCode, message: string, hint?: string, details?: Record<string, unknown>) {
     super(message);
     this.name = 'MarkiloError';
     this.code = code;
     this.hint = hint;
+    this.details = details;
   }
 }
 

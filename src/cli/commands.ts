@@ -18,7 +18,7 @@ import {
 } from '../construct/vary.js';
 import { MarkiloError } from '../core/errors.js';
 import { isDir, nowIso, readJson, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
-import { isSlug, portableRelative, realExisting, slugify } from '../core/paths.js';
+import { isSlug, portableRelative, realExisting, resolveInsideReal, slugify } from '../core/paths.js';
 import type {
   BrandRole,
   Brief,
@@ -33,6 +33,16 @@ import { validateBrief } from '../core/validate.js';
 import { Workspace, withBrandLock } from '../core/workspace.js';
 import { addFont, searchFonts } from '../design/font-catalog.js';
 import { fontInfo, listFonts, loadBundledFace, loadFontFile } from '../design/fonts.js';
+import {
+  assembleWord,
+  drawnGlyph,
+  type GlyphSet,
+  glyphSet,
+  glyphSvg,
+  hasWordMetrics,
+  splitGlyphs,
+  withWordMetrics,
+} from '../design/glyphs.js';
 import { composeLockup } from '../design/lockup.js';
 import { generatePalette } from '../design/palette.js';
 import {
@@ -146,6 +156,8 @@ function groundColourWarnings(w: Workspace, brand: string, id: string): string[]
   return out;
 }
 
+/** A word without data-baseline / data-cap-height: composeLockup has to assume its ink box is the cap box. */
+const NO_BASELINE = 'word has no baseline; lockups will guess its position — run `family glyphs` on it';
 const brandOpt = { brand: { type: 'string', short: 'b', description: 'Brand slug' } } as const;
 const pos = (c: RunContext, i: number, label: string): string => {
   const v = c.positionals[i];
@@ -2388,6 +2400,7 @@ export const COMMANDS: CommandSpec[] = [
       const files: string[] = [];
       const notes: string[] = [];
       const critiqueElsewhere: Record<string, string[]> = {};
+      const warnings: string[] = [];
       // The letter a concept carries is its own, so one proposal alone keeps the letter the board gave it.
       const roundMates = (r?: number) => all.filter((x) => r !== undefined && x.round === r);
       const letterOf = (cpt: Concept): string =>
@@ -2450,6 +2463,7 @@ export const COMMANDS: CommandSpec[] = [
           }
         }
         const lockup = read(cpt, cpt.files.lockupHorizontal);
+        if (wordmark && !hasWordMetrics(wordmark)) warnings.push(`${cpt.id}: the ${NO_BASELINE}`);
         // The user chose the main symbol at small sizes: show what export will draw.
         const small = cpt.smallSizes === 'main' ? undefined : read(cpt, cpt.files.small);
         const input: ProposalInput = {
@@ -2536,6 +2550,7 @@ export const COMMANDS: CommandSpec[] = [
         ...(Object.keys(compare).length ? { compare } : {}),
         missing,
         ...(notes.length ? { notes } : {}),
+        ...(warnings.length ? { warnings } : {}),
         next: missing.length
           ? 'Complete what is missing, then render again.'
           : `Read the board, then open the gallery (markilo gallery --serve) for the user's decision.`,
@@ -2874,10 +2889,15 @@ export const COMMANDS: CommandSpec[] = [
     options: { master: { type: 'boolean', description: 'Strict rules for master files' } },
     async run(c) {
       if (!c.positionals.length) throw new MarkiloError('USAGE', 'Give at least one SVG file.');
-      const results = c.positionals.map((p) => ({
-        file: p,
-        ...lintSvg(readText(file(c, p)), { master: c.bool('master') }),
-      }));
+      const results = c.positionals.map((p) => {
+        const src = readText(file(c, p));
+        const r = lintSvg(src, { master: c.bool('master') });
+        // A word (role wordmark, or a wordmark file) without metrics: lockups would guess where it stands.
+        const role = /data-markilo-role="([^"]*)"/.exec(src)?.[1];
+        if ((role === 'wordmark' || /wordmark/i.test(basename(p))) && !hasWordMetrics(src))
+          r.issues.push({ rule: 'word-baseline', severity: 'warning', message: `The ${NO_BASELINE}.` });
+        return { file: p, ...r };
+      });
       return { ok: results.every((r) => r.ok), results };
     },
   },
@@ -3539,6 +3559,159 @@ export const COMMANDS: CommandSpec[] = [
         width: Math.round(l.width),
         height: Math.round(l.height),
         clearSpace: l.clearSpace,
+      };
+    },
+  },
+  {
+    name: 'family glyphs',
+    summary:
+      "Split a family member's custom-drawn word (a reference or an SVG file) into one measured glyph per letter under work/family/glyphs/<ref>/: cap height, baseline, overshoot, stems, bars, sidebearings and terminals, in units where the cap height is 100. The reference itself is never edited.",
+    usage: 'family glyphs --brand <slug> --ref <reference id | svg path> --text <letters> [--part word|auto]',
+    options: {
+      ...brandOpt,
+      ref: { type: 'string', description: 'Reference id (see: markilo reference list) or an SVG file' },
+      text: { type: 'string', description: 'The letters of the word, one per glyph, left to right' },
+      part: {
+        type: 'string',
+        description:
+          'auto (default: a lockup loses the part that is not the word) or word (the file is a word)',
+      },
+    },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      w.brand(slug);
+      const part = c.str('part') ?? 'auto';
+      if (part !== 'auto' && part !== 'word') throw new MarkiloError('USAGE', '--part must be word or auto.');
+      const refArg = c.req('ref');
+      const known = readReferences(w, slug).references.find((r) => r.id === refArg);
+      const src = known ? resolveInsideReal(w.referencesDir(slug), known.file) : file(c, refArg);
+      if (!existsSync(src))
+        throw new MarkiloError(
+          'NOT_FOUND',
+          `No reference or file "${refArg}".`,
+          'Give a reference id (markilo reference list) or the path of an SVG.',
+        );
+      if (extname(src).toLowerCase() !== '.svg')
+        throw new MarkiloError(
+          'INVALID_INPUT',
+          'family glyphs reads SVG outlines; this reference is an image.',
+        );
+      const ref = known?.id ?? slugify(basename(src, extname(src)));
+      const svg = readText(src);
+      const split = await splitGlyphs(svg, c.req('text'), { part });
+      const familyDir = join(w.brandDir(slug), 'work', 'family');
+      const dir = join(familyDir, 'glyphs', ref);
+      const set = glyphSet(ref, portableRelative(w.brandDir(slug), src), split);
+      for (const g of set.glyphs) writeGenerated(join(dir, g.file), glyphSvg(g, set.fill));
+      writeJson(join(dir, 'glyphs.json'), set);
+      // Lockups place a symbol by the word's baseline: a word without one gets a measured copy (never the original).
+      const word = hasWordMetrics(svg) ? undefined : join(familyDir, `${ref}-word.svg`);
+      if (word) writeGenerated(word, withWordMetrics(svg, split.capHeight, split.baseline));
+      return {
+        ref,
+        text: set.text,
+        capHeight: set.capHeight,
+        baseline: set.baseline,
+        overshoot: set.overshoot,
+        stem: set.stem,
+        bar: set.bar,
+        terminals: set.terminals,
+        glyphs: set.glyphs.map(({ char, file, advance, left, right, stem, bar, terminals }) => ({
+          char,
+          file,
+          advance,
+          left,
+          right,
+          stem,
+          bar,
+          terminals,
+        })),
+        dir,
+        ...(word ? { word } : {}),
+        ...(set.dropped.length ? { dropped: set.dropped } : {}),
+      };
+    },
+  },
+  {
+    name: 'family word',
+    summary:
+      'Assemble a new word from family glyphs (family glyphs) and drawn letters: a taken run keeps its own spacing; between runs and single letters the gap is the mean of the two sidebearings plus --tracking. The word records its baseline and cap height for lockups; letters with no source get a grey box and are listed in missing.',
+    usage:
+      'family word --brand <slug> --text <WORD> --take <ref>:<LETTERS>[,<ref>:<LETTERS>…] [--draw <char>=<file.svg>…] [--tracking <units>] [-o work/family/wordmark.svg] [--force]',
+    options: {
+      ...brandOpt,
+      text: { type: 'string', description: 'The new word' },
+      take: {
+        type: 'string',
+        multiple: true,
+        description:
+          'ref:LETTERS — a run of letters from a reference split with family glyphs (repeat or comma-separate)',
+      },
+      draw: {
+        type: 'string',
+        multiple: true,
+        description: 'char=file.svg — a letter drawn at cap 100, baseline 0 (repeat)',
+      },
+      tracking: {
+        type: 'string',
+        description: 'Extra space between runs and letters, in cap units (cap = 100)',
+      },
+      out: { type: 'string', short: 'o', description: 'Output SVG (default: work/family/wordmark.svg)' },
+      force: { type: 'boolean', description: 'Overwrite -o' },
+    },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      w.brand(slug);
+      const familyDir = join(w.brandDir(slug), 'work', 'family');
+      const takes = c.list('take').map((t) => {
+        const i = t.indexOf(':');
+        const ref = t.slice(0, i);
+        const letters = t.slice(i + 1);
+        if (i < 1 || !letters || !isSlug(ref))
+          throw new MarkiloError('USAGE', `--take "${t}" must be <ref>:<LETTERS>.`);
+        const path = join(familyDir, 'glyphs', ref, 'glyphs.json');
+        if (!existsSync(path))
+          throw new MarkiloError(
+            'NOT_FOUND',
+            `No glyphs for "${ref}".`,
+            `Split the word first: markilo family glyphs --brand ${slug} --ref ${ref} --text <letters>.`,
+          );
+        return { set: readJson<GlyphSet>(path), letters };
+      });
+      const drawn = await Promise.all(
+        c.list('draw').map((d) => {
+          const i = d.indexOf('=');
+          const ch = d.slice(0, i);
+          if (i < 1 || [...ch].length !== 1 || !d.slice(i + 1))
+            throw new MarkiloError('USAGE', `--draw "${d}" must be <char>=<file.svg>.`);
+          return drawnGlyph(readText(file(c, d.slice(i + 1))), ch);
+        }),
+      );
+      if (!takes.length && !drawn.length)
+        throw new MarkiloError('USAGE', 'Give at least one --take or --draw.');
+      const r = await assembleWord({
+        text: c.req('text'),
+        takes,
+        drawn,
+        ...(c.num('tracking') !== undefined ? { tracking: c.num('tracking')! } : {}),
+      });
+      const out = c.str('out') ? file(c, c.str('out')!) : join(familyDir, 'wordmark.svg');
+      // The default file is generated and rewritten freely; a path the user names is protected unless --force.
+      if (c.str('out')) writeFileSafe(out, r.svg, { force: c.bool('force') });
+      else writeGenerated(out, r.svg);
+      return {
+        out,
+        text: c.req('text'),
+        capHeight: 100,
+        baseline: 0,
+        width: r.width,
+        letters: r.letters,
+        missing: r.missing,
+        ...(r.missing.length
+          ? { next: `Draw ${r.missing.join(', ')} at cap 100, baseline 0 and pass --draw <char>=<file.svg>.` }
+          : {}),
       };
     },
   },

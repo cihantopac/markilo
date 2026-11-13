@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 290 70">
+  <title>Nimbra (synthetic test word: cap 100, stem 14, bar 12 in drawing units)</title>
+  <g transform="matrix(0.5 0 0 0.5 10 10)" fill="#1b2140">
+    <g transform="translate(0 0)">
+      <path d="M0 0H14V100H0Z"/>
+      <rect x="66" y="0" width="14" height="100"/>
+      <polygon points="0,0 14,0 80,100 66,100"/>
+      <polygon points="100,24 120,24 117,62 120,100 100,100 103,62"/>
+      <circle cx="110" cy="8" r="8"/>
+    </g>
+    <g transform="translate(140 0)">
+      <rect x="0" y="0" width="14" height="100"/>
+      <rect x="86" y="0" width="14" height="100"/>
+      <polygon points="0,0 14,0 57,100 43,100"/>
+      <polygon points="86,0 100,0 57,100 43,100"/>
+    </g>
+    <g transform="matrix(2 0 0 2 260 0)">
+      <path fill-rule="evenodd" d="M0 0H32.5L37.5 5V22.5L35 25L37.5 27.5V45L32.5 50H0Z M7 6H30.5V22H7Z M7 28H30.5V44H7Z"/>
+    </g>
+    <path fill-rule="evenodd" d="M355 0H420L430 10V45L420 55H400L430 100H414L386 55H369V100H355Z M369 12H416V43H369Z"/>
+    <g transform="rotate(180 490 50)">
+      <path fill-rule="evenodd" d="M530 0L497 100H483L450 0H464L475 33H505L516 0Z M500 45H480L490 75Z"/>
+    </g>
+  </g>
+</svg>
