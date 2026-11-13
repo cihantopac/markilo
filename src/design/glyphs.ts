@@ -882,6 +882,8 @@ export interface AssembleInput {
   drawn: DrawnGlyph[];
   /** Extra space between blocks and single letters, in cap units. */
   tracking?: number;
+  /** The colour of the word (default #111111, never inherited from the reference word). */
+  fill?: string;
 }
 
 export interface AssembledWord {
@@ -982,7 +984,7 @@ export async function assembleWord(input: AssembleInput): Promise<AssembledWord>
         };
   });
   const tracking = input.tracking ?? 0;
-  const fill = input.takes[0]?.set.fill ?? '#111111';
+  const fill = input.fill ?? '#111111';
   const letters: AssembledWord['letters'] = [];
   const marks: string[] = [];
   let prev: { end: number; right: number } | undefined;

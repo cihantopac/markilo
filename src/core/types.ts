@@ -157,6 +157,8 @@ export interface Concept {
   semantics: string[];
   construction?: string;
   palette: ConceptPalette;
+  /** Colours that were once a palette role and were replaced (#rrggbb, deduped): a master still using one is stale. */
+  paletteHistory?: string[];
   typography?: {
     fontId: string;
     weight: number;
