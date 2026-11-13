@@ -39,7 +39,9 @@ import {
   type GlyphSet,
   glyphSet,
   glyphSvg,
+  glyphWarnings,
   hasWordMetrics,
+  sourceStems,
   splitGlyphs,
   withWordMetrics,
   wordOnlyCopy,
@@ -3659,6 +3661,7 @@ export const COMMANDS: CommandSpec[] = [
           terminals,
         })),
         dir,
+        ...(glyphWarnings(split.glyphs, part).length ? { warnings: glyphWarnings(split.glyphs, part) } : {}),
         ...(set.fillSubstituted
           ? { notes: ['The word is not painted with a literal colour; #111111 was used in the glyph files.'] }
           : {}),
@@ -3731,6 +3734,7 @@ export const COMMANDS: CommandSpec[] = [
         drawn,
         ...(c.num('tracking') !== undefined ? { tracking: c.num('tracking')! } : {}),
       });
+      const { sources, warnings } = sourceStems(takes);
       const out = c.str('out') ? file(c, c.str('out')!) : join(familyDir, 'wordmark.svg');
       // The default file is generated and rewritten freely; a path the user names is protected unless --force.
       if (c.str('out')) writeFileSafe(out, r.svg, { force: c.bool('force') });
@@ -3743,6 +3747,8 @@ export const COMMANDS: CommandSpec[] = [
         width: r.width,
         letters: r.letters,
         missing: r.missing,
+        sources,
+        ...(warnings.length ? { warnings } : {}),
         ...(r.missing.length
           ? { next: `Draw ${r.missing.join(', ')} at cap 100, baseline 0 and pass --draw <char>=<file.svg>.` }
           : {}),

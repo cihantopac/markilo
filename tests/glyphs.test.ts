@@ -4,8 +4,12 @@ import { MarkiloError } from '../src/core/errors.js';
 import {
   assembleWord,
   drawnGlyph,
+  type GlyphInfo,
+  type GlyphSet,
   glyphSet,
+  glyphWarnings,
   hasWordMetrics,
+  sourceStems,
   splitGlyphs,
   wordMetrics,
   wordOnlyCopy,
@@ -181,5 +185,60 @@ describe('family word', () => {
     const [sym, wm] = m as [number[], number[]];
     // The symbol (100 units tall in its own box) stands on the word's baseline (y = 0 in the word).
     expect(sym[5]! + 100 * sym[3]!).toBeCloseTo(wm[5]!, 1);
+  });
+});
+
+describe('family glyph checks', () => {
+  const g = (char: string, advance: number, left = 10, right = 10, stem: number | null = 14): GlyphInfo => ({
+    char,
+    d: '',
+    x: 0,
+    width: advance - 10,
+    top: -100,
+    bottom: 0,
+    left,
+    right,
+    advance,
+    stem,
+    bar: 12,
+    terminals: 'flat',
+    overshoot: { above: 0, below: 0 },
+  });
+
+  it('warns about a merged circle and a wide sidebearing', () => {
+    const w = glyphWarnings([g('N', 80), g('O', 163), g('V', 80, 51, 10), g('A', 85)], 'auto');
+    expect(w).toHaveLength(2);
+    expect(w[0]).toMatch(/^O: advance 163/);
+    expect(w[0]).toContain('--part word');
+    expect(w[1]).toMatch(/^V: left sidebearing 51/);
+    expect(glyphWarnings([g('N', 80), g('O', 163), g('A', 85), g('I', 80)], 'word')[0]).not.toContain(
+      '--part word',
+    );
+    expect(glyphWarnings([g('N', 90), g('I', 40), g('A', 95)], 'auto')).toEqual([]);
+  });
+
+  it('reports stems per source and warns when they differ by over 15 %', () => {
+    const set = (ref: string, stem: number): GlyphSet =>
+      ({
+        ref,
+        text: 'OK',
+        stem,
+        bar: 12,
+        glyphs: [g('O', 90, 10, 10, stem), g('K', 90, 10, 10, stem)],
+      }) as GlyphSet;
+    const r = sourceStems([
+      { set: set('parent', 12.6), letters: 'O' },
+      { set: set('sibling', 17), letters: 'K' },
+    ]);
+    expect(r.sources).toEqual([
+      { ref: 'parent', letters: 'O', stem: 12.6, bar: 12 },
+      { ref: 'sibling', letters: 'K', stem: 17, bar: 12 },
+    ]);
+    expect(r.warnings).toEqual(['stems differ between parent (12.6) and sibling (17) — 26 %']);
+    const close = sourceStems([
+      { set: set('a', 14), letters: 'O' },
+      { set: set('b', 15), letters: 'K' },
+    ]);
+    expect(close.warnings).toEqual([]);
   });
 });
