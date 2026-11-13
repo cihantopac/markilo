@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { type CostLog, costSummary } from '../src/report/cost.js';
+import { type CostLog, costSummary, parsePlan, planEstimate } from '../src/report/cost.js';
 import { tmp } from './helpers.js';
 
 const bin = join(__dirname, '..', 'plugin', 'dist', 'markilo.mjs');
@@ -249,5 +249,38 @@ describe('cost: what it measures', () => {
     expect('minutesIncomplete' in s).toBe(false);
     expect('agents' in s).toBe(false);
     expect(s.phases.map((p) => p.phase)).toEqual(['explore', 'refine']);
+  });
+});
+
+describe('cost --plan', () => {
+  const plan = parsePlan('explore:3,develop:1,critic:1');
+  const agent = (phase: 'explore' | 'refine', name: string, minutes: number, usd: number) => ({
+    phase,
+    at: '',
+    agent: name,
+    part: 1,
+    minutes,
+    usd,
+  });
+  it("plan estimate uses defaults, then this brand's history", () => {
+    const d = planEstimate(log([]), plan);
+    expect(d.source).toBe('defaults');
+    expect(d.estimate.agentMinutes).toEqual([3 * 10 + 12 + 4, 3 * 16 + 20 + 8]);
+    expect(d.estimate.wallMinutes).toEqual([10 + 12 + 4, 16 + 20 + 8]);
+    // One recorded explore agent is not enough history.
+    expect(planEstimate(log([agent('explore', 'a', 30, 4)]), plan).source).toBe('defaults');
+    const h = planEstimate(log([agent('explore', 'a', 30, 4), agent('explore', 'b', 40, 5)]), plan);
+    expect(h.source).toBe('mixed');
+    expect(h.kinds[0]).toMatchObject({ kind: 'explore', perAgentMinutes: [30, 40] });
+    expect(h.estimate.agentMinutes).toEqual([3 * 30 + 12 + 4, 3 * 40 + 20 + 8]);
+    expect(h.estimate.wallMinutes).toEqual([30 + 12 + 4, 40 + 20 + 8]);
+    expect(h.estimate.usd).toEqual([13.8, 18.1]);
+  });
+  it('plan says whether it fits the budget', () => {
+    expect(planEstimate(log([]), plan).fits).toBe(true);
+    const tight = planEstimate({ ...log([]), budgetUsd: 5, budgetMinutes: 40 }, plan);
+    expect(tight.fits).toBe(false);
+    expect(tight.shortfall).toEqual({ usd: 5.6, agentMinutes: 36 });
+    expect(() => parsePlan('paint:2')).toThrow(/Unknown agent kind/);
   });
 });
