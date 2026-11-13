@@ -14,7 +14,8 @@
       "!bench/results",
       "!branding-next",
       "!**/*.png",
-      "!.superpowers"
+      "!.superpowers",
+      "!.claude"
     ]
   },
   "formatter": {
