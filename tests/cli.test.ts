@@ -265,12 +265,17 @@ describe('cli (bundled)', () => {
     );
     ws.saveConcept({ ...fold, id: 'fold-b', files: { symbol: 'symbol.svg' } });
     const { critique: _c, blind: _b, judgment: _j, ...bare } = fold;
-    ws.saveConcept(bare as typeof fold);
+    ws.saveConcept({ ...bare, status: 'draft' } as typeof fold);
+    // At explore time (draft) the hint is noise: only the pointer stays.
+    const draft = JSON.parse(run(['proposals', '--brand', 'nimbra', '--concepts', 'fold'], cwd).stdout);
+    expect(draft.critiqueElsewhere).toEqual({ fold: ['fold-b'] });
+    expect((draft.warnings ?? []).join(' ')).not.toMatch(/not-reviewed/);
+    ws.saveConcept({ ...bare, status: 'shortlisted' } as typeof fold);
     const r = run(['proposals', '--brand', 'nimbra', '--concepts', 'fold'], cwd);
     expect(r.status, r.stderr).toBe(0);
     const out = JSON.parse(r.stdout);
     expect(out.critiqueElsewhere).toEqual({ fold: ['fold-b'] });
-    expect(out.notes.join(' ')).toMatch(/not-reviewed.*fold-b/);
+    expect(out.warnings.join(' ')).toMatch(/not-reviewed.*fold-b/);
   }, 60_000);
   it('family glyphs and family word build a word with a baseline; proposals warns for a word without one', () => {
     const { ws, dir: cwd } = synthBrand();
@@ -292,6 +297,20 @@ describe('cli (bundled)', () => {
     ]);
     expect(existsSync(join(g.dir, 'glyphs.json'))).toBe(true);
     expect(readFileSync(g.word, 'utf8')).toMatch(/data-baseline="60"/);
+    // A lockup's measured copy holds the word only: the symbol circle is gone.
+    const l = ok([
+      'family',
+      'glyphs',
+      '--brand',
+      'nimbra',
+      '--ref',
+      fixture('glyphs/nimbra-lockup.svg'),
+      '--text',
+      'NIMBRA',
+    ]);
+    const lockCopy = readFileSync(l.word, 'utf8');
+    expect(lockCopy).toMatch(/data-baseline="70"/);
+    expect(lockCopy).not.toContain('<circle');
     const bad = run(['family', 'glyphs', '--brand', 'nimbra', '--ref', wordFile, '--text', 'NIMBR'], cwd);
     expect(bad.status).not.toBe(0);
     expect(JSON.parse(bad.stderr).error.groups).toHaveLength(6);

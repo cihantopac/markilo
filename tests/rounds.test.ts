@@ -614,6 +614,25 @@ describe('round letters under concurrency', () => {
     expect(ok(['proposals', '--brand', 'tidepool'], cwd).letterConflicts).toBeUndefined();
   });
 
+  it('--letter is checked against the whole round', () => {
+    const cwd = proposals(2, ['first', 'second']);
+    const w = Workspace.locate(cwd);
+    const a = w.concept('tidepool', 'first');
+    const b = w.concept('tidepool', 'second');
+    a.createdAt = '2026-01-01T00:00:00.000Z';
+    b.createdAt = '2026-01-02T00:00:00.000Z';
+    delete a.letter; // written by 1.3.0: no letter of its own
+    b.letter = 'A';
+    w.saveConcept(a);
+    w.saveConcept(b);
+    // The earlier concept may take A (the later one then moves on); the later one may not take what the earlier shows.
+    ok(['concept', 'update', '--brand', 'tidepool', '--concept', 'first', '--letter', 'A'], cwd);
+    expect(w.concept('tidepool', 'first').letter).toBe('A');
+    const r = run(['concept', 'update', '--brand', 'tidepool', '--concept', 'second', '--letter', 'A'], cwd);
+    expect(r.status).not.toBe(0);
+    expect(existsSync(join(cwd, 'brand', 'brands', 'tidepool', '.lock'))).toBe(false);
+  });
+
   it('a stale lock is replaced', () => {
     const cwd = proposals(0);
     const lock = join(cwd, 'brand', 'brands', 'tidepool', '.lock');

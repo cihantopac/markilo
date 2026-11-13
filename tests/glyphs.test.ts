@@ -1,7 +1,15 @@
 import { readFileSync } from 'node:fs';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { MarkiloError } from '../src/core/errors.js';
-import { assembleWord, drawnGlyph, glyphSet, splitGlyphs, wordMetrics } from '../src/design/glyphs.js';
+import {
+  assembleWord,
+  drawnGlyph,
+  glyphSet,
+  hasWordMetrics,
+  splitGlyphs,
+  wordMetrics,
+  wordOnlyCopy,
+} from '../src/design/glyphs.js';
 import { composeLockup } from '../src/design/lockup.js';
 import { ensurePathKit } from '../src/geom/pathkit.js';
 import { fixture } from './helpers.js';
@@ -69,6 +77,30 @@ describe('family glyphs', () => {
     await expect(splitGlyphs(lockup(), 'NIMBRA', { part: 'word' })).rejects.toThrow(/7 groups/);
   });
 
+  it("a lockup's measured copy holds only the word", async () => {
+    const r = await splitGlyphs(lockup(), 'NIMBRA');
+    const copy = await wordOnlyCopy(lockup(), 'NIMBRA', r.fill);
+    expect(hasWordMetrics(copy)).toBe(true);
+    expect(copy).toContain(`data-baseline="${r.baseline}"`);
+    expect(copy).not.toContain('<circle');
+    expect(copy).not.toContain('#3b5bdb');
+    const again = await splitGlyphs(copy, 'NIMBRA', { part: 'word' });
+    expect(again.glyphs).toHaveLength(6);
+    expect(again.dropped).toEqual([]);
+    // The viewBox starts at the word, not at the symbol (which sits at x < 90).
+    const vb = /viewBox="([-\d.]+)/.exec(copy)!;
+    expect(Number(vb[1])).toBeGreaterThan(90);
+  });
+
+  it('a gradient-painted word falls back to a literal colour', async () => {
+    const svg = word().replace(/fill="#1b2140"/g, 'fill="url(#g)"');
+    const r = await splitGlyphs(svg, 'NIMBRA');
+    expect(r.fill).toBe('#111111');
+    expect(r.fillSubstituted).toBe(true);
+    expect(word()).toContain('#1b2140');
+    expect((await splitGlyphs(word(), 'NIMBRA')).fillSubstituted).toBeUndefined();
+  });
+
   it('measures a word without a text for other commands', async () => {
     const m = await wordMetrics(word());
     expect(m.capHeight).toBeCloseTo(50, 1);
@@ -105,6 +137,21 @@ describe('family word', () => {
     // L carries no sidebearings: it gets the word's median (20); B's left is 20; plus tracking.
     expect(r.letters[1]!.x - (r.letters[0]!.x + 60)).toBeCloseTo(20 + 4, 1);
     expect(r.svg).toContain('data-char="L"');
+  });
+
+  it('sidebearings of a drawn letter scale with its cap height', async () => {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 800" data-cap-height="700" data-baseline="700" data-left="70" data-right="140"><path d="M0 0H100V700H0Z"/></svg>`;
+    const g = await drawnGlyph(svg, 'I');
+    expect(g.left).toBeCloseTo(10, 1);
+    expect(g.right).toBeCloseTo(20, 1);
+  });
+
+  it('a <use> fan-out is refused', async () => {
+    let defs = '<g id="g0"><rect width="10" height="10"/></g>';
+    for (let i = 1; i <= 20; i++)
+      defs += `<g id="g${i}"><use href="#g${i - 1}"/><use href="#g${i - 1}"/></g>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${defs}<use href="#g20"/></svg>`;
+    await expect(splitGlyphs(svg, 'A')).rejects.toThrow(/more than 5000 elements/);
   });
 
   it('missing letters are listed', async () => {

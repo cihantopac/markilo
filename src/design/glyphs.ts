@@ -180,12 +180,16 @@ function viewportMatrix(el: XmlElement): Matrix {
  * Every filled shape of a (sanitized) SVG with its nested transforms applied, in the root's user units. A rect that
  * covers most of the artboard behind other shapes (a background) is left out.
  */
+const MAX_VISITS = 5000;
+
 function flatten(root: XmlElement): Shape[] {
   const ids = new Map<string, XmlElement>();
   walk(root, (el) => {
     if (el.attrs.id) ids.set(el.attrs.id, el);
   });
   const raw: { d: string; rule: 'evenodd' | 'nonzero'; fill: string; m: Matrix; rect: boolean }[] = [];
+  // <use> can reference groups that reference groups: bound the total work so a hostile file cannot hang the walk.
+  let visits = 0;
   const visit = (
     el: XmlElement,
     m: Matrix,
@@ -195,6 +199,12 @@ function flatten(root: XmlElement): Shape[] {
     viaUse = false,
   ) => {
     if (depth > 64) return;
+    if (++visits > MAX_VISITS)
+      throw new MarkiloError(
+        'INVALID_INPUT',
+        `The SVG expands to more than ${MAX_VISITS} elements (nested <use> references).`,
+        'Flatten the drawing (outline it, remove repeated <use> chains) and try again.',
+      );
     const name = localName(el.name).toLowerCase();
     // A <symbol> reached through <use> is drawn; met while walking the tree it is a definition only.
     if (!isRoot && NOT_DRAWN.has(name) && !(viaUse && name === 'symbol')) return;
@@ -406,12 +416,17 @@ export interface GlyphSplit {
   bar: number | null;
   terminals: Terminals;
   fill: string;
+  /** True when the word's paint was not a literal colour (gradient, currentColor, class) and #111111 was used. */
+  fillSubstituted?: true;
   glyphs: GlyphInfo[];
   /** Parts of a lockup that are not the word (source units). */
   dropped: { x0: number; x1: number; y0: number; y1: number }[];
 }
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
+
+const LITERAL_COLOR =
+  /^(#[0-9a-f]{3,8}|(rgb|hsl)a?\([^)]*\)|(?!none$|transparent$|currentcolor$|inherit$|context-)[a-z]+)$/i;
 
 interface Run {
   a: number;
@@ -627,7 +642,12 @@ export async function splitGlyphs(
     const cx = sh.box.x + sh.box.w / 2;
     if (cx >= x0 && cx <= x1) fills.set(sh.fill, (fills.get(sh.fill) ?? 0) + 1);
   }
-  const fill = [...fills.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? '#111111';
+  // Glyph files have no <defs> or stylesheet: only a literal colour survives (not url(#…), currentColor, var()).
+  const literal = [...fills.entries()]
+    .filter(([c]) => LITERAL_COLOR.test(c.trim()))
+    .sort((a, b) => b[1] - a[1]);
+  const fill = literal[0]?.[0] ?? '#111111';
+  const fillSubstituted = fills.size > 0 && !literal.length;
   return {
     text: chars.join(''),
     capHeight: r2(baseline - capTop),
@@ -637,6 +657,7 @@ export async function splitGlyphs(
     bar: bars.length ? r2(median(bars)) : null,
     terminals: flared * 2 > glyphs.length ? 'flared' : 'flat',
     fill,
+    ...(fillSubstituted ? { fillSubstituted: true as const } : {}),
     glyphs,
     dropped: loc.dropped.map((g) => ({ x0: r2(g.x0), x1: r2(g.x1), y0: r2(g.y0), y1: r2(g.y1) })),
   };
@@ -701,6 +722,29 @@ export function withWordMetrics(svg: string, capHeight: number, baseline: number
   return `${serializeXml(root)}\n`;
 }
 
+/**
+ * A copy of a lockup that holds only the word (the shapes `--part auto` kept), cropped to the word, with the measured
+ * baseline and cap height on its root. Source units are kept; use it where a word without its symbol is needed.
+ */
+export async function wordOnlyCopy(svg: string, text: string, fill: string): Promise<string> {
+  const chars = [...text.replace(/\s+/g, '')];
+  const loc = await locate(svg, 'auto', chars.length);
+  const groups = mergeTo(loc.groups, chars.length);
+  const { capTop, baseline } = capAndBaseline(groups);
+  const x0 = Math.min(...groups.map((g) => g.x0));
+  const x1 = Math.max(...groups.map((g) => g.x1));
+  const y0 = Math.min(...groups.map((g) => g.y0));
+  const y1 = Math.max(...groups.map((g) => g.y1));
+  const d = groups.flatMap((g) => g.parts.map((p) => p.d)).join('');
+  return [
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${fmt(r2(x0))} ${fmt(r2(y0))} ${fmt(r2(x1 - x0))} ${fmt(r2(y1 - y0))}"`,
+    `  data-baseline="${fmt(r2(baseline))}" data-cap-height="${fmt(r2(baseline - capTop))}">`,
+    `  <path fill="${escapeAttr(fill)}" fill-rule="evenodd" d="${d}"/>`,
+    '</svg>',
+    '',
+  ].join('\n');
+}
+
 export const hasWordMetrics = (svg: string): boolean => {
   try {
     const root = parseXml(svg);
@@ -749,8 +793,11 @@ export async function drawnGlyph(svg: string, char: string): Promise<DrawnGlyph>
     const v = Number.parseFloat(root.attrs[k] ?? '');
     return Number.isFinite(v) ? v : undefined;
   };
-  const left = side('data-left');
-  const right = side('data-right');
+  // Sidebearings are given in the drawing's units, like the outline: scale them with it.
+  const leftRaw = side('data-left');
+  const rightRaw = side('data-right');
+  const left = leftRaw === undefined ? undefined : r2(leftRaw * s);
+  const right = rightRaw === undefined ? undefined : r2(rightRaw * s);
   return {
     char,
     d,

@@ -42,6 +42,7 @@ import {
   hasWordMetrics,
   splitGlyphs,
   withWordMetrics,
+  wordOnlyCopy,
 } from '../design/glyphs.js';
 import { composeLockup } from '../design/lockup.js';
 import { generatePalette } from '../design/palette.js';
@@ -1720,14 +1721,25 @@ export const COMMANDS: CommandSpec[] = [
           throw new MarkiloError('USAGE', '--letter applies to a concept of an exploration round.');
         if (!/^[A-Z]+$/.test(wantLetter))
           throw new MarkiloError('INVALID_INPUT', '--letter must be capital letters, like B.');
-        const others = w.concepts(slug).filter((x) => x.round === cur.round && x.id !== cur.id);
-        const holder = [...roundLetters(others)].find(([, l]) => l === wantLetter)?.[0];
-        if (holder)
-          throw new MarkiloError(
-            'USAGE',
-            `Letter ${wantLetter} is already used by ${holder} in round ${cur.round}.`,
-            'Pick a letter no other concept of the round shows.',
-          );
+        // Check against the whole round (as every other command reads it) and store the letter under the brand lock,
+        // so a `concept new` running at the same time cannot take it in between.
+        withBrandLock(w, slug, () => {
+          const fresh = w.concept(slug, cur.id);
+          const mates = w
+            .concepts(slug)
+            .filter((x) => x.round === cur.round)
+            .map((x) => (x.id === cur.id ? { ...x, letter: wantLetter } : x));
+          const shown = roundLetters(mates);
+          if (shown.get(cur.id) !== wantLetter) {
+            const holder = [...shown].find(([id, l]) => id !== cur.id && l === wantLetter)?.[0];
+            throw new MarkiloError(
+              'USAGE',
+              `Letter ${wantLetter} is already used by ${holder ?? 'another concept'} in round ${cur.round}.`,
+              'Pick a letter no other concept of the round shows.',
+            );
+          }
+          w.saveConcept({ ...fresh, letter: wantLetter });
+        });
         next.letter = wantLetter;
       }
       if (st) {
@@ -2492,7 +2504,9 @@ export const COMMANDS: CommandSpec[] = [
         const gate = gateOf(cpt, currentArt(w, slug, cpt));
         const hint = notReviewedHint(w, slug, cpt.id, gate.status);
         if (hint.elsewhere.length) critiqueElsewhere[cpt.id] = hint.elsewhere;
-        if (hint.warning) notes.push(hint.warning);
+        // Only a concept that has been picked or later is worth the hint at explore time.
+        if (hint.warning && (cpt.status === 'shortlisted' || cpt.status === 'approved'))
+          warnings.push(hint.warning);
         if (gate.status === 'stale')
           notes.push(
             `${cpt.id}: ${STALE_NOTE} — the critic scored an earlier drawing; ask for a fresh look.`,
@@ -2899,7 +2913,13 @@ export const COMMANDS: CommandSpec[] = [
         const r = lintSvg(src, { master: c.bool('master') });
         // A word (role wordmark, or a wordmark file) without metrics: lockups would guess where it stands.
         const role = /data-markilo-role="([^"]*)"/.exec(src)?.[1];
-        if ((role === 'wordmark' || /wordmark/i.test(basename(p))) && !hasWordMetrics(src))
+        // The name rule applies to a concept folder's own files; exported logos carry the role or nothing.
+        const inConcept = /[\\/]concepts[\\/]/.test(file(c, p));
+        const inLogos = /[\\/]logos[\\/]/.test(file(c, p));
+        if (
+          ((role === 'wordmark' && !inLogos) || (inConcept && /wordmark/i.test(basename(p)))) &&
+          !hasWordMetrics(src)
+        )
           r.issues.push({ rule: 'word-baseline', severity: 'warning', message: `The ${NO_BASELINE}.` });
         return { file: p, ...r };
       });
@@ -3612,7 +3632,13 @@ export const COMMANDS: CommandSpec[] = [
       writeJson(join(dir, 'glyphs.json'), set);
       // Lockups place a symbol by the word's baseline: a word without one gets a measured copy (never the original).
       const word = hasWordMetrics(svg) ? undefined : join(familyDir, `${ref}-word.svg`);
-      if (word) writeGenerated(word, withWordMetrics(svg, split.capHeight, split.baseline));
+      if (word)
+        writeGenerated(
+          word,
+          split.dropped.length
+            ? await wordOnlyCopy(svg, c.req('text'), split.fill)
+            : withWordMetrics(svg, split.capHeight, split.baseline),
+        );
       return {
         ref,
         text: set.text,
@@ -3633,6 +3659,9 @@ export const COMMANDS: CommandSpec[] = [
           terminals,
         })),
         dir,
+        ...(set.fillSubstituted
+          ? { notes: ['The word is not painted with a literal colour; #111111 was used in the glyph files.'] }
+          : {}),
         ...(word ? { word } : {}),
         ...(set.dropped.length ? { dropped: set.dropped } : {}),
       };
@@ -3643,7 +3672,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Assemble a new word from family glyphs (family glyphs) and drawn letters: a taken run keeps its own spacing; between runs and single letters the gap is the mean of the two sidebearings plus --tracking. The word records its baseline and cap height for lockups; letters with no source get a grey box and are listed in missing.',
     usage:
-      'family word --brand <slug> --text <WORD> --take <ref>:<LETTERS>[,<ref>:<LETTERS>…] [--draw <char>=<file.svg>…] [--tracking <units>] [-o work/family/wordmark.svg] [--force]',
+      'family word --brand <slug> --text <WORD> --take <ref>:<LETTERS>[,<ref>:<LETTERS>…] [--draw <char>=<file.svg>…] [--tracking <units>] [-o <file.svg>] [--force]',
     options: {
       ...brandOpt,
       text: { type: 'string', description: 'The new word' },
