@@ -81,7 +81,12 @@ import {
   requireCriterion,
   STALE_NOTE,
 } from '../report/gate.js';
-import { buildOriginalityReport, readReferences } from '../report/originality.js';
+import {
+  buildOriginalityReport,
+  nameRiskReasons,
+  readReferences,
+  referenceIndexPath,
+} from '../report/originality.js';
 import { verifyConcept } from '../report/quality.js';
 import { brandKeyOf, brandsOf, officialHostsFrom } from '../report/references.js';
 import { type AppListing, downloadIcon, lookupAndroidApp, searchIosApps } from '../research/appstore.js';
@@ -294,6 +299,27 @@ export const COMMANDS: CommandSpec[] = [
         locked: c.bool('locked'),
       });
       return { brand: b, files: { brief: w.briefPath(b.slug), profile: w.profilePath(b.slug) } };
+    },
+  },
+  {
+    name: 'brand update',
+    summary:
+      "Change a brand's display name (the slug and folder stay). Use it when research finds the name is written differently, e.g. in capitals.",
+    usage: 'brand update --brand <slug> --name <display name>',
+    options: { ...brandOpt, name: { type: 'string', description: 'The name as it is written' } },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      const name = c.req('name').trim();
+      if (!name) throw new MarkiloError('INVALID_INPUT', '--name must not be empty.');
+      const before = w.brand(slug).name;
+      const m = structuredClone(w.manifest);
+      m.brands.find((b) => b.slug === slug)!.name = name;
+      w.saveManifest(m);
+      const brief = w.brief(slug);
+      writeJson(w.briefPath(slug), { ...brief, name });
+      if (before !== name) w.logDecision(slug, 'Name', `Display name changed from "${before}" to "${name}".`);
+      return { brand: slug, name, was: before };
     },
   },
   {
@@ -629,6 +655,7 @@ export const COMMANDS: CommandSpec[] = [
         cachedAssets: r.saved.length,
         ...(r.references.length ? { references: r.references } : {}),
         ...(r.issues.length ? { issues: r.issues } : {}),
+        ...(r.suggest ? { suggest: r.suggest } : {}),
       };
     },
   },
@@ -965,36 +992,88 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'answers',
     summary:
-      'List questions already asked for a brand, or record a new question/answer so it is never asked twice.',
-    usage: 'answers --brand <slug> [--question <text> [--answer <text>]]',
+      'List questions already asked for a brand, or record questions/answers so they are never asked twice. --amend changes an earlier answer; --file records a batch.',
+    usage:
+      'answers --brand <slug> [--question <text> [--answer <text>]] [--amend <Qn> --answer <text>] [--file <json: [{question, answer}]>]',
     options: {
       ...brandOpt,
       question: { type: 'string', description: 'Question asked' },
       answer: { type: 'string', description: 'Answer given' },
+      amend: { type: 'string', description: 'Id of an earlier question (Q1, Q2 …) whose answer changes' },
+      file: { type: 'string', description: 'JSON file: an array of {question, answer} to record at once' },
     },
     async run(c) {
       const w = ws(c);
       const slug = c.req('brand');
       const log = w.answers(slug);
-      const q = c.str('question');
-      if (q) {
+      const recorded: { id: string; question: string; answer: string | null }[] = [];
+      const record = (q: string, answer: string | null) => {
         const existing = log.questions.find(
           (x) => x.question.trim().toLowerCase() === q.trim().toLowerCase(),
         );
-        const answer = c.str('answer') ?? null;
         if (existing) {
           if (answer !== null) Object.assign(existing, { answer, answeredAt: nowIso() });
-        } else
-          log.questions.push({
-            id: `Q${log.questions.length + 1}`,
-            question: q,
-            answer,
-            askedAt: nowIso(),
-            ...(answer !== null ? { answeredAt: nowIso() } : {}),
-          });
-        writeJson(w.answersPath(slug), log);
+          recorded.push({ id: existing.id, question: existing.question, answer: existing.answer });
+          return;
+        }
+        const entry = {
+          id: `Q${log.questions.length + 1}`,
+          question: q,
+          answer,
+          askedAt: nowIso(),
+          ...(answer !== null ? { answeredAt: nowIso() } : {}),
+        };
+        log.questions.push(entry);
+        recorded.push({ id: entry.id, question: q, answer });
+      };
+      const amend = c.str('amend');
+      if (amend) {
+        const answer = c.str('answer');
+        if (answer === undefined) throw new MarkiloError('USAGE', '--amend <Qn> needs --answer <text>.');
+        const target = log.questions.find((x) => x.id.toLowerCase() === amend.trim().toLowerCase());
+        if (!target)
+          throw new MarkiloError(
+            'NOT_FOUND',
+            `No question ${amend} for ${slug}.`,
+            `Known: ${log.questions.map((x) => x.id).join(', ') || '(none)'}.`,
+          );
+        Object.assign(target, { answer, answeredAt: nowIso() });
+        recorded.push({ id: target.id, question: target.question, answer });
       }
-      return log;
+      const batch = c.str('file');
+      if (batch) {
+        const src = file(c, batch);
+        if (!existsSync(src)) throw new MarkiloError('NOT_FOUND', `File not found: ${src}`);
+        let items: unknown;
+        try {
+          items = JSON.parse(readFileSync(src, 'utf8'));
+        } catch {
+          throw new MarkiloError('INVALID_INPUT', `${batch} is not valid JSON.`);
+        }
+        const ok =
+          Array.isArray(items) &&
+          items.length > 0 &&
+          items.every(
+            (x) =>
+              x &&
+              typeof x === 'object' &&
+              typeof x.question === 'string' &&
+              x.question.trim() &&
+              (x.answer === undefined || x.answer === null || typeof x.answer === 'string'),
+          );
+        if (!ok)
+          throw new MarkiloError(
+            'INVALID_INPUT',
+            '--file must be a non-empty JSON array of {"question": "...", "answer": "..."}.',
+          );
+        for (const x of items as { question: string; answer?: string | null }[])
+          record(x.question, x.answer ?? null);
+      }
+      const q = c.str('question');
+      if (q) record(q, c.str('answer') ?? null);
+      if (!amend && !batch && !q) return log;
+      writeJson(w.answersPath(slug), log);
+      return { recorded, count: recorded.length };
     },
   },
   {
@@ -1136,6 +1215,47 @@ export const COMMANDS: CommandSpec[] = [
       });
       const total = readReferences(w, slug).references.length;
       return { added: r.id, duplicate: r.duplicate, total };
+    },
+  },
+  {
+    name: 'reference update',
+    summary: 'Change the category (and notes) of a reference mark without removing and re-adding it.',
+    usage: 'reference update --brand <slug> --id <ref> --category <c> [--notes <text>]',
+    options: {
+      ...brandOpt,
+      id: { type: 'string', description: 'Reference id from "reference list"' },
+      category: { type: 'string', description: REFERENCE_CATEGORIES.join(' | ') },
+      notes: { type: 'string', description: 'Replace the notes' },
+    },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      const category = c.str('category');
+      if (category === undefined && c.str('notes') === undefined)
+        throw new MarkiloError('USAGE', 'Give --category and/or --notes.');
+      if (category && !REFERENCE_CATEGORIES.includes(category as ReferenceCategory))
+        throw new MarkiloError(
+          'INVALID_INPUT',
+          `Unknown --category "${category}".`,
+          `Use one of: ${REFERENCE_CATEGORIES.join(', ')}.`,
+        );
+      const idx = readReferences(w, slug);
+      const ref = idx.references.find((r) => r.id === c.req('id'));
+      if (!ref)
+        throw new MarkiloError(
+          'NOT_FOUND',
+          `No reference "${c.req('id')}".`,
+          'See "markilo reference list".',
+        );
+      const was = ref.category ?? 'direct';
+      if (category) ref.category = category;
+      if (c.str('notes') !== undefined) {
+        // The content hash lives in the notes (duplicate detection): keep it.
+        const hash = /sha256:[0-9a-f]{16}/.exec(ref.notes ?? '')?.[0];
+        ref.notes = [c.str('notes')!.trim(), hash].filter(Boolean).join(' · ');
+      }
+      writeJson(referenceIndexPath(w, slug), idx);
+      return { updated: ref.id, category: ref.category ?? 'direct', was, notes: ref.notes ?? '' };
     },
   },
   {
@@ -1384,7 +1504,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--wordmark <file>] [--symbol <file>] [--small <file>] [--small-sizes small|main] [--wordmark-small <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--semantics "<a>; <b>"] [--show] [--wordmark <file>] [--symbol <file>] [--small <file>] [--small-sizes small|main] [--wordmark-small <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1483,6 +1603,8 @@ export const COMMANDS: CommandSpec[] = [
       idea: { type: 'string', description: 'Proposal: the idea in one short sentence, for the user' },
       strengths: { type: 'string', description: 'Proposal: key strengths, separated by ";"' },
       weaknesses: { type: 'string', description: 'Proposal: honest risks and weaknesses, separated by ";"' },
+      semantics: { type: 'string', description: 'The meanings the mark carries, separated by ";"' },
+      show: { type: 'boolean', description: 'Print the whole updated concept instead of what changed' },
     },
     async run(c) {
       const w = ws(c);
@@ -1549,6 +1671,16 @@ export const COMMANDS: CommandSpec[] = [
           strengths: c.str('strengths') ? items(c.str('strengths')) : (cur.pitch?.strengths ?? []),
           weaknesses: c.str('weaknesses') ? items(c.str('weaknesses')) : (cur.pitch?.weaknesses ?? []),
         };
+      }
+      if (c.str('semantics') !== undefined) {
+        const items = c
+          .str('semantics')!
+          .split(/[;,]/)
+          .map((x) => x.trim())
+          .filter(Boolean);
+        if (!items.length)
+          throw new MarkiloError('INVALID_INPUT', '--semantics needs at least one meaning, e.g. "a; b".');
+        next.semantics = items;
       }
       if (c.str('reads-as'))
         next.readsAs = c
@@ -1710,9 +1842,33 @@ export const COMMANDS: CommandSpec[] = [
           ? `--on-brand ${next.palette.onBrand} is under 3:1 on the tile ${tileGround(next.palette)}; export uses it as given.`
           : undefined,
       ].filter((x): x is string => !!x);
+      if (c.bool('show'))
+        return {
+          ...next,
+          gate,
+          ...(kept.length ? { kept } : {}),
+          ...(faint.length ? { warnings: faint } : {}),
+        };
+      const changed: string[] = [];
+      const differs = (a: unknown, b: unknown) => JSON.stringify(a) !== JSON.stringify(b);
+      const nextRec = next as unknown as Record<string, unknown>;
+      const curRec = cur as unknown as Record<string, unknown>;
+      for (const k of new Set([...Object.keys(curRec), ...Object.keys(nextRec)])) {
+        if (k === 'files' || k === 'palette') {
+          const a = (curRec[k] ?? {}) as Record<string, unknown>;
+          const b = (nextRec[k] ?? {}) as Record<string, unknown>;
+          for (const f of new Set([...Object.keys(a), ...Object.keys(b)]))
+            if (differs(a[f], b[f])) changed.push(`${k}.${f}`);
+        } else if (k !== 'reviewedArt' && differs(curRec[k], nextRec[k])) changed.push(k);
+      }
+      const judged = changed.some((k) =>
+        ['judgment', 'blind', 'critique', 'looks', 'reviews', 'readsAs'].includes(k),
+      );
       return {
-        ...next,
-        gate,
+        id: next.id,
+        status: next.status,
+        changed,
+        ...(judged ? { gate } : {}),
         ...(kept.length ? { kept } : {}),
         ...(faint.length ? { warnings: faint } : {}),
       };
@@ -1825,6 +1981,7 @@ export const COMMANDS: CommandSpec[] = [
         verdict: r.report.verdict,
         visualRisk: r.report.visual.risk,
         nameRisk: r.report.name.risk,
+        nameRiskReasons: nameRiskReasons(r.report.name),
         genericity: r.report.genericity ?? null,
         ...(r.report.family?.length ? { family: r.report.family } : {}),
         report: r.mdPath,
@@ -2250,7 +2407,7 @@ export const COMMANDS: CommandSpec[] = [
         }
       }
       const board =
-        inputs.length > 1
+        inputs.length > 0
           ? join(w.brandDir(slug), 'proposals', `round-${ids.length ? 'custom' : round}.png`)
           : undefined;
       if (board) writeGenerated(board, await renderRoundBoard(inputs));

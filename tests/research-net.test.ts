@@ -244,6 +244,16 @@ describe('name casing', () => {
       seenIn: ['og:site_name', 'json-ld', 'title'],
     });
   });
+  it('suggests the written name when it differs from the recorded one', async () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Tidepool', slug: 'tidepool' });
+    const r = await researchSite(ws, 'tidepool', `${base}/caps`, { ...local, maxPages: 1 });
+    expect(r.suggest).toEqual({ name: 'TIDEPOOL' });
+    ws.addBrand({ name: 'TIDEPOOL', slug: 'caps' });
+    expect(
+      (await researchSite(ws, 'caps', `${base}/caps`, { ...local, maxPages: 1 })).suggest,
+    ).toBeUndefined();
+  });
   it('says nothing when the name is mixed case or the sources disagree', async () => {
     expect((await scanSite(`${base}/mixed`, { ...local, maxPages: 1 })).nameCase).toBeUndefined();
   });

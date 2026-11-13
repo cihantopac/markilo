@@ -30,6 +30,8 @@ export interface SiteResearchResult {
   /** The main chromatic colour of each identity surface that could be read. */
   identityColors: { favicon?: string; headerLogo?: string; ogImage?: string };
   issues: string[];
+  /** The name as the site writes it, when that differs from the name recorded at `brand add`. */
+  suggest?: { name: string };
 }
 
 /** The first clearly coloured (not grey, white or black) colour of a mark. */
@@ -207,5 +209,9 @@ export async function researchSite(
     references,
     identityColors,
     issues,
+    /** The name as the site writes it, when that differs from the name recorded at `brand add`. */
+    ...(scan.nameCase && scan.nameCase.name !== ws.brand(brand).name
+      ? { suggest: { name: scan.nameCase.name } }
+      : {}),
   };
 }

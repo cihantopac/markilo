@@ -267,7 +267,17 @@ describe('cli: critique and research', () => {
       cwd,
     );
     const yes = run(
-      ['concept', 'update', '--brand', 'gate-test', '--concept', 'a', '--present', 'yes:Ready for a client'],
+      [
+        'concept',
+        'update',
+        '--brand',
+        'gate-test',
+        '--concept',
+        'a',
+        '--present',
+        'yes:Ready for a client',
+        '--show',
+      ],
       cwd,
     );
     expect(yes.status, yes.stderr).toBe(0);
@@ -282,6 +292,7 @@ describe('cli: critique and research', () => {
         'a',
         '--judgment',
         'presentable=no:Reads as a bar chart',
+        '--show',
       ],
       cwd,
     );
@@ -300,6 +311,7 @@ describe('cli: critique and research', () => {
         'a',
         '--blind',
         'distinctiveness=6,memorability=6,brandFit=7,craft=6,versatility=7',
+        '--show',
       ],
       cwd,
     );
@@ -334,6 +346,7 @@ describe('cli: critique and research', () => {
         'a',
         '--judgment',
         'brandFit=7:Calm and warm',
+        '--show',
       ],
       cwd,
     );

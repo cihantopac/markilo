@@ -47,6 +47,18 @@ export function readReferences(ws: Workspace, brand: string): ReferenceIndex {
 export type OriginalityVerdict = 'redesign' | 'needs-review' | 'insufficient-evidence' | 'no-conflicts-found';
 export type AssessedRisk = RiskLevel | 'unknown';
 
+/** The comparisons and registry hits that produced the name risk, so "high" always says why. */
+export function nameRiskReasons(name: OriginalityReport['name']): string[] {
+  const out: string[] = [];
+  for (const c of name.comparisons) {
+    if (c.risk === 'low' || c.risk !== name.risk) continue;
+    out.push(`${name.candidate} vs ${c.other} (${c.risk}): ${c.reasons.join(' ') || 'similar name'}`);
+  }
+  for (const c of name.registryConflicts)
+    out.push(`Registry search in ${c.registry} found possibly conflicting marks: ${c.marks.join(', ')}.`);
+  return out.slice(0, 6);
+}
+
 export interface OriginalityReport {
   schema: 'markilo/originality@2';
   brand: string;

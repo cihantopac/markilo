@@ -197,6 +197,7 @@ describe('cli (bundled)', () => {
       'distinctiveness=7,memorability=7,brand-fit=7,craft=7,versatility=7',
       '--present',
       'yes:ready',
+      '--show',
     ]);
     expect(scored.reviewedArt).toMatch(/^[0-9a-f]{64}$/);
     expect(scored.gate.status).toBe('passed');
@@ -452,6 +453,7 @@ describe('cli (bundled)', () => {
         's2',
         '--sketch-notes',
         'keep the gesture',
+        '--show',
       ],
       cwd,
     );
@@ -717,5 +719,155 @@ describe('small fixes found in use (bundled)', () => {
     expect(r.kit.originality.note).toBe(
       "No competitor marks were compared, so this verdict says nothing about similarity. Run research (with the user's OK to use the network) before relying on the mark.",
     );
+  }, 60_000);
+});
+
+describe('cli frictions', () => {
+  const setup = () => {
+    const cwd = tmp();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    ok(['init', '--name', 'Demo']);
+    ok(['brand', 'add', 'Tidepool']);
+    return { cwd, ok };
+  };
+  it('answers amend, batch, and compact write results', () => {
+    const { cwd, ok } = setup();
+    const a = ok(['answers', '--brand', 'tidepool', '--question', 'Who is it for?', '--answer', 'Divers']);
+    expect(a.count).toBe(1);
+    expect(a.recorded[0]).toMatchObject({ id: 'Q1', answer: 'Divers' });
+    expect(a.questions).toBeUndefined();
+    const m = ok(['answers', '--brand', 'tidepool', '--amend', 'Q1', '--answer', 'Snorkellers']);
+    expect(m.recorded[0]).toMatchObject({ id: 'Q1', answer: 'Snorkellers' });
+    writeFileSync(
+      join(cwd, 'batch.json'),
+      JSON.stringify([
+        { question: 'Colours?', answer: 'Blue' },
+        { question: 'Tone?', answer: 'Calm' },
+      ]),
+    );
+    expect(ok(['answers', '--brand', 'tidepool', '--file', 'batch.json']).count).toBe(2);
+    const all = ok(['answers', '--brand', 'tidepool']);
+    expect(all.questions.map((q: { id: string; answer: string }) => `${q.id}:${q.answer}`)).toEqual([
+      'Q1:Snorkellers',
+      'Q2:Blue',
+      'Q3:Calm',
+    ]);
+    expect(run(['answers', '--brand', 'tidepool', '--amend', 'Q9', '--answer', 'x'], cwd).status).not.toBe(0);
+    writeFileSync(join(cwd, 'bad.json'), '{"question":"x"}');
+    const bad = run(['answers', '--brand', 'tidepool', '--file', 'bad.json'], cwd);
+    expect(bad.status).not.toBe(0);
+    expect(bad.stderr).toContain('INVALID_INPUT');
+  }, 60_000);
+  it('concept update sets semantics and prints a compact result unless --show', () => {
+    const { ok } = setup();
+    ok([
+      'concept',
+      'new',
+      '--brand',
+      'tidepool',
+      '--id',
+      'p1',
+      '--title',
+      'One',
+      '--direction',
+      'd',
+      '--rationale',
+      'r',
+      '--semantics',
+      'a',
+      '--primary',
+      '#1d4e89',
+      '--round',
+      '1',
+    ]);
+    const set = ['concept', 'update', '--brand', 'tidepool', '--concept', 'p1'];
+    const r = ok([...set, '--semantics', 'tide; pool']);
+    expect(r).toMatchObject({ id: 'p1', status: 'draft', changed: ['semantics'] });
+    expect(r.palette).toBeUndefined();
+    const s = ok([...set, '--primary', '#112233', '--show']);
+    expect(s.palette.primary).toBe('#112233');
+    expect(s.semantics).toEqual(['tide', 'pool']);
+    expect(ok([...set, '--primary', '#112233']).changed).toEqual([]);
+  }, 60_000);
+  it('brand update renames the display name, and reference update changes the category', () => {
+    const { cwd, ok } = setup();
+    const r = ok(['brand', 'update', '--brand', 'tidepool', '--name', 'TIDEPOOL']);
+    expect(r).toMatchObject({ brand: 'tidepool', name: 'TIDEPOOL', was: 'Tidepool' });
+    expect(ok(['brand', 'list']).brands.map((b: { name: string }) => b.name)).toContain('TIDEPOOL');
+    expect(ok(['brief', 'show', '--brand', 'tidepool']).name).toBe('TIDEPOOL');
+    copyFileSync(fixture('marks/fold-n.svg'), join(cwd, 'm.svg'));
+    const added = ok([
+      'reference',
+      'add',
+      '--brand',
+      'tidepool',
+      '--file',
+      'm.svg',
+      '--name',
+      'Acme',
+      '--source',
+      'note',
+      '--notes',
+      'first',
+    ]);
+    const up = ok([
+      'reference',
+      'update',
+      '--brand',
+      'tidepool',
+      '--id',
+      added.added,
+      '--category',
+      'inspiration',
+      '--notes',
+      'likes the fold',
+    ]);
+    expect(up).toMatchObject({ category: 'inspiration', was: 'direct' });
+    expect(up.notes).toContain('likes the fold');
+    expect(up.notes).toContain('sha256:');
+    const bad = run(
+      ['reference', 'update', '--brand', 'tidepool', '--id', added.added, '--category', 'nope'],
+      cwd,
+    );
+    expect(bad.status).not.toBe(0);
+    expect(bad.stderr).toContain('INVALID_INPUT');
+  }, 60_000);
+  it('name risk carries the reasons that produced it', () => {
+    const { cwd, ok } = setup();
+    ok([
+      'concept',
+      'new',
+      '--brand',
+      'tidepool',
+      '--id',
+      'p1',
+      '--title',
+      'One',
+      '--direction',
+      'd',
+      '--rationale',
+      'r',
+      '--semantics',
+      'a',
+      '--primary',
+      '#1d4e89',
+      '--round',
+      '1',
+    ]);
+    copyFileSync(
+      fixture('marks/fold-n.svg'),
+      join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'p1', 'symbol.svg'),
+    );
+    ok(['concept', 'update', '--brand', 'tidepool', '--concept', 'p1', '--symbol', 'symbol.svg']);
+    const o = ok(['originality', '--brand', 'tidepool', '--concept', 'p1', '--names', 'Tidepoll']);
+    expect(o.nameRisk).not.toBe('low');
+    expect(o.nameRiskReasons.length).toBeGreaterThan(0);
+    expect(
+      ok(['verify', '--brand', 'tidepool', '--concept', 'p1']).originality.nameRiskReasons,
+    ).toBeDefined();
   }, 60_000);
 });

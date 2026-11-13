@@ -69,6 +69,12 @@ function proposals(n: number, names?: string[]) {
 }
 
 describe('exploration rounds', () => {
+  it('a one-proposal round still writes its board', () => {
+    const cwd = proposals(1);
+    const r = ok(['proposals', '--brand', 'tidepool'], cwd);
+    expect(r.board).toBeTruthy();
+    expect(existsSync(r.board)).toBe(true);
+  }, 60_000);
   it('letters follow creation order, not ids', () => {
     const cwd = proposals(3, ['zeta', 'alpha', 'mid']);
     const shown = (id: string) =>

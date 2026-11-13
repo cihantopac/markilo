@@ -14,7 +14,7 @@ import { type ContextPeer, groundFor, renderContextSheet } from '../render/conte
 import { renderReviewSheet, renderWordmarkSheet } from '../render/sheet.js';
 import { type ReferenceCategory, USER_REFERENCE } from '../research/competitors.js';
 import { currentArt, gateOf, STALE_NOTE } from './gate.js';
-import { buildOriginalityReport, readReferences } from './originality.js';
+import { buildOriginalityReport, nameRiskReasons, readReferences } from './originality.js';
 
 /** Collected reference marks, direct competitors first, one per brand, for the context sheet. */
 async function contextPeers(ws: Workspace, brand: string): Promise<ContextPeer[]> {
@@ -295,6 +295,7 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
       genericity: orig.report.genericity ?? null,
       closestConcept: orig.report.diversity.sort((a, b) => b.visual - a.visual)[0] ?? null,
       nameRisk: orig.report.name.risk,
+      nameRiskReasons: nameRiskReasons(orig.report.name),
     },
     files: {
       reviewSheets: sheets,
