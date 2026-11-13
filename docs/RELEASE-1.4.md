@@ -3,10 +3,12 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or
 > superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Fix what three full identity runs on 1.3.0 showed. The user must never develop a concept other than the one
+**Goal:** Fix what four full identity runs on 1.3.0 showed. The user must never develop a concept other than the one
 they named. What a round shows must be what the export ships, and the user must be able to say which colour a mark has
 on a brand-filled tile. A product inside an existing family should get a real path. Research should read the evidence a
-site actually carries. The gate should advise and never say "reject". Cost and time should say what they measure.
+site actually carries. The gate should advise, never say "reject" and notice when the drawing changed. The first questions should catch the
+kind of mark and the feel before a round is spent, and a rejected round should cost little. Cost and time should say
+what they measure.
 
 **Architecture:** Small changes in existing modules: the proposals and concept commands, the round order in the
 workspace, render/proposal and the exporter's tile, report/gate, research/site and research/competitors, a new
@@ -16,9 +18,9 @@ changes are grouped in two tasks. No new dependencies or subsystems.
 **Tech Stack:** TypeScript (Node ≥ 20.10, ESM), vitest, biome, resvg-wasm, CanvasKit/PathKit, esbuild bundle in
 `plugin/dist/markilo.mjs`.
 
-**Spec:** three field reports on 1.3.0, all from products inside one existing product family: two family members that
-share a parent wordmark plus a suffix, and one product whose family rule lived on other domains. Each claim was checked
-against the code at `89d2214`. The findings are summarized in [Sources](#sources).
+**Spec:** four field reports on 1.3.0, all from products inside one existing product family: two family members that
+share a parent wordmark plus a suffix, and two products whose family rule lived on other domains. Each claim was
+checked against the code at `89d2214`. The findings are summarized in [Sources](#sources).
 
 ## Global Constraints
 
@@ -51,7 +53,7 @@ against the code at `89d2214`. The findings are summarized in [Sources](#sources
    workspace written by 1.3.0 (concepts without a `letter`) gets the same letters it showed before only when its
    creation order equals its id order; otherwise the new order wins and `proposals` says so. Pinned in Task 1.
 4. **Gate wording.** No gate result may contain `reject`. A concept with no recorded critique still reads
-   `not-reviewed` (Task 3).
+   `not-reviewed`. A critique recorded by 1.3.0 (no artwork hash) is never reported `stale` (Task 3).
 5. **A cost log written by 1.3.0** reads, summarises and reports its status exactly as before; only new fields are
    added (Task 11).
 6. **Inline SVG from websites** stays sanitized before it is written anywhere (Tasks 8, 9).
@@ -108,7 +110,8 @@ and the `.icns`. The tile ground is always `primary` (`exporter.ts:253-259`). No
 - Modify: `src/core/types.ts` (`ConceptPalette`: `onBrand?`, `tile?`), `src/export/kit.ts` (copy them at finalize),
   `src/cli/commands.ts` (`concept new|update --on-brand <#hex|auto|none> --tile <#hex|none>`), `src/export/variants.ts`
   (one resolver), `src/export/exporter.ts` (`appmarkSvg` :248 and every tile call site), `src/render/proposal.ts`
-  (:94 and :106), the chosen-vs-now and sheet renderers that draw an opposite ground
+  (:94 and :106), the chosen-vs-now and sheet renderers that draw an opposite ground (`render/sheet.ts:29,89`, labelled
+  "Color on dark (adapted)" and called without the palette)
 - Modify: `docs/OUTPUTS.md`, `plugin/skills/design/references/cli.md`
 - Test: `tests/grounds.test.ts`, `tests/export.test.ts`, `tests/cli.test.ts`
 
@@ -123,8 +126,9 @@ and the `.icns`. The tile ground is always `primary` (`exporter.ts:253-259`). No
   - `proposals` and export call `markOnGround`; a locked kit always takes today's path.
 
 - [ ] **Step 1: Write the failing tests.**
-  - `previews use onDark on the dark panel`: primary `#c2255c`, onDark `#f783ac` → the proposal's opposite panel
-    contains `#f783ac`, not `#c2255c`.
+  - `previews use onDark on the dark panel`: primary `#c2255c`, onDark `#f783ac` → the proposal's opposite panel and
+    the `render --compare` dark row contain `#f783ac`, not `#c2255c`; the row is labelled "Color on dark" when
+    `onDark` is set and "(adapted)" only when it is not.
   - `onBrand puts a white mark on every brand tile`: `--on-brand #ffffff` → appmark, apple-touch-icon, Android launcher
     and the proposal tile carry `#ffffff` and no adapted tint.
   - `tile sets the tile ground`: `--tile #1a1a1a` → the same files fill with `#1a1a1a`.
@@ -137,11 +141,12 @@ and the `.icns`. The tile ground is always `primary` (`exporter.ts:253-259`). No
 - [ ] **Step 4: Run the tests and confirm they pass.**
 - [ ] **Step 5: Commit** with the message `feat(palette): onBrand and tile colours, one ground resolver for previews and export`.
 
-### Task 3: The gate advises; it never says reject, and finalize says where the critique is
+### Task 3: The gate advises; it never says reject, goes stale when the drawing changes, and finalize says where the critique is
 
 A critic called a concept presentable; one score of 5 made the gate say `failed, next: reject` (`gate.ts:159`), which
 contradicts "advice, not a gate on the user's choice". After a hand re-base, the kit said `not-reviewed` although a
-critique existed — on another concept.
+critique existed — on another concept. In another run the designer applied the critic's fixes and the gate still said
+`failed`: nothing ties a critique to the drawing it judged.
 
 **Files:**
 
@@ -156,16 +161,20 @@ critique existed — on another concept.
     `present-with-notes`; below the bar with `present === false` → `fix`.
   - `finalize` output gains `critiqueElsewhere?: string[]` (ids of other concepts in the brand that carry a critique)
     and a warning line when the finalized concept is `not-reviewed` and that list is not empty.
+  - Recording judgment, blind scores or a critique stores `reviewedArt: string` (sha256 of the symbol and wordmark
+    files). When the files no longer match, the gate returns `status: 'stale'` with the old result under `previous`,
+    and `proposals`/`verify` say "the critique is older than the drawing". No `reviewedArt` → today's behaviour.
 
 - [ ] **Step 1: Write the failing tests.**
   - `presentable with one low score is present-with-notes`: distinctiveness 5, others ≥ 7, present → status
     `failed`, `next: 'present-with-notes'`, reasons name distinctiveness.
   - `no gate result says reject`: run the existing gate fixtures and assert `JSON.stringify(r)` has no `reject`.
   - `finalize warns when the critique is on another concept`.
+  - `a changed drawing makes the gate stale`; `a 1.3 critique without a hash is not stale`.
 - [ ] **Step 2: Run them and confirm they fail.** Run `npx vitest run tests/gate.test.ts tests/cli.test.ts`.
 - [ ] **Step 3: Implement.** Update the gallery and guidelines texts that print `next`; add Turkish strings.
 - [ ] **Step 4: Run the tests and confirm they pass.**
-- [ ] **Step 5: Commit** with the message `fix(gate): advise present, fix or present with notes; finalize points at a critique on another concept`.
+- [ ] **Step 5: Commit** with the message `fix(gate): advise present, fix or present with notes; stale after a redraw; finalize points at a critique elsewhere`.
 
 ### Task 4: Adopt a drawing from another concept
 
@@ -267,12 +276,15 @@ critic recommended `wordmark-small.svg`; it had no slot and was added to the kit
 
 `--download-assets` aborts on one malformed inline SVG (`sanitizeSvg` outside the try, `commands.ts:529-534`).
 Inline SVG logos are counted but never reach `existingIdentity.logos` (`mergeSiteScan` only merges colours and fonts).
-A product colour set only as the favicon's `color` attribute is missed, and `oklch()` colours are not converted.
+A product colour set only as the favicon's `color` attribute is missed. CSS colours are read only as hex and `rgb()`
+(`research/repo.ts:145`): `hsl()`, `oklch()` and custom properties (`--brand-hue: 345` used in `oklch(… var(--brand-hue))`)
+are lost, so a parent's green token ranked first while the product's own hue was never seen; dark-theme values are
+missed too.
 
 **Files:**
 
 - Modify: `src/cli/commands.ts` (:529-534), `src/research/profile.ts` (`mergeSiteScan` :219-325),
-  `src/research/site.ts` (icon `color` attribute at :451; CSS colour parsing), the colour parser (`oklch()`/`oklab()`
+  `src/research/site.ts` (icon `color` attribute at :451), `src/research/repo.ts` (`extractCssSignals` :143), the colour parser (`oklch()`/`oklab()`
   → hex)
 - Test: `tests/research-net.test.ts`, `tests/color.test.ts`
 
@@ -283,11 +295,15 @@ A product colour set only as the favicon's `color` attribute is missed, and `okl
   - `mergeSiteScan` adds each inline logo to `existingIdentity.logos` (`kind: 'inline-svg'`); with
     `--download-assets` the saved file is also added as an `existing` reference.
   - `SiteScan.iconColors` from `<link rel="mask-icon" color>` and similar, merged as identity colours.
-  - `oklch()`/`oklab()` parsed to hex.
+  - `hsl()`, `oklch()` and `oklab()` parsed to hex; `var(--x)` resolved from `:root`/`html` custom properties (one
+    level of nesting, numbers and colours), including `calc()`-free hue tokens.
+  - Colours inside `@media (prefers-color-scheme: dark)` or `[data-theme=dark]` blocks are reported separately as
+    `SiteScan.darkColors` and merged with a `dark theme` note.
   - A finding when favicon, header logo and og:image clearly disagree in colour (`identity inconsistency`).
 
 - [ ] **Step 1: Write the failing tests** on the local server: a page with one broken and one good inline SVG; a
-  `mask-icon` colour; an `oklch(0.62 0.2 25)` colour; a purple favicon with an orange header logo.
+  `mask-icon` colour; an `oklch(0.62 0.2 25)` colour; `--brand-hue: 345` used in `oklch(0.6 0.2 var(--brand-hue))`;
+  an `hsl()` colour; a dark-theme block; a purple favicon with an orange header logo.
 - [ ] **Step 2: Run them and confirm they fail.**
 - [ ] **Step 3: Implement.**
 - [ ] **Step 4: Run the tests and confirm they pass.**
@@ -324,7 +340,8 @@ lockups were pulled out by hand with curl and Python.
 
 In a header, any inline SVG is taken without a hint (`site.ts:291-310`), so a menu icon and an info icon became two
 competitors' "logos"; one similarity score was measured against an info icon. Another run took a customer logo from a
-clients folder (named in Turkish).
+clients folder (named in Turkish). A third took a flag and an external-link arrow as the product's own logo candidates,
+the parent company's logo for one competitor and the parent's generic "G" favicon as another's app icon.
 
 **Files:**
 
@@ -338,12 +355,13 @@ clients folder (named in Turkish).
 - Produces:
   - `inlineLogoSvgs` scores each candidate: inside a home link (`<a href="/">`), brand name or `logo` in
     class/id/aria-label/title, not tiny (both viewBox sides ≤ 24 with one path → skip), not a known UI glyph name
-    (`menu`, `search`, `close`, `info`, `arrow`, `chevron`). Returns candidates sorted by score with
+    (`menu`, `search`, `close`, `info`, `arrow`, `chevron`, `external`, `flag`, `globe`). Returns candidates sorted by score with
     `confidence: 'high' | 'low'`.
   - Competitor logo images skip paths and alt text that say clients, customers, partners, references (also `logolar`,
     `referans`, `musteri`).
   - `research competitors` result marks `logo.confidence`; a low-confidence logo is saved with notes
-    `low confidence — check it`.
+    `low confidence — check it`. A logo or icon whose alt, title or file name names another brand than the competitor,
+    or an icon served from another registrable domain than the competitor's site, is low confidence.
 
 - [ ] **Step 1: Write the failing tests**: a header with a hamburger SVG and the logo inside `<a href="/">` → the logo
   is picked; an `/img/clients/acme.png` candidate is skipped.
@@ -354,14 +372,16 @@ clients folder (named in Turkish).
 
 ### Task 10: CLI frictions
 
-Small things every run hit: `answers` cannot amend and prints the whole list; no batch entry; `concept update` cannot
+Small things the runs hit: `answers` cannot amend and prints the whole list; no batch entry; `concept update` cannot
 change `semantics` and prints the whole concept; a one-proposal round has `board: null` (`commands.ts:1976`);
-`finalize`/`verify` show name risk `high` without reasons (`commands.ts:1616`).
+`finalize`/`verify` show name risk `high` without reasons (`commands.ts:1616`). The name is recorded at `brand add`,
+before research finds `nameCase`, and there is no `brand rename`, so the kit used title case while the logo
+was in capitals. A reference's category cannot be changed (remove and re-add).
 
 **Files:**
 
 - Modify: `src/cli/commands.ts` (`answers` :896-931, `concept update` :1304, `proposals` :1976, name-risk output
-  :1616)
+  :1616, `brand add` :202, `reference add` :1026)
 - Test: `tests/cli.test.ts`, `tests/rounds.test.ts`
 
 **Interfaces:**
@@ -372,16 +392,19 @@ change `semantics` and prints the whole concept; a one-proposal round has `board
   - `concept update --semantics "<a>; <b>"`; `concept update` returns `{ id, status, changed: [...] }` unless `--show`.
   - A one-proposal round still writes its board.
   - Name risk lines carry the reasons that produced them.
+  - `brand update --brand <slug> --name <display name>` changes the display name (the slug stays); `research site`
+    returns `suggest: { name }` when `nameCase` differs from the recorded name.
+  - `reference update --brand <slug> --id <ref> --category <c> [--notes <text>]`.
 
 - [ ] **Step 1: Write the failing tests** for each bullet.
 - [ ] **Step 2: Run them and confirm they fail.**
 - [ ] **Step 3: Implement.** Update `cli.md` for the changed output shapes.
 - [ ] **Step 4: Run the tests and confirm they pass.**
-- [ ] **Step 5: Commit** with the message `feat(cli): amend and batch answers, semantics and compact concept updates, one-proposal boards`.
+- [ ] **Step 5: Commit** with the message `feat(cli): amend and batch answers, compact concept updates, brand and reference updates, one-proposal boards`.
 
 ### Task 11: Cost says what it measures
 
-All three reports: `--budget-minutes` sums agent minutes across parallel agents and does not say so (`cost.ts:48`);
+All four reports: `--budget-minutes` sums agent minutes across parallel agents and does not say so (`cost.ts:48`);
 the dollar figure covers subagents only and looks like the cost; the desktop app showed no session total; an agent
 stopped by a usage limit and resumed had no recording rule.
 
@@ -409,7 +432,7 @@ stopped by a usage limit and resumed had no recording rule.
 - [ ] **Step 4: Run the tests and confirm they pass.**
 - [ ] **Step 5: Commit** with the message `feat(cost): agent and wall minutes, interrupted agents, a plain subagents-only label`.
 
-### Task 12: Skill and agent text from the three runs
+### Task 12: Skill and agent text from the four runs
 
 No code; the wording the runs asked for. Each bullet names its source finding.
 
@@ -417,20 +440,28 @@ No code; the wording the runs asked for. Each bullet names its source finding.
 
 - Modify: `plugin/skills/design/SKILL.md`, `plugin/skills/design/references/workflow.md`,
   `plugin/skills/refine/SKILL.md`, `plugin/agents/concept-designer.md`, `plugin/agents/design-critic.md`,
-  `plugin/skills/gallery/SKILL.md`
+  `plugin/skills/gallery/SKILL.md`, `plugin/skills/design/references/design-principles.md`
 - Test: `tests/plugin.test.ts` (string checks for the key rules)
 
-- [ ] **Step 1: First questions** fit one 4-question dialog, in this order: scope (for a product with an existing or
-  family identity: refresh, product icon or new?) with earlier work and references; which family members define the
-  rule and which are out of date; money and time; then two separate network consents — collecting competitor marks,
-  and sending the name to trademark registries.
+- [ ] **Step 1: First questions** fit one 4-question dialog, multiple choice with an "Other" field, in this order:
+  - mode and scope: refresh, redesign, product icon or new, with earlier work and references; for a family, which
+    members define the rule and which are out of date;
+  - the mark: kind (abstract / from a letter / an object or figure / a character) and feel (corporate / dynamic /
+    warm / bold); "keep the current colour?" is asked, never assumed to be equity;
+  - money and time;
+  - two separate network consents: collecting competitor marks, and searching trademark registries now (or accepting
+    the risk at the end).
+    Name case is taken from `nameCase` before `brand add` when a site is given.
 - [ ] **Step 2: Presenting a round**: present in the board's order as `A · <title>`, quote `proposals.order`, and read
-  the choice back (`letter · title · id`) before develop or finalize.
+  the choice back (`letter · title · id`) before develop or finalize. After a rejection, ask what to change as
+  multiple choice (kind, feel, colour, lettering, fill) — a user who says "I don't know" can still pick; an open
+  question is the last resort.
 - [ ] **Step 3: Explore**: when the name holds an object or idea (loop, link, dock…), one of the three directions treats
   it directly and boldly; the cliché filter does not drop it. A letter-becomes-figure idea is allowed. A reference is
   for measure and context, not form; one direction per round stays independent of it, and the orchestrator reads back
   its interpretation. Board captions carry the idea name. Each designer keeps its scripts under
-  `concepts/<id>/work/`.
+  `concepts/<id>/work/`. For icon-led work at least one direction depicts nothing (abstract); give designers a
+  concrete bar to beat (the most crafted mark in the family or the brief's references), not only principles.
 - [ ] **Step 4: Develop**: a transformation the user asked for is shown to the user before any taste-based send-back;
   "character lost → send back" applies only to unrequested change. Small sizes go to the small version; the main
   weight stays within ±10 % of the chosen drawing unless the user asked otherwise. Colour is offered as its own cheap
@@ -439,10 +470,15 @@ No code; the wording the runs asked for. Each bullet names its source finding.
 - [ ] **Step 5: Gallery in the desktop app**: send the round's PNGs into the chat; `gallery --serve` is optional and
   stops when the session ends; record chat answers yourself (as today). Regenerate the gallery each round. Show the
   first finished proposal early in a long round.
-- [ ] **Step 6: Research**: Read every collected competitor reference before using it; delete wrong ones
+- [ ] **Step 6: Round economics**: after a rejected round, or when the user is unsure, run a sketch round first —
+  icon only, 9–12 rough ideas on one `sketches` sheet, no lockups, verify or critic — and polish only what the user
+  points at. "Not chosen but curious" is a probe: 2–3 icon options, nothing else. "Finish now" has a written
+  protocol in the designer agent: stop exploring, record what exists (`concept update`), skip what is not drawn and
+  report it, so finalize lists it as missing.
+- [ ] **Step 7: Research**: Read every collected competitor reference before using it; delete wrong ones
   (`reference remove`). Use `research family` for a product inside an existing family.
-- [ ] **Step 7:** Add the `tests/plugin.test.ts` checks, run `npm run ci`, commit with the message
-  `docs(skills): first questions, round letters, name ideas, requested change, desktop gallery`.
+- [ ] **Step 8:** Add the `tests/plugin.test.ts` checks, run `npm run ci`, commit with the message
+  `docs(skills): first questions, round letters, sketch rounds, name ideas, requested change, desktop gallery`.
 
 ### Task 13: Release 1.4.0
 
@@ -454,8 +490,9 @@ No code; the wording the runs asked for. Each bullet names its source finding.
   - `concept new` ×3 in creation order `c`, `a`, `b` → board letters A, B, C in that order, `proposals.order` matches.
   - `concept adopt` re-pins `chosen/`.
   - `--on-dark`, `--on-brand #ffffff`, `--tile` show in `proposal.png` and in every exported tile.
-  - Gate prints no `reject`; `lettering family` skips typeset and the guidelines print no stand-in typeface.
+  - Gate prints no `reject` and turns `stale` after the symbol changes; `lettering family` skips typeset and the guidelines print no stand-in typeface.
   - `cost` shows agent and wall minutes.
+  - A local page whose brand hue is a custom property in `oklch()` yields that hue in `existingIdentity.colors`.
 
   Record the result here.
 - [ ] **Step 3: Re-export Markilo's own kit** (`--only logos,web,social,tokens,guidelines --clean`); logo files must stay
@@ -470,48 +507,52 @@ No code; the wording the runs asked for. Each bullet names its source finding.
 
 ## Not in 1.4.0
 
-| Request                                                                      | Why not now                                                                                                                                                                          |
-| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| A "family lettering" tool that builds new words from existing outlines       | Needs glyph segmentation of arbitrary outlines. Task 5 lets the shared parts be drawn once and reused; Task 8 brings the outlines into the workspace.                                |
-| Computed-style sampling and theme detection in `research site`               | Needs a real browser; Markilo reads HTML and CSS offline. Task 7 adds icon colours and an identity-inconsistency finding; the skill says to ask for screenshots.                     |
-| A registry-search step (trademark databases)                                 | Registries have no common open API and their terms vary. The skill asks for the consent separately (Task 12) and the links stay as today.                                            |
-| `research site --from-html` / owner-confirmed robots override                | Respecting robots.txt stays absolute. A user can save the page and add its logo with `reference add --category existing`.                                                            |
-| A measured develop delta (ink, stroke, silhouette vs the chosen)             | Needs calibration across runs. Task 12 sets a ±10 % weight rule and keeps `chosen-vs-now.png`.                                                                                       |
-| `proposals --palettes` (one mark in several palettes)                        | `palette` and `render` already do it in two calls; Task 12 tells the orchestrator to offer it.                                                                                       |
-| Per-part letter case ("NAME iD") and `concept import` from another workspace | One report each; the first questions (Task 12) ask about case and earlier work. Revisit if a second run hits them.                                                                   |
-| A new default token rate                                                     | The rate matches measured agent runs; the gap is the uncounted session. Task 11 labels it.                                                                                           |
-| `export --zip`                                                               | Needs a zip writer (no dependency allowed). The kit folder can be zipped by the OS.                                                                                                  |
-| Discord TLS failure in `research competitors`                                | A site certificate problem; the issue line already reports it.                                                                                                                       |
-| Finalize losing a designer's lockup scale                                    | Not reproduced: finalize keeps a lockup the concept records in `files.lockupHorizontal` (`kit.ts:210`); only `lockup-compact` is composed. Task 12 tells designers to record theirs. |
-| Open minors deferred from the 1.2.0 reviews                                  | Still never hit in real use; they stay in the field-report backlog.                                                                                                                  |
+| Request                                                                        | Why not now                                                                                                                                                                          |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| A "family lettering" tool, or a glyph-metrics / symbol-to-word ratio extractor | Needs glyph segmentation of arbitrary outlines. Task 5 lets the shared parts be drawn once and reused; Task 8 brings the outlines into the workspace.                                |
+| Computed-style sampling and theme detection in `research site`                 | Needs a real browser; Markilo reads HTML and CSS offline. Task 7 adds icon colours and an identity-inconsistency finding; the skill says to ask for screenshots.                     |
+| A registry-search step (trademark databases)                                   | Registries have no common open API and their terms vary. The skill asks for the consent separately (Task 12) and the links stay as today.                                            |
+| `research site --from-html` / owner-confirmed robots override                  | Respecting robots.txt stays absolute. A user can save the page and add its logo with `reference add --category existing`.                                                            |
+| A measured develop delta (ink, stroke, silhouette vs the chosen)               | Needs calibration across runs. Task 12 sets a ±10 % weight rule and keeps `chosen-vs-now.png`.                                                                                       |
+| `proposals --palettes` (one mark in several palettes)                          | `palette` and `render` already do it in two calls; Task 12 tells the orchestrator to offer it.                                                                                       |
+| Per-part letter case ("NAME iD") and `concept import` from another workspace   | One report each; the first questions (Task 12) ask about case and earlier work. Revisit if a second run hits them.                                                                   |
+| A new default token rate                                                       | The rate matches measured agent runs; the gap is the uncounted session. Task 11 labels it.                                                                                           |
+| `export --zip`                                                                 | Needs a zip writer (no dependency allowed). The kit folder can be zipped by the OS.                                                                                                  |
+| Audience and features from blog pages in `profile understanding`               | Unverified (one report). The skill already says to read the pages; revisit with a fixture from a real miss.                                                                          |
+| Discord TLS failure in `research competitors`                                  | A site certificate problem; the issue line already reports it.                                                                                                                       |
+| Finalize losing a designer's lockup scale                                      | Not reproduced: finalize keeps a lockup the concept records in `files.lockupHorizontal` (`kit.ts:210`); only `lockup-compact` is composed. Task 12 tells designers to record theirs. |
+| Open minors deferred from the 1.2.0 reviews                                    | Still never hit in real use; they stay in the field-report backlog.                                                                                                                  |
 
 ## Sources
 
-Three field reports on 1.3.0 (2026-11-12), all from products in one family: two members that keep the parent's
-custom wordmark and add a suffix, and a product joining the family from its own domain. Together: 7 explore agents,
-4 develop passes, 3 critics, one wrong concept developed and one wrong concept finalized and exported. Each claim was
+Four field reports on 1.3.0 (2026-11-12/13), all from products in one family: two members that keep the parent's
+custom wordmark and add a suffix, and two products joining the family from their own domains. Together: 16 explore
+agents, 5 develop passes, 4 critics, one wrong concept developed, one wrong concept finalized and exported, and two
+rounds (≈880 k tokens) spent on a kind of mark and a colour the user did not want. Each claim was
 checked against the code at `89d2214`.
 
-| Finding                                                                                            | Hits | Task  |
-| -------------------------------------------------------------------------------------------------- | ---- | ----- |
-| Board letters follow ids; a wrong concept was developed, another finalized; single proposal says A | 2    | 1, 12 |
-| Previews ignore onDark; tile mark is a bare-3:1 tint; tile ground fixed to primary                 | 2    | 2     |
-| Gate says reject on a presentable concept; kit `not-reviewed` after a critique elsewhere           | 2    | 3     |
-| No way to build on another concept's drawing                                                       | 1    | 4     |
-| Family product: locked parent wordmark + suffix; typeset vs stand-in; stand-in printed as typeface | 3    | 5, 8  |
-| Small version cannot be switched off; no small wordmark slot                                       | 2    | 6     |
-| `--download-assets` aborts; inline logos and icon colours lost; oklch                              | 2    | 7     |
-| Family rule on other domains; extracted by hand                                                    | 2    | 8     |
-| Menu/info icons and a client logo taken as competitor logos                                        | 2    | 9     |
-| answers amend/batch, semantics, verbose updates, one-proposal board, name risk reasons             | 2    | 10    |
-| Agent vs wall minutes, subagent-only dollars, interrupted agents                                   | 3    | 11    |
-| First questions order and consents; name idea filtered as cliché; requested vs unrequested change  | 3    | 12    |
+| Finding                                                                                             | Hits | Task  |
+| --------------------------------------------------------------------------------------------------- | ---- | ----- |
+| Board letters follow ids; a wrong concept was developed, another finalized; single proposal says A  | 2    | 1, 12 |
+| Previews ignore onDark; tile mark is a bare-3:1 tint; tile ground fixed to primary                  | 3    | 2     |
+| Gate says reject on a presentable concept; critique elsewhere; gate never goes stale                | 3    | 3     |
+| No way to build on another concept's drawing                                                        | 1    | 4     |
+| Family product: locked parent wordmark + suffix; typeset vs stand-in; stand-in printed as typeface  | 4    | 5, 8  |
+| Small version cannot be switched off; no small wordmark slot                                        | 2    | 6     |
+| `--download-assets` aborts; inline logos, icon colours, oklch, custom properties, dark theme lost   | 3    | 7     |
+| Family rule on other domains; extracted by hand                                                     | 3    | 8     |
+| UI glyphs, flags, client and parent-company logos taken as logos                                    | 3    | 9     |
+| answers amend/batch, semantics, verbose updates, one-proposal board, brand name, reference category | 3    | 10    |
+| Agent vs wall minutes, subagent-only dollars, interrupted agents                                    | 4    | 11    |
+| First questions miss mode, mark kind, feel and colour; consents; "I don't know"                     | 4    | 12    |
+| Name idea filtered as cliché; literal icons; requested vs unrequested change                        | 2    | 12    |
+| Rejected rounds cost as much as chosen ones; no sketch round, probe or early close                  | 1    | 12    |
 
 The reports also praised parts that should stay as they are:
 
-- `research site` → profile → brief, and `nameCase`.
+- `research site` → profile → brief, `nameCase`, and `score`/`verify` evidence for a redesign.
 - Early first questions.
-- One designer per proposal, with eliminated variants and an honest First read.
+- One designer per proposal, with eliminated variants and an honest First read that predicted the user's rejections.
 - `proposals`, `verify`, `compare` and `color compare` as the measured basis for a decision.
 - The independent critic's numbered fixes.
 - finalize requiring the user's words and `--accept-risk`; `export --all` with `logos/overview.png`.
