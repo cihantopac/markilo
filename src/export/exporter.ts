@@ -28,7 +28,7 @@ import {
   isDarkGround,
   markOnGround,
   monochrome,
-  onFillVariant,
+  onBrandColor,
   reversedVariant,
   tileGround,
 } from './variants.js';
@@ -261,6 +261,16 @@ async function appmarkSvg(
         ? `<circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="${fill}"/>`
         : squircle(size, 0, size * 0.225, fill);
   return canvas(svg, size, size, { mode: 'box', fraction }, undefined, under, ctx.kit.name);
+}
+
+/** The brand tile's colours as tokens, only when the palette sets them (`auto` resolved); none for a locked kit. */
+function tileColorTokens(kit: BrandKit): { onBrand?: string; tile?: string } {
+  if (kit.locked) return {};
+  const onBrand = onBrandColor(kit.palette);
+  return {
+    ...(onBrand ? { onBrand } : {}),
+    ...(kit.palette.tile ? { tile: kit.palette.tile } : {}),
+  };
 }
 
 // ---------------------------------------------------------------- web
@@ -643,7 +653,7 @@ async function exportAndroid(ctx: Ctx) {
   await emit(
     ctx,
     'android/res/values/ic_launcher_colors.xml',
-    `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="brand_primary">${kit.palette.primary}</color>\n</resources>\n`,
+    `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="brand_primary">${kit.locked ? kit.palette.primary : tileGround(kit.palette)}</color>\n</resources>\n`,
     { group: 'android', purpose: 'Brand color resource', derivedFrom: 'brand.json' },
   );
   const play = kit.locked
@@ -938,7 +948,10 @@ async function exportMarketing(ctx: Ctx) {
     `<svg xmlns="http://www.w3.org/2000/svg" width="85mm" height="55mm" viewBox="0 0 85 55"><rect width="85" height="55" fill="${bg}"/>${body}</svg>`;
   const front = kit.locked
     ? mm(fitArt(art, 85, 55, 50, 18), kit.palette.paper)
-    : mm(fitArt(onFillVariant(art, kit.palette.primary).svg, 85, 55, 50, 18), kit.palette.primary);
+    : mm(
+        fitArt(markOnGround(art, tileGround(kit.palette), kit.palette, { tile: true }), 85, 55, 50, 18),
+        tileGround(kit.palette),
+      );
   const t = (s: string, y: number, size: number, weight = 400) =>
     `<text x="8" y="${y}" font-family="${escapeAttr(family)}" font-size="${size}" font-weight="${weight}" fill="${kit.palette.ink}">${s}</text>`;
   const back = mm(
@@ -986,6 +999,9 @@ async function exportTokens(ctx: Ctx) {
   color.paper = { $type: 'color', $value: kit.palette.paper } as never;
   if (kit.palette.onDark) color.onDark = { $type: 'color', $value: kit.palette.onDark } as never;
   if (kit.palette.onLight) color.onLight = { $type: 'color', $value: kit.palette.onLight } as never;
+  const tileTokens = tileColorTokens(kit);
+  if (tileTokens.onBrand) color.onBrand = { $type: 'color', $value: tileTokens.onBrand } as never;
+  if (tileTokens.tile) color.tile = { $type: 'color', $value: tileTokens.tile } as never;
   dtcg.spacing = Object.fromEntries(
     [1, 2, 3, 4, 6, 8, 12, 16, 24].map((n) => [String(n), { $type: 'dimension', $value: `${n * 4}px` }]),
   );
@@ -1015,6 +1031,8 @@ async function exportTokens(ctx: Ctx) {
   css.push(`  --${kit.brand}-ink: ${kit.palette.ink};`, `  --${kit.brand}-paper: ${kit.palette.paper};`);
   if (kit.palette.onDark) css.push(`  --${kit.brand}-on-dark: ${kit.palette.onDark};`);
   if (kit.palette.onLight) css.push(`  --${kit.brand}-on-light: ${kit.palette.onLight};`);
+  if (tileTokens.onBrand) css.push(`  --${kit.brand}-on-brand: ${tileTokens.onBrand};`);
+  if (tileTokens.tile) css.push(`  --${kit.brand}-tile: ${tileTokens.tile};`);
   // A surface/text pair for the brand's own scheme, swapped for the other scheme by the media query.
   const g = grounds(kit);
   const readable = (ground: string, preferred: string, fallbacks: [string, string]) =>

@@ -1,6 +1,6 @@
 import { contrastRatio } from '../analyze/color.js';
 import { inkMetrics, placeMark } from '../export/geometry.js';
-import { onFillVariant } from '../export/variants.js';
+import { markOnGround, onFillVariant, tileGround } from '../export/variants.js';
 import { nestSvg, svgDocument } from '../svg/compose.js';
 import { escapeAttr } from '../svg/xml.js';
 import { renderPng } from './resvg.js';
@@ -35,6 +35,10 @@ export interface ContextSheetInput {
   lockup?: string;
   paper: string;
   primary: string;
+  ink?: string;
+  /** The brand tile's mark colour (#hex or auto) and ground, as the export draws app icons and avatars. */
+  onBrand?: string;
+  tile?: string;
   dark?: string;
   peers: ContextPeer[];
 }
@@ -124,10 +128,10 @@ export async function contextSheetSvg(input: ContextSheetInput): Promise<{ svg: 
     const x = PAD + 60 + col * 220;
     const ty = y + 20 + row * 92;
     if (t === 'own') {
-      const fill = input.primary;
+      const fill = tileGround(input);
       body += `<rect x="${x}" y="${ty}" width="60" height="60" rx="14" fill="${fill}"/>`;
       body += await placeMark(
-        onFillVariant(input.symbol, fill).svg,
+        markOnGround(input.symbol, fill, input, { tile: true }),
         { x, y: ty, width: 60, height: 60 },
         { mode: 'box', fraction: 0.62 },
       );
@@ -159,9 +163,9 @@ export async function contextSheetSvg(input: ContextSheetInput): Promise<{ svg: 
   for (const [i, a] of avatars.entries()) {
     const cx = PAD + 20 + i * 64;
     if (a === 'own') {
-      body += `<circle cx="${cx + 20}" cy="${y + 20}" r="20" fill="${input.primary}"/>`;
+      body += `<circle cx="${cx + 20}" cy="${y + 20}" r="20" fill="${tileGround(input)}"/>`;
       body += await placeMark(
-        onFillVariant(input.symbol, input.primary).svg,
+        markOnGround(input.symbol, tileGround(input), input, { tile: true }),
         { x: cx, y, width: 40, height: 40 },
         { mode: 'circle', radius: 0.36 },
       );

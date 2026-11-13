@@ -7,10 +7,11 @@ import type { Workspace } from '../src/core/workspace.js';
 import { readIcnsTypes, readIcoSizes } from '../src/export/encoders.js';
 import { cssFontFamily, type ExportResult, exportBrand } from '../src/export/exporter.js';
 import { finalizeConcept, kitPath, lockIdentity } from '../src/export/kit.js';
-import { isDarkGround } from '../src/export/variants.js';
+import { isDarkGround, onFillVariant } from '../src/export/variants.js';
 import { buildGallery } from '../src/gallery/gallery.js';
 import { decodeImage, pngSize } from '../src/render/png.js';
 import { verifyConcept } from '../src/report/quality.js';
+import { lintSvg } from '../src/svg/lint.js';
 import { mark, synthBrand, tmp } from './helpers.js';
 
 let ws: Workspace;
@@ -444,6 +445,8 @@ describe('the brand tile', () => {
     }
     return [...n.entries()].sort((a, b) => b[1] - a[1]).map(([c]) => c);
   };
+  // The tint the automatic path gives this mark on its own rose tile (what onBrand replaces).
+  const onFillTint = lintSvg(onFillVariant(rose, '#c2255c').svg).stats.colors[0]!;
   const exportWith = async (extra: Record<string, string>) => {
     const { ws } = synthBrand();
     writeFileSync(join(ws.conceptDir('nimbra', 'fold'), 'symbol.svg'), rose);
@@ -451,8 +454,10 @@ describe('the brand tile', () => {
     ws.saveConcept({ ...c, palette: { primary: '#c2255c', ...extra } });
     await verifyConcept(ws, 'nimbra', 'fold');
     await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
-    await exportBrand(ws, 'nimbra', { groups: ['logos', 'web', 'android', 'macos'] });
-    return (p: string) => readFileSync(join(ws.exportsDir('nimbra'), p));
+    await exportBrand(ws, 'nimbra', { groups: ['logos', 'web', 'android', 'macos', 'marketing', 'tokens'] });
+    const read = (p: string) => readFileSync(join(ws.exportsDir('nimbra'), p));
+    read.gallery = async () => readFileSync((await buildGallery(ws)).path, 'utf8');
+    return read;
   };
 
   it('onBrand puts a white mark on every brand tile', async () => {
@@ -461,12 +466,31 @@ describe('the brand tile', () => {
     expect(app).toContain('fill="#ffffff"');
     expect(app).not.toMatch(/fill="#(?!ffffff|c2255c)[0-9a-f]{6}"/);
     for (const f of tileFiles) expect(colours(read(f)).slice(0, 2), f).toEqual(['#c2255c', '#ffffff']);
+    const card = read('marketing/business-card-front.svg').toString();
+    expect(card).toContain('fill="#ffffff"');
+    expect(card).not.toMatch(/fill="#(?!ffffff|c2255c)[0-9a-f]{6}"/);
+    expect(read('tokens/tokens.css').toString()).toContain('--nimbra-on-brand: #ffffff;');
+    expect(read('tokens/tokens.css').toString()).not.toContain('--nimbra-tile:');
+    expect(JSON.parse(read('tokens/tokens.json').toString()).color.onBrand.$value).toBe('#ffffff');
+    // The gallery's tiles carry the same white mark, not the adapted tint.
+    expect(onFillTint).not.toBe('#ffffff');
+    expect(await read.gallery()).not.toContain(onFillTint);
   }, 120_000);
 
   it('tile sets the tile ground', async () => {
-    const read = await exportWith({ tile: '#1a1a1a' });
+    const read = await exportWith({ tile: '#1a1a1a', onBrand: 'auto' });
     expect(read('logos/appmark/appmark.svg').toString()).toContain('fill="#1a1a1a"');
     for (const f of tileFiles) expect(colours(read(f))[0], f).toBe('#1a1a1a');
+    expect(read('marketing/business-card-front.svg').toString()).toContain('fill="#1a1a1a"');
+    expect(read('android/res/values/ic_launcher_colors.xml').toString()).toContain(
+      '<color name="brand_primary">#1a1a1a</color>',
+    );
+    const css = read('tokens/tokens.css').toString();
+    // auto is resolved to the colour it picks: white (the paper) on a near-black tile.
+    expect(css).toContain('--nimbra-on-brand: #ffffff;');
+    expect(css).toContain('--nimbra-tile: #1a1a1a;');
+    expect(JSON.parse(read('tokens/tokens.json').toString()).color.tile.$value).toBe('#1a1a1a');
+    expect(await read.gallery()).toContain('#1a1a1a');
   }, 120_000);
 
   it('a locked brand ignores onBrand and tile', async () => {

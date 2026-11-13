@@ -245,6 +245,9 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
         ...(lockup ? { lockup } : {}),
         paper: concept.palette.paper ?? '#ffffff',
         primary: concept.palette.primary,
+        ...(concept.palette.ink ? { ink: concept.palette.ink } : {}),
+        ...(concept.palette.onBrand ? { onBrand: concept.palette.onBrand } : {}),
+        ...(concept.palette.tile ? { tile: concept.palette.tile } : {}),
         peers: await contextPeers(ws, brand),
       }),
     );

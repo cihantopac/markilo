@@ -33,8 +33,10 @@ All names are prefixed with the brand slug (`--<slug>-...`).
 - Brand tile: app icons, avatars and the appmark put the symbol on a tile filled with `primary`, with the mark adapted
   to reach 3:1 on it. A palette `tile` (`concept update --tile`) changes the tile's ground, and `onBrand`
   (`--on-brand <#hex|auto>`) colours the whole mark in one colour there (`auto`: paper or ink, whichever contrasts
-  more). The proposal previews use the same tile. Without either field every file is unchanged; locked identities
-  ignore both.
+  more). The proposal previews, the gallery, the verify context sheet and the business card front use the same tile,
+  the Android `brand_primary` colour resource takes the tile colour, and `--<slug>-on-brand` / `--<slug>-tile`
+  (`onBrand`/`tile` in `tokens.json`, `auto` resolved to the colour it picks) are emitted. Without either field every
+  file is unchanged; locked identities ignore both.
 - Semantic colours: `--<slug>-success`, `-warning`, `-danger`, `-info` and the other keys of `palette.json`'s
   `semantic`. Their hues are fixed on purpose, so a success or error colour stays recognisable whatever the brand
   colour is.

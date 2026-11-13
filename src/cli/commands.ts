@@ -161,13 +161,17 @@ function tileColorOptions(c: RunContext): { onBrand?: string; tile?: string } {
   const onBrand = c.str('on-brand');
   if (onBrand && onBrand !== 'none') {
     const v = onBrand === 'auto' ? 'auto' : onBrand.startsWith('#') ? normalizeColor(onBrand) : undefined;
-    if (!v) throw new MarkiloError('USAGE', '--on-brand must be a hex color like #ffffff, "auto" or "none".');
+    if (!v)
+      throw new MarkiloError(
+        'INVALID_INPUT',
+        '--on-brand must be a hex color like #ffffff, "auto" or "none".',
+      );
     out.onBrand = v;
   }
   const tile = c.str('tile');
   if (tile && tile !== 'none') {
     const v = tile.startsWith('#') ? normalizeColor(tile) : undefined;
-    if (!v) throw new MarkiloError('USAGE', '--tile must be a hex color like #1a1a1a or "none".');
+    if (!v) throw new MarkiloError('INVALID_INPUT', '--tile must be a hex color like #1a1a1a or "none".');
     out.tile = v;
   }
   return out;

@@ -10,7 +10,7 @@ import { composeLockup } from '../design/lockup.js';
 import { roundLetters, rounds } from '../design/rounds.js';
 import { placeMark, squircle } from '../export/geometry.js';
 import { type BrandKit, kitPath } from '../export/kit.js';
-import { adaptToGround, groundsFor, onFillVariant } from '../export/variants.js';
+import { type GroundPalette, groundsFor, markOnGround, tileGround } from '../export/variants.js';
 import { gateOf } from '../report/gate.js';
 import type { OriginalityReport } from '../report/originality.js';
 import { aspectOf, nestSvg, svgDocument } from '../svg/compose.js';
@@ -36,6 +36,8 @@ interface Subject {
   wordmark?: string;
   lockup?: string;
   palette: { primary: string; secondary?: string; accent?: string; ink: string; paper: string; dark: string };
+  /** The palette the ground resolver reads (onDark/onLight, onBrand, tile), as previews and export read it. */
+  grounds: GroundPalette;
   concept?: Concept;
   quality?: QualityReport;
   originality?: OriginalityReport;
@@ -65,8 +67,8 @@ async function tile(
   fraction = 0.58,
 ): Promise<string> {
   if (!s.symbol) return '';
-  const fill = s.locked ? s.palette.paper : s.palette.primary;
-  const mark = s.locked ? s.symbol : onFillVariant(s.symbol, fill).svg;
+  const fill = s.locked ? s.palette.paper : tileGround(s.grounds);
+  const mark = s.locked ? s.symbol : markOnGround(s.symbol, fill, s.grounds, { tile: true });
   const under =
     shape === 'circle'
       ? `<circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="${fill}"/>`
@@ -87,7 +89,7 @@ async function mockups(s: Subject): Promise<string> {
   const art = s.lockup ?? s.wordmark ?? s.symbol!;
   // Every surface gets artwork adapted to its own background (no-op when contrast is already fine).
   const on = (svg: string, ground: string) =>
-    s.locked ? svg : adaptToGround(svg, ground, { dark: s.palette.ink });
+    s.locked ? svg : markOnGround(svg, ground, s.grounds, { neutrals: { dark: s.palette.ink } });
   const rev = on(art, DARK);
   const onWhite = on(art, '#ffffff');
   const favicon = s.symbol ? inline(on(s.symbol, '#ffffff'), 16, 16) : '';
@@ -125,8 +127,8 @@ async function mockups(s: Subject): Promise<string> {
   parts.push(
     `<figure class="mock social"><div class="post"><div class="who"><i style="background:${s.palette.primary}"></i><b>${escapeText(s.brand.name)}</b></div>${og.replace('<svg ', '<svg class="og" ')}<small>${escapeText(s.brand.slug)}.example</small></div>${cap('Link preview (Open Graph)')}</figure>`,
   );
-  const cardFill = s.locked ? s.palette.paper : s.palette.primary;
-  const cardArt = s.locked ? art : onFillVariant(art, cardFill).svg;
+  const cardFill = s.locked ? s.palette.paper : tileGround(s.grounds);
+  const cardArt = s.locked ? art : markOnGround(art, cardFill, s.grounds, { tile: true });
   parts.push(
     `<figure class="mock bizcard"><div class="front" style="background:${cardFill}">${fitInline(cardArt, 170, 50)}</div><div class="back">${s.symbol ? inline(on(s.symbol, '#ffffff'), 26, 26) : ''}<b>Full Name</b><small>Role · name@${escapeText(s.brand.slug)}.example</small></div>${cap('Business card')}</figure>`,
   );
@@ -156,7 +158,7 @@ function criticAverage(s: Subject): number | undefined {
 async function subjectCard(s: Subject, opts: { review?: boolean; letter?: string } = {}): Promise<string> {
   const g = groundsFor(s.palette.paper);
   const on = (svg: string, ground: string) =>
-    s.locked ? svg : adaptToGround(svg, ground, { dark: s.palette.ink });
+    s.locked ? svg : markOnGround(svg, ground, s.grounds, { neutrals: { dark: s.palette.ink } });
   const lock = s.lockup ?? s.wordmark;
   // A wordmark-led concept is shown as its word first; the symbol is the icon cut from it.
   const wordLed = s.concept?.lead === 'wordmark' && s.wordmark;
@@ -285,7 +287,7 @@ async function approvedPanel(
 ): Promise<string> {
   const g = groundsFor(s.palette.paper);
   const on = (svg: string, ground: string) =>
-    s.locked ? svg : adaptToGround(svg, ground, { dark: s.palette.ink });
+    s.locked ? svg : markOnGround(svg, ground, s.grounds, { neutrals: { dark: s.palette.ink } });
   const lock = s.lockup ?? s.wordmark;
   const link = (rel: string, label: string, cls = '') =>
     `<a${cls ? ` class="${cls}"` : ''} href="${escapeAttr(portableRelative(ws.galleryDir(), join(ws.exportsDir(b.slug), rel)))}">${t(label)}</a>`;
@@ -318,7 +320,7 @@ async function approvedPanel(
       ? `<div class="ground" style="background:${g.native}">${inline(s.symbol, 110, 110)}${label('Symbol')}</div>`
       : '',
     s.symbol
-      ? `<div class="ground" style="background:${s.locked ? g.native : s.palette.primary}">${inline(s.locked ? s.symbol : onFillVariant(s.symbol, s.palette.primary).svg, 110, 110)}${label('On brand color')}</div>`
+      ? `<div class="ground" style="background:${s.locked ? g.native : tileGround(s.grounds)}">${inline(s.locked ? s.symbol : markOnGround(s.symbol, tileGround(s.grounds), s.grounds, { tile: true }), 110, 110)}${label('On brand color')}</div>`
       : '',
   ].join('');
   const o = s.originality;
@@ -414,6 +416,7 @@ function subjectsFor(ws: Workspace, b: WorkspaceBrand): Subject[] {
       ...(wordmark ? { wordmark } : {}),
       ...(lockup ? { lockup } : {}),
       palette: kit.palette,
+      grounds: kit.palette,
       locked: kit.locked,
       ...(kit.concept
         ? { quality: maybeJson<QualityReport>(join(reports, `quality-${kit.concept}.json`)) }
@@ -450,6 +453,7 @@ function subjectsFor(ws: Workspace, b: WorkspaceBrand): Subject[] {
         paper: c.palette.paper ?? '#ffffff',
         dark: DARK,
       },
+      grounds: c.palette,
       concept: c,
       ...(q ? { quality: q } : {}),
       ...(o ? { originality: o } : {}),

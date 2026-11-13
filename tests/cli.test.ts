@@ -108,7 +108,7 @@ describe('cli (bundled)', () => {
     ]) {
       const r = run([...set, ...bad], cwd);
       expect(r.status, bad.join(' ')).not.toBe(0);
-      expect(JSON.parse(r.stderr).error.code).toBe('USAGE');
+      expect(JSON.parse(r.stderr).error.code).toBe('INVALID_INPUT');
     }
     ok([...set, '--on-brand', 'none', '--tile', 'none']);
     expect(conceptJson().palette.onBrand).toBeUndefined();
