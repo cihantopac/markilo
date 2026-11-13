@@ -1,6 +1,6 @@
 import { loadBundledFace } from '../design/fonts.js';
 import { textPathMarkup } from '../design/wordmark.js';
-import { adaptToGround, groundsFor } from '../export/variants.js';
+import { type GroundPalette, groundsFor, markOnGround } from '../export/variants.js';
 import { aspectOf, fmt, nestSvg, svgDocument } from '../svg/compose.js';
 import { monochrome } from '../svg/variants.js';
 import { renderPng } from './resvg.js';
@@ -19,18 +19,32 @@ export interface SheetRow {
  */
 export function reviewSheetSvg(
   svg: string,
-  opts: { title?: string; dark?: string; light?: string } = {},
+  opts: { title?: string; dark?: string; light?: string; palette?: GroundPalette } = {},
 ): string {
+  return sheetSvg(reviewSheetRows(svg, opts), SHEET_SIZES, opts.title);
+}
+
+/**
+ * The four review rows. Colors are adapted per ground the way exports adapt them (reversed variants), so the sheet
+ * shows what ships: with a palette, its onDark / onLight colour replaces the primary there, and the dark row is no
+ * longer "(adapted)" when the designer chose its colour.
+ */
+export function reviewSheetRows(
+  svg: string,
+  opts: { dark?: string; light?: string; palette?: GroundPalette } = {},
+): SheetRow[] {
   const light = opts.light ?? '#ffffff';
   const dark = opts.dark ?? '#111318';
-  const rows: SheetRow[] = [
-    // Colors are adapted per ground the way exports adapt them (reversed variants), so the sheet shows what ships.
-    { label: 'Color on light', background: light, svg: adaptToGround(svg, light) },
-    { label: 'Color on dark (adapted)', background: dark, svg: adaptToGround(svg, dark) },
+  return [
+    { label: 'Color on light', background: light, svg: markOnGround(svg, light, opts.palette) },
+    {
+      label: opts.palette?.onDark ? 'Color on dark' : 'Color on dark (adapted)',
+      background: dark,
+      svg: markOnGround(svg, dark, opts.palette),
+    },
     { label: 'Black', background: light, svg: monochrome(svg, '#000000') },
     { label: 'White (reversed)', background: dark, svg: monochrome(svg, '#ffffff') },
   ];
-  return sheetSvg(rows, SHEET_SIZES, opts.title);
 }
 
 /** Text rendered as outlines (Inter) so labels look the same on every machine. */
@@ -68,8 +82,12 @@ const isDark = (hex: string) => {
   return ((n >> 16) & 255) * 0.299 + ((n >> 8) & 255) * 0.587 + (n & 255) * 0.114 < 128;
 };
 
-export async function renderReviewSheet(svg: string, title?: string): Promise<Buffer> {
-  const sheet = reviewSheetSvg(svg, title ? { title } : {});
+export async function renderReviewSheet(
+  svg: string,
+  title?: string,
+  palette?: GroundPalette,
+): Promise<Buffer> {
+  const sheet = reviewSheetSvg(svg, { ...(title ? { title } : {}), ...(palette ? { palette } : {}) });
   const width = Number(/width="(\d+)"/.exec(sheet)![1]);
   return renderPng(sheet, { width });
 }
@@ -81,15 +99,12 @@ export const WORDMARK_HEIGHTS = [12, 16, 24, 36, 64];
  * The wordmark on the same four grounds as the symbol sheet, at the heights it is read at. For a concept led by its
  * wordmark this is the identity, so the critic reads it the way it reads the symbol sheet.
  */
-export async function renderWordmarkSheet(svg: string, title?: string): Promise<Buffer> {
-  const light = '#ffffff';
-  const dark = '#111318';
-  const rows: SheetRow[] = [
-    { label: 'Color on light', background: light, svg: adaptToGround(svg, light) },
-    { label: 'Color on dark (adapted)', background: dark, svg: adaptToGround(svg, dark) },
-    { label: 'Black', background: light, svg: monochrome(svg, '#000000') },
-    { label: 'White (reversed)', background: dark, svg: monochrome(svg, '#ffffff') },
-  ];
+export async function renderWordmarkSheet(
+  svg: string,
+  title?: string,
+  palette?: GroundPalette,
+): Promise<Buffer> {
+  const rows = reviewSheetRows(svg, palette ? { palette } : {});
   const sheet = sheetSvg(rows, WORDMARK_HEIGHTS, title, Math.min(8, Math.max(1, aspectOf(svg))));
   return renderPng(sheet, { width: Number(/width="(\d+)"/.exec(sheet)![1]) });
 }
@@ -102,6 +117,7 @@ export function compareSheetSvg(
   items: { label: string; svg: string }[],
   paper = '#ffffff',
   title = 'Options',
+  palette?: GroundPalette,
 ): string {
   const g = groundsFor(paper);
   const rows: SheetRow[] = items.flatMap((it) => [
@@ -109,7 +125,7 @@ export function compareSheetSvg(
     {
       label: `${it.label} · on ${g.darkFirst ? 'light' : 'dark'}`,
       background: g.opposite,
-      svg: adaptToGround(it.svg, g.opposite),
+      svg: markOnGround(it.svg, g.opposite, palette),
     },
   ]);
   const sizes = [16, 32, 64, 128, 256];
@@ -120,8 +136,9 @@ export async function renderCompareSheet(
   items: { label: string; svg: string }[],
   paper = '#ffffff',
   title = 'Options',
+  palette?: GroundPalette,
 ): Promise<Buffer> {
-  const sheet = compareSheetSvg(items, paper, title);
+  const sheet = compareSheetSvg(items, paper, title, palette);
   const width = Number(/width="(\d+)"/.exec(sheet)![1]);
   return renderPng(sheet, { width });
 }

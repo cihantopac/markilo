@@ -9,7 +9,7 @@ import { cssFontFamily, type ExportResult, exportBrand } from '../src/export/exp
 import { finalizeConcept, kitPath, lockIdentity } from '../src/export/kit.js';
 import { isDarkGround } from '../src/export/variants.js';
 import { buildGallery } from '../src/gallery/gallery.js';
-import { pngSize } from '../src/render/png.js';
+import { decodeImage, pngSize } from '../src/render/png.js';
 import { verifyConcept } from '../src/report/quality.js';
 import { mark, synthBrand, tmp } from './helpers.js';
 
@@ -422,6 +422,76 @@ describe('a colour for each ground', () => {
       JSON.stringify({ ...kit, palette: { ...kit.palette, onDark: '#00ff99', onLight: '#004422' } }),
     );
     await exportBrand(ws, 'duskmint', { groups: ['logos'], clean: true });
+    expect(hashes()).toEqual(before);
+  }, 120_000);
+});
+
+describe('the brand tile', () => {
+  const rose = mark('fold-n').replace(/fill="#[0-9a-f]{6}"/g, 'fill="#c2255c"');
+  const tileFiles = [
+    'web/apple-touch-icon.png',
+    'android/res/mipmap-xxxhdpi/ic_launcher.png',
+    'macos/AppIcon.iconset/icon_512x512.png',
+  ];
+  /** Opaque colours of a PNG, most frequent first, as #rrggbb. */
+  const colours = (buf: Buffer): string[] => {
+    const { data } = decodeImage(buf);
+    const n = new Map<string, number>();
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] !== 255) continue;
+      const hex = `#${[data[i]!, data[i + 1]!, data[i + 2]!].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+      n.set(hex, (n.get(hex) ?? 0) + 1);
+    }
+    return [...n.entries()].sort((a, b) => b[1] - a[1]).map(([c]) => c);
+  };
+  const exportWith = async (extra: Record<string, string>) => {
+    const { ws } = synthBrand();
+    writeFileSync(join(ws.conceptDir('nimbra', 'fold'), 'symbol.svg'), rose);
+    const c = ws.concept('nimbra', 'fold');
+    ws.saveConcept({ ...c, palette: { primary: '#c2255c', ...extra } });
+    await verifyConcept(ws, 'nimbra', 'fold');
+    await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
+    await exportBrand(ws, 'nimbra', { groups: ['logos', 'web', 'android', 'macos'] });
+    return (p: string) => readFileSync(join(ws.exportsDir('nimbra'), p));
+  };
+
+  it('onBrand puts a white mark on every brand tile', async () => {
+    const read = await exportWith({ onBrand: '#ffffff' });
+    const app = read('logos/appmark/appmark.svg').toString();
+    expect(app).toContain('fill="#ffffff"');
+    expect(app).not.toMatch(/fill="#(?!ffffff|c2255c)[0-9a-f]{6}"/);
+    for (const f of tileFiles) expect(colours(read(f)).slice(0, 2), f).toEqual(['#c2255c', '#ffffff']);
+  }, 120_000);
+
+  it('tile sets the tile ground', async () => {
+    const read = await exportWith({ tile: '#1a1a1a' });
+    expect(read('logos/appmark/appmark.svg').toString()).toContain('fill="#1a1a1a"');
+    for (const f of tileFiles) expect(colours(read(f))[0], f).toBe('#1a1a1a');
+  }, 120_000);
+
+  it('a locked brand ignores onBrand and tile', async () => {
+    const { ws } = synthBrand();
+    const symbolPath = join(tmp(), 'symbol.svg');
+    writeFileSync(symbolPath, mark('bars'));
+    ws.addBrand({ name: 'Ledger', locked: true });
+    lockIdentity(ws, 'ledger', { symbol: symbolPath, primary: '#7a3cf0' });
+    const root = ws.exportsDir('ledger');
+    const hashes = () =>
+      Object.fromEntries(
+        readdirSync(root, { recursive: true })
+          .map(String)
+          .filter((f) => /\.(svg|png|icns)$/.test(f))
+          .map((f) => [f, sha256(readFileSync(join(root, f)))]),
+      );
+    const groups = ['logos', 'web', 'android', 'macos'] as const;
+    await exportBrand(ws, 'ledger', { groups: [...groups] });
+    const before = hashes();
+    const kit = JSON.parse(readFileSync(kitPath(ws, 'ledger'), 'utf8'));
+    writeFileSync(
+      kitPath(ws, 'ledger'),
+      JSON.stringify({ ...kit, palette: { ...kit.palette, onBrand: '#ffffff', tile: '#1a1a1a' } }),
+    );
+    await exportBrand(ws, 'ledger', { groups: [...groups], clean: true });
     expect(hashes()).toEqual(before);
   }, 120_000);
 });

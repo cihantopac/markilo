@@ -81,6 +81,77 @@ describe('cli (bundled)', () => {
     expect(conceptJson().palette.onLight).toBeUndefined();
     expect(conceptJson().palette.onDark).toBe('#3ddc97');
   });
+  it('sets the brand tile and the mark colour on it', () => {
+    const cwd = tmp();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    ok(['init', '--name', 'Demo']);
+    ok(['brand', 'add', 'Lumen']);
+    // biome-ignore format: one flag per pair reads better
+    ok(['concept', 'new', '--brand', 'lumen', '--id', 'p1', '--title', 'One', '--direction', 'd', '--rationale', 'r',
+      '--semantics', 'a', '--primary', '#c2255c', '--on-brand', 'auto', '--tile', '#1A1A1A']);
+    const conceptJson = () =>
+      JSON.parse(
+        readFileSync(join(cwd, 'brand', 'brands', 'lumen', 'concepts', 'p1', 'concept.json'), 'utf8'),
+      );
+    expect(conceptJson().palette).toMatchObject({ onBrand: 'auto', tile: '#1a1a1a' });
+    const set = ['concept', 'update', '--brand', 'lumen', '--concept', 'p1'];
+    ok([...set, '--on-brand', '#FFFFFF']);
+    expect(conceptJson().palette.onBrand).toBe('#ffffff');
+    for (const bad of [
+      ['--tile', 'red'],
+      ['--on-brand', 'white'],
+      ['--tile', 'auto'],
+    ]) {
+      const r = run([...set, ...bad], cwd);
+      expect(r.status, bad.join(' ')).not.toBe(0);
+      expect(JSON.parse(r.stderr).error.code).toBe('USAGE');
+    }
+    ok([...set, '--on-brand', 'none', '--tile', 'none']);
+    expect(conceptJson().palette.onBrand).toBeUndefined();
+    expect(conceptJson().palette.tile).toBeUndefined();
+  });
+  it('render --compare and --sheet take the ground colours', () => {
+    const cwd = tmp();
+    const rose =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20 20h60v60H20z" fill="#c2255c"/></svg>';
+    writeFileSync(join(cwd, 'a.svg'), rose);
+    writeFileSync(join(cwd, 'b.svg'), rose);
+    const r = run(
+      [
+        'render',
+        'a.svg',
+        'b.svg',
+        '--compare',
+        '--primary',
+        '#c2255c',
+        '--on-dark',
+        '#f783ac',
+        '-o',
+        'c.png',
+      ],
+      cwd,
+    );
+    expect(r.status, r.stderr).toBe(0);
+    const plain = run(['render', 'a.svg', 'b.svg', '--compare', '-o', 'p.png'], cwd);
+    expect(plain.status, plain.stderr).toBe(0);
+    expect(readFileSync(join(cwd, 'c.png')).equals(readFileSync(join(cwd, 'p.png')))).toBe(false);
+    const bad = run(['render', 'a.svg', 'b.svg', '--compare', '--on-dark', 'pink', '-o', 'x.png'], cwd);
+    expect(JSON.parse(bad.stderr).error.code).toBe('INVALID_INPUT');
+    const noPrimary = run(
+      ['render', 'a.svg', 'b.svg', '--compare', '--on-dark', '#f783ac', '-o', 'x.png'],
+      cwd,
+    );
+    expect(JSON.parse(noPrimary.stderr).error.code).toBe('USAGE');
+    const sheet = run(
+      ['render', 'a.svg', '--sheet', '--primary', '#c2255c', '--on-dark', '#f783ac', '-o', 's.png'],
+      cwd,
+    );
+    expect(sheet.status, sheet.stderr).toBe(0);
+  });
   it('concept update takes paths from the cwd, stored relative, and keeps a chat choice', () => {
     const cwd = tmp();
     const ok = (args: string[]) => {

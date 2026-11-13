@@ -42,6 +42,9 @@ export interface BrandKit {
     /** The brand colour on a dark / light ground, replacing `primary` there. */
     onDark?: string;
     onLight?: string;
+    /** The mark colour on the brand tile (#hex or `auto`) and the tile's ground (default `primary`). */
+    onBrand?: string;
+    tile?: string;
   };
   typography?: { fontId: string; weight: number; family?: string; license?: string };
   tagline?: string;
@@ -80,6 +83,7 @@ export function loadKit(
   const kit = readJson<BrandKit>(p);
   const HEX = /^#[0-9a-fA-F]{6}$/;
   for (const [k, v] of Object.entries(kit.palette ?? {})) {
+    if (k === 'onBrand' && v === 'auto') continue;
     if (typeof v !== 'string' || !HEX.test(v))
       throw new MarkiloError('INVALID_INPUT', `final/brand.json palette.${k} must be #rrggbb.`);
   }
@@ -249,6 +253,8 @@ export async function finalizeConcept(
       ...(concept.palette.accent ? { accent: concept.palette.accent } : {}),
       ...(concept.palette.onDark ? { onDark: concept.palette.onDark } : {}),
       ...(concept.palette.onLight ? { onLight: concept.palette.onLight } : {}),
+      ...(concept.palette.onBrand ? { onBrand: concept.palette.onBrand } : {}),
+      ...(concept.palette.tile ? { tile: concept.palette.tile } : {}),
       ink: concept.palette.ink ?? ink,
       paper: concept.palette.paper ?? '#ffffff',
       dark,

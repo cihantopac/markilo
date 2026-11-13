@@ -26,9 +26,11 @@ import {
   groundColors,
   groundsFor,
   isDarkGround,
+  markOnGround,
   monochrome,
   onFillVariant,
   reversedVariant,
+  tileGround,
 } from './variants.js';
 
 export const EXPORT_GROUPS = [
@@ -250,8 +252,8 @@ async function appmarkSvg(
   shape: 'rounded' | 'square' | 'circle',
   fraction = 0.6,
 ): Promise<string> {
-  const fill = ctx.kit.palette.primary;
-  const { svg } = onFillVariant(ctx.symbol!, fill);
+  const fill = tileGround(ctx.kit.palette);
+  const svg = markOnGround(ctx.symbol!, fill, ctx.kit.palette, { tile: true });
   const under =
     shape === 'square'
       ? `<rect width="${size}" height="${size}" fill="${fill}"/>`
@@ -347,8 +349,8 @@ async function exportWeb(ctx: Ctx) {
     });
   }
   for (const s of SPECS.web.maskableIcons) {
-    const fill = kit.locked ? kit.palette.paper : kit.palette.primary;
-    const mark = kit.locked ? sym : onFillVariant(sym, fill).svg;
+    const fill = kit.locked ? kit.palette.paper : tileGround(kit.palette);
+    const mark = kit.locked ? sym : markOnGround(sym, fill, kit.palette, { tile: true });
     const maskable = await canvas(
       mark,
       s,
@@ -462,14 +464,14 @@ async function exportIos(ctx: Ctx) {
     await emit(
       ctx,
       'ios/icon-composer/background.svg',
-      svgDocument(S, S, '', { background: kit.palette.primary }),
+      svgDocument(S, S, '', { background: tileGround(kit.palette) }),
       { group: 'ios', purpose: 'Icon Composer background layer', derivedFrom: 'brand.json' },
     );
     const fg = svgDocument(
       S,
       S,
       await placeMark(
-        onFillVariant(sym, kit.palette.primary).svg,
+        markOnGround(sym, tileGround(kit.palette), kit.palette, { tile: true }),
         { x: 0, y: 0, width: S, height: S },
         { mode: 'box', fraction: 0.6 },
       ),
@@ -492,8 +494,8 @@ async function exportIos(ctx: Ctx) {
 async function exportMacos(ctx: Ctx) {
   const { kit } = ctx;
   const { canvas: C, legacyBody: body, legacyCornerRadius } = SPECS.macos;
-  const fill = kit.locked ? kit.palette.paper : kit.palette.primary;
-  const mark = kit.locked ? ctx.symbol! : onFillVariant(ctx.symbol!, fill).svg;
+  const fill = kit.locked ? kit.palette.paper : tileGround(kit.palette);
+  const mark = kit.locked ? ctx.symbol! : markOnGround(ctx.symbol!, fill, kit.palette, { tile: true });
   // macOS 26+: full-bleed square; the system applies the rounded shape (also the Icon Composer canvas).
   const square = svgDocument(
     C,
@@ -560,8 +562,8 @@ async function exportAndroid(ctx: Ctx) {
   const { kit } = ctx;
   const A = SPECS.android;
   const sym = ctx.symbol!;
-  const fill = kit.locked ? kit.palette.paper : kit.palette.primary;
-  const fg = kit.locked ? sym : onFillVariant(sym, fill).svg;
+  const fill = kit.locked ? kit.palette.paper : tileGround(kit.palette);
+  const fg = kit.locked ? sym : markOnGround(sym, fill, kit.palette, { tile: true });
   const safe = A.safeZoneDp / 2 / A.adaptiveDp; // radius as fraction of the layer
   for (const [d, k] of Object.entries(A.densities)) {
     const L = Math.round(A.adaptiveDp * k);

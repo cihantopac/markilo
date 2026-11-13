@@ -1,6 +1,6 @@
 import { composeLockup } from '../design/lockup.js';
 import { inkMetrics, placeMark } from '../export/geometry.js';
-import { adaptToGround, groundsFor, onFillVariant } from '../export/variants.js';
+import { groundsFor, markOnGround, tileGround } from '../export/variants.js';
 import { nestSvg, svgDocument } from '../svg/compose.js';
 import { renderPng } from './resvg.js';
 import { label } from './sheet.js';
@@ -19,6 +19,11 @@ export interface ProposalInput {
   paper: string;
   ink?: string;
   primary: string;
+  /** The palette's colour for each ground, the mark colour on the brand tile and the tile's ground (as export uses them). */
+  onDark?: string;
+  onLight?: string;
+  onBrand?: string;
+  tile?: string;
 }
 
 const W = 640;
@@ -73,6 +78,7 @@ export async function proposalSvg(p: ProposalInput): Promise<{ svg: string; widt
   const hero = heroOf(p, symbolInk);
   const wide = p.lead === 'wordmark' || hero !== p.symbol;
   const neutrals = p.ink ? { dark: p.ink } : {};
+  const onGround = (svg: string, ground: string) => markOnGround(svg, ground, p, { neutrals });
   let body = '';
   let y = PAD;
   body += label(p.caption, PAD, y + 12, 13, '#6a707c');
@@ -91,7 +97,7 @@ export async function proposalSvg(p: ProposalInput): Promise<{ svg: string; widt
   y += heroBox.height + 12;
   const altBox = { x: PAD, y, width: W - PAD * 2, height: 130 };
   body += `<rect x="${altBox.x}" y="${altBox.y}" width="${altBox.width}" height="${altBox.height}" rx="14" fill="${g.opposite}"/>`;
-  body += await fitCenter(adaptToGround(hero, g.opposite, neutrals), {
+  body += await fitCenter(onGround(hero, g.opposite), {
     x: altBox.x + 90,
     y: altBox.y + (wide ? 40 : 24),
     width: altBox.width - 180,
@@ -103,9 +109,10 @@ export async function proposalSvg(p: ProposalInput): Promise<{ svg: string; widt
   const icon = p.symbol;
   if (icon) {
     const tile = 96;
-    body += `<rect x="${PAD}" y="${y}" width="${tile}" height="${tile}" rx="22" fill="${p.primary}"/>`;
+    const tileFill = tileGround(p);
+    body += `<rect x="${PAD}" y="${y}" width="${tile}" height="${tile}" rx="22" fill="${tileFill}"/>`;
     body += await placeMark(
-      onFillVariant(icon, p.primary).svg,
+      markOnGround(icon, tileFill, p, { tile: true }),
       { x: PAD, y, width: tile, height: tile },
       { mode: 'box', fraction: 0.6 },
     );
@@ -115,7 +122,7 @@ export async function proposalSvg(p: ProposalInput): Promise<{ svg: string; widt
     const cx = ax + tile + 24;
     body += `<circle cx="${cx + tile / 2}" cy="${y + tile / 2}" r="${tile / 2}" fill="${g.opposite}"/>`;
     body += await placeMark(
-      adaptToGround(icon, g.opposite, neutrals),
+      onGround(icon, g.opposite),
       { x: cx, y, width: tile, height: tile },
       { mode: 'circle', radius: 0.34 },
     );
@@ -125,7 +132,7 @@ export async function proposalSvg(p: ProposalInput): Promise<{ svg: string; widt
     for (const [i, ground] of [g.native, g.opposite].entries()) {
       const ry = y + i * 50;
       body += `<rect x="${sx}" y="${ry}" width="${sw}" height="46" rx="10" fill="${ground}" stroke="#e1e4ea"/>`;
-      const art = i ? adaptToGround(small, ground, neutrals) : small;
+      const art = i ? onGround(small, ground) : small;
       body += await placeMark(
         art,
         { x: sx + 14, y: ry + 7, width: 32, height: 32 },

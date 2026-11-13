@@ -97,6 +97,7 @@ export function validateConcept(v: unknown): Issues {
     issues.push('palette.primary must be #rrggbb');
   } else {
     for (const [k, c] of Object.entries(v.palette)) {
+      if (k === 'onBrand' && c === 'auto') continue;
       if (typeof c !== 'string' || !HEX.test(c)) issues.push(`palette.${k} must be #rrggbb`);
     }
   }

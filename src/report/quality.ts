@@ -163,7 +163,7 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
     }
     if (role === 'symbol') {
       const sheet = join(dir, 'review', 'symbol-sheet.png');
-      writeGenerated(sheet, await renderReviewSheet(svg, `${concept.title} — symbol`));
+      writeGenerated(sheet, await renderReviewSheet(svg, `${concept.title} — symbol`, concept.palette));
       sheets.push(sheet);
     }
     if (role === 'wordmark') {
@@ -193,7 +193,7 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
         r.summary[problems.length ? 'warn' : 'pass']++;
       }
       const sheet = join(dir, 'review', 'wordmark-sheet.png');
-      writeGenerated(sheet, await renderWordmarkSheet(svg, `${concept.title} — wordmark`));
+      writeGenerated(sheet, await renderWordmarkSheet(svg, `${concept.title} — wordmark`, concept.palette));
       sheets.push(sheet);
     }
   }

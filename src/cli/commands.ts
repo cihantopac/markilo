@@ -53,6 +53,7 @@ import { GROUP_INFO, resolveDeliverables, suggestDeliverables } from '../export/
 import { brandFinalHolding, EXPORT_GROUPS, type ExportGroup, exportBrand } from '../export/exporter.js';
 import { inkMetrics } from '../export/geometry.js';
 import { finalizeConcept, lockIdentity } from '../export/kit.js';
+import { tileGround } from '../export/variants.js';
 import { feedbackRequests, parseFeedback, readLatestFeedback, storeFeedback } from '../gallery/feedback.js';
 import { buildGallery } from '../gallery/gallery.js';
 import { serveGallery } from '../gallery/serve.js';
@@ -154,6 +155,24 @@ function groundColorOptions(
   }
   return out;
 }
+/** `--on-brand <#hex|auto>` / `--tile <#hex>` ("none" is handled by the caller): the brand tile's colours. */
+function tileColorOptions(c: RunContext): { onBrand?: string; tile?: string } {
+  const out: { onBrand?: string; tile?: string } = {};
+  const onBrand = c.str('on-brand');
+  if (onBrand && onBrand !== 'none') {
+    const v = onBrand === 'auto' ? 'auto' : onBrand.startsWith('#') ? normalizeColor(onBrand) : undefined;
+    if (!v) throw new MarkiloError('USAGE', '--on-brand must be a hex color like #ffffff, "auto" or "none".');
+    out.onBrand = v;
+  }
+  const tile = c.str('tile');
+  if (tile && tile !== 'none') {
+    const v = tile.startsWith('#') ? normalizeColor(tile) : undefined;
+    if (!v) throw new MarkiloError('USAGE', '--tile must be a hex color like #1a1a1a or "none".');
+    out.tile = v;
+  }
+  return out;
+}
+
 async function loadReferences(w: Workspace, brand: string): Promise<Reference[]> {
   const out: Reference[] = [];
   for (const r of readReferences(w, brand).references.slice(0, 60)) {
@@ -1168,7 +1187,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Create a concept folder and concept.json. Then write symbol.svg (and optionally wordmark.svg) into it.',
     usage:
-      'concept new --brand <slug> --id <id> --title <title> --direction <direction> --rationale <why> --semantics a,b,c --primary <#hex> [--secondary --accent --ink --paper] [--font <id> --weight <n>] [--lead symbol|wordmark] [--round <n> [--directed "<the user\'s direction>"]]',
+      'concept new --brand <slug> --id <id> --title <title> --direction <direction> --rationale <why> --semantics a,b,c --primary <#hex> [--secondary --accent --ink --paper] [--on-dark|--on-light <#hex>] [--on-brand <#hex|auto>] [--tile <#hex>] [--font <id> --weight <n>] [--lead symbol|wordmark] [--round <n> [--directed "<the user\'s direction>"]]',
     options: {
       ...brandOpt,
       id: { type: 'string', description: 'Concept id (slug)' },
@@ -1197,6 +1216,12 @@ export const COMMANDS: CommandSpec[] = [
       paper: { type: 'string', description: 'Background color' },
       'on-dark': { type: 'string', description: 'Brand color on a dark ground, replacing primary there' },
       'on-light': { type: 'string', description: 'Brand color on a light ground, replacing primary there' },
+      'on-brand': {
+        type: 'string',
+        description:
+          'Mark color on the brand tile (app icons, avatars): #hex, or auto (paper or ink, whichever contrasts more)',
+      },
+      tile: { type: 'string', description: 'Ground of the brand tile (default: primary)' },
       font: { type: 'string', description: 'Wordmark font id (markilo fonts)' },
       weight: { type: 'string', description: 'Wordmark font weight' },
     },
@@ -1243,6 +1268,7 @@ export const COMMANDS: CommandSpec[] = [
               .map((k) => [k, c.str(k)!]),
           ),
           ...groundColorOptions(c),
+          ...tileColorOptions(c),
         },
         ...(font
           ? {
@@ -1311,7 +1337,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--font <id> --weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1366,6 +1392,12 @@ export const COMMANDS: CommandSpec[] = [
         type: 'string',
         description: 'Brand color on a light ground, replacing primary there ("none" removes it)',
       },
+      'on-brand': {
+        type: 'string',
+        description:
+          'Mark color on the brand tile: #hex, auto (paper or ink, whichever contrasts more) or "none" to remove it',
+      },
+      tile: { type: 'string', description: 'Ground of the brand tile, default primary ("none" removes it)' },
       font: { type: 'string', description: 'Font id' },
       weight: { type: 'string', description: 'Font weight' },
       construction: { type: 'string', description: 'Grid / geometry notes' },
@@ -1427,6 +1459,9 @@ export const COMMANDS: CommandSpec[] = [
         if (c.str(opt) === 'none') delete next.palette[key];
         else Object.assign(next.palette, groundColorOptions(c, opt));
       }
+      Object.assign(next.palette, tileColorOptions(c));
+      if (c.str('on-brand') === 'none') delete next.palette.onBrand;
+      if (c.str('tile') === 'none') delete next.palette.tile;
       if (c.str('construction')) next.construction = c.str('construction')!;
       for (const k of ['title', 'direction', 'rationale'] as const) if (c.str(k)) next[k] = c.str(k)!;
       if (c.str('idea') || c.str('strengths') || c.str('weaknesses')) {
@@ -1584,6 +1619,11 @@ export const COMMANDS: CommandSpec[] = [
           : undefined,
         next.palette.onLight && contrastRatio(next.palette.onLight, '#ffffff') < 3
           ? `--on-light ${next.palette.onLight} is under 3:1 on a light ground; export uses it as given.`
+          : undefined,
+        next.palette.onBrand &&
+        next.palette.onBrand !== 'auto' &&
+        contrastRatio(next.palette.onBrand, tileGround(next.palette)) < 3
+          ? `--on-brand ${next.palette.onBrand} is under 3:1 on the tile ${tileGround(next.palette)}; export uses it as given.`
           : undefined,
       ].filter((x): x is string => !!x);
       return {
@@ -1971,6 +2011,10 @@ export const COMMANDS: CommandSpec[] = [
           paper: cpt.palette.paper ?? '#ffffff',
           ...(cpt.palette.ink ? { ink: cpt.palette.ink } : {}),
           primary: cpt.palette.primary,
+          ...(cpt.palette.onDark ? { onDark: cpt.palette.onDark } : {}),
+          ...(cpt.palette.onLight ? { onLight: cpt.palette.onLight } : {}),
+          ...(cpt.palette.onBrand ? { onBrand: cpt.palette.onBrand } : {}),
+          ...(cpt.palette.tile ? { tile: cpt.palette.tile } : {}),
         };
         inputs.push(input);
         order.push({ letter: letterOf(cpt), id: cpt.id, title: cpt.title, status: cpt.status });
@@ -2999,7 +3043,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Render an SVG to PNG, or a review contact sheet (sizes 16–256 on light/dark/mono) with --sheet.',
     usage:
-      'render <in.svg> -o <out.png> [--width <px>] [--bg <#hex>] [--sheet] | render <a.svg> <b.svg>… --compare [--paper <#hex>] -o <out.png>',
+      'render <in.svg> -o <out.png> [--width <px>] [--bg <#hex>] [--sheet] | render <a.svg> <b.svg>… --compare [--paper <#hex>] -o <out.png>  (--sheet / --compare: [--primary <#hex> --on-dark|--on-light <#hex>])',
     options: {
       out: { type: 'string', short: 'o', description: 'Output PNG' },
       width: { type: 'string', description: 'Width in px (default 512)' },
@@ -3010,8 +3054,25 @@ export const COMMANDS: CommandSpec[] = [
         description: 'Compare several sketches side by side (16–256 px, both grounds)',
       },
       paper: { type: 'string', description: 'Paper color for --compare (default #ffffff)' },
+      primary: {
+        type: 'string',
+        description: '--sheet / --compare: the primary color that --on-dark / --on-light replace',
+      },
+      'on-dark': { type: 'string', description: '--sheet / --compare: brand color on the dark ground' },
+      'on-light': { type: 'string', description: '--sheet / --compare: brand color on the light ground' },
     },
     async run(c) {
+      const grounds = groundColorOptions(c);
+      let palette: { primary: string; onDark?: string; onLight?: string } | undefined;
+      if (grounds.onDark || grounds.onLight) {
+        const primary = c.str('primary') && normalizeColor(c.str('primary')!);
+        if (!primary)
+          throw new MarkiloError(
+            'USAGE',
+            '--on-dark / --on-light need --primary <#hex>: the color they replace.',
+          );
+        palette = { primary, ...grounds };
+      }
       if (c.bool('compare')) {
         if (c.positionals.length < 2 || c.positionals.length > 8)
           throw new MarkiloError('USAGE', '--compare takes 2 to 8 SVG files.');
@@ -3021,13 +3082,15 @@ export const COMMANDS: CommandSpec[] = [
             svg: readText(file(c, p)),
           })),
           c.str('paper') ?? '#ffffff',
+          'Options',
+          palette,
         );
         writeGenerated(file(c, c.req('out')), png);
         return { out: c.req('out'), sketches: c.positionals.length, bytes: png.length };
       }
       const svg = readText(file(c, pos(c, 0, 'in.svg')));
       const png = c.bool('sheet')
-        ? await renderReviewSheet(svg, basename(pos(c, 0, 'in.svg')))
+        ? await renderReviewSheet(svg, basename(pos(c, 0, 'in.svg')), palette)
         : await renderPng(svg, {
             width: c.num('width', 512)!,
             ...(c.str('bg') ? { background: c.str('bg')! } : {}),

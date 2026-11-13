@@ -115,4 +115,53 @@ export function onFillVariant(
   return { svg: monochrome(svg, best), color: best };
 }
 
+/** The palette fields that decide how a mark sits on a ground or on the brand tile. */
+export interface GroundPalette {
+  primary: string;
+  paper?: string;
+  ink?: string;
+  onDark?: string;
+  onLight?: string;
+  /** The mark colour on the brand tile: #hex, or `auto` (the higher contrast of paper and ink). */
+  onBrand?: string;
+  /** The brand tile's ground; `primary` when unset. */
+  tile?: string;
+}
+
+/** The ground of the brand tile (app icons, avatars, the appmark): `tile` when set, else `primary`. */
+export const tileGround = (p: { primary: string; tile?: string }): string => p.tile ?? p.primary;
+
+/**
+ * The mark colour the palette sets for the brand tile, or undefined when it sets none. `auto` takes whichever of
+ * paper (default white) and ink (default near-black) has the higher contrast on the tile.
+ */
+export function onBrandColor(p: GroundPalette): string | undefined {
+  if (!p.onBrand) return undefined;
+  if (p.onBrand !== 'auto') return normalizeColor(p.onBrand) ?? p.onBrand;
+  const ground = tileGround(p);
+  const paper = p.paper ?? '#ffffff';
+  const ink = p.ink ?? '#0b0d12';
+  return contrastRatio(ink, ground) > contrastRatio(paper, ground) ? ink : paper;
+}
+
+/**
+ * The one resolver for how a mark sits on a ground, shared by previews and export. On a plain ground the palette's
+ * onDark / onLight replace `primary` when set; on the brand tile (`tile: true`) the palette's onBrand colours the
+ * mark when set. Otherwise — and always for a locked identity — the behaviour is the automatic one
+ * (`adaptToGround` / `onFillVariant`).
+ */
+export function markOnGround(
+  svg: string,
+  ground: string,
+  palette: GroundPalette | undefined,
+  opts: { locked?: boolean; tile?: boolean; neutrals?: { light?: string; dark?: string } } = {},
+): string {
+  const own = palette && !opts.locked ? palette : undefined;
+  if (opts.tile) {
+    const color = own && onBrandColor(own);
+    return color ? monochrome(svg, color) : onFillVariant(svg, ground).svg;
+  }
+  return adaptToGround(svg, ground, opts.neutrals ?? {}, own && groundColors(own));
+}
+
 export { monochrome };

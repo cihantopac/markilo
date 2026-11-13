@@ -137,6 +137,10 @@ export interface ConceptPalette {
   onDark?: string;
   /** The brand colour on a light ground, replacing `primary` there. */
   onLight?: string;
+  /** The mark colour on the brand tile (app icons, avatars): #hex, or `auto` (the higher contrast of paper and ink). */
+  onBrand?: string;
+  /** The brand tile's ground; `primary` when unset. */
+  tile?: string;
 }
 
 export interface Concept {
