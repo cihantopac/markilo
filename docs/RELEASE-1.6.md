@@ -566,3 +566,7 @@ The reports also praised parts that should stay as they are:
   `cost` reported `busyMinutes` and `elapsedMinutes`.
 - `npm run ci` 435/435, `node scripts/smoke.mjs` passed, `claude plugin validate plugin` passed. Markilo's own kit
   re-exported: logo files byte-identical; the manifest changed.
+
+**Released 2026-11-14.** Tag `markilo--v1.6.0` and the GitHub release on 2026-11-13; `markilo@1.6.0` on npm
+(`latest`, gitHead `5d2a806`, shasum `469740f3ef5cdc646dc5612cc628c2017ff73b08`), published by the user.
+`npx markilo@1.6.0 --version` prints 1.6.0. The `v1.5` and `v1.6` branches were deleted after the merge.
