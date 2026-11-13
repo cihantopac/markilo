@@ -41,11 +41,7 @@ beforeAll(async () => {
   // The same brand approved and exported.
   ({ ws } = synthBrand());
   await verifyConcept(ws, 'nimbra', 'fold');
-  await finalizeConcept(ws, 'nimbra', 'fold', {
-    acceptRisk: true,
-    acceptColours: true,
-    userChoice: 'Chosen in a test.',
-  });
+  await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
   await exportBrand(ws, 'nimbra', { groups: ['logos', 'web', 'tokens', 'guidelines'] });
   approved = readFileSync((await buildGallery(ws)).path, 'utf8');
   kit = readFileSync(join(ws.exportsDir('nimbra'), 'index.html'), 'utf8');

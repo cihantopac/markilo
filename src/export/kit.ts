@@ -184,18 +184,22 @@ const MASTER_KEYS = [
  * The colours each master uses that the concept's palette does not hold. Allowed: the palette roles, currentColor,
  * none, white and black, and the stops of a gradient whose end colours are allowed.
  */
-export function masterColourCheck(
-  ws: Workspace,
-  brand: string,
-  id: string,
-): { file: string; colours: string[] }[] {
+export interface MasterColours {
+  /** Colours that used to be a palette role and no longer are: the palette moved, the master did not. */
+  stale: { file: string; colours: string[] }[];
+  /** Any other colour outside the palette (a shade of the primary, say): worth a look, never a block. */
+  offPalette: { file: string; colours: string[] }[];
+}
+
+export function masterColourCheck(ws: Workspace, brand: string, id: string): MasterColours {
   const cpt = ws.concept(brand, id);
   const allowed = new Set<string>(['#ffffff', '#000000']);
   for (const v of Object.values(cpt.palette)) {
     const hex = typeof v === 'string' ? normalizeColor(v) : undefined;
     if (hex) allowed.add(hex);
   }
-  const out: { file: string; colours: string[] }[] = [];
+  const history = new Set((cpt.paletteHistory ?? []).map((h) => normalizeColor(h) ?? h));
+  const out: MasterColours = { stale: [], offPalette: [] };
   for (const key of MASTER_KEYS) {
     const rel = cpt.files[key];
     if (!rel) continue;
@@ -226,17 +230,27 @@ export function masterColourCheck(
       for (const h of stops) used.add(h);
     }
     const bad = [...used].filter((h) => !allowed.has(h)).sort();
-    if (bad.length) out.push({ file: rel, colours: bad });
+    const stale = bad.filter((h) => history.has(h));
+    const off = bad.filter((h) => !history.has(h));
+    if (stale.length) out.stale.push({ file: rel, colours: stale });
+    if (off.length) out.offPalette.push({ file: rel, colours: off });
   }
   return out;
 }
 
-/** One line per master: what to do about the colours it uses outside the palette. */
-export function masterColourMessages(found: { file: string; colours: string[] }[]): string[] {
-  return found.map(
-    (f) =>
-      `${f.file} uses ${f.colours.join(', ')}, which ${f.colours.length === 1 ? 'is' : 'are'} not in the palette — run \`concept update --primary <#hex>\` to recolour, or add ${f.colours.length === 1 ? 'it' : 'them'} as a role`,
-  );
+/** One line per master: a stale colour says how to recolour, an off-palette one only that it is not a role. */
+export function masterColourMessages(found: MasterColours): string[] {
+  const list = (f: { colours: string[] }) => f.colours.join(', ');
+  const plural = (f: { colours: string[] }) => f.colours.length > 1;
+  return [
+    ...found.stale.map(
+      (f) =>
+        `${f.file} uses ${list(f)}, which ${plural(f) ? 'are' : 'is'} not in the palette — run \`concept update --primary <#hex>\` to recolour, or add ${plural(f) ? 'them' : 'it'} as a role`,
+    ),
+    ...found.offPalette.map(
+      (f) => `${f.file} uses ${list(f)}, which ${plural(f) ? 'are' : 'is'} not a palette role`,
+    ),
+  ];
 }
 
 /** Freezes an approved concept into final/: optimized masters, generated lockups and brand.json. */
@@ -314,11 +328,13 @@ export async function finalizeConcept(
     );
   }
   // A master still drawn in a colour the palette no longer holds would reach every export unnoticed.
-  const stale = masterColourMessages(masterColourCheck(ws, brand, conceptId));
+  const colours = masterColourCheck(ws, brand, conceptId);
+  const stale = masterColourMessages({ stale: colours.stale, offPalette: [] });
+  const colourWarnings = masterColourMessages(colours);
   if (stale.length && !opts.acceptColours)
     throw new MarkiloError(
       'INVALID_INPUT',
-      `Concept ${conceptId} has master colours outside its palette: ${stale.join('; ')}.`,
+      `Concept ${conceptId} has master colours the palette no longer holds: ${stale.join('; ')}.`,
       'Recolour with concept update, or add the colour as a palette role. If the user knowingly keeps them, pass --accept-colours.',
     );
   const dir = ws.finalDir(brand);
@@ -433,7 +449,7 @@ export async function finalizeConcept(
           }
         : {}),
     },
-    ...(stale.length ? { warnings: stale } : {}),
+    ...(colourWarnings.length ? { warnings: colourWarnings } : {}),
     gate: {
       status: gate.status,
       ...(gate.average !== undefined ? { average: gate.average } : {}),

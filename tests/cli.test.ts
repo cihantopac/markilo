@@ -222,17 +222,7 @@ describe('cli (bundled)', () => {
     ws.saveConcept(bare);
     await verifyConcept(ws, 'nimbra', 'fold');
     const r = run(
-      [
-        'finalize',
-        '--brand',
-        'nimbra',
-        '--concept',
-        'fold',
-        '--user-choice',
-        'This one.',
-        '--accept-risk',
-        '--accept-colours',
-      ],
+      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
       cwd,
     );
     expect(r.status, r.stderr).toBe(0);
@@ -254,17 +244,7 @@ describe('cli (bundled)', () => {
     );
     expect(cost.status, cost.stderr).toBe(0);
     const r = run(
-      [
-        'finalize',
-        '--brand',
-        'nimbra',
-        '--concept',
-        'fold',
-        '--user-choice',
-        'This one.',
-        '--accept-risk',
-        '--accept-colours',
-      ],
+      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
       cwd,
     );
     expect(r.status, r.stderr).toBe(0);
@@ -397,17 +377,7 @@ describe('cli (bundled)', () => {
     });
     await verifyConcept(ws, 'nimbra', 'fold');
     const r = run(
-      [
-        'finalize',
-        '--brand',
-        'nimbra',
-        '--concept',
-        'fold',
-        '--user-choice',
-        'This one.',
-        '--accept-risk',
-        '--accept-colours',
-      ],
+      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
       cwd,
     );
     expect(r.status, r.stderr).toBe(0);
@@ -468,14 +438,7 @@ describe('cli (bundled)', () => {
   }, 60_000);
   it('finalize fails on a stale master colour; --accept-colours records it', async () => {
     const { ws, dir: cwd } = synthBrand();
-    const symbol = join(ws.conceptDir('nimbra', 'fold'), 'symbol.svg');
-    writeFileSync(symbol, readFileSync(symbol, 'utf8').replace('#ff8a3d', '#3d5a80'));
-    const fold = ws.concept('nimbra', 'fold');
-    ws.saveConcept({ ...fold, palette: { ...fold.palette, secondary: '#2b44b0', ink: '#1b2140' } });
-    await verifyConcept(ws, 'nimbra', 'fold');
-    const verify = JSON.parse(run(['verify', '--brand', 'nimbra', '--concept', 'fold'], cwd).stdout);
-    expect(verify.warnings.join(' ')).toMatch(/symbol\.svg uses #3d5a80, which is not in the palette/);
-    const args = [
+    const fin = [
       'finalize',
       '--brand',
       'nimbra',
@@ -485,17 +448,39 @@ describe('cli (bundled)', () => {
       'This one.',
       '--accept-risk',
     ];
-    const bad = run(args, cwd);
+    // The accent changes, the master keeps drawing the old one: that colour is stale.
+    const upd = run(
+      ['concept', 'update', '--brand', 'nimbra', '--concept', 'fold', '--accent', '#e5484d', '--no-recolor'],
+      cwd,
+    );
+    expect(upd.status, upd.stderr).toBe(0);
+    expect(ws.concept('nimbra', 'fold').paletteHistory).toEqual(['#ff8a3d']);
+    await verifyConcept(ws, 'nimbra', 'fold');
+    const verify = JSON.parse(run(['verify', '--brand', 'nimbra', '--concept', 'fold'], cwd).stdout);
+    expect(verify.warnings.join(' ')).toMatch(/symbol\.svg uses #ff8a3d, which is not in the palette/);
+    const bad = run(fin, cwd);
     expect(bad.status).not.toBe(0);
     expect(JSON.parse(bad.stderr).error.code).toBe('INVALID_INPUT');
     expect(bad.stderr).toMatch(
-      /symbol\.svg uses #3d5a80, which is not in the palette — run `concept update --primary/,
+      /symbol\.svg uses #ff8a3d, which is not in the palette — run `concept update --primary/,
     );
-    const r = run([...args, '--accept-colours'], cwd);
+    const r = run([...fin, '--accept-colours'], cwd);
     expect(r.status, r.stderr).toBe(0);
     const out = JSON.parse(r.stdout);
-    expect(out.kit.warnings.join(' ')).toMatch(/symbol\.svg uses #3d5a80/);
-    expect(out.warnings.join(' ')).toMatch(/symbol\.svg uses #3d5a80/);
+    expect(out.kit.warnings.join(' ')).toMatch(/symbol\.svg uses #ff8a3d/);
+    expect(out.warnings.join(' ')).toMatch(/symbol\.svg uses #ff8a3d/);
+  }, 60_000);
+  it('an off-palette shade finalizes with a warning', async () => {
+    const { ws, dir: cwd } = synthBrand();
+    await verifyConcept(ws, 'nimbra', 'fold');
+    const r = run(
+      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
+      cwd,
+    );
+    expect(r.status, r.stderr).toBe(0);
+    const out = JSON.parse(r.stdout);
+    expect(out.kit.warnings.join(' ')).toMatch(/symbol\.svg uses #2b44b0, which is not a palette role/);
+    expect(out.kit.warnings.join(' ')).not.toMatch(/run `concept update/);
   }, 60_000);
   it('family word --fill writes the given fill on the word', () => {
     const { dir: cwd } = synthBrand();

@@ -38,7 +38,6 @@ beforeAll(async () => {
   await finalizeConcept(ws, 'nimbra', 'fold', {
     tagline: 'Notes that fold into structure',
     acceptRisk: true,
-    acceptColours: true,
     userChoice: 'Chosen in a test.',
     notes: ['Never use the accent as an error color.'],
   });
@@ -296,7 +295,6 @@ describe('wordmark-only identities', () => {
     await verifyConcept(wws, 'nimbra', 'fold');
     const kit = await finalizeConcept(wws, 'nimbra', 'fold', {
       acceptRisk: true,
-      acceptColours: true,
       userChoice: 'Chosen in a test.',
       wordmarkOnly: true,
     });
@@ -388,11 +386,7 @@ describe('a colour for each ground', () => {
       palette: { primary: '#3ddc97', paper: '#0b1220', ink: '#e8f0ec', onLight: '#007044' },
     });
     await verifyConcept(ws, 'nimbra', 'fold');
-    await finalizeConcept(ws, 'nimbra', 'fold', {
-      acceptRisk: true,
-      acceptColours: true,
-      userChoice: 'Chosen in a test.',
-    });
+    await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
     await exportBrand(ws, 'nimbra', { groups: ['logos', 'social', 'tokens', 'guidelines'] });
     const out = ws.exportsDir('nimbra');
     // Dark-first: the reversed artwork sits on white, so it takes the green chosen for light grounds.
@@ -418,11 +412,7 @@ describe('a colour for each ground', () => {
     const c = ws.concept('nimbra', 'fold');
     ws.saveConcept({ ...c, palette: { primary: '#e0a22a', paper: '#ffffff', onLight: '#a86f00' } });
     await verifyConcept(ws, 'nimbra', 'fold');
-    await finalizeConcept(ws, 'nimbra', 'fold', {
-      acceptRisk: true,
-      acceptColours: true,
-      userChoice: 'Chosen in a test.',
-    });
+    await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
     await exportBrand(ws, 'nimbra', { groups: ['logos'] });
     const out = ws.exportsDir('nimbra');
     const color = readFileSync(join(out, 'logos/symbol/symbol-color.svg'), 'utf8');
@@ -490,11 +480,7 @@ describe('the brand tile', () => {
     const c = ws.concept('nimbra', 'fold');
     ws.saveConcept({ ...c, palette: { primary: '#c2255c', ...extra } });
     await verifyConcept(ws, 'nimbra', 'fold');
-    await finalizeConcept(ws, 'nimbra', 'fold', {
-      acceptRisk: true,
-      acceptColours: true,
-      userChoice: 'Chosen in a test.',
-    });
+    await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
     await exportBrand(ws, 'nimbra', { groups: ['logos', 'web', 'android', 'macos', 'marketing', 'tokens'] });
     const read = (p: string) => readFileSync(join(ws.exportsDir('nimbra'), p));
     read.gallery = async () => readFileSync((await buildGallery(ws)).path, 'utf8');
@@ -569,7 +555,6 @@ describe('originality band', () => {
     await verifyConcept(ws, 'nimbra', 'fold');
     const kit = await finalizeConcept(ws, 'nimbra', 'fold', {
       acceptRisk: true,
-      acceptColours: true,
       userChoice: 'Chosen in a test.',
     });
     expect(kit.originality?.verdict).toBe('insufficient-evidence');
@@ -597,11 +582,7 @@ describe('a stand-in font stays out of the kit typography', () => {
     const c = ws.concept('nimbra', 'fold');
     ws.saveConcept({ ...c, typography: typography as never });
     await verifyConcept(ws, 'nimbra', 'fold');
-    await finalizeConcept(ws, 'nimbra', 'fold', {
-      acceptRisk: true,
-      acceptColours: true,
-      userChoice: 'Chosen in a test.',
-    });
+    await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
     return ws;
   };
   it('a family-lettered kit has no top-level fontId', async () => {
@@ -661,11 +642,7 @@ describe('custom lettering', () => {
       },
     });
     await verifyConcept(ws, 'nimbra', 'fold');
-    await finalizeConcept(ws, 'nimbra', 'fold', {
-      acceptRisk: true,
-      acceptColours: true,
-      userChoice: 'Chosen in a test.',
-    });
+    await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
     await exportBrand(ws, 'nimbra', { groups: ['tokens', 'guidelines'] });
     const read = (f: string) => readFileSync(join(ws.exportsDir('nimbra'), f), 'utf8');
     const md = () => read('guidelines/brand-guidelines.md');

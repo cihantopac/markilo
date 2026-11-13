@@ -1872,6 +1872,14 @@ export const COMMANDS: CommandSpec[] = [
         recolor = recolorConceptFiles(w, slug, cur, next);
       if (c.str('on-brand') === 'none') delete next.palette.onBrand;
       if (c.str('tile') === 'none') delete next.palette.tile;
+      // A colour that stopped being a role is remembered, so a master still drawn in it reads as stale at finalize.
+      const history = new Set(cur.paletteHistory ?? []);
+      for (const key of Object.keys(cur.palette) as (keyof Concept['palette'])[]) {
+        const was = cur.palette[key] && normalizeColor(cur.palette[key]!);
+        const now = next.palette[key] && normalizeColor(next.palette[key]!);
+        if (was && was !== now) history.add(was);
+      }
+      if (history.size) next.paletteHistory = [...history];
       if (c.str('construction')) next.construction = c.str('construction')!;
       for (const k of ['title', 'direction', 'rationale'] as const) if (c.str(k)) next[k] = c.str(k)!;
       if (c.str('idea') || c.str('strengths') || c.str('weaknesses')) {
