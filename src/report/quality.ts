@@ -132,7 +132,17 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
     reports.push(
       await assessQuality(svg, `${id}/${rel}`, role, { paper: concept.palette.paper ?? '#ffffff' }),
     );
-    if (role === 'symbol' && concept.files.small) {
+    if (role === 'symbol' && concept.smallSizes === 'main') {
+      // The user chose the main symbol at 16/32 px: its small-size failures are known and accepted, not blocking.
+      const main = reports[reports.length - 1]!;
+      for (const c of main.checks) {
+        if (!SMALL_SIZE_CHECKS.has(c.id) || c.status !== 'fail') continue;
+        main.summary.fail--;
+        main.summary.warn++;
+        c.status = 'warn';
+        c.message += ' — the user chose the main symbol at small sizes.';
+      }
+    } else if (role === 'symbol' && concept.files.small) {
       // Export draws every size up to 32 px from the small version, so it, not the main symbol, answers for them.
       const main = reports[reports.length - 1]!;
       for (const c of main.checks) {
@@ -245,7 +255,9 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
       await renderContextSheet({
         name: ws.brand(brand).name,
         symbol: symbolSvg,
-        ...(concept.files.small ? { small: readText(ws.conceptFile(brand, id, concept.files.small)) } : {}),
+        ...(concept.files.small && concept.smallSizes !== 'main'
+          ? { small: readText(ws.conceptFile(brand, id, concept.files.small)) }
+          : {}),
         ...(lockup ? { lockup } : {}),
         paper: concept.palette.paper ?? '#ffffff',
         primary: concept.palette.primary,

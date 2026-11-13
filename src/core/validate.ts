@@ -105,6 +105,9 @@ export function validateConcept(v: unknown): Issues {
   else if (!v.files.symbol && !v.files.wordmark) issues.push('files needs at least a symbol or a wordmark');
   if (!['draft', 'verified', 'shortlisted', 'rejected', 'approved'].includes(v.status as string))
     issues.push('status is invalid');
+  const sizes = (v as unknown as Concept).smallSizes;
+  if (sizes !== undefined && sizes !== 'small' && sizes !== 'main')
+    issues.push('smallSizes must be small or main');
   const t = (v as unknown as Concept).typography;
   if (t !== undefined && (typeof t.fontId !== 'string' || typeof t.weight !== 'number'))
     issues.push('typography needs fontId and weight');

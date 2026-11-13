@@ -1394,7 +1394,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--wordmark <file>] [--symbol <file>] [--small <file>] [--small-sizes small|main] [--wordmark-small <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1407,6 +1407,16 @@ export const COMMANDS: CommandSpec[] = [
       },
       'lockup-horizontal': { type: 'string', description: 'Hand-made horizontal lockup file' },
       'lockup-stacked': { type: 'string', description: 'Hand-made stacked lockup file' },
+      'wordmark-small': {
+        type: 'string',
+        description:
+          'Wordmark drawn for small sizes, file name inside the concept folder (exported as logos/wordmark-small)',
+      },
+      'small-sizes': {
+        type: 'string',
+        description:
+          'small (default: the simplified small version at 32 px and below) or main (the user chose the main symbol at every size)',
+      },
       judgment: {
         type: 'string',
         multiple: true,
@@ -1502,11 +1512,17 @@ export const COMMANDS: CommandSpec[] = [
         ['small', 'small'],
         ['lockup-horizontal', 'lockupHorizontal'],
         ['lockup-stacked', 'lockupStacked'],
+        ['wordmark-small', 'wordmarkSmall'],
       ] as const) {
         const v = c.str(opt);
         if (!v) continue;
         next.files[key] = conceptRelative(w, slug, cur.id, v, c);
       }
+      const sizes = c.str('small-sizes');
+      if (sizes === 'main') next.smallSizes = 'main';
+      else if (sizes === 'small') delete next.smallSizes;
+      else if (sizes !== undefined)
+        throw new MarkiloError('INVALID_INPUT', '--small-sizes must be small or main.');
       if (c.str('primary')) next.palette.primary = c.str('primary')!;
       for (const role of ['secondary', 'accent', 'ink', 'paper'] as const) {
         const v = c.str(role);
@@ -2189,7 +2205,8 @@ export const COMMANDS: CommandSpec[] = [
           }
         }
         const lockup = read(cpt, cpt.files.lockupHorizontal);
-        const small = read(cpt, cpt.files.small);
+        // The user chose the main symbol at small sizes: show what export will draw.
+        const small = cpt.smallSizes === 'main' ? undefined : read(cpt, cpt.files.small);
         const input: ProposalInput = {
           title: cpt.title,
           caption: `${cpt.round !== undefined ? `Round ${cpt.round} · ` : ''}${letterOf(cpt)} · ${cpt.lead === 'wordmark' ? 'wordmark-led' : 'symbol-led'}`,

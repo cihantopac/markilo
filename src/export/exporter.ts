@@ -73,6 +73,8 @@ interface Ctx {
   /** Simplified symbol for 32 px and below (favicons, small ICO sizes, Windows target sizes). */
   small?: string;
   wordmark?: string;
+  /** A wordmark drawn for small sizes, exported beside the others. */
+  wordmarkSmall?: string;
   lockupH?: string;
   lockupS?: string;
   lockupC?: string;
@@ -228,6 +230,20 @@ async function exportLogos(ctx: Ctx) {
       group: 'logos',
       purpose: 'Overview of every logo file on its intended background',
       derivedFrom: 'brand.json',
+    });
+  }
+  if (ctx.wordmarkSmall) {
+    const svg = kit.locked ? ctx.wordmarkSmall : optimizeSvg(ctx.wordmarkSmall);
+    const purpose = 'Wordmark drawn for small sizes (below about 120 px wide)';
+    await emit(ctx, 'logos/wordmark-small.svg', svg, {
+      group: 'logos',
+      purpose,
+      derivedFrom: 'wordmark-small.svg',
+    });
+    await emit(ctx, 'logos/wordmark-small.png', await png(svg, 1000), {
+      group: 'logos',
+      purpose: `${purpose}, transparent PNG`,
+      derivedFrom: 'wordmark-small.svg',
     });
   }
   if (ctx.symbol && !kit.locked) {
@@ -1206,8 +1222,10 @@ export async function exportBrand(
     outDir,
     themeColor,
     ...(kit.files.symbol ? { symbol: kit.read('symbol') } : {}),
-    ...(kit.files.symbolSmall ? { small: kit.read('symbolSmall') } : {}),
+    // The user may choose the main symbol at every size: then the small version is kept but not drawn.
+    ...(kit.files.symbolSmall && kit.smallSizes !== 'main' ? { small: kit.read('symbolSmall') } : {}),
     ...(kit.files.wordmark ? { wordmark: kit.read('wordmark') } : {}),
+    ...(kit.files.wordmarkSmall ? { wordmarkSmall: kit.read('wordmarkSmall') } : {}),
     ...(kit.files.lockupHorizontal ? { lockupH: kit.read('lockupHorizontal') } : {}),
     ...(kit.files.lockupStacked ? { lockupS: kit.read('lockupStacked') } : {}),
     ...(kit.files.lockupCompact ? { lockupC: kit.read('lockupCompact') } : {}),

@@ -21,6 +21,9 @@ export interface GuidelinesInput {
 /** Opens the originality section when no competitor marks were compared (verdict insufficient-evidence). */
 const LETTERING_LABEL = { custom: 'custom', family: 'custom (family)' } as const;
 
+const WORDMARK_SMALL_RULE =
+  'Where the wordmark stands alone below about 120 px wide, use `logos/wordmark-small.svg`: the same word drawn for small sizes.';
+
 const NOT_VERIFIED =
   'Originality not verified: no competitor marks were compared. Run research (with network access) before relying on this mark.';
 const WORDMARK_ONLY_RULE =
@@ -82,7 +85,9 @@ export function guidelinesMarkdown(g: GuidelinesInput): string {
   L.push(
     '- Minimum sizes: symbol 16 px on screen / 5 mm in print; horizontal logo 96 px wide on screen / 25 mm in print.',
   );
-  L.push('- Use the compact lockup below 120 px width.', '');
+  L.push('- Use the compact lockup below 120 px width.');
+  if (kit.files.wordmarkSmall) L.push(`- ${WORDMARK_SMALL_RULE}`);
+  L.push('');
   L.push('## Color', '');
   L.push('| Color | Hex | On white | On dark |', '| --- | --- | --- | --- |');
   for (const r of colorRows(kit))
@@ -212,7 +217,7 @@ ${topBar('Brand guidelines')}
 <h1>${escapeText(kit.name)}</h1><p class="meta">${t('Brand guidelines')}${kit.concept ? ` · ${t('concept')} <code>${escapeText(kit.concept)}</code>` : ''} · ${t('generated {0}', [new Date().toISOString().slice(0, 10)])}</p>
 ${kit.locked ? `<p class="locked">${t('This identity is locked and reproduced exactly as provided.')}</p>` : ''}
 <h2>${n()}${t('Logo')}</h2><div class="grid">${figure(primary, gr.native, 'Primary logo')}${kit.locked || !primary ? '' : figure(g.reversed(primary), gr.opposite, 'On dark backgrounds')}${figure(g.lockupS, gr.native, 'Secondary logo')}${figure(g.symbol, gr.native, 'Symbol', 160, 160)}</div>
-<h2>${n()}${t('Clear space & minimum size')}</h2><p>${t('Keep clear space equal to the wordmark cap height on every side. Minimum: symbol 16 px / 5 mm, horizontal logo 96 px / 25 mm.')}</p>
+<h2>${n()}${t('Clear space & minimum size')}</h2><p>${t('Keep clear space equal to the wordmark cap height on every side. Minimum: symbol 16 px / 5 mm, horizontal logo 96 px / 25 mm.')}</p>${kit.files.wordmarkSmall ? `<p>${t(WORDMARK_SMALL_RULE)}</p>` : ''}
 <h2>${n()}${t('Color')}</h2><div class="swatches">${swatches}</div>${scales}
 <h2>${n()}${t('Typography')}</h2><p>${kit.typography && drawn ? `${t(drawn === 'family' ? 'Wordmark: custom (family) lettering — do not retype it.' : 'Wordmark: custom lettering — do not retype it.')}${supporting ? `</p><p>${t('Supporting typeface: {0}, weight {1}.', [supporting.family ?? supporting.fontId, String(supporting.weight)])}` : ''}` : kit.typography ? `${escapeText(kit.typography.family ?? kit.typography.fontId)} ${kit.typography.weight} — ${escapeText(kit.typography.license ?? '')}` : t('Outlined wordmark; no typeface required.')}</p>
 ${

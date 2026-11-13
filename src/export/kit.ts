@@ -33,7 +33,11 @@ export interface BrandKit {
     lockupCompact?: string;
     /** The simplified symbol used at 32 px and below. */
     symbolSmall?: string;
+    /** A wordmark drawn for small sizes. */
+    wordmarkSmall?: string;
   };
+  /** The user chose the main symbol at 32 px and below: export ignores `symbolSmall`. */
+  smallSizes?: 'main';
   palette: {
     primary: string;
     secondary?: string;
@@ -237,6 +241,8 @@ export async function finalizeConcept(
   if (symbol) files.symbol = 'symbol.svg';
   if (wordmark) files.wordmark = 'wordmark.svg';
   if (symbol && take(concept.files.small, 'symbol-small.svg')) files.symbolSmall = 'symbol-small.svg';
+  if (wordmark && take(concept.files.wordmarkSmall, 'wordmark-small.svg'))
+    files.wordmarkSmall = 'wordmark-small.svg';
   const lockup = (
     rel: string | undefined,
     out: string,
@@ -292,6 +298,7 @@ export async function finalizeConcept(
       paper: concept.palette.paper ?? '#ffffff',
       dark,
     },
+    ...(concept.smallSizes === 'main' ? { smallSizes: 'main' as const } : {}),
     ...(concept.typography ? { typography: concept.typography } : {}),
     ...(opts.tagline ? { tagline: opts.tagline } : {}),
     ...(opts.notes?.length ? { notes: opts.notes } : {}),

@@ -178,7 +178,14 @@ export interface Concept {
     lockupHorizontal?: string;
     lockupStacked?: string;
     small?: string;
+    /** A wordmark drawn for small sizes (tighter detail, opened spacing), exported as logos/wordmark-small. */
+    wordmarkSmall?: string;
   };
+  /**
+   * What export draws at 32 px and below: the simplified `files.small` (default when it exists) or, by the user's
+   * choice, the main symbol (`main`), whose 16/32 px results then read as warnings.
+   */
+  smallSizes?: 'small' | 'main';
   status: ConceptStatus;
   createdAt: string;
   updatedAt: string;
