@@ -197,9 +197,9 @@ export function costSummary(log: CostLog) {
 
 /** The kinds of agent a round starts, the phase each is recorded under, and the defaults used without history. */
 export const PLAN_KINDS = {
-  explore: { phase: 'explore', minutes: [10, 16], usd: [1.5, 2.5] },
-  develop: { phase: 'refine', minutes: [12, 20], usd: [1.4, 2.2] },
-  critic: { phase: 'verify', minutes: [4, 8], usd: [0.4, 0.9] },
+  explore: { phase: 'explore', minutes: [10, 16], tokens: [150_000, 300_000] },
+  develop: { phase: 'refine', minutes: [12, 20], tokens: [150_000, 300_000] },
+  critic: { phase: 'verify', minutes: [4, 8], tokens: [40_000, 90_000] },
 } as const;
 export type PlanKind = keyof typeof PLAN_KINDS;
 
@@ -235,6 +235,8 @@ export function planEstimate(log: CostLog, plan: Partial<Record<PlanKind, number
   const agentMin: [number, number] = [0, 0];
   const wall: [number, number] = [0, 0];
   const usd: [number, number] = [0, 0];
+  // Dollars are tokens × the brand's recorded rate (the latest entry that sets one), else the default rate.
+  const rate = [...log.entries].reverse().find((e) => e.rate !== undefined)?.rate ?? DEFAULT_RATE;
   const kinds = (Object.keys(plan) as PlanKind[]).map((kind) => {
     const count = plan[kind]!;
     const def = PLAN_KINDS[kind];
@@ -245,14 +247,17 @@ export function planEstimate(log: CostLog, plan: Partial<Record<PlanKind, number
       const es = log.entries.filter((e) => e.phase === def.phase && e.agent === agent);
       return {
         minutes: es.reduce((a, e) => a + (e.minutes ?? 0), 0),
-        usd: es.reduce((a, e) => a + entryUsd(e).usd, 0),
+        tokens: es.reduce((a, e) => a + (e.tokens ?? 0), 0),
         complete: !es.some((e) => e.minutesUnknown) && es.some((e) => (e.minutes ?? 0) > 0),
       };
     });
     const usable = agents.filter((a) => a.complete);
     const history = usable.length >= 2;
     const m = history ? range(usable.map((a) => a.minutes)) : ([...def.minutes] as [number, number]);
-    const d = history ? range(usable.map((a) => a.usd)) : ([...def.usd] as [number, number]);
+    const withTokens = agents.filter((a) => a.tokens > 0);
+    const tokenHistory = withTokens.length >= 2;
+    const t = tokenHistory ? range(withTokens.map((a) => a.tokens)) : ([...def.tokens] as [number, number]);
+    const d: [number, number] = [(t[0] / 1e6) * rate, (t[1] / 1e6) * rate];
     agentMin[0] += count * m[0];
     agentMin[1] += count * m[1];
     wall[0] += m[0];
@@ -263,6 +268,8 @@ export function planEstimate(log: CostLog, plan: Partial<Record<PlanKind, number
       kind,
       agents: count,
       perAgentMinutes: m,
+      perAgentTokens: t,
+      tokensSource: tokenHistory ? `this brand's ${withTokens.length} recorded ${kind} agents` : 'defaults',
       source: history ? `this brand's ${usable.length} recorded ${kind} agents` : 'defaults',
     };
   });
@@ -280,6 +287,8 @@ export function planEstimate(log: CostLog, plan: Partial<Record<PlanKind, number
     estimate: { agentMinutes: rr(agentMin), wallMinutes: rr(wall), usd: rr(usd) },
     source: sources.size > 1 ? 'mixed' : sources.has('history') ? 'history' : 'defaults',
     kinds,
+    rate,
+    ...(summary.label ? { label: summary.label } : {}),
     budgetUsd: summary.budgetUsd,
     remainingUsd: summary.remainingUsd,
     ...(summary.minutesRemaining !== undefined
