@@ -20,7 +20,10 @@ import { buildOriginalityReport, readReferences } from './originality.js';
 async function contextPeers(ws: Workspace, brand: string): Promise<ContextPeer[]> {
   const seen = new Set<string>();
   const refs = [...readReferences(ws, brand).references]
-    .filter((r) => !USER_REFERENCE.includes((r.category ?? 'direct') as ReferenceCategory))
+    .filter(
+      (r) =>
+        !USER_REFERENCE.includes((r.category ?? 'direct') as ReferenceCategory) && r.category !== 'family',
+    )
     .sort(
       (a, b) => Number((b.category ?? 'direct') === 'direct') - Number((a.category ?? 'direct') === 'direct'),
     );

@@ -184,9 +184,54 @@ function tileColorOptions(c: RunContext): { onBrand?: string; tile?: string } {
   return out;
 }
 
+/**
+ * `--lettering` and `--supporting-font/-weight`: what the wordmark is, and the typeface used beside custom lettering.
+ * Returns the typography to store (unchanged when neither flag is given).
+ */
+function letteringOptions(c: RunContext, cur: Concept['typography']): { typography?: Concept['typography'] } {
+  const kind = c.str('lettering');
+  const sFont = c.str('supporting-font');
+  const sWeight = c.str('supporting-weight');
+  if (!kind && !sFont && !sWeight) return {};
+  if (kind && !(['font', 'custom', 'family'] as string[]).includes(kind))
+    throw new MarkiloError('INVALID_INPUT', '--lettering must be font, custom or family.');
+  if (sWeight && !sFont) throw new MarkiloError('USAGE', '--supporting-weight needs --supporting-font <id>.');
+  let supporting = cur?.supporting;
+  if (sFont === 'none') supporting = undefined;
+  else if (sFont) {
+    const info = fontInfo(sFont);
+    const weight = sWeight === undefined ? 400 : Number(sWeight);
+    if (!Number.isInteger(weight) || !info.weights.includes(weight))
+      throw new MarkiloError(
+        'INVALID_INPUT',
+        `--supporting-weight must be one of ${info.weights.join(', ')} for ${info.id}.`,
+      );
+    supporting = { fontId: info.id, weight, family: info.family };
+  }
+  // Custom lettering may have no font at all: the supporting face (else Inter) only fills the required fields; it is
+  // never named as the brand typeface while the lettering is not `font`.
+  const base = cur ?? {
+    fontId: supporting?.fontId ?? 'inter',
+    weight: supporting?.weight ?? 600,
+    family: supporting?.family ?? 'Inter',
+  };
+  const { supporting: _s, lettering: _l, ...rest } = base;
+  const lettering = (kind ?? base.lettering) as NonNullable<Concept['typography']>['lettering'];
+  return {
+    typography: {
+      ...rest,
+      ...(lettering && lettering !== 'font' ? { lettering } : {}),
+      ...(supporting ? { supporting } : {}),
+    },
+  };
+}
+
 async function loadReferences(w: Workspace, brand: string): Promise<Reference[]> {
   const out: Reference[] = [];
-  for (const r of readReferences(w, brand).references.slice(0, 60)) {
+  // A family reference is expected to look alike: it never steers sketches or variants away.
+  for (const r of readReferences(w, brand)
+    .references.filter((x) => x.category !== 'family')
+    .slice(0, 60)) {
     try {
       out.push({
         name: r.name,
@@ -1061,7 +1106,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Add a competitor or category reference mark (SVG/PNG/JPEG/ICO) for similarity analysis. Stored git-ignored.',
     usage:
-      'reference add --brand <slug> --file <path> --name <brand name> --source <url or note> [--category direct|indirect|category|form-family|inspiration|dislike|existing] [--notes <what the user likes or dislikes in it>] [--retrieved <ISO date>]',
+      'reference add --brand <slug> --file <path> --name <brand name> --source <url or note> [--category direct|indirect|category|form-family|inspiration|dislike|existing|family] [--notes <what the user likes or dislikes in it>] [--retrieved <ISO date>]',
     options: {
       ...brandOpt,
       file: { type: 'string', description: 'Logo, screenshot, mood board or sketch' },
@@ -1070,7 +1115,7 @@ export const COMMANDS: CommandSpec[] = [
       category: {
         type: 'string',
         description:
-          'direct, indirect, category or form-family (competitors); inspiration, dislike or existing (the user’s own references)',
+          'direct, indirect, category or form-family (competitors); inspiration, dislike or existing (the user’s own references); family (a mark of the product family this brand joins: likeness reported apart, never a risk)',
       },
       retrieved: { type: 'string', description: 'Retrieval date' },
       notes: { type: 'string', description: 'Notes' },
@@ -1349,7 +1394,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--wordmark <file>] [--symbol <file>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1412,6 +1457,16 @@ export const COMMANDS: CommandSpec[] = [
       tile: { type: 'string', description: 'Ground of the brand tile, default primary ("none" removes it)' },
       font: { type: 'string', description: 'Font id' },
       weight: { type: 'string', description: 'Font weight' },
+      lettering: {
+        type: 'string',
+        description:
+          'font (a typeface set and adjusted), custom (lettering drawn for this brand) or family (lettering the product family shares)',
+      },
+      'supporting-font': {
+        type: 'string',
+        description: 'Typeface used next to custom or family lettering ("none" removes it)',
+      },
+      'supporting-weight': { type: 'string', description: 'Weight of the supporting typeface' },
       construction: { type: 'string', description: 'Grid / geometry notes' },
       'sketch-pick': { type: 'string', description: 'Critic: sketch to develop (e.g. s3), or "none"' },
       'reads-as': {
@@ -1513,7 +1568,11 @@ export const COMMANDS: CommandSpec[] = [
           weight: c.num('weight', 600)!,
           family: fontInfo(c.str('font')!).family,
           license: fontInfo(c.str('font')!).license,
+          // A new stand-in font does not change what the wordmark is or the face beside it.
+          ...(cur.typography?.lettering ? { lettering: cur.typography.lettering } : {}),
+          ...(cur.typography?.supporting ? { supporting: cur.typography.supporting } : {}),
         };
+      Object.assign(next, letteringOptions(c, next.typography));
       const presentAs = (answer: string, reason: string) => {
         // A new drawing has no answer yet (construct clears it): this is the critic's first verdict on it.
         if (!cur.critique) next.reviews = (cur.reviews ?? 0) + 1;
@@ -1761,6 +1820,7 @@ export const COMMANDS: CommandSpec[] = [
         visualRisk: r.report.visual.risk,
         nameRisk: r.report.name.risk,
         genericity: r.report.genericity ?? null,
+        ...(r.report.family?.length ? { family: r.report.family } : {}),
         report: r.mdPath,
         json: r.jsonPath,
       };
@@ -2068,9 +2128,11 @@ export const COMMANDS: CommandSpec[] = [
           : undefined;
       const inputs: ProposalInput[] = [];
       const missing: string[] = [];
-      const typeset: Record<string, number> = {};
-      const typesetBase: Record<string, { font: string; weight: number; case: 'as-is' | 'lower' | 'upper' }> =
-        {};
+      const typeset: Record<string, number | null> = {};
+      const typesetBase: Record<
+        string,
+        { font: string; weight: number; case: 'as-is' | 'lower' | 'upper' } | { skipped: string }
+      > = {};
       const compare: Record<string, string> = {};
       const files: string[] = [];
       const notes: string[] = [];
@@ -2109,7 +2171,12 @@ export const COMMANDS: CommandSpec[] = [
           );
         if (!cpt.pitch?.strengths.length || !cpt.pitch?.weaknesses.length)
           missing.push(`${cpt.id}: no strengths/weaknesses (concept update --idea --strengths --weaknesses)`);
-        if (wordmark) {
+        const lettering = cpt.typography?.lettering;
+        if (wordmark && (lettering === 'custom' || lettering === 'family')) {
+          // Drawn lettering has no typeface to be "as set" in: measuring it against a stand-in means nothing.
+          typeset[cpt.id] = null;
+          typesetBase[cpt.id] = { skipped: `${lettering} lettering` };
+        } else if (wordmark) {
           const font = wordmarkFont(wordmark, cpt.typography);
           const t = font && (await typesetLikeness(wordmark, font, w.brand(slug).name));
           if (t) {

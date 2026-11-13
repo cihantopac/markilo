@@ -79,7 +79,7 @@ The family's rule lives in members that already exist, often on other sites; Mar
 1. Ask which members define the rule and which are out of date (first questions). Only the current ones are the rule.
 2. `markilo research family --brand <slug> --member <url> --member <url> --allow-network` saves each current member's
    lockups and logos as `family` references and returns `takenColors`. `family` references count as family likeness in
-   `compare`, never as an originality risk.
+   `originality`, never as an originality risk.
 3. Draw the shared parts once, before any designer runs, in `work/family/`: the parent word or the family lettering,
    any suffix, and the lockup metrics (symbol height against cap height, gap). Measure them from the references.
    Every designer gets the same files and keeps them unchanged; when the word is locked, the round varies the icon and

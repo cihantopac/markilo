@@ -4,7 +4,9 @@ import { hexToOklch, oklchToHex } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
 import { nowIso, readJson, readText, writeGenerated, writeJson } from '../core/fsx.js';
 import { resolveInsideReal } from '../core/paths.js';
+import type { Lettering } from '../core/types.js';
 import type { Workspace } from '../core/workspace.js';
+import { fontInfo } from '../design/fonts.js';
 import { composeLockup } from '../design/lockup.js';
 import { currentArt, type GateResult, gateOf } from '../report/gate.js';
 import { lintSvg } from '../svg/lint.js';
@@ -46,7 +48,14 @@ export interface BrandKit {
     onBrand?: string;
     tile?: string;
   };
-  typography?: { fontId: string; weight: number; family?: string; license?: string };
+  typography?: {
+    fontId: string;
+    weight: number;
+    family?: string;
+    license?: string;
+    lettering?: Lettering;
+    supporting?: { fontId: string; weight: number; family?: string };
+  };
   tagline?: string;
   /** Usage rules decided at approval (e.g. "never use the accent as an error color"); shown in the guidelines. */
   notes?: string[];
@@ -64,6 +73,29 @@ export interface BrandKit {
   };
   /** The critic gate at approval time; a concept that did not pass needs the user's own reason. */
   gate?: { status: GateResult['status']; average?: number; reasons: string[]; userChoice?: string };
+}
+
+/** Custom or family lettering: the kit's font is a stand-in, never named or used as the brand typeface. */
+export function drawnLettering(kit: Pick<BrandKit, 'typography'>): 'custom' | 'family' | undefined {
+  const l = kit.typography?.lettering;
+  return l === 'custom' || l === 'family' ? l : undefined;
+}
+
+/**
+ * The typeface for live text in the kit (tokens, slides, tagline): the brand typeface, or beside custom lettering the
+ * supporting typeface (none when not given). Kits without `lettering` keep their typography exactly.
+ */
+export function textTypeface(
+  kit: Pick<BrandKit, 'typography'>,
+): { fontId: string; weight: number; family?: string } | undefined {
+  if (!drawnLettering(kit)) return kit.typography;
+  const s = kit.typography?.supporting;
+  if (!s || s.family) return s;
+  try {
+    return { ...s, family: fontInfo(s.fontId).family };
+  } catch {
+    return s;
+  }
 }
 
 export const kitPath = (ws: Workspace, brand: string) => join(ws.finalDir(brand), 'brand.json');

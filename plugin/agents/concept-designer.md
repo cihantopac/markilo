@@ -55,7 +55,11 @@ round's other proposals at the same time — do not touch their concepts.
    from a natural pair, one terminal shape on every stroke ending, reshaped counters, stroke contrast, a width, custom
    letters drawn as skeletons or freeform paths, merged with the font's letters where you keep them. Save it as
    `concepts/<id>/wordmark.svg` (outlined; `"role": "wordmark"` when built with `construct`) and register it with
-   `markilo concept update --brand <slug> --concept <id> --wordmark wordmark.svg`.
+   `markilo concept update --brand <slug> --concept <id> --wordmark wordmark.svg`. For a product joining an existing
+   family the caller gives you the shared parts from `work/family/` (parent word, suffix, lockup metrics): copy them
+   unchanged instead of redrawing them, vary the icon, and record `--lettering family` (`--lettering custom` for a
+   word you drew yourself; add `--supporting-font <id> --supporting-weight <n>` only when a typeface really sits
+   beside it).
 4. **The icon** (`symbol.svg`, square) is the mark alone, on a transparent artboard — never on its own tile, disc or
    box: app icons, avatars and favicons add their own ground, and a drawn tile becomes a tile inside a tile. Prefer a
    drawn form that carries one truth about the product over a lone initial: every letter icon in Markilo 1.1's

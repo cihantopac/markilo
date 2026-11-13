@@ -143,6 +143,8 @@ export interface ConceptPalette {
   tile?: string;
 }
 
+export type Lettering = 'font' | 'custom' | 'family';
+
 export interface Concept {
   schema: 'markilo/concept@1';
   id: string;
@@ -160,6 +162,14 @@ export interface Concept {
     license?: string;
     tracking?: number;
     case?: 'as-is' | 'lower' | 'upper';
+    /**
+     * What the wordmark is: a typeface set and adjusted (`font`, the default), lettering drawn for this brand
+     * (`custom`), or lettering shared by a product family (`family`). For custom and family lettering `fontId` is a
+     * stand-in at most: typeset likeness is not measured and the kit never names it as the brand typeface.
+     */
+    lettering?: Lettering;
+    /** The typeface used next to custom or family lettering (UI, documents), named "Supporting typeface". */
+    supporting?: { fontId: string; weight: number; family?: string };
   };
   /** small: a simplified symbol for 32 px and below (favicons, small ICO sizes), checked against the main one. */
   files: {

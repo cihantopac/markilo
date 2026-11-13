@@ -257,6 +257,11 @@ export const TR: Record<string, string> = {
   Color: 'Renk',
   Typography: 'Tipografi',
   'Outlined wordmark; no typeface required.': 'Logotip çizgiye dönüştürülmüştür; yazı karakteri gerekmez.',
+  'Wordmark: custom lettering — do not retype it.':
+    'Logotip: markaya özel çizilmiş harfler — yazı karakteriyle yeniden yazmayın.',
+  'Wordmark: custom (family) lettering — do not retype it.':
+    'Logotip: aileye özel çizilmiş harfler — yazı karakteriyle yeniden yazmayın.',
+  'Supporting typeface: {0}, weight {1}.': 'Yardımcı yazı karakteri: {0}, ağırlık {1}.',
   'Originality check': 'Özgünlük denetimi',
   'Approved with originality verdict {0} (confidence {1}), with the remaining risk explicitly accepted.':
     '{0} özgünlük kararıyla onaylandı (güven: {1}); kalan risk açıkça kabul edildi.',

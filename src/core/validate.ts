@@ -108,5 +108,12 @@ export function validateConcept(v: unknown): Issues {
   const t = (v as unknown as Concept).typography;
   if (t !== undefined && (typeof t.fontId !== 'string' || typeof t.weight !== 'number'))
     issues.push('typography needs fontId and weight');
+  if (t?.lettering !== undefined && !['font', 'custom', 'family'].includes(t.lettering))
+    issues.push('typography.lettering must be font, custom or family');
+  if (
+    t?.supporting !== undefined &&
+    (typeof t.supporting.fontId !== 'string' || typeof t.supporting.weight !== 'number')
+  )
+    issues.push('typography.supporting needs fontId and weight');
   return issues;
 }

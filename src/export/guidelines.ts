@@ -3,7 +3,7 @@ import type { Palette } from '../design/palette.js';
 import { nestSvg, svgDocument } from '../svg/compose.js';
 import { escapeText } from '../svg/xml.js';
 import { CHROME_CSS, CHROME_HASH, CHROME_SCRIPT, footHtml, t, topBar, withChrome } from '../ui/chrome.js';
-import type { BrandKit } from './kit.js';
+import { type BrandKit, drawnLettering, textTypeface } from './kit.js';
 import { groundsFor } from './variants.js';
 
 export interface GuidelinesInput {
@@ -19,6 +19,8 @@ export interface GuidelinesInput {
 }
 
 /** Opens the originality section when no competitor marks were compared (verdict insufficient-evidence). */
+const LETTERING_LABEL = { custom: 'custom', family: 'custom (family)' } as const;
+
 const NOT_VERIFIED =
   'Originality not verified: no competitor marks were compared. Run research (with network access) before relying on this mark.';
 const WORDMARK_ONLY_RULE =
@@ -98,7 +100,14 @@ export function guidelinesMarkdown(g: GuidelinesInput): string {
     L.push(`| \`${p.foreground}\` | \`${p.background}\` | ${p.ratio}:1 | ${p.rating} | ${p.use} |`);
   for (const w of g.palette.warnings) L.push('', `> ⚠️ ${w}`);
   L.push('', '## Typography', '');
-  if (kit.typography) {
+  const drawn = drawnLettering(kit);
+  if (kit.typography && drawn) {
+    // Custom or family lettering: the font recorded with it is a stand-in, never the brand typeface.
+    L.push(`- Wordmark: ${LETTERING_LABEL[drawn]} lettering — do not retype it.`);
+    const s = textTypeface(kit);
+    if (s) L.push(`- Supporting typeface: **${s.family ?? s.fontId}**, weight ${s.weight}.`);
+    L.push('- The wordmark is outlined artwork, so using the logo never requires a font.');
+  } else if (kit.typography) {
     L.push(
       `- Brand typeface: **${kit.typography.family ?? kit.typography.fontId}**, weight ${kit.typography.weight}.`,
     );
@@ -161,6 +170,8 @@ function evidenceLines(kit: BrandKit): string[] {
 export function guidelinesHtml(g: GuidelinesInput): string {
   const gr = groundsFor(g.kit.palette.paper, g.kit.palette.dark);
   const { kit } = g;
+  const drawn = drawnLettering(kit);
+  const supporting = drawn && textTypeface(kit);
   const primary = g.primary ?? g.lockupH ?? g.wordmark ?? g.symbol;
   const swatches = colorRows(kit)
     .map(
@@ -203,7 +214,7 @@ ${kit.locked ? `<p class="locked">${t('This identity is locked and reproduced ex
 <h2>${n()}${t('Logo')}</h2><div class="grid">${figure(primary, gr.native, 'Primary logo')}${kit.locked || !primary ? '' : figure(g.reversed(primary), gr.opposite, 'On dark backgrounds')}${figure(g.lockupS, gr.native, 'Secondary logo')}${figure(g.symbol, gr.native, 'Symbol', 160, 160)}</div>
 <h2>${n()}${t('Clear space & minimum size')}</h2><p>${t('Keep clear space equal to the wordmark cap height on every side. Minimum: symbol 16 px / 5 mm, horizontal logo 96 px / 25 mm.')}</p>
 <h2>${n()}${t('Color')}</h2><div class="swatches">${swatches}</div>${scales}
-<h2>${n()}${t('Typography')}</h2><p>${kit.typography ? `${escapeText(kit.typography.family ?? kit.typography.fontId)} ${kit.typography.weight} — ${escapeText(kit.typography.license ?? '')}` : t('Outlined wordmark; no typeface required.')}</p>
+<h2>${n()}${t('Typography')}</h2><p>${kit.typography && drawn ? `${t(drawn === 'family' ? 'Wordmark: custom (family) lettering — do not retype it.' : 'Wordmark: custom lettering — do not retype it.')}${supporting ? `</p><p>${t('Supporting typeface: {0}, weight {1}.', [supporting.family ?? supporting.fontId, String(supporting.weight)])}` : ''}` : kit.typography ? `${escapeText(kit.typography.family ?? kit.typography.fontId)} ${kit.typography.weight} — ${escapeText(kit.typography.license ?? '')}` : t('Outlined wordmark; no typeface required.')}</p>
 ${
   o
     ? `<h2>${n()}${t('Originality check')}</h2>${o.verdict === 'insufficient-evidence' ? `<p class="band warn">${t(NOT_VERIFIED)}</p>` : ''}<p>${t(o.acceptedRisk ? 'Approved with originality verdict {0} (confidence {1}), with the remaining risk explicitly accepted.' : 'Approved with originality verdict {0} (confidence {1}).', [o.verdict, o.confidence])}</p>${evidence(

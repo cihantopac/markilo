@@ -43,6 +43,10 @@ All names are prefixed with the brand slug (`--<slug>-...`).
 - Spacing: `--<slug>-space-<n>` for n = 1, 2, 3, 4, 6, 8, 12, 16, 24, in 4 px units (`--<slug>-space-4` is 16 px),
   the same steps as `tokens.json`.
 - Font: `--<slug>-font-brand`, the brand typeface followed by `system-ui, sans-serif` (only when the brand has one).
+  When the wordmark is custom or family lettering (`concept update --lettering custom|family`), the font recorded with
+  it is a stand-in and is never a token: `--<slug>-font-supporting` (`font.supporting` in `tokens.json`,
+  `--font-<slug>-supporting` in `tailwind.css`) names the supporting typeface when one was given, and the guidelines
+  say "Wordmark: custom (family) lettering — do not retype it" instead of a brand typeface.
 - Scheme pair: `--<slug>-surface` and `--<slug>-text` hold the brand's own ground and a readable text colour. A
   `@media (prefers-color-scheme: ...)` block swaps them for the other scheme (`dark` for light-first brands, `light`
   for dark-first brands).

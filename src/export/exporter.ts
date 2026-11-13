@@ -17,7 +17,7 @@ import { escapeAttr, localName, parseXml, serializeXml, walk } from '../svg/xml.
 import { encodeIcns, encodeIco, ICNS_TYPES } from './encoders.js';
 import { placeMark, squircle } from './geometry.js';
 import { guidelinesHtml, guidelinesMarkdown } from './guidelines.js';
-import { type BrandKit, loadKit } from './kit.js';
+import { type BrandKit, drawnLettering, loadKit, textTypeface } from './kit.js';
 import { kitIndexHtml, kitReadme } from './preview.js';
 import { SPECS } from './specs.js';
 import {
@@ -800,8 +800,9 @@ async function socialCard(
   const artH = h * (opts.artShare ?? 0.26);
   body += fitArt(art, w, h, w * 0.62, artH, w / 2, hasTag ? h * 0.44 : h / 2);
   if (hasTag) {
-    const face = kit.typography
-      ? loadBundledFace(kit.typography.fontId, Math.min(500, ...[kit.typography.weight]))
+    const tf = textTypeface(kit);
+    const face = tf
+      ? loadBundledFace(tf.fontId, Math.min(500, ...[tf.weight]))
       : loadBundledFace('inter', 500);
     const size = Math.round(h * 0.055);
     const probe = textPathMarkup(face, kit.tagline!, 0, 0, size, '#000');
@@ -910,13 +911,10 @@ async function exportMarketing(ctx: Ctx) {
     derivedFrom: primaryFile(ctx),
   });
 
-  const face = kit.typography
-    ? loadBundledFace(kit.typography.fontId, kit.typography.weight)
-    : loadBundledFace('inter', 600);
-  const faceText = kit.typography
-    ? loadBundledFace(kit.typography.fontId, 400)
-    : loadBundledFace('inter', 400);
-  const family = kit.typography?.family ?? 'Inter';
+  const tf = textTypeface(kit);
+  const face = tf ? loadBundledFace(tf.fontId, tf.weight) : loadBundledFace('inter', 600);
+  const faceText = tf ? loadBundledFace(tf.fontId, 400) : loadBundledFace('inter', 400);
+  const family = tf?.family ?? 'Inter';
   // Slide template: SVG keeps live text for editing; the PNG preview uses outlines.
   const slide = (live: boolean) => {
     const W = 1920;
@@ -924,7 +922,7 @@ async function exportMarketing(ctx: Ctx) {
     let body = fitArt(art, W, H, 420, 90, 160 + 210, 140);
     body += `<rect x="160" y="${H - 160}" width="240" height="10" fill="${kit.palette.primary}"/>`;
     if (live) {
-      body += `<text x="160" y="560" font-family="${escapeAttr(family)}" font-size="96" font-weight="${kit.typography?.weight ?? 600}" fill="${kit.palette.ink}">Presentation title</text>`;
+      body += `<text x="160" y="560" font-family="${escapeAttr(family)}" font-size="96" font-weight="${tf?.weight ?? 600}" fill="${kit.palette.ink}">Presentation title</text>`;
       body += `<text x="160" y="650" font-family="${escapeAttr(family)}" font-size="40" fill="${kit.palette.ink}" opacity="0.7">Subtitle, speaker and date</text>`;
     } else {
       body += textPathMarkup(face, 'Presentation title', 160, 560, 96, kit.palette.ink).markup;
@@ -1005,13 +1003,11 @@ async function exportTokens(ctx: Ctx) {
   dtcg.spacing = Object.fromEntries(
     [1, 2, 3, 4, 6, 8, 12, 16, 24].map((n) => [String(n), { $type: 'dimension', $value: `${n * 4}px` }]),
   );
-  if (kit.typography)
-    dtcg.font = {
-      brand: {
-        $type: 'fontFamily',
-        $value: [kit.typography.family ?? kit.typography.fontId, 'system-ui', 'sans-serif'],
-      },
-    };
+  // Beside custom or family lettering the font is the supporting typeface, named so; a stand-in is never a token.
+  const role = drawnLettering(kit) ? 'supporting' : 'brand';
+  const tf = textTypeface(kit);
+  const fam = tf && (tf.family ?? tf.fontId);
+  if (fam) dtcg.font = { [role]: { $type: 'fontFamily', $value: [fam, 'system-ui', 'sans-serif'] } };
   await emit(ctx, 'tokens/tokens.json', `${JSON.stringify(dtcg, null, 2)}\n`, {
     group: 'tokens',
     purpose: 'Design tokens (W3C DTCG format)',
@@ -1024,10 +1020,7 @@ async function exportTokens(ctx: Ctx) {
   // Semantic hues stay fixed (success, warning, danger must be recognisable whatever the brand colour).
   for (const [k, v] of Object.entries(pal.semantic)) css.push(`  --${kit.brand}-${k}: ${v};`);
   for (const n of [1, 2, 3, 4, 6, 8, 12, 16, 24]) css.push(`  --${kit.brand}-space-${n}: ${n * 4}px;`);
-  if (kit.typography) {
-    const fam = kit.typography.family ?? kit.typography.fontId;
-    css.push(`  --${kit.brand}-font-brand: ${cssFontFamily(fam)}, system-ui, sans-serif;`);
-  }
+  if (fam) css.push(`  --${kit.brand}-font-${role}: ${cssFontFamily(fam)}, system-ui, sans-serif;`);
   css.push(`  --${kit.brand}-ink: ${kit.palette.ink};`, `  --${kit.brand}-paper: ${kit.palette.paper};`);
   if (kit.palette.onDark) css.push(`  --${kit.brand}-on-dark: ${kit.palette.onDark};`);
   if (kit.palette.onLight) css.push(`  --${kit.brand}-on-light: ${kit.palette.onLight};`);
@@ -1064,10 +1057,10 @@ async function exportTokens(ctx: Ctx) {
     `  --color-${kit.brand}-ink: ${kit.palette.ink};`,
     `  --color-${kit.brand}-paper: ${kit.palette.paper};`,
   );
-  if (kit.typography) {
-    const fam = kit.typography.family ?? kit.typography.fontId;
-    tw.push(`  --font-${kit.brand}: ${cssFontFamily(fam)}, system-ui, sans-serif;`);
-  }
+  if (fam)
+    tw.push(
+      `  --font-${kit.brand}${role === 'brand' ? '' : '-supporting'}: ${cssFontFamily(fam)}, system-ui, sans-serif;`,
+    );
   tw.push('}', '');
   await emit(ctx, 'tokens/tailwind.css', tw.join('\n'), {
     group: 'tokens',

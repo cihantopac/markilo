@@ -548,3 +548,53 @@ describe('originality band', () => {
     expect(g('index.html')).not.toContain(BAND);
   }, 120_000);
 });
+
+describe('custom lettering', () => {
+  it('guidelines do not call a stand-in the brand typeface', async () => {
+    const { ws } = synthBrand();
+    const c = ws.concept('nimbra', 'fold');
+    ws.saveConcept({
+      ...c,
+      typography: {
+        fontId: 'outfit',
+        weight: 600,
+        family: 'Outfit',
+        license: 'OFL-1.1',
+        lettering: 'custom',
+      },
+    });
+    await verifyConcept(ws, 'nimbra', 'fold');
+    await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
+    await exportBrand(ws, 'nimbra', { groups: ['tokens', 'guidelines'] });
+    const read = (f: string) => readFileSync(join(ws.exportsDir('nimbra'), f), 'utf8');
+    const md = () => read('guidelines/brand-guidelines.md');
+    expect(md()).not.toContain('Brand typeface: **Outfit**');
+    expect(md()).toContain('Wordmark: custom lettering — do not retype it');
+    expect(md()).not.toContain('Supporting typeface');
+    expect(read('guidelines/index.html')).not.toMatch(/Outfit 600/);
+    expect(read('tokens/tokens.css')).not.toContain('Outfit');
+    expect(read('tokens/tokens.json')).not.toContain('Outfit');
+    expect(read('tokens/tailwind.css')).not.toContain('Outfit');
+    // A supporting typeface is named as such, in the guidelines and the tokens.
+    const saved = JSON.parse(readFileSync(kitPath(ws, 'nimbra'), 'utf8'));
+    writeFileSync(
+      kitPath(ws, 'nimbra'),
+      JSON.stringify({
+        ...saved,
+        typography: {
+          ...saved.typography,
+          lettering: 'family',
+          supporting: { fontId: 'inter', weight: 400 },
+        },
+      }),
+    );
+    await exportBrand(ws, 'nimbra', { groups: ['tokens', 'guidelines'], clean: true });
+    expect(md()).toContain('Wordmark: custom (family) lettering — do not retype it');
+    expect(md()).toContain('Supporting typeface: **Inter**, weight 400');
+    expect(md()).not.toContain('Brand typeface');
+    expect(read('guidelines/index.html')).toContain('Supporting typeface');
+    expect(read('tokens/tokens.css')).toContain('--nimbra-font-supporting: Inter, system-ui, sans-serif;');
+    expect(read('tokens/tokens.css')).not.toContain('--nimbra-font-brand');
+    expect(JSON.parse(read('tokens/tokens.json')).font.supporting.$value[0]).toBe('Inter');
+  }, 120_000);
+});

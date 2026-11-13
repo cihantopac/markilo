@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { loadMark, rasterizeSvgSquare, sampleFromRaster } from '../src/analyze/mark.js';
 import { compareMarks, genericity } from '../src/analyze/similarity.js';
 import { encodePng } from '../src/render/png.js';
-import { fixture } from './helpers.js';
+import { buildOriginalityReport, readReferences } from '../src/report/originality.js';
+import { addReference, removeReferences } from '../src/research/competitors.js';
+import { fixture, mark, synthBrand } from './helpers.js';
 
 const load = (n: string) => loadMark(fixture(`marks/${n}.svg`));
 
@@ -69,5 +71,37 @@ describe('calibration on the fixture marks', () => {
     for (const t of ['mirror', 'rotate-90', 'recolor'] as const)
       expect(r.copiesCaught.byTransform[t]!.review).toBe(1);
     expect(r.falseAlarms.review).toBe(0);
+  }, 60_000);
+});
+
+describe('family references', () => {
+  it('a family reference is not an originality risk', async () => {
+    const { ws } = synthBrand();
+    const before = (await buildOriginalityReport(ws, 'nimbra', 'fold')).report;
+    // The parent brand's own mark: near-identical, and expected to be.
+    const bytes = new TextEncoder().encode(mark('fold-n'));
+    await addReference(ws, 'nimbra', {
+      name: 'Nimbra Parent',
+      source: 'family',
+      bytes,
+      ext: '.svg',
+      category: 'family',
+    });
+    const after = (await buildOriginalityReport(ws, 'nimbra', 'fold')).report;
+    expect(after.verdict).toBe(before.verdict);
+    expect(after.visual.risk).toBe(before.visual.risk);
+    expect(after.name.risk).toBe(before.name.risk);
+    expect(after.scope.referencesCompared).toBe(before.scope.referencesCompared);
+    expect(after.visual.matches.map((m) => m.name)).not.toContain('Nimbra Parent');
+    expect(after.family?.map((f) => f.name)).toEqual(['Nimbra Parent']);
+    expect(after.family?.[0]?.visual).toBeGreaterThan(0.9);
+    // The same file filed as a competitor is a risk.
+    removeReferences(
+      ws,
+      'nimbra',
+      readReferences(ws, 'nimbra').references.map((r) => r.id),
+    );
+    await addReference(ws, 'nimbra', { name: 'Rival', source: 'x', bytes, ext: '.svg' });
+    expect((await buildOriginalityReport(ws, 'nimbra', 'fold')).report.visual.risk).toBe('high');
   }, 60_000);
 });

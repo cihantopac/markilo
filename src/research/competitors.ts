@@ -20,7 +20,9 @@ export type ReferenceCategory =
   /** The user's own references: what they like, what they do not, and an identity that already exists. */
   | 'inspiration'
   | 'dislike'
-  | 'existing';
+  | 'existing'
+  /** A mark of the product family this brand joins: likeness is expected, reported apart, never a risk. */
+  | 'family';
 
 export const REFERENCE_CATEGORIES: ReferenceCategory[] = [
   'direct',
@@ -30,6 +32,7 @@ export const REFERENCE_CATEGORIES: ReferenceCategory[] = [
   'inspiration',
   'dislike',
   'existing',
+  'family',
 ];
 
 /** References the user supplied: compared for originality like any other, never shown as competitors. */

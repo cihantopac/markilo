@@ -77,6 +77,11 @@ export interface OriginalityReport {
     matches: (Comparison & { name: string; brand?: string; source: string; image?: string })[];
   };
   diversity: { concept: string; visual: number; risk: RiskLevel; reasons: string[] }[];
+  /**
+   * Likeness to the marks of the product family this brand joins (`reference add --category family`): expected,
+   * reported apart, and never part of the visual risk, the evidence or the name comparison.
+   */
+  family?: { name: string; source: string; visual: number; reasons: string[] }[];
   genericity?: Genericity;
   name: {
     candidate: string;
@@ -156,7 +161,9 @@ export async function buildOriginalityReport(
     label: concept.title,
   });
 
-  const refs = readReferences(ws, brand).references;
+  const all = readReferences(ws, brand).references;
+  const refs = all.filter((r) => r.category !== 'family');
+  const familyRefs = all.filter((r) => r.category === 'family');
   const outDir = join(ws.reportsDir(brand), `originality-${conceptId}`);
   const matches: OriginalityReport['visual']['matches'] = [];
   for (const r of refs) {
@@ -186,6 +193,18 @@ export async function buildOriginalityReport(
     matches.push(entry);
   }
   matches.sort((a, b) => b.visual - a.visual);
+  const family: NonNullable<OriginalityReport['family']> = [];
+  for (const r of familyRefs) {
+    const file = join(ws.referencesDir(brand), r.file);
+    if (!existsSync(file)) continue;
+    try {
+      const c = await compareMarks(sample, await loadMark(file, { id: r.id, label: r.name }));
+      family.push({ name: r.name, source: r.source, visual: c.visual, reasons: c.reasons });
+    } catch {
+      // An unreadable family file says nothing about originality either way.
+    }
+  }
+  family.sort((a, b) => b.visual - a.visual);
   // Keep the closest file of each brand: a brand's second and third logo add no new evidence, only noise.
   const perBrand = matches.filter((m, i) => matches.findIndex((x) => x.brand === m.brand) === i);
 
@@ -298,6 +317,7 @@ export async function buildOriginalityReport(
     },
     visual: { risk: visualRisk, thresholds: RISK_THRESHOLDS, matches: perBrand.slice(0, 10) },
     diversity,
+    ...(family.length ? { family } : {}),
     ...(g ? { genericity: g } : {}),
     name: {
       candidate: brief.name,
@@ -398,6 +418,17 @@ export function originalityMarkdown(r: OriginalityReport, concept: Concept): str
       `Closest primitive: **${r.genericity.closest}** at ${pct(r.genericity.similarity)} overlap → ${r.genericity.level}.`,
       '',
     );
+  }
+  if (r.family?.length) {
+    lines.push('## Family likeness', '');
+    lines.push(
+      '_Marks of the product family this brand joins. Likeness here is intended and is not an originality risk._',
+      '',
+      '| Family mark | Likeness |',
+      '| --- | --- |',
+    );
+    for (const f of r.family) lines.push(`| ${f.name} | ${pct(f.visual)} |`);
+    lines.push('');
   }
   lines.push('## Difference from the other concepts', '');
   if (r.diversity.length) {
