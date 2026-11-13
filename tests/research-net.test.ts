@@ -280,6 +280,10 @@ describe('nameRenderingOf', () => {
     expect(render(`${icon}<span>Ledger</span>`)).toBe('live-text');
     expect(render(`${icon} Ledger`)).toBe('live-text');
   });
+  it('a small UI-sized icon next to a live-text name is live-text, not unknown', () => {
+    const dot = '<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="10"/></svg>';
+    expect(render(`${dot}<span>Ledger</span>`)).toBe('live-text');
+  });
   it('a drawn word or an icon alone stays outlined', () => {
     expect(render(word)).toBe('outlined');
     expect(render(icon)).toBe('outlined');

@@ -488,8 +488,9 @@ export function nameRenderingOf(
     if (!isHomeHref(href, opts.origin) && !/logo|brand|wordmark/i.test(m[1]!)) continue;
     const inner = m[2]!;
     if (/<img\b/i.test(inner)) return 'image';
-    if (/<svg\b/i.test(inner)) continue;
-    if (/[\p{L}\p{N}]/u.test(inner.replace(/<[^>]*>/g, ''))) return 'live-text';
+    // An icon too small to be a logo candidate beside the name: the name is still set as text.
+    const text = inner.replace(/<svg\b[\s\S]*?<\/svg>/gi, '').replace(/<[^>]*>/g, '');
+    if (/[\p{L}\p{N}]/u.test(text)) return 'live-text';
   }
   for (const m of zone.matchAll(
     /<(span|div|p|strong|b|h1|h2)\b([^>]*(?:logo|brand|wordmark)[^>]*)>([^<]*)</gi,
