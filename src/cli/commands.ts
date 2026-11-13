@@ -18,7 +18,14 @@ import {
 } from '../construct/vary.js';
 import { MarkiloError } from '../core/errors.js';
 import { isDir, nowIso, readJson, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
-import { isSlug, portableRelative, realExisting, resolveInsideReal, slugify } from '../core/paths.js';
+import {
+  isSlug,
+  portableRelative,
+  realExisting,
+  resolveInsideReal,
+  slugify,
+  slugifyOrHash,
+} from '../core/paths.js';
 import type {
   BrandRole,
   Brief,
@@ -66,7 +73,7 @@ import { defaultFonts, exploreWordmarks } from '../design/wordmarks.js';
 import { GROUP_INFO, resolveDeliverables, suggestDeliverables } from '../export/deliverables.js';
 import { brandFinalHolding, EXPORT_GROUPS, type ExportGroup, exportBrand } from '../export/exporter.js';
 import { inkMetrics } from '../export/geometry.js';
-import { finalizeConcept, lockIdentity } from '../export/kit.js';
+import { composeLockedLockups, finalizeConcept, lockIdentity } from '../export/kit.js';
 import { groundColors, tileGround } from '../export/variants.js';
 import { feedbackRequests, parseFeedback, readLatestFeedback, storeFeedback } from '../gallery/feedback.js';
 import { buildGallery } from '../gallery/gallery.js';
@@ -375,14 +382,24 @@ export const COMMANDS: CommandSpec[] = [
     async run(c) {
       const w = ws(c);
       const role = c.str('role') as BrandRole | undefined;
+      const name = pos(c, 0, 'name');
+      const derived = c.str('slug') ? undefined : slugifyOrHash(name);
       const b = w.addBrand({
-        name: pos(c, 0, 'name'),
-        ...(c.str('slug') ? { slug: c.str('slug')! } : {}),
+        name,
+        ...(c.str('slug') ? { slug: c.str('slug')! } : derived ? { slug: derived.slug } : {}),
         ...(role ? { role } : {}),
         ...(c.str('parent') ? { parent: c.str('parent')! } : {}),
         locked: c.bool('locked'),
       });
-      return { brand: b, files: { brief: w.briefPath(b.slug), profile: w.profilePath(b.slug) } };
+      return {
+        brand: b,
+        files: { brief: w.briefPath(b.slug), profile: w.profilePath(b.slug) },
+        ...(derived?.hashed
+          ? {
+              slugNote: `The name has no Latin letters or digits, so the slug is ${b.slug} (a hash of the name). Pass --slug <slug> to choose it. A wordmark in this script needs a supplied SVG (--wordmark <file> on concept update or lock); the bundled fonts cannot draw it.`,
+            }
+          : {}),
+      };
     },
   },
   {
@@ -2207,13 +2224,15 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Register an existing identity that must be preserved exactly (files copied byte-for-byte; no redesign, no recoloring).',
     usage:
-      'lock --brand <slug> --primary <#hex> [--symbol <svg>] [--wordmark <svg>] [--lockup <svg>] [--paper <#hex>] [--ink <#hex>] [--force]',
+      'lock --brand <slug> --primary <#hex> [--symbol <svg>] [--wordmark <svg>] [--lockup <svg>] [--secondary <#hex>] [--accent <#hex>] [--paper <#hex>] [--ink <#hex>] [--force]',
     options: {
       ...brandOpt,
       symbol: { type: 'string', description: 'Existing symbol SVG' },
       wordmark: { type: 'string', description: 'Existing wordmark SVG' },
       lockup: { type: 'string', description: 'Existing logo/lockup SVG' },
       primary: { type: 'string', description: 'Brand color' },
+      secondary: { type: 'string', description: 'Secondary brand color' },
+      accent: { type: 'string', description: 'Accent color' },
       paper: { type: 'string', description: 'Background color' },
       ink: { type: 'string', description: 'Ink color' },
       force: { type: 'boolean', description: 'Replace existing kit' },
@@ -2231,10 +2250,16 @@ export const COMMANDS: CommandSpec[] = [
         primary: c.req('primary'),
         ...(c.str('paper') ? { paper: c.str('paper')! } : {}),
         ...(c.str('ink') ? { ink: c.str('ink')! } : {}),
+        ...(c.str('secondary') ? { secondary: c.str('secondary')! } : {}),
+        ...(c.str('accent') ? { accent: c.str('accent')! } : {}),
         force: c.bool('force'),
       });
+      // A symbol and a wordmark without a lockup: build the lockups as finalize does (both files stay as provided).
+      const composed = await composeLockedLockups(w, c.req('brand'));
       return {
-        kit,
+        kit: composed.kit ?? kit,
+        ...(composed.added.length ? { composedLockups: composed.added } : {}),
+        ...(composed.skipped ? { warnings: [`Lockups were not composed: ${composed.skipped}`] } : {}),
         note: 'Locked: Markilo will reproduce these files exactly and refuse concept work for this brand.',
       };
     },
@@ -2925,7 +2950,8 @@ export const COMMANDS: CommandSpec[] = [
           r.issues.push({ rule: 'word-baseline', severity: 'warning', message: `The ${NO_BASELINE}.` });
         return { file: p, ...r };
       });
-      return { ok: results.every((r) => r.ok), results };
+      const ok = results.every((r) => r.ok);
+      return { ok, results, ...(ok ? {} : { exitCode: 1 }) };
     },
   },
   {

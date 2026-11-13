@@ -73,6 +73,7 @@ function runs(face: FontFace, text: string): { font: Font; text: string }[] {
       throw new MarkiloError(
         'INVALID_INPUT',
         `${face.label} has no glyph for "${ch}" (U+${cp.toString(16).toUpperCase()}).`,
+        'Markilo cannot draw this script from a font. Supply a drawn wordmark SVG instead (--wordmark <file> on concept update, or lock).',
       );
     }
     const last = out[out.length - 1];
