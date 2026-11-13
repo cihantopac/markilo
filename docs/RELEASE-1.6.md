@@ -543,4 +543,26 @@ The reports also praised parts that should stay as they are:
 
 ## Progress record
 
-- (empty)
+- Tasks 1–11 implemented by parallel agents in worktrees (at most four at once) and merged on `v1.6`; one whole-branch
+  review (0 Critical, 7 Important, 13 Minor), one fix wave (I1–I7, M1–M3, M9, M11, M13), a scoped re-review (12 fixed,
+  I4 partly: tightly kerned overlapping pairs can still read as a form change; parked).
+- Deviations from the task text, decided during the work:
+  - Task 2: `finalize` fails only on a **stale** colour (a former palette value kept in `paletteHistory`); other
+    off-palette colours are warnings, so shades of the primary stay legal. `--recolor-from <#hex>` is the remedy.
+  - Task 3: `wordmarkIoU` compares letter by letter, so spacing changes do not count as a form change.
+  - Task 8: proposal letters unchanged — only `proposals` writes `proposal.png`, and letters are fixed at
+    `concept new` under the 1.5 lock.
+  - Task 10: the 250 KB symbol ran `lock` + `export --all` in about 2.4 s (zlib and resvg dominate); the finalize path
+    with a very large symbol was not profiled.
+- Parked for 1.7: loose family-hint stem matching, non-Latin mark names dropping a family lockup, colours inside
+  `<style>` blocks, a palette-only change making the critique stale, navy icon + black word still warning, nested
+  hidden-text tags, the I4 kerning residual and three cosmetic nits.
+- Release check (Task 12, 2026-11-13), built CLI against a local page: `research site` → `nameRendering: outlined`,
+  `familyHint.siblings` as URLs (the default digest dropped these fields; fixed in `d2c026a`); `research family` named
+  the reference `nimbra-mail-1` from `data-lockup-art`; `family word --draw` with the arc C stayed within −100…0 and
+  `--fill` set the ink; `concept update --primary` listed `recolored`, a stale colour stopped finalize and
+  `--recolor-from` fixed it; a different drawing gave `formChange.symbol 0.44` with the warning, `concept revert`
+  restored it byte-identical and the critique came back (`passed`); `svg lint` on a bad file exited 1 with JSON;
+  `cost` reported `busyMinutes` and `elapsedMinutes`.
+- `npm run ci` 435/435, `node scripts/smoke.mjs` passed, `claude plugin validate plugin` passed. Markilo's own kit
+  re-exported: logo files byte-identical; the manifest changed.

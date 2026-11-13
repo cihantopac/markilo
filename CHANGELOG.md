@@ -6,16 +6,72 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-11-13
+
+Keeps what the user chose. From two field reports on 1.5.0 (two products joining a family whose words are
+custom-drawn) and one headless integration. Locked identities and the logo files of existing kits are byte-for-byte
+what 1.5.0 wrote.
+
+### Added
+
+- `concept revert --brand --concept --to chosen [--note "<the user's words>"]`: restores the drawing the user chose
+  from `chosen/` (by file key, so a renamed master comes back), recolours it to the current palette, unregisters files
+  made after the choice and moves them to `rejected/<timestamp>/` (never deletes), restores an earlier critique of that
+  drawing and logs the decision. It checks everything before moving a file. `chosen/files.json` records the files and
+  the palette at the time of the choice.
+- `proposals` measures how far a developed drawing moved from the chosen one: `formChange { symbol, wordmark }`
+  (silhouette IoU; letter by letter for a wordmark, so spacing alone does not count) and a warning below 0.85.
+- `concept update --primary|--secondary|--accent|--ink` rewrites the old colour to the new one in the concept's SVGs
+  and lists `recolored`; `--no-recolor` keeps the files; `--recolor-from <#hex>` rewrites a leftover colour to a role.
+  Replaced colours are kept in `paletteHistory`.
+- `family word --fill <#hex>` (default `#111111`); `family glyphs` warns about outlier advances and sidebearings (the
+  symbol may be merged into the word); `family word` reports stems per source and warns when they differ by more than
+  15 %.
+- `research site` records `outboundHosts` and returns `familyHint` from sibling links (a shared name stem with the
+  page or the organization); `research family --member` accepts a bare host. Family references are named after the
+  mark (`data-lockup-art`, `aria-label`, `<title>`) when it has a name.
+- `research competitors` returns `missingLogos` with a warning.
+- `lock --secondary --accent`; a locked kit with a symbol and a wordmark but no lockup gets composed lockups.
+- `brand add` gives a name without Latin letters or digits a `brand-<hash>` slug (`slugNote`).
+- `cost` reports `busyMinutes` (the union of agent intervals) and `elapsedMinutes`.
+
 ### Changed
 
 - The critic gate status `failed` is now `below-threshold` (the critique is advice, not a rejection; `next` is
   unchanged). Kits written before 1.6 with `gate.status: "failed"` are read as `below-threshold`.
+- The time budget and `cost --plan`'s `fits` compare busy time, not first-to-last time, so waiting for the user no
+  longer counts; `wallMinutes` is an alias of `elapsedMinutes` and will be removed in a later release; the plan's
+  shortfall field is `shortfall.busyMinutes` (was `agentMinutes`).
+- `familyHint.hub` and `siblings` are URLs on every path.
+- `svg lint` exits 1 when a file is not ok (the JSON is printed as before).
+- `finalize --force` removes master files in `final/` that the new kit no longer lists.
+- The skills ask the scope of a develop pass first (craft only · small revision · the form may change) and offer three
+  visual probes when the user cannot say what is missing. The critic labels each fix `craft` or `silhouette`;
+  silhouette fixes are shown before and after and applied only on the user's yes; traits the user likes are protected
+  and readings the user forbade are named. The family question offers the users' own rule (the parent's letters, the
+  siblings' letters, the rest drawn in the same style). A family word keeps the family ink.
 
 ### Fixed
 
-- A critique is kept in `concept.critiques[]` with the drawing it judged. When the artwork returns byte-identical to
-  that drawing, the critique is current again (the gate leaves `stale`) and `concept update` says "restored the critique
-  of <date>". The critic agent now checks that its scores were recorded (`gate` is not `not-reviewed`) before saying so.
+- Arcs drawn through PathKit (boolean operations, transforms, `family word --draw`) bulged outward: conics were
+  written as plain quadratics without their weight. They are now exact.
+- A palette change left the masters in the old colour and `finalize`/`export` shipped them silently. A master that
+  still uses a replaced palette colour now stops `finalize` (with the `--recolor-from` remedy) unless
+  `--accept-colours`; other off-palette colours are warnings in `verify` and `finalize` only.
+- A critique is kept in `concept.critiques[]` with the drawing it judged; when the artwork returns byte-identical, it
+  is current again. A critique of a changed drawing starts clean. The critic agent checks that its scores were
+  recorded before saying so.
+- `concept update --small none` / `--wordmark-small none` unregister the file; a kit with `smallSizes: main` no longer
+  lists or copies the small symbol.
+- A visually hidden name (`sr-only` etc.) beside a drawn word no longer makes it `live-text`.
+- `render --compare --tile --primary` drew the tile row in the default blue unless `--on-dark`/`--on-light` was given.
+- Competitor logos skip review-site badges, social marks and close/menu/arrow icons.
+- A one-colour lockup no longer gets palette-separation and lightness-contrast warnings; the artboard-fit message shows
+  one decimal.
+- A trademark search on a registry host logged as a `search` source counts as a registry search.
+- Recolouring is written only after every option is validated.
+- The default `research site` output now carries `nameRendering`, `outboundHosts` and `familyHint` (they were only in
+  `--full`).
 
 ## [1.5.0] - 2026-11-13
 
