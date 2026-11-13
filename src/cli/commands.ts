@@ -40,7 +40,10 @@ import {
   CHOSEN_DIR,
   checkRound,
   keepChosen,
+  letterAt,
+  nextLetter,
   ROUND_SIZE,
+  roundOrder,
   rounds,
 } from '../design/rounds.js';
 import { wordmarkSvg } from '../design/wordmark.js';
@@ -1216,12 +1219,15 @@ export const COMMANDS: CommandSpec[] = [
         throw new MarkiloError('USAGE', '--lead must be symbol or wordmark.');
       const round = c.str('round') ? c.num('round')! : undefined;
       if (round !== undefined) checkRound(w, slug, round, c.str('directed'));
+      const letter =
+        round !== undefined ? nextLetter(w.concepts(slug).filter((x) => x.round === round)) : undefined;
       const concept: Concept = {
         schema: 'markilo/concept@1',
         id,
         brand: slug,
         ...(lead === 'wordmark' ? { lead } : {}),
         ...(round !== undefined ? { round } : {}),
+        ...(letter ? { letter } : {}),
         ...(round !== undefined && c.str('directed') ? { directed: c.str('directed')! } : {}),
         title: c.req('title'),
         direction: c.req('direction'),
@@ -1903,7 +1909,15 @@ export const COMMANDS: CommandSpec[] = [
         {};
       const compare: Record<string, string> = {};
       const files: string[] = [];
-      for (const [i, cpt] of picked.entries()) {
+      // The letter a concept carries is its own, so one proposal alone keeps the letter the board gave it.
+      const letterOf = (cpt: Concept): string => {
+        if (cpt.letter) return cpt.letter;
+        const mates = roundOrder(all.filter((x) => x.round !== undefined && x.round === cpt.round));
+        const at = mates.findIndex((x) => x.id === cpt.id);
+        return letterAt(Math.max(at, 0));
+      };
+      const order: { letter: string; id: string; title: string; status: string }[] = [];
+      for (const cpt of picked) {
         const symbol = read(cpt, cpt.files.symbol);
         const wordmark = read(cpt, cpt.files.wordmark);
         if (!symbol && !wordmark) {
@@ -1934,7 +1948,7 @@ export const COMMANDS: CommandSpec[] = [
         const small = read(cpt, cpt.files.small);
         const input: ProposalInput = {
           title: cpt.title,
-          caption: `${cpt.round !== undefined ? `Round ${cpt.round} · ` : ''}${String.fromCharCode(65 + i)} · ${cpt.lead === 'wordmark' ? 'wordmark-led' : 'symbol-led'}`,
+          caption: `${cpt.round !== undefined ? `Round ${cpt.round} · ` : ''}${letterOf(cpt)} · ${cpt.lead === 'wordmark' ? 'wordmark-led' : 'symbol-led'}`,
           idea: cpt.pitch?.idea ?? cpt.direction,
           lead: cpt.lead === 'wordmark' ? 'wordmark' : 'symbol',
           ...(symbol ? { symbol } : {}),
@@ -1946,6 +1960,7 @@ export const COMMANDS: CommandSpec[] = [
           primary: cpt.palette.primary,
         };
         inputs.push(input);
+        order.push({ letter: letterOf(cpt), id: cpt.id, title: cpt.title, status: cpt.status });
         const out = w.conceptFile(slug, cpt.id, join('review', 'proposal.png'));
         writeGenerated(out, await renderProposal(input));
         files.push(out);
@@ -1981,6 +1996,8 @@ export const COMMANDS: CommandSpec[] = [
       return {
         round: ids.length ? null : round,
         proposals: picked.map((x) => x.id),
+        /** The letters on the board and in the gallery: say "B" and this is the concept. */
+        order,
         board: board ?? null,
         files,
         /** How closely each wordmark matches its typeface set plainly (1 = untouched). */
@@ -2980,7 +2997,10 @@ export const COMMANDS: CommandSpec[] = [
         if (c.positionals.length < 2 || c.positionals.length > 8)
           throw new MarkiloError('USAGE', '--compare takes 2 to 8 SVG files.');
         const png = await renderCompareSheet(
-          c.positionals.map((p) => ({ label: basename(p), svg: readText(file(c, p)) })),
+          c.positionals.map((p, i) => ({
+            label: `${letterAt(i)} · ${basename(p)}`,
+            svg: readText(file(c, p)),
+          })),
           c.str('paper') ?? '#ffffff',
         );
         writeGenerated(file(c, c.req('out')), png);

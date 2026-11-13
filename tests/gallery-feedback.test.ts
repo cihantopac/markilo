@@ -115,6 +115,33 @@ describe('gallery: ideas', () => {
   });
 });
 
+describe('gallery: round letters', () => {
+  it('cards carry the letters the board shows, in proposal order', async () => {
+    const { copyFileSync, mkdirSync } = await import('node:fs');
+    const { ws } = synthBrand();
+    const base = ws.concept('nimbra', 'fold');
+    const made = [
+      ['zeta', 'Zeta idea', 'A', '2026-01-01T00:00:00.000Z'],
+      ['alpha', 'Alpha idea', 'B', '2026-01-02T00:00:00.000Z'],
+      ['mid', 'Mid idea', 'C', '2026-01-03T00:00:00.000Z'],
+    ] as const;
+    for (const [id, title, letter, createdAt] of made) {
+      mkdirSync(ws.conceptDir('nimbra', id), { recursive: true });
+      for (const f of ['symbol.svg', 'wordmark.svg'])
+        copyFileSync(ws.conceptFile('nimbra', 'fold', f), ws.conceptFile('nimbra', id, f));
+      ws.saveConcept({ ...base, id, title, round: 1, letter, createdAt });
+    }
+    const html = readFileSync((await buildGallery(ws)).path, 'utf8');
+    const at = (t: string) => html.indexOf(`<span class="letter">`, html.indexOf(`</span>${t}</h3>`) - 40);
+    expect(html).toMatch(/<span class="letter">A<\/span>Zeta idea/);
+    expect(html).toMatch(/<span class="letter">B<\/span>Alpha idea/);
+    expect(html).toMatch(/<span class="letter">C<\/span>Mid idea/);
+    expect(html.indexOf('Zeta idea')).toBeLessThan(html.indexOf('Alpha idea'));
+    expect(html.indexOf('Alpha idea')).toBeLessThan(html.indexOf('Mid idea'));
+    expect(at('Mid idea')).toBeGreaterThan(0);
+  });
+});
+
 describe('gallery: nothing passed', () => {
   it('says why nothing is offered and shows the rejected concepts with the critic verdict', async () => {
     const { ws } = synthBrand();

@@ -13,7 +13,35 @@ export const AUTONOMOUS_ROUNDS = 2;
 export function rounds(concepts: Concept[]): { round: number; concepts: Concept[] }[] {
   const by = new Map<number, Concept[]>();
   for (const c of concepts) if (c.round !== undefined) by.set(c.round, [...(by.get(c.round) ?? []), c]);
-  return [...by.entries()].sort((a, b) => a[0] - b[0]).map(([round, cs]) => ({ round, concepts: cs }));
+  return [...by.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([round, cs]) => ({ round, concepts: roundOrder(cs) }));
+}
+
+/**
+ * Concepts in the order they were proposed: by `letter`, then creation time, then id (workspaces written by 1.3.0 have
+ * no letters). Everything that presents a round to the user goes through this, so a letter means one concept.
+ */
+export function roundOrder(concepts: Concept[]): Concept[] {
+  return [...concepts].sort(
+    (a, b) =>
+      (a.letter ?? '~').localeCompare(b.letter ?? '~') ||
+      a.createdAt.localeCompare(b.createdAt) ||
+      a.id.localeCompare(b.id),
+  );
+}
+
+/** The letter for position `i` in a round: A… Z, then AA… */
+export function letterAt(i: number): string {
+  return i < 26 ? String.fromCharCode(65 + i) : `${letterAt(Math.floor(i / 26) - 1)}${letterAt(i % 26)}`;
+}
+
+/** The next letter not yet used inside a round's concepts. */
+export function nextLetter(inRound: Concept[]): string {
+  const used = new Set(inRound.map((c) => c.letter));
+  let i = 0;
+  while (used.has(letterAt(i))) i++;
+  return letterAt(i);
 }
 
 /**

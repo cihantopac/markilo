@@ -16,12 +16,12 @@ const ok = (args: string[], cwd: string) => {
 };
 
 /** A workspace with brand "Tidepool" and `n` proposals in round 1, each with a symbol and a wordmark. */
-function proposals(n: number) {
+function proposals(n: number, names?: string[]) {
   const cwd = tmp();
   ok(['init', '--name', 'Demo'], cwd);
   ok(['brand', 'add', 'Tidepool'], cwd);
   for (let i = 1; i <= n; i++) {
-    const id = `p${i}`;
+    const id = names?.[i - 1] ?? `p${i}`;
     ok(
       [
         'concept',
@@ -68,6 +68,49 @@ function proposals(n: number) {
 }
 
 describe('exploration rounds', () => {
+  it('letters follow creation order, not ids', () => {
+    const cwd = proposals(3, ['zeta', 'alpha', 'mid']);
+    const shown = (id: string) =>
+      ok(['concept', 'show', '--brand', 'tidepool', '--concept', id], cwd) as { letter?: string };
+    expect(['zeta', 'alpha', 'mid'].map((id) => shown(id).letter)).toEqual(['A', 'B', 'C']);
+    const r = ok(['proposals', '--brand', 'tidepool'], cwd);
+    expect(r.proposals).toEqual(['zeta', 'alpha', 'mid']);
+    expect(r.order.map((o: { letter: string; id: string }) => `${o.letter}:${o.id}`)).toEqual([
+      'A:zeta',
+      'B:alpha',
+      'C:mid',
+    ]);
+    expect(r.order[0]).toEqual({ letter: 'A', id: 'zeta', title: 'Proposal 1', status: 'draft' });
+  });
+
+  it('a single proposal keeps its letter', () => {
+    const cwd = proposals(3, ['zeta', 'alpha', 'mid']);
+    const r = ok(['proposals', '--brand', 'tidepool', '--concepts', 'mid'], cwd);
+    expect(r.order).toEqual([{ letter: 'C', id: 'mid', title: 'Proposal 3', status: 'draft' }]);
+    const png = readFileSync(r.files[0]);
+    expect(png.length).toBeGreaterThan(1000);
+  });
+
+  it('a 1.3.0 round without letters orders by creation time', async () => {
+    const { Workspace } = await import('../src/core/workspace.js');
+    const { roundOrder } = await import('../src/design/rounds.js');
+    const cwd = proposals(3, ['zeta', 'alpha', 'mid']);
+    const w = Workspace.locate(cwd);
+    for (const [i, id] of ['zeta', 'alpha', 'mid'].entries()) {
+      const c = w.concept('tidepool', id);
+      delete c.letter;
+      c.createdAt = `2026-01-0${i + 1}T00:00:00.000Z`;
+      w.saveConcept(c);
+    }
+    expect(roundOrder(w.concepts('tidepool')).map((c) => c.id)).toEqual(['zeta', 'alpha', 'mid']);
+    const r = ok(['proposals', '--brand', 'tidepool'], cwd);
+    expect(r.order.map((o: { letter: string }) => o.letter)).toEqual(['A', 'B', 'C']);
+    expect(r.proposals).toEqual(['zeta', 'alpha', 'mid']);
+    // A concept without a letter, shown alone, takes its position in its round.
+    const one = ok(['proposals', '--brand', 'tidepool', '--concepts', 'mid'], cwd);
+    expect(one.order[0].letter).toBe('C');
+  });
+
   it('allows three proposals per round, no skipped round, and a third round only on the user’s direction', () => {
     const cwd = proposals(3);
     const base = [

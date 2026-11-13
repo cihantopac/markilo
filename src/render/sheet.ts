@@ -98,21 +98,30 @@ export async function renderWordmarkSheet(svg: string, title?: string): Promise<
  * Side-by-side comparison of several sketches: each sketch on its paper and on the opposite ground, at
  * 16–256 px. Used to choose between alternatives before refining one.
  */
-export async function renderCompareSheet(
+export function compareSheetSvg(
   items: { label: string; svg: string }[],
   paper = '#ffffff',
-): Promise<Buffer> {
+  title = 'Options',
+): string {
   const g = groundsFor(paper);
-  const rows: SheetRow[] = items.flatMap((it, i) => [
-    { label: `${String.fromCharCode(65 + i)} · ${it.label}`, background: g.native, svg: it.svg },
+  const rows: SheetRow[] = items.flatMap((it) => [
+    { label: it.label, background: g.native, svg: it.svg },
     {
-      label: `${String.fromCharCode(65 + i)} · on ${g.darkFirst ? 'light' : 'dark'}`,
+      label: `${it.label} · on ${g.darkFirst ? 'light' : 'dark'}`,
       background: g.opposite,
       svg: adaptToGround(it.svg, g.opposite),
     },
   ]);
   const sizes = [16, 32, 64, 128, 256];
-  const sheet = sheetSvg(rows, sizes, 'Sketch comparison');
+  return sheetSvg(rows, sizes, title);
+}
+
+export async function renderCompareSheet(
+  items: { label: string; svg: string }[],
+  paper = '#ffffff',
+  title = 'Options',
+): Promise<Buffer> {
+  const sheet = compareSheetSvg(items, paper, title);
   const width = Number(/width="(\d+)"/.exec(sheet)![1]);
   return renderPng(sheet, { width });
 }

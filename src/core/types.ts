@@ -179,6 +179,8 @@ export interface Concept {
    * exploring on its own and asks the user for direction; a third round needs the user's direction.
    */
   round?: number;
+  /** The letter the user says for this proposal inside its round (A, B, C…): the order it was proposed in. */
+  letter?: string;
   /** How the proposal is pitched to the user: the idea in one sentence, its strengths and its risks. */
   pitch?: { idea: string; strengths: string[]; weaknesses: string[] };
   /** The user's direction a round beyond the second was built on (their words). */
