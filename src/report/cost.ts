@@ -194,3 +194,110 @@ export function costSummary(log: CostLog) {
               : undefined,
   };
 }
+
+/** The kinds of agent a round starts, the phase each is recorded under, and the defaults used without history. */
+export const PLAN_KINDS = {
+  explore: { phase: 'explore', minutes: [10, 16], tokens: [150_000, 300_000] },
+  develop: { phase: 'refine', minutes: [12, 20], tokens: [150_000, 300_000] },
+  critic: { phase: 'verify', minutes: [4, 8], tokens: [40_000, 90_000] },
+} as const;
+export type PlanKind = keyof typeof PLAN_KINDS;
+
+/** `explore:3,develop:1,critic:1` → counts per kind (a kind without a count means 1). */
+export function parsePlan(text: string): Partial<Record<PlanKind, number>> {
+  const out: Partial<Record<PlanKind, number>> = {};
+  for (const part of text.split(',')) {
+    const [rawKind, rawCount] = part.split(':').map((s) => s.trim().toLowerCase());
+    if (!rawKind) continue;
+    if (!(rawKind in PLAN_KINDS))
+      throw new MarkiloError(
+        'USAGE',
+        `Unknown agent kind "${rawKind}" in --plan.`,
+        `Use ${Object.keys(PLAN_KINDS).join(', ')}, e.g. explore:3,develop:1,critic:1.`,
+      );
+    const n = rawCount === undefined ? 1 : Number(rawCount);
+    if (!Number.isInteger(n) || n < 1)
+      throw new MarkiloError('USAGE', `--plan count for ${rawKind} must be a whole number from 1.`);
+    out[rawKind as PlanKind] = (out[rawKind as PlanKind] ?? 0) + n;
+  }
+  if (!Object.keys(out).length)
+    throw new MarkiloError('USAGE', '--plan needs agents, e.g. explore:3,develop:1,critic:1.');
+  return out;
+}
+
+/**
+ * Estimate a round before it starts. Per kind: this brand's recorded named agents of the kind's phase when there are at
+ * least 2 (their range), else the defaults. Agent minutes add up; wall time is the longest agent of each kind, since the
+ * agents of a kind run in parallel and the kinds run one after another.
+ */
+export function planEstimate(log: CostLog, plan: Partial<Record<PlanKind, number>>) {
+  const range = (xs: number[]): [number, number] => [r2(Math.min(...xs)), r2(Math.max(...xs))];
+  const agentMin: [number, number] = [0, 0];
+  const wall: [number, number] = [0, 0];
+  const usd: [number, number] = [0, 0];
+  // Dollars are tokens × the brand's recorded rate (the latest entry that sets one), else the default rate.
+  const rate = [...log.entries].reverse().find((e) => e.rate !== undefined)?.rate ?? DEFAULT_RATE;
+  const kinds = (Object.keys(plan) as PlanKind[]).map((kind) => {
+    const count = plan[kind]!;
+    const def = PLAN_KINDS[kind];
+    const names = [
+      ...new Set(log.entries.filter((e) => e.phase === def.phase && e.agent).map((e) => e.agent!)),
+    ];
+    const agents = names.map((agent) => {
+      const es = log.entries.filter((e) => e.phase === def.phase && e.agent === agent);
+      return {
+        minutes: es.reduce((a, e) => a + (e.minutes ?? 0), 0),
+        tokens: es.reduce((a, e) => a + (e.tokens ?? 0), 0),
+        complete: !es.some((e) => e.minutesUnknown) && es.some((e) => (e.minutes ?? 0) > 0),
+      };
+    });
+    const usable = agents.filter((a) => a.complete);
+    const history = usable.length >= 2;
+    const m = history ? range(usable.map((a) => a.minutes)) : ([...def.minutes] as [number, number]);
+    const withTokens = agents.filter((a) => a.tokens > 0);
+    const tokenHistory = withTokens.length >= 2;
+    const t = tokenHistory ? range(withTokens.map((a) => a.tokens)) : ([...def.tokens] as [number, number]);
+    const d: [number, number] = [(t[0] / 1e6) * rate, (t[1] / 1e6) * rate];
+    agentMin[0] += count * m[0];
+    agentMin[1] += count * m[1];
+    wall[0] += m[0];
+    wall[1] += m[1];
+    usd[0] += count * d[0];
+    usd[1] += count * d[1];
+    return {
+      kind,
+      agents: count,
+      perAgentMinutes: m,
+      perAgentTokens: t,
+      tokensSource: tokenHistory ? `this brand's ${withTokens.length} recorded ${kind} agents` : 'defaults',
+      source: history ? `this brand's ${usable.length} recorded ${kind} agents` : 'defaults',
+    };
+  });
+  const rr = (p: [number, number]): [number, number] => [r2(p[0]), r2(p[1])];
+  const summary = costSummary(log);
+  const shortUsd = r2(Math.max(0, usd[1] - summary.remainingUsd));
+  const shortMin =
+    summary.minutesRemaining !== undefined
+      ? r2(Math.max(0, agentMin[1] - summary.minutesRemaining))
+      : undefined;
+  const fits = shortUsd === 0 && (shortMin ?? 0) === 0;
+  const sources = new Set(kinds.map((k) => (k.source === 'defaults' ? 'defaults' : 'history')));
+  return {
+    plan,
+    estimate: { agentMinutes: rr(agentMin), wallMinutes: rr(wall), usd: rr(usd) },
+    source: sources.size > 1 ? 'mixed' : sources.has('history') ? 'history' : 'defaults',
+    kinds,
+    rate,
+    ...(summary.label ? { label: summary.label } : {}),
+    budgetUsd: summary.budgetUsd,
+    remainingUsd: summary.remainingUsd,
+    ...(summary.minutesRemaining !== undefined
+      ? { minutesBudget: summary.minutesBudget, minutesRemaining: summary.minutesRemaining }
+      : {}),
+    fits,
+    ...(fits
+      ? {}
+      : { shortfall: { usd: shortUsd, ...(shortMin !== undefined ? { agentMinutes: shortMin } : {}) } }),
+    note: 'Compared against the upper end of the estimate. Dollars are for subagents only; the session itself is not counted.',
+  };
+}

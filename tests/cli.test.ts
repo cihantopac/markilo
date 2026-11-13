@@ -10,9 +10,26 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { parseCommand } from '../src/cli/args.js';
+import { findCommand } from '../src/cli/commands.js';
 import { verifyConcept } from '../src/report/quality.js';
 import { fixture, synthBrand, tmp } from './helpers.js';
+
+vi.mock('../src/research/appstore.js', async (orig) => ({
+  ...(await orig<typeof import('../src/research/appstore.js')>()),
+  searchIosApps: async () => [
+    {
+      store: 'ios',
+      id: '123456789',
+      name: 'Rivalry',
+      url: 'https://apps.apple.com/app/id123456789',
+      screenshots: [],
+      retrievedAt: '2026-11-12T10:00:00.000Z',
+      sourceApi: 'https://itunes.apple.com/lookup?id=123456789',
+    },
+  ],
+}));
 
 const bin = join(__dirname, '..', 'plugin', 'dist', 'markilo.mjs');
 const run = (args: string[], cwd: string) =>
@@ -918,4 +935,24 @@ describe('cli frictions', () => {
       ok(['verify', '--brand', 'tidepool', '--concept', 'p1']).originality.nameRiskReasons,
     ).toBeDefined();
   }, 60_000);
+});
+
+describe('research app (stubbed network)', () => {
+  it('research app hints at --as-reference', async () => {
+    const dir = tmp();
+    const base = ['--workspace', join(dir, 'brand')];
+    expect(run(['init', '--name', 'Demo', ...base], dir).status).toBe(0);
+    expect(run(['brand', 'add', 'Tidepool', ...base], dir).status).toBe(0);
+    const go = async (extra: string[]) => {
+      const f = findCommand(['research', 'app'])!;
+      const argv = ['123456789', '--brand', 'tidepool', '--allow-network', ...base, ...extra];
+      return (await f.spec.run(parseCommand(f.spec, argv, dir))) as { hint?: string; reference: unknown };
+    };
+    const r = await go(['--competitor']);
+    expect(r.reference).toBeNull();
+    expect(r.hint).toBe(
+      'nothing stored as a reference — add --as-reference to keep the icon for similarity checks',
+    );
+    expect((await go([])).hint).toBeUndefined();
+  });
 });
