@@ -61,8 +61,17 @@ export function adaptToGround(
   const dark = isDarkGround(ground);
   const chosen = brand && (dark ? brand.onDark : brand.onLight);
   const primary = chosen && normalizeColor(brand!.primary);
+  // The colour chosen for the other ground, drawn into a master: it shows this ground's colour instead (or the
+  // primary when that passes 3:1 here).
+  const other = brand && (dark ? brand.onLight : brand.onDark);
+  const otherKey = other && normalizeColor(other);
+  const fallbackPrimary = brand && normalizeColor(brand.primary);
   return recolorSvg(svg, (c) => {
     if (primary && normalizeColor(c) === primary) return chosen;
+    if (otherKey && normalizeColor(c) === otherKey && otherKey !== fallbackPrimary) {
+      if (chosen) return chosen;
+      if (fallbackPrimary && contrastRatio(fallbackPrimary, ground) >= 3) return fallbackPrimary;
+    }
     if (contrastRatio(c, ground) >= 3) return undefined;
     const o = hexToOklch(c);
     const neutral = o.c < 0.09 || o.l < 0.3 || o.l > 0.93;

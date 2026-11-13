@@ -267,6 +267,71 @@ describe('cli (bundled)', () => {
     const verify = ok(['verify', '--brand', 'tidepool', '--concept', 'p1']);
     expect(JSON.stringify(verify)).toMatch(/the critique is older than the drawing/);
   }, 60_000);
+  it('finalize keeps a stand-in font under standIn for family lettering', async () => {
+    const { ws, dir } = synthBrand();
+    const cwd = dirname(ws.root);
+    expect(cwd).toBe(dir);
+    const fold = ws.concept('nimbra', 'fold');
+    ws.saveConcept({
+      ...fold,
+      typography: {
+        fontId: 'outfit',
+        weight: 600,
+        family: 'Outfit',
+        license: 'OFL-1.1',
+        lettering: 'family',
+      },
+    });
+    await verifyConcept(ws, 'nimbra', 'fold');
+    const r = run(
+      ['finalize', '--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
+      cwd,
+    );
+    expect(r.status, r.stderr).toBe(0);
+    const out = JSON.parse(r.stdout);
+    expect(out.kit.typography).toEqual({ lettering: 'family', standIn: { fontId: 'outfit', weight: 600 } });
+  }, 60_000);
+  it('verify warns for a ground colour in a master', () => {
+    const cwd = tmp();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    ok(['init', '--name', 'Demo']);
+    ok(['brand', 'add', 'Tidepool']);
+    // biome-ignore format: one flag per pair reads better
+    ok(['concept', 'new', '--brand', 'tidepool', '--id', 'p1', '--title', 'One', '--direction', 'd', '--rationale', 'r',
+      '--semantics', 'a', '--primary', '#e0a22a']);
+    const symbol = join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'p1', 'symbol.svg');
+    writeFileSync(
+      symbol,
+      readFileSync(fixture('marks/fold-n.svg'), 'utf8').replace(/#[0-9a-f]{6}/gi, '#a86f00'),
+    );
+    ok([
+      'concept',
+      'update',
+      '--brand',
+      'tidepool',
+      '--concept',
+      'p1',
+      '--symbol',
+      'symbol.svg',
+      '--on-light',
+      '#a86f00',
+    ]);
+    const verify = ok(['verify', '--brand', 'tidepool', '--concept', 'p1']);
+    expect(verify.warnings.join(' ')).toMatch(
+      /the master symbol\.svg uses the light colour #a86f00; keep masters in the primary and let exports pick the ground colour/,
+    );
+    writeFileSync(
+      symbol,
+      readFileSync(fixture('marks/fold-n.svg'), 'utf8').replace(/#[0-9a-f]{6}/gi, '#e0a22a'),
+    );
+    expect(ok(['verify', '--brand', 'tidepool', '--concept', 'p1']).warnings.join(' ')).not.toMatch(
+      /keep masters in the primary/,
+    );
+  }, 60_000);
   it('concept update takes paths from the cwd, stored relative, and keeps a chat choice', () => {
     const cwd = tmp();
     const ok = (args: string[]) => {

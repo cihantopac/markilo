@@ -4,7 +4,7 @@ import { hexToOklch, oklchToHex } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
 import { nowIso, readJson, readText, writeGenerated, writeJson } from '../core/fsx.js';
 import { resolveInsideReal } from '../core/paths.js';
-import type { Lettering } from '../core/types.js';
+import type { Concept, Lettering } from '../core/types.js';
 import type { Workspace } from '../core/workspace.js';
 import { fontInfo } from '../design/fonts.js';
 import { composeLockup } from '../design/lockup.js';
@@ -14,6 +14,42 @@ import { optimizeSvg } from '../svg/optimize.js';
 import { inkMetrics } from './geometry.js';
 
 /** The approved, frozen identity that every export is derived from. Lives in brands/<slug>/final/. */
+/**
+ * The kit's typography. A typeset wordmark (`lettering` font or absent) records the brand typeface as `fontId` and
+ * `weight`. Custom or family lettering records no brand typeface: the font recorded with the concept moves under
+ * `standIn` (used only for previews that need a face). A 1.4 kit with `lettering` and a top-level `fontId` is still
+ * read: `drawnLettering` looks at `lettering` alone.
+ */
+export type KitTypography =
+  | {
+      fontId: string;
+      weight: number;
+      family?: string;
+      license?: string;
+      lettering?: Lettering;
+      supporting?: { fontId: string; weight: number; family?: string };
+      standIn?: { fontId: string; weight: number };
+    }
+  | {
+      lettering: 'custom' | 'family';
+      fontId?: undefined;
+      weight?: undefined;
+      family?: undefined;
+      license?: undefined;
+      standIn?: { fontId: string; weight: number };
+      supporting?: { fontId: string; weight: number; family?: string };
+    };
+
+/** The typography a finalized concept writes to the kit: drawn lettering keeps its stand-in font under `standIn`. */
+export function kitTypography(t: NonNullable<Concept['typography']>): KitTypography {
+  if (t.lettering !== 'custom' && t.lettering !== 'family') return t;
+  return {
+    lettering: t.lettering,
+    standIn: { fontId: t.fontId, weight: t.weight },
+    ...(t.supporting ? { supporting: t.supporting } : {}),
+  };
+}
+
 export interface BrandKit {
   schema: 'markilo/kit@1';
   brand: string;
@@ -52,14 +88,7 @@ export interface BrandKit {
     onBrand?: string;
     tile?: string;
   };
-  typography?: {
-    fontId: string;
-    weight: number;
-    family?: string;
-    license?: string;
-    lettering?: Lettering;
-    supporting?: { fontId: string; weight: number; family?: string };
-  };
+  typography?: KitTypography;
   tagline?: string;
   /** Usage rules decided at approval (e.g. "never use the accent as an error color"); shown in the guidelines. */
   notes?: string[];
@@ -92,7 +121,7 @@ export function drawnLettering(kit: Pick<BrandKit, 'typography'>): 'custom' | 'f
 export function textTypeface(
   kit: Pick<BrandKit, 'typography'>,
 ): { fontId: string; weight: number; family?: string } | undefined {
-  if (!drawnLettering(kit)) return kit.typography;
+  if (!drawnLettering(kit)) return kit.typography?.fontId ? kit.typography : undefined;
   const s = kit.typography?.supporting;
   if (!s || s.family) return s;
   try {
@@ -299,7 +328,7 @@ export async function finalizeConcept(
       dark,
     },
     ...(concept.smallSizes === 'main' ? { smallSizes: 'main' as const } : {}),
-    ...(concept.typography ? { typography: concept.typography } : {}),
+    ...(concept.typography ? { typography: kitTypography(concept.typography) } : {}),
     ...(opts.tagline ? { tagline: opts.tagline } : {}),
     ...(opts.notes?.length ? { notes: opts.notes } : {}),
     approvedAt: nowIso(),

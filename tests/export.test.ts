@@ -402,6 +402,33 @@ describe('a colour for each ground', () => {
     expect(tokens).not.toContain('--nimbra-on-dark:');
   }, 120_000);
 
+  it('color logos use onLight on paper', async () => {
+    const { ws } = synthBrand();
+    const cdir = ws.conceptDir('nimbra', 'fold');
+    writeFileSync(
+      join(cdir, 'symbol.svg'),
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20 20h30v60H20zM60 20l20 30-20 30z" fill="#e0a22a"/></svg>',
+    );
+    const c = ws.concept('nimbra', 'fold');
+    ws.saveConcept({ ...c, palette: { primary: '#e0a22a', paper: '#ffffff', onLight: '#a86f00' } });
+    await verifyConcept(ws, 'nimbra', 'fold');
+    await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
+    await exportBrand(ws, 'nimbra', { groups: ['logos'] });
+    const out = ws.exportsDir('nimbra');
+    const color = readFileSync(join(out, 'logos/symbol/symbol-color.svg'), 'utf8');
+    expect(color).toContain('#a86f00');
+    expect(color).not.toContain('#e0a22a');
+    // The overview's colour row is drawn from the recoloured art (the reversed row keeps the primary on dark).
+    const { data } = decodeImage(readFileSync(join(out, 'logos/overview.png')));
+    const seen = new Set<string>();
+    for (let i = 0; i < data.length; i += 4)
+      if (data[i + 3] === 255)
+        seen.add(
+          `#${[data[i]!, data[i + 1]!, data[i + 2]!].map((v) => v.toString(16).padStart(2, '0')).join('')}`,
+        );
+    expect(seen.has('#a86f00')).toBe(true);
+  }, 120_000);
+
   it('does not recolour a locked brand', async () => {
     const { ws } = synthBrand();
     const symbolPath = join(tmp(), 'symbol.svg');
@@ -546,6 +573,57 @@ describe('originality band', () => {
     await exportBrand(ws, 'nimbra', { groups: ['guidelines'], clean: true });
     expect(g('brand-guidelines.md')).not.toContain(BAND);
     expect(g('index.html')).not.toContain(BAND);
+  }, 120_000);
+});
+
+describe('a stand-in font stays out of the kit typography', () => {
+  const finalizeWith = async (typography: Record<string, unknown>) => {
+    const { ws } = synthBrand();
+    const c = ws.concept('nimbra', 'fold');
+    ws.saveConcept({ ...c, typography: typography as never });
+    await verifyConcept(ws, 'nimbra', 'fold');
+    await finalizeConcept(ws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
+    return ws;
+  };
+  it('a family-lettered kit has no top-level fontId', async () => {
+    const ws = await finalizeWith({
+      fontId: 'outfit',
+      weight: 600,
+      family: 'Outfit',
+      license: 'OFL-1.1',
+      lettering: 'family',
+    });
+    const kit = JSON.parse(readFileSync(kitPath(ws, 'nimbra'), 'utf8'));
+    expect(kit.typography).toEqual({ lettering: 'family', standIn: { fontId: 'outfit', weight: 600 } });
+    expect(kit.typography.fontId).toBeUndefined();
+  }, 120_000);
+  it('a kit without lettering keeps fontId exactly', async () => {
+    const ws = await finalizeWith({ fontId: 'outfit', weight: 600, family: 'Outfit', license: 'OFL-1.1' });
+    const kit = JSON.parse(readFileSync(kitPath(ws, 'nimbra'), 'utf8'));
+    expect(kit.typography).toEqual({ fontId: 'outfit', weight: 600, family: 'Outfit', license: 'OFL-1.1' });
+  }, 120_000);
+  it('a 1.4 family kit still exports', async () => {
+    const ws = await finalizeWith({ fontId: 'outfit', weight: 600, family: 'Outfit', license: 'OFL-1.1' });
+    const saved = JSON.parse(readFileSync(kitPath(ws, 'nimbra'), 'utf8'));
+    writeFileSync(
+      kitPath(ws, 'nimbra'),
+      JSON.stringify({
+        ...saved,
+        typography: {
+          fontId: 'outfit',
+          weight: 600,
+          family: 'Outfit',
+          license: 'OFL-1.1',
+          lettering: 'family',
+          supporting: { fontId: 'inter', weight: 400 },
+        },
+      }),
+    );
+    await exportBrand(ws, 'nimbra', { groups: ['tokens', 'guidelines'] });
+    const md = readFileSync(join(ws.exportsDir('nimbra'), 'guidelines/brand-guidelines.md'), 'utf8');
+    expect(md).toContain('Wordmark: custom (family) lettering — do not retype it');
+    expect(md).toContain('Supporting typeface: **Inter**, weight 400');
+    expect(md).not.toContain('Brand typeface');
   }, 120_000);
 });
 
