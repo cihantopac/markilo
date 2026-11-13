@@ -7,6 +7,7 @@ import { Workspace } from '../src/core/workspace.js';
 import { safeGet } from '../src/net/http.js';
 import { readReferences } from '../src/report/originality.js';
 import { researchCompetitor } from '../src/research/competitors.js';
+import { researchFamily } from '../src/research/family.js';
 import { scanSite } from '../src/research/site.js';
 import { researchSite } from '../src/research/site-research.js';
 import { mark, tmp } from './helpers.js';
@@ -107,6 +108,12 @@ beforeAll(async () => {
         'text/css',
         ':root{--brand-hue:345;--accent:hsl(210 80% 40%)}.a{color:oklch(0.62 0.2 25)}.b{color:oklch(0.6 0.2 var(--brand-hue))}.c{background:var(--accent)}@media (prefers-color-scheme: dark){.a{color:#112233}}',
       );
+    if (url === '/hub' || url === '/ledger')
+      return send(
+        200,
+        'text/html',
+        `<!doctype html><html><head><title>${url === '/hub' ? 'Tidepool' : 'Ledger'}</title><meta property="og:site_name" content="${url === '/hub' ? 'Tidepool' : 'Ledger'}"><link rel="mask-icon" href="/m.svg" color="${url === '/hub' ? '#118a55' : '#3b5bdb'}"></head><body><header><nav><svg viewBox="0 0 24 24" class="menu"><path d="M3 6h18M3 12h18"/></svg></nav></header><main><div class="hero"><svg data-lockup-art viewBox="0 0 200 60"><rect width="60" height="60" fill="${url === '/hub' ? '#118a55' : '#3b5bdb'}"/><path d="M80 10h100v40H80z" fill="#1b2140"/><script>alert(1)</script></svg></div></main></body></html>`,
+      );
     if (url === '/fav.svg')
       return send(
         200,
@@ -195,6 +202,22 @@ describe('site research keeps the identity it finds', () => {
     );
     expect(r.identityColors).toMatchObject({ favicon: '#7a3cf0', headerLogo: '#ff8a3d' });
     expect(p.findings.some((f) => f.statement.startsWith('identity inconsistency'))).toBe(true);
+  });
+});
+
+describe('research family', () => {
+  it('saves each member lockup as a family reference and lists the colours already taken', async () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Lumen' });
+    const r = await researchFamily(ws, 'lumen', [`${base}/hub`, `${base}/ledger`], { ...local, maxPages: 1 });
+    expect(r.members.map((m) => m.name)).toEqual(['Tidepool', 'Ledger']);
+    expect(r.members.every((m) => m.lockups.length === 1)).toBe(true);
+    const refs = readReferences(ws, 'lumen').references;
+    expect(refs).toHaveLength(2);
+    expect(refs.every((x) => x.category === 'family')).toBe(true);
+    expect(refs.map((x) => x.name)).toEqual(['Tidepool', 'Ledger']);
+    expect(r.takenColors).toEqual(expect.arrayContaining(['#118a55', '#3b5bdb']));
+    expect(r.takenColors).not.toContain('#1b2140');
   });
 });
 

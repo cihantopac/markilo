@@ -321,27 +321,62 @@ function organizationFrom(html: string, base: string): Organization | undefined 
   return undefined;
 }
 
-/** Inline SVG logos: <svg> elements inside <header>/<nav> or marked as a logo (class, id, aria-label, title). */
+/** The opening tag right before `index` (the element that wraps an <svg>), if any. */
+function wrapperTag(html: string, index: number): string {
+  return /<[a-z][^<>]*>\s*$/i.exec(html.slice(Math.max(0, index - 400), index))?.[0] ?? '';
+}
+
+/** HTML allows bare (`data-x`) and unquoted (`width=24`) attributes inside inline SVG; XML does not. */
+function xmlAttributes(svg: string): string {
+  return svg.replace(
+    /<([a-zA-Z][\w:-]*)(\s[^<>]*?)?(\/?)>/g,
+    (_all, name: string, attrs = '', close: string) => {
+      const fixed = attrs.replace(
+        /(\s)([^\s=/>"']+)(\s*=\s*("[^"]*"|'[^']*'|[^\s>"']+))?/g,
+        (_m: string, sp: string, key: string, eq?: string, value?: string) => {
+          if (!eq) return `${sp}${key}=""`;
+          return /^["']/.test(value!) ? `${sp}${key}=${value}` : `${sp}${key}="${value}"`;
+        },
+      );
+      return `<${name}${fixed}${close}>`;
+    },
+  );
+}
+
+const LOCKUP_HINT = /\bdata-(lockup|logo)[\w-]*/i;
+
+/**
+ * Inline SVG logos: <svg> elements marked as a lockup or logo with data-lockup* / data-logo* (on the svg or its
+ * wrapper) anywhere on the page; failing that, those inside <header>/<nav>, then any marked as a logo (class, id,
+ * aria-label, title).
+ */
 export function inlineLogoSvgs(html: string): string[] {
-  const zones = [...html.matchAll(/<(header|nav)\b[\s\S]*?<\/\1>/gi)].map((m) => m[0]);
   const found: string[] = [];
-  const consider = (chunk: string, requireHint: boolean) => {
+  const consider = (chunk: string, accept: (open: string, wrapper: string, svg: string) => boolean) => {
     for (const m of chunk.matchAll(/<svg\b[\s\S]*?<\/svg>/gi)) {
+      if (found.length >= 3) return;
       const svg = m[0];
       if (svg.length > 150_000) continue;
       const open = /<svg\b[^>]*>/i.exec(svg)?.[0] ?? '';
-      const hinted = /logo|brand|wordmark/i.test(open) || /<title>[^<]*(logo|brand)/i.test(svg);
-      if (requireHint && !hinted) continue;
-      if (!/viewBox=/i.test(open)) continue;
-      found.push(
-        svg.includes('xmlns=') ? svg : svg.replace(/<svg\b/i, '<svg xmlns="http://www.w3.org/2000/svg"'),
-      );
-      if (found.length >= 3) return;
+      if (!/viewBox=/i.test(open) || !accept(open, wrapperTag(chunk, m.index), svg)) continue;
+      const xml = xmlAttributes(svg);
+      const full = xml.includes('xmlns=')
+        ? xml
+        : xml.replace(/<svg\b/i, '<svg xmlns="http://www.w3.org/2000/svg"');
+      if (!found.includes(full)) found.push(full);
     }
   };
-  for (const z of zones) consider(z, false);
-  if (!found.length) consider(html, true);
-  return [...new Set(found)].slice(0, 3);
+  // A page that marks its lockups says which marks are the logo: nothing else is guessed.
+  consider(html, (open, wrapper) => LOCKUP_HINT.test(open) || LOCKUP_HINT.test(wrapper));
+  if (found.length) return found;
+  const zones = [...html.matchAll(/<(header|nav)\b[\s\S]*?<\/\1>/gi)].map((m) => m[0]);
+  for (const z of zones) consider(z, () => true);
+  if (!found.length)
+    consider(
+      html,
+      (open, _w, svg) => /logo|brand|wordmark/i.test(open) || /<title>[^<]*(logo|brand)/i.test(svg),
+    );
+  return found.slice(0, 3);
 }
 
 function parseSitemap(xml: string, origin: string): string[] {

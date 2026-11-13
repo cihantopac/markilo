@@ -94,6 +94,7 @@ import {
   removeReferences,
   researchCompetitor,
 } from '../research/competitors.js';
+import { researchFamily } from '../research/family.js';
 import { scanMonorepo } from '../research/monorepo.js';
 import { addFinding, addSource, mergeRepoScan, summarizeProfile } from '../research/profile.js';
 import { DEFAULT_MAX_FILES, scanRepo, summarizeScan } from '../research/repo.js';
@@ -679,6 +680,34 @@ export const COMMANDS: CommandSpec[] = [
         competitors: results,
         references: readReferences(w, slug).references.length,
       };
+    },
+  },
+  {
+    name: 'research family',
+    summary:
+      'Read the sites of a product family (hub and members) where its rule lives: each member’s inline lockups and logos are saved as family references, and its brand colours are listed as takenColors. Requires --allow-network.',
+    usage:
+      'research family --brand <slug> --member <url> [--member <url>]… --allow-network [--pages 2] [--allow-private]',
+    options: {
+      ...brandOpt,
+      'allow-network': { type: 'boolean', description: 'Permit network access (ask the user first)' },
+      'allow-private': {
+        type: 'boolean',
+        description: 'Allow localhost/private addresses (your own dev server only)',
+      },
+      member: { type: 'string', multiple: true, description: 'Family member or hub URL (repeat)' },
+      pages: { type: 'string', description: 'Pages per member (default 2)' },
+    },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      const members = (c.values.member as string[] | undefined) ?? [];
+      const r = await researchFamily(w, slug, members, {
+        allowNetwork: c.bool('allow-network'),
+        allowPrivate: c.bool('allow-private'),
+        maxPages: c.num('pages', 2)!,
+      });
+      return { ...r, references: readReferences(w, slug).references.length };
     },
   },
   {
