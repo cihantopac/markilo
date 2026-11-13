@@ -49,9 +49,9 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
    cost --brand <slug> --phase <p> --session-usd <total>`; it covers the agents and Markilo subtracts what they
    recorded). In an app that shows no session total, record `--session-usd` from the app's usage view or tool when one
    exists; otherwise say the dollar figure is subagents only — the session itself is not counted (`cost` labels it so).
-   `--minutes` are agent minutes: parallel agents add up, and `cost` also shows the wall minutes. An agent stopped by a
+   `--minutes` are agent minutes: parallel agents add up; `cost` also shows `busyMinutes` (working time, which the time budget uses) and `elapsedMinutes` (including waiting). An agent stopped by a
    usage limit and resumed is recorded once per part under one name: `cost --brand <slug> --phase <p> --tokens <n>
-   --minutes <m> --agent <name> --part <n>` (a part whose minutes you cannot read is flagged incomplete).
+   --minutes <m> --agent <name> --part <n>` (a part whose minutes you cannot read is flagged incomplete). For a resumed agent, record the minutes of each part (`duration_ms` is per part), and the tokens either as the difference from the previous part's `subagent_tokens` (which are cumulative) or as the total once at the end, never both.
 
    Never repeat research, critique an unchanged image again, or refine a direction the user rejected.
    Before each round run `markilo cost --brand <slug> --plan explore:3,develop:1,critic:1` (the phases and agent counts
