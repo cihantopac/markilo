@@ -35,6 +35,7 @@ const GROUPS: [string, string[]][] = [
       'wordmark',
       'wordmarks',
       'family glyphs',
+      'family word',
       'center',
       'lockup',
       'palette',

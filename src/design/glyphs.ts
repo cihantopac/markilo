@@ -177,15 +177,15 @@ function viewportMatrix(el: XmlElement): Matrix {
 }
 
 /**
- * Every filled shape of a (sanitized) SVG with its nested transforms applied, in the root's user units. Shapes that
- * cover most of the artboard (a background) are left out.
+ * Every filled shape of a (sanitized) SVG with its nested transforms applied, in the root's user units. A rect that
+ * covers most of the artboard behind other shapes (a background) is left out.
  */
 function flatten(root: XmlElement): Shape[] {
   const ids = new Map<string, XmlElement>();
   walk(root, (el) => {
     if (el.attrs.id) ids.set(el.attrs.id, el);
   });
-  const raw: { d: string; rule: 'evenodd' | 'nonzero'; fill: string; m: Matrix }[] = [];
+  const raw: { d: string; rule: 'evenodd' | 'nonzero'; fill: string; m: Matrix; rect: boolean }[] = [];
   const visit = (
     el: XmlElement,
     m: Matrix,
@@ -220,7 +220,7 @@ function flatten(root: XmlElement): Shape[] {
     }
     const d = shapeD(el);
     if (d && fill !== 'none' && fill !== 'transparent')
-      raw.push({ d, rule: rule === 'evenodd' ? 'evenodd' : 'nonzero', fill, m: mm });
+      raw.push({ d, rule: rule === 'evenodd' ? 'evenodd' : 'nonzero', fill, m: mm, rect: name === 'rect' });
     for (const c of el.children) if (c.type === 'element') visit(c, mm, { fill, rule }, depth + 1, false);
   };
   visit(root, IDENTITY, { fill: '#000000', rule: 'nonzero' }, 0, true);
@@ -233,7 +233,7 @@ function flatten(root: XmlElement): Shape[] {
     if (!d) continue;
     const box = boundsOf(d);
     if (!(box.w > 0 && box.h > 0)) continue;
-    if (box.w * box.h >= 0.9 * area) continue;
+    if (s.rect && raw.length > 1 && box.w * box.h >= 0.9 * area) continue;
     out.push({ d, box, fill: s.fill });
   }
   return out;
@@ -712,3 +712,197 @@ export const hasWordMetrics = (svg: string): boolean => {
     return false;
   }
 };
+
+// ----- assembling a word -----
+
+/** A letter drawn by a designer at cap 100, baseline 0 (or with its own data-cap-height / data-baseline). */
+export interface DrawnGlyph {
+  char: string;
+  d: string;
+  width: number;
+  top: number;
+  bottom: number;
+  left?: number;
+  right?: number;
+}
+
+export async function drawnGlyph(svg: string, char: string): Promise<DrawnGlyph> {
+  await ensurePathKit();
+  const root = sanitizeTree(parseXml(svg));
+  const shapes = flatten(root);
+  if (!shapes.length)
+    throw new MarkiloError('INVALID_INPUT', `The drawing for "${char}" has no filled shapes.`);
+  const cap = Number.parseFloat(root.attrs['data-cap-height'] ?? '');
+  const base = Number.parseFloat(root.attrs['data-baseline'] ?? '');
+  const s = cap > 0 ? 100 / cap : 1;
+  const baseline = Number.isFinite(base) ? base : 0;
+  const union =
+    shapes.length === 1
+      ? shapes[0]!.d
+      : booleanOp(
+          'union',
+          shapes.map((x) => x.d),
+        );
+  const b = boundsOf(union);
+  const d = transformPath(union, [s, 0, 0, s, -b.x * s, -baseline * s]);
+  const side = (k: string) => {
+    const v = Number.parseFloat(root.attrs[k] ?? '');
+    return Number.isFinite(v) ? v : undefined;
+  };
+  const left = side('data-left');
+  const right = side('data-right');
+  return {
+    char,
+    d,
+    width: r2(b.w * s),
+    top: r2((b.y - baseline) * s),
+    bottom: r2((b.y + b.h - baseline) * s),
+    ...(left !== undefined ? { left } : {}),
+    ...(right !== undefined ? { right } : {}),
+  };
+}
+
+export interface AssembleInput {
+  text: string;
+  /** Runs taken from a family member's glyphs, found by position in that member's text. */
+  takes: { set: GlyphSet; letters: string }[];
+  drawn: DrawnGlyph[];
+  /** Extra space between blocks and single letters, in cap units. */
+  tracking?: number;
+}
+
+export interface AssembledWord {
+  svg: string;
+  letters: { char: string; x: number; from: string }[];
+  missing: string[];
+  width: number;
+}
+
+interface Placed {
+  char: string;
+  d?: string;
+  /** Ink left edge relative to the unit's first glyph. */
+  dx: number;
+  width: number;
+  top: number;
+  bottom: number;
+}
+interface Unit {
+  from: string;
+  glyphs: Placed[];
+  left: number;
+  right: number;
+}
+
+function indexOfRun(hay: string[], run: string[], free?: (i: number) => boolean): number {
+  for (let i = 0; i + run.length <= hay.length; i++)
+    if (run.every((c, j) => hay[i + j] === c && (!free || free(i + j)))) return i;
+  return -1;
+}
+
+/**
+ * Assembles a word from family glyphs: a taken run keeps its own spacing as one block; between blocks and single
+ * letters the gap is the mean of the two sidebearings plus tracking. Letters with no source get a grey box and are
+ * listed in `missing`. The result is a wordmark at cap 100, baseline 0.
+ */
+export async function assembleWord(input: AssembleInput): Promise<AssembledWord> {
+  await ensurePathKit();
+  const chars = [...input.text];
+  if (!chars.length) throw new MarkiloError('USAGE', '--text is empty.');
+  const slots: (Unit | 'used' | undefined)[] = chars.map(() => undefined);
+  const all = input.takes.flatMap((t) => t.set.glyphs);
+  const sideDefault = all.length ? median(all.flatMap((g) => [g.left, g.right])) : 10;
+  const boxWidth = all.length ? median(all.map((g) => g.width)) : 60;
+  for (const t of input.takes) {
+    const run = [...t.letters];
+    const at = indexOfRun(
+      t.set.glyphs.map((g) => g.char),
+      run,
+    );
+    if (!run.length || at < 0)
+      throw new MarkiloError(
+        'INVALID_INPUT',
+        `"${t.set.ref}" has no run "${t.letters}" in its text "${t.set.text}".`,
+        'Take letters that stand next to each other in that word (family glyphs --text names them).',
+      );
+    const pos = indexOfRun(chars, run, (i) => slots[i] === undefined);
+    if (pos < 0)
+      throw new MarkiloError(
+        'INVALID_INPUT',
+        `"${t.letters}" is not a free run of "${input.text}".`,
+        'Each --take must be a run of letters of --text, and runs may not overlap.',
+      );
+    const gs = t.set.glyphs.slice(at, at + run.length);
+    const first = gs[0]!;
+    slots[pos] = {
+      from: t.set.ref,
+      glyphs: gs.map((g) => ({
+        char: g.char,
+        d: g.d,
+        dx: g.x - first.x,
+        width: g.width,
+        top: g.top,
+        bottom: g.bottom,
+      })),
+      left: first.left,
+      right: gs[gs.length - 1]!.right,
+    };
+    for (let i = 1; i < run.length; i++) slots[pos + i] = 'used';
+  }
+  const missing: string[] = [];
+  chars.forEach((ch, i) => {
+    if (slots[i] !== undefined) return;
+    const dg = input.drawn.find((g) => g.char === ch);
+    if (!dg) missing.push(ch);
+    slots[i] = dg
+      ? {
+          from: 'drawn',
+          glyphs: [{ char: ch, d: dg.d, dx: 0, width: dg.width, top: dg.top, bottom: dg.bottom }],
+          left: dg.left ?? sideDefault,
+          right: dg.right ?? sideDefault,
+        }
+      : {
+          from: 'missing',
+          glyphs: [{ char: ch, dx: 0, width: boxWidth, top: -100, bottom: 0 }],
+          left: sideDefault,
+          right: sideDefault,
+        };
+  });
+  const tracking = input.tracking ?? 0;
+  const fill = input.takes[0]?.set.fill ?? '#111111';
+  const letters: AssembledWord['letters'] = [];
+  const marks: string[] = [];
+  let prev: { end: number; right: number } | undefined;
+  let top = -100;
+  let bottom = 0;
+  for (const u of slots) {
+    if (!u || u === 'used') continue;
+    const x = prev ? prev.end + (prev.right + u.left) / 2 + tracking : 0;
+    let end = x;
+    for (const g of u.glyphs) {
+      const gx = x + g.dx;
+      letters.push({ char: g.char, x: r2(gx), from: u.from });
+      end = Math.max(end, gx + g.width);
+      top = Math.min(top, g.top);
+      bottom = Math.max(bottom, g.bottom);
+      marks.push(
+        g.d
+          ? `    <path data-char="${escapeAttr(g.char)}" d="${transformPath(g.d, [1, 0, 0, 1, gx, 0])}"/>`
+          : `    <rect data-char="${escapeAttr(g.char)}" data-missing="true" x="${fmt(r2(gx))}" y="-100" width="${fmt(r2(g.width))}" height="100" fill="#cccccc"/>`,
+      );
+    }
+    prev = { end, right: u.right };
+  }
+  const width = prev?.end ?? 0;
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 ${fmt(r2(top))} ${fmt(r2(width))} ${fmt(r2(bottom - top))}"`,
+    '  data-markilo-role="wordmark" data-lettering="family" data-baseline="0" data-cap-height="100">',
+    `  <title>${escapeText(input.text)}</title>`,
+    `  <g fill="${escapeAttr(fill)}" fill-rule="evenodd">`,
+    ...marks,
+    '  </g>',
+    '</svg>',
+    '',
+  ].join('\n');
+  return { svg, letters, missing, width: r2(width) };
+}

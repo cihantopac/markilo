@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { MarkiloError } from '../src/core/errors.js';
-import { splitGlyphs, wordMetrics } from '../src/design/glyphs.js';
+import { assembleWord, drawnGlyph, glyphSet, splitGlyphs, wordMetrics } from '../src/design/glyphs.js';
+import { composeLockup } from '../src/design/lockup.js';
 import { ensurePathKit } from '../src/geom/pathkit.js';
 import { fixture } from './helpers.js';
 
@@ -73,5 +74,65 @@ describe('family glyphs', () => {
     expect(m.capHeight).toBeCloseTo(50, 1);
     expect(m.baseline).toBeCloseTo(60, 1);
     expect(m.glyphs).toBe(6);
+  });
+});
+
+describe('family word', () => {
+  const nimbra = async () => glyphSet('nimbra', 'nimbra-word.svg', await splitGlyphs(word(), 'NIMBRA'));
+  const drawnL = () => readFileSync(fixture('glyphs/drawn-l.svg'), 'utf8');
+
+  it('takes a block with its own spacing', async () => {
+    const set = await nimbra();
+    const r = await assembleWord({ text: 'BRA', takes: [{ set, letters: 'BRA' }], drawn: [] });
+    expect(r.missing).toEqual([]);
+    const src = set.glyphs.slice(3).map((g) => g.x - set.glyphs[3]!.x);
+    const out = r.letters.map((l) => l.x - r.letters[0]!.x);
+    for (const [i, x] of out.entries()) expect(x).toBeCloseTo(src[i]!, 2);
+    expect(r.letters.map((l) => l.from)).toEqual(['nimbra', 'nimbra', 'nimbra']);
+  });
+
+  it('mixes taken and drawn letters', async () => {
+    const set = await nimbra();
+    const L = await drawnGlyph(drawnL(), 'L');
+    const r = await assembleWord({ text: 'LBRA', takes: [{ set, letters: 'BRA' }], drawn: [L], tracking: 4 });
+    expect(r.missing).toEqual([]);
+    expect(r.letters.map((l) => `${l.char}:${l.from}`)).toEqual([
+      'L:drawn',
+      'B:nimbra',
+      'R:nimbra',
+      'A:nimbra',
+    ]);
+    // L carries no sidebearings: it gets the word's median (20); B's left is 20; plus tracking.
+    expect(r.letters[1]!.x - (r.letters[0]!.x + 60)).toBeCloseTo(20 + 4, 1);
+    expect(r.svg).toContain('data-char="L"');
+  });
+
+  it('missing letters are listed', async () => {
+    const set = await nimbra();
+    const r = await assembleWord({ text: 'BRAVO', takes: [{ set, letters: 'BRA' }], drawn: [] });
+    expect(r.missing).toEqual(['V', 'O']);
+    expect(r.svg.match(/data-missing="true"/g)).toHaveLength(2);
+    await expect(
+      assembleWord({ text: 'BRAVO', takes: [{ set, letters: 'BAR' }], drawn: [] }),
+    ).rejects.toThrow(/BAR/);
+  });
+
+  it('the word carries baseline and cap height, and composeLockup aligns the symbol to it', async () => {
+    const set = await nimbra();
+    const r = await assembleWord({ text: 'NIMBRA', takes: [{ set, letters: 'NIMBRA' }], drawn: [] });
+    expect(r.svg).toContain('data-markilo-role="wordmark"');
+    expect(r.svg).toContain('data-lettering="family"');
+    expect(r.svg).toContain('data-baseline="0"');
+    expect(r.svg).toContain('data-cap-height="100"');
+    const symbol =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>';
+    const l = composeLockup(symbol, r.svg, {
+      layout: 'horizontal',
+      symbolInk: { x: 0, y: 0, w: 100, h: 100 },
+    });
+    const m = [...l.svg.matchAll(/matrix\(([^)]*)\)/g)].map((x) => x[1]!.split(' ').map(Number));
+    const [sym, wm] = m as [number[], number[]];
+    // The symbol (100 units tall in its own box) stands on the word's baseline (y = 0 in the word).
+    expect(sym[5]! + 100 * sym[3]!).toBeCloseTo(wm[5]!, 1);
   });
 });
