@@ -139,6 +139,8 @@ export interface PageScan {
   clientRendered: boolean;
 }
 
+export type NameRendering = 'outlined' | 'live-text' | 'image' | 'unknown';
+
 export interface Organization {
   name?: string;
   legalName?: string;
@@ -176,6 +178,10 @@ export interface SiteScan {
   iconColors: { hex: string; from: string }[];
   /** Inline logos that could not be parsed or sanitized, and were left out. */
   logoIssues: string[];
+  /** How the header or home-link logo writes the name: drawn paths, live text in a web font, an image, or unknown. */
+  nameRendering: NameRendering;
+  /** Set when the site points at a hub or lists sibling lockups: the skill asks the family questions. */
+  familyHint?: { hub: string; siblings: string[] };
   fonts: string[];
   stylesheetsRead: string[];
   language?: string;
@@ -444,6 +450,66 @@ export function inlineLogoSvgs(html: string, opts: { origin?: string; brandName?
   return inlineLogoCandidates(html, opts).map((c) => c.svg);
 }
 
+/**
+ * How the page writes its name: `outlined` when the header or home-link logo is an inline SVG with shapes and no
+ * <text>; `live-text` when it is an SVG <text> or a text node in the home link or a logo/brand element; `image` when
+ * it is an <img>; otherwise `unknown`.
+ */
+export function nameRenderingOf(
+  html: string,
+  opts: { origin?: string; brandName?: string } = {},
+): NameRendering {
+  const top = inlineLogoCandidates(html, opts)[0];
+  if (top) {
+    if (/<text\b/i.test(top.svg)) return 'live-text';
+    if (/<(path|circle|rect|ellipse|polygon|polyline)\b/i.test(top.svg)) return 'outlined';
+  }
+  const zone = [...html.matchAll(/<(header|nav)\b[\s\S]*?<\/\1>/gi)].map((m) => m[0]).join('\n') || html;
+  for (const m of zone.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)) {
+    const href = /href=["']([^"']*)["']/i.exec(m[1]!)?.[1] ?? '';
+    if (!isHomeHref(href, opts.origin) && !/logo|brand|wordmark/i.test(m[1]!)) continue;
+    const inner = m[2]!;
+    if (/<img\b/i.test(inner)) return 'image';
+    if (/<svg\b/i.test(inner)) continue;
+    if (/[\p{L}\p{N}]/u.test(inner.replace(/<[^>]*>/g, ''))) return 'live-text';
+  }
+  for (const m of zone.matchAll(
+    /<(span|div|p|strong|b|h1|h2)\b([^>]*(?:logo|brand|wordmark)[^>]*)>([^<]*)</gi,
+  ))
+    if (/[\p{L}\p{N}]/u.test(m[3]!)) return 'live-text';
+  if (/<img\b[^>]*(logo|brand|wordmark)/i.test(zone)) return 'image';
+  return 'unknown';
+}
+
+const SOCIAL_HOSTS =
+  /(^|\.)(x|twitter|facebook|instagram|linkedin|github|gitlab|youtube|tiktok|medium|reddit|pinterest|threads|mastodon|bsky|discord|crunchbase|wikipedia|wikidata|apple|google|play\.google|npmjs)\./i;
+
+/** A `sameAs` hub (a non-social site elsewhere) or sibling `data-lockup` marks on the page itself. */
+export function familyHintOf(
+  html: string,
+  org: Organization | undefined,
+  pageUrl: string,
+): { hub: string; siblings: string[] } | undefined {
+  let host = '';
+  try {
+    host = new URL(pageUrl).hostname;
+  } catch {
+    return undefined;
+  }
+  const others = (org?.sameAs ?? []).filter((u) => {
+    try {
+      const h = new URL(u).hostname;
+      return h !== host && !SOCIAL_HOSTS.test(`${h}.`);
+    } catch {
+      return false;
+    }
+  });
+  if (others.length) return { hub: others[0]!, siblings: others.slice(1) };
+  const lockups = (html.match(/<svg\b[^>]*\bdata-lockup[\w-]*/gi) ?? []).length;
+  if (lockups >= 2) return { hub: new URL(pageUrl).origin, siblings: [] };
+  return undefined;
+}
+
 function parseSitemap(xml: string, origin: string): string[] {
   return [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/gi)]
     .map((m) => m[1]!)
@@ -665,6 +731,8 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
   const themeColor = cleanText(metaContent(html, 'theme-color'), 30);
   const ogImage = metaContent(html, 'og:image');
   const nameCase = nameCaseOf(siteName, org?.name, h.title);
+  const nameRendering = nameRenderingOf(html, { origin, ...(brandName ? { brandName } : {}) });
+  const familyHint = familyHintOf(html, org, first.url);
   return {
     url: rawUrl,
     finalUrl: first.url,
@@ -687,6 +755,8 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
     darkColors: tally(sig.darkColors),
     iconColors,
     logoIssues,
+    nameRendering,
+    ...(familyHint ? { familyHint } : {}),
     fonts: [...new Set(sig.fonts)]
       .map((f) => cleanText(f, 60)!)
       .filter(Boolean)

@@ -67,7 +67,8 @@ export interface ExistingIdentity {
   logos: { path: string; kind: string; source: string }[];
   /** note: where the colour was seen when it is not the default theme ("dark theme", "icon colour"). */
   colors: { hex: string; count: number; source: string; note?: string }[];
-  fonts: { family: string; source: string }[];
+  /** note: "UI text; the words are custom-drawn" when the site draws its name, so the font is not the lettering. */
+  fonts: { family: string; source: string; note?: string }[];
 }
 
 export interface BrandProfile {
