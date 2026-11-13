@@ -114,8 +114,16 @@ async function main(argv: string[]): Promise<number> {
   const result = await found.spec.run(ctx);
   // Compact JSON when another program (such as Claude) reads the output: indentation costs tokens.
   const pretty = process.stdout.isTTY || process.env.MARKILO_PRETTY === '1';
-  process.stdout.write(`${JSON.stringify(result, null, pretty ? 2 : undefined)}\n`);
-  return 0;
+  // A result may carry `exitCode` (svg lint: 1 when a file is not ok). It steers the process only and is not printed.
+  let exitCode = 0;
+  let printed: unknown = result;
+  if (result && typeof result === 'object' && !Array.isArray(result) && 'exitCode' in result) {
+    const { exitCode: code, ...rest } = result as Record<string, unknown>;
+    if (typeof code === 'number') exitCode = code;
+    printed = rest;
+  }
+  process.stdout.write(`${JSON.stringify(printed, null, pretty ? 2 : undefined)}\n`);
+  return exitCode;
 }
 
 main(process.argv.slice(2)).then(

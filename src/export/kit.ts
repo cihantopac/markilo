@@ -388,10 +388,18 @@ export function lockIdentity(
     primary: string;
     paper?: string;
     ink?: string;
+    secondary?: string;
+    accent?: string;
     force?: boolean;
   },
 ): BrandKit {
-  for (const [k, v] of Object.entries({ primary: input.primary, paper: input.paper, ink: input.ink })) {
+  for (const [k, v] of Object.entries({
+    primary: input.primary,
+    paper: input.paper,
+    ink: input.ink,
+    secondary: input.secondary,
+    accent: input.accent,
+  })) {
     if (v !== undefined && !/^#[0-9a-fA-F]{6}$/.test(v))
       throw new MarkiloError('INVALID_INPUT', `--${k} must be #rrggbb.`);
   }
@@ -431,7 +439,14 @@ export function lockIdentity(
     name: ws.brand(brand).name,
     locked: true,
     files,
-    palette: { primary: input.primary, ink: input.ink ?? ink, paper: input.paper ?? '#ffffff', dark },
+    palette: {
+      primary: input.primary,
+      ...(input.secondary ? { secondary: input.secondary } : {}),
+      ...(input.accent ? { accent: input.accent } : {}),
+      ink: input.ink ?? ink,
+      paper: input.paper ?? '#ffffff',
+      dark,
+    },
     approvedAt: nowIso(),
   };
   writeJson(kitPath(ws, brand), kit);
@@ -445,4 +460,41 @@ export function lockIdentity(
     `Existing identity registered as locked (${Object.keys(files).join(', ')}); it is reproduced exactly and never redesigned.`,
   );
   return kit;
+}
+
+/**
+ * A locked kit given a symbol and a wordmark but no lockup: builds the horizontal and stacked lockups the way finalize
+ * does, from the stored copies (neither file is changed), and records them in the kit. Returns the files added, or a
+ * reason when the lockups could not be built (the kit then keeps its symbol and wordmark as provided).
+ */
+export async function composeLockedLockups(
+  ws: Workspace,
+  brand: string,
+): Promise<{ added: string[]; skipped?: string; kit?: BrandKit }> {
+  const kit = readJson<BrandKit>(kitPath(ws, brand));
+  const dir = ws.finalDir(brand);
+  if (!kit.files.symbol || !kit.files.wordmark || kit.files.lockupHorizontal) return { added: [] };
+  const symbol = readText(join(dir, kit.files.symbol));
+  const wordmark = readText(join(dir, kit.files.wordmark));
+  const added: string[] = [];
+  try {
+    const symbolInk = (await inkMetrics(symbol)).bbox;
+    for (const [layout, out, key] of [
+      ['horizontal', 'lockup-horizontal.svg', 'lockupHorizontal'],
+      ['stacked', 'lockup-stacked.svg', 'lockupStacked'],
+    ] as const) {
+      const l = composeLockup(symbol, wordmark, {
+        layout,
+        symbolInk,
+        title: ws.brand(brand).name,
+      });
+      writeGenerated(join(dir, out), l.svg);
+      kit.files[key] = out;
+      added.push(out);
+    }
+  } catch (e) {
+    return { added: [], skipped: e instanceof Error ? e.message : String(e) };
+  }
+  writeJson(kitPath(ws, brand), kit);
+  return { added, kit };
 }
