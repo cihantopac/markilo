@@ -30,6 +30,19 @@ const logRegistry = (ws: ReturnType<typeof synthBrand>['ws'], id: string, confli
   ws.saveProfile('nimbra', p);
 };
 
+describe('a trademark registry searched on the web counts as a registry search', () => {
+  it('counts a search source on a registry host, not one elsewhere', async () => {
+    const { ws } = synthBrand();
+    const p = ws.profile('nimbra');
+    addSource(p, { type: 'search', ref: 'https://branddb.wipo.int/en/quicksearch?by=brandName&q=Nimbra' });
+    addSource(p, { type: 'search', ref: 'https://example.com/search?q=Nimbra' });
+    ws.saveProfile('nimbra', p);
+    const { report } = await buildOriginalityReport(ws, 'nimbra', 'fold');
+    expect(report.evidence.registry.coverage).toBe('minimal');
+    expect(report.evidence.registry.have).toMatch(/1 logged search.*wipo-gbd/);
+  });
+});
+
 describe('originality verdicts are only as strong as their evidence', () => {
   it('says insufficient-evidence (not "clear") when nothing was researched', async () => {
     const { ws } = synthBrand();

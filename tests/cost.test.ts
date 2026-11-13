@@ -151,7 +151,10 @@ describe('cost: a time budget', () => {
     expect(warn.minutesRemaining).toBe(10);
     const over = costSummary({
       ...base,
-      entries: [...base.entries, { phase: 'refine', at, tokens: 1000, minutes: 11 }],
+      entries: [
+        ...base.entries,
+        { phase: 'refine', at: '2026-11-12T02:00:00.000Z', tokens: 1000, minutes: 11 },
+      ],
     });
     expect(over.status).toBe('over');
     expect(over.next).toMatch(/time budget/i);
@@ -179,14 +182,29 @@ describe('cost: what it measures', () => {
         { phase: 'explore', at: '2026-11-12T10:00:00.000Z', tokens: 100_000, minutes: 5 },
         { phase: 'explore', at: '2026-11-12T10:01:00.000Z', tokens: 100_000, minutes: 5 },
       ]),
-      budgetMinutes: 8,
+      budgetMinutes: 5,
     });
     expect(s.agentMinutes).toBe(10);
     expect(s.minutes).toBe(10);
+    expect(s.busyMinutes).toBe(6);
     expect(s.wallMinutes).toBe(6);
     expect(s.status).toBe('over');
     expect(s.next).toMatch(/10 agent minutes/);
-    expect(s.next).toMatch(/6 minutes of wall-clock/);
+    expect(s.next).toMatch(/6 busy minutes/);
+  });
+  it('busy time leaves out the waiting between two entries; elapsed keeps it', () => {
+    const s = costSummary({
+      ...log([
+        { phase: 'explore', at: '2026-11-12T10:00:00.000Z', tokens: 1000, minutes: 10 },
+        { phase: 'refine', at: '2026-11-12T11:00:00.000Z', tokens: 1000, minutes: 10 },
+      ]),
+      budgetMinutes: 30,
+    });
+    expect(s.busyMinutes).toBe(20);
+    expect(s.elapsedMinutes).toBe(70);
+    expect(s.wallMinutes).toBe(70);
+    expect(s.status).toBe('ok');
+    expect(s.minutesRemaining).toBe(10);
   });
   it('says subagents only while the session is missing', () => {
     const s = costSummary(log([{ phase: 'explore', at: '', usd: 2 }]));
