@@ -221,6 +221,21 @@ function emitContour(segs: Seg[], tol: number): string {
   return out;
 }
 
+/** Split a conic (rational quadratic, weight w) into quadratics that stay within `tol` of it. */
+function conicToQuads(p0: Pt, p1: Pt, p2: Pt, w: number, tol: number, depth = 0): [Pt, Pt, Pt][] {
+  const cm: Pt = [
+    (p0[0] + 2 * w * p1[0] + p2[0]) / (2 + 2 * w),
+    (p0[1] + 2 * w * p1[1] + p2[1]) / (2 + 2 * w),
+  ];
+  const qm: Pt = [(p0[0] + 2 * p1[0] + p2[0]) / 4, (p0[1] + 2 * p1[1] + p2[1]) / 4];
+  if (depth >= 8 || Math.abs(w - 1) < 1e-9 || dist(cm, qm) <= tol) return [[p0, p1, p2]];
+  const s = 1 + w;
+  const a: Pt = [(p0[0] + w * p1[0]) / s, (p0[1] + w * p1[1]) / s];
+  const b: Pt = [(w * p1[0] + p2[0]) / s, (w * p1[1] + p2[1]) / s];
+  const w2 = Math.sqrt(s / 2);
+  return [...conicToQuads(p0, a, cm, w2, tol, depth + 1), ...conicToQuads(cm, b, p2, w2, tol, depth + 1)];
+}
+
 export function refitPath(
   cmds: number[][],
   v: { move: number; line: number; quad: number; conic: number; cubic: number; close: number },
@@ -258,10 +273,14 @@ export function refitPath(
       const p: Pt = [c[1]!, c[2]!];
       if (dist(p, cur) > 1e-6) segs.push({ k: 'L', p: [cur, p] });
       cur = p;
-    } else if (verb === v.quad || verb === v.conic) {
-      // Conics only appear for arcs; at the sizes Skia emits them a quadratic is within tolerance.
+    } else if (verb === v.quad) {
       const p: Pt = [c[3]!, c[4]!];
       segs.push({ k: 'Q', p: [cur, [c[1]!, c[2]!], p] });
+      cur = p;
+    } else if (verb === v.conic) {
+      // Skia emits arcs as conics [verb, x1, y1, x2, y2, w]; split the rational curve into quadratics.
+      const p: Pt = [c[3]!, c[4]!];
+      for (const q of conicToQuads(cur, [c[1]!, c[2]!], p, c[5] ?? 1, tol * 0.5)) segs.push({ k: 'Q', p: q });
       cur = p;
     } else if (verb === v.cubic) {
       const p: Pt = [c[5]!, c[6]!];

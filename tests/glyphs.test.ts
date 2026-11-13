@@ -146,6 +146,13 @@ describe('family word', () => {
     expect(g.right).toBeCloseTo(20, 1);
   });
 
+  it('drawnGlyph keeps an arc C inside its cap', async () => {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -100 78 100"><path d="M74 -93.86A50 50 0 1 0 74 -6.14L74 -31.17A33.6 33.6 0 1 1 74 -68.83Z"/></svg>`;
+    const g = await drawnGlyph(svg, 'C');
+    expect(g.top).toBeGreaterThanOrEqual(-100.5);
+    expect(g.bottom).toBeLessThanOrEqual(0.5);
+  });
+
   it('a <use> fan-out is refused', async () => {
     let defs = '<g id="g0"><rect width="10" height="10"/></g>';
     for (let i = 1; i <= 20; i++)
