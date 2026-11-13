@@ -559,4 +559,32 @@ The reports also praised parts that should stay as they are:
 
 ## Progress record
 
-(filled in during implementation)
+- **Tasks 1–12** implemented on branch `v1.4` (2026-11-13). Task 1 had a per-task review (approved; a legacy-round
+  sort bug and the `orderNote` were fixed). On the user's request to go faster, later tasks ran in batches (2+3, 4–6,
+  7–9, 10–11) without per-task reviews; Task 12 (skill text) was written alongside. One whole-branch review (most
+  capable model) found two important issues — a family lockup collected earlier kept its old category, and an
+  extended 1.3.0 round read in a different order in the gallery — and six minor ones (Markdown backticks in the HTML
+  guidelines, an unescaped table cell, competitor downloads skipping robots.txt, a loose 1.3 cost-log test,
+  `answers --amend` with `--question`, an adopted drawing keeping an old critique). All eight were fixed in one wave.
+- **Step 1:** `npm run ci` (330 tests, dist up to date), `node scripts/smoke.mjs` and `claude plugin validate plugin`
+  pass.
+- **Step 2, check run** (synthetic "Nimbra Loop" with two local member pages, built CLI):
+  - `research family` saved one `family` reference (the same lockup on both members, deduplicated), `takenColors`
+    `#c2255c`; the menu glyph in the header was not taken; `oklch(0.6 0.2 var(--brand-hue))` → `#cd3f9b` and `hsl()` →
+    `#336699` in `existingIdentity.colors`; the inline logo is in `existingIdentity.logos`; `suggest.name` from
+    `nameCase`.
+  - `concept new` ×3 created as `c`, `a`, `b` → `order` A·c, B·a, C·b; the board is written.
+  - `concept adopt --from a --files symbol` re-pinned `chosen/symbol.svg`.
+  - Gate with distinctiveness 5 and a presentable critique → `failed`, `next: present-with-notes`; after the symbol
+    changed → `stale` with the old result under `previous`.
+  - A plain circle was refused at finalize (genericity `circle` 0.99 → `redesign`), as intended; a drawn mark
+    finalized with `--accept-risk`.
+  - Export with `--on-brand #ffffff --tile #1a1a1a`: `logos/appmark.svg` fills `#1a1a1a` with a white mark,
+    `ic_launcher_colors.xml` `#1a1a1a`, tokens `--nimbra-loop-on-brand`/`--nimbra-loop-tile`; with `--lettering family`
+    the guidelines say "custom (family) lettering" and name no typeface.
+  - `cost` with two agents and a two-part agent: `agentMinutes` 28, `wallMinutes` 12, `minutesIncomplete`, the
+    "subagents only" label and a per-agent rollup.
+  - Seen: `onBrand` recolours the whole mark, so a paper-coloured inner detail merges with it on the tile.
+- **Markilo's own kit** re-exported (`--only logos,web,social,tokens,guidelines --clean`): all logo files are
+  byte-identical; only the manifest and the dated guidelines changed.
+- Version 1.4.0 set in `package.json`, `package-lock.json`, `plugin.json` and `marketplace.json`.

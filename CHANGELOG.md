@@ -6,6 +6,56 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-13
+
+Fixes from four field reports on 1.3.0, all products inside one existing product family. Locked identities and the
+logo files of existing kits are byte-for-byte what 1.3.0 wrote.
+
+### Added
+
+- Round letters: `concept new --round` gives each concept the next free letter (A, B, C) in the order it was proposed;
+  `proposals` returns `order` (`letter`, `id`, `title`, `status`), and the board, single proposal captions and the
+  gallery all use it. A 1.3.0 round is ordered by creation time, and `proposals` returns `orderNote` when that differs
+  from the old id order.
+- Tile colours: `concept new|update --on-brand <#hex|auto> --tile <#hex>` set the mark colour on a brand-filled tile and
+  the tile ground for app icons, launcher icons, the business card and previews; `--<slug>-on-brand`/`--<slug>-tile`
+  tokens when set.
+- `concept adopt --from <id> --files symbol,wordmark,small,lockup`: build on another concept's drawing and re-pin the
+  chosen state.
+- Family products: `reference add --category family` (reported as family likeness, never an originality risk);
+  `research family --member <url>…` saves the current members' lockups as `family` references and returns
+  `takenColors`; `concept update --lettering font|custom|family [--supporting-font <id> --supporting-weight <n>]`.
+- Small sizes: `concept update --small-sizes small|main` (the user may keep the main symbol at 16/32 px) and
+  `--wordmark-small <file>`, exported as `logos/wordmark-small.svg` and `.png` (one colour).
+- `brand update --name`, `reference update --category|--notes`, `answers --amend <Qn>` and `answers --file <json>`,
+  `concept update --semantics`, `cost --agent <name> --part <n>` for an agent stopped by a usage limit and resumed.
+- `research site` keeps inline logos in the profile's existing identity, reads `hsl()`, `oklch()`, `oklab()` and
+  `var(--…)` colours, icon `color` attributes and dark-theme colours, reports an identity inconsistency when favicon,
+  header logo and social image disagree, and returns `suggest.name` from `nameCase`.
+
+### Changed
+
+- Previews, the gallery and the export use one ground resolver: `onDark`/`onLight` are used on the opposite panels of
+  `proposals`, `render --compare` and review sheets, as in the export.
+- The critic gate advises `present`, `fix` or `present-with-notes` and never says reject; it turns `stale` when the
+  symbol or wordmark changed after the critique. `finalize` points at a critique recorded on another concept.
+- With `--lettering custom|family`, `typeset` is skipped and the guidelines and tokens name no stand-in typeface.
+- `concept update` and `answers` print a compact result (`concept update --show` prints the concept).
+- `cost` reports `agentMinutes` and `wallMinutes`, labels the dollars "subagents only", and adds a per-agent rollup.
+- Competitor and site logos prefer the home-link mark and skip UI glyphs, flags, clients' and parent companies' logos;
+  a doubtful pick is saved as low confidence. Competitor logo and icon downloads respect robots.txt.
+- Name risk lines in `originality` and `verify` carry their reasons.
+- Design skill: four first questions (mode and scope, kind of mark, feel and colour, network and budget, with separate
+  consents for competitor marks and registry searches); present rounds in board order and read the choice back;
+  multiple-choice questions after a rejection, a sketch round before polishing, a probe for "curious" and an
+  early-close protocol; one abstract direction for icon-led work and the name's own idea kept; a requested
+  transformation is shown before a taste-based send-back; a path for a product joining an existing family.
+
+### Fixed
+
+- `research site --download-assets` no longer stops on one malformed inline SVG; inline SVG is sanitized at scan time.
+- A one-proposal round writes its board; the icon-options sheet is titled "Options" and keeps the caller's labels.
+
 ## [1.3.0] - 2026-11-12
 
 Fixes from a field report on 1.2.0 (a full company-website identity run). Locked identities and the logo files of
