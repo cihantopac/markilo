@@ -10,7 +10,7 @@ import { safeGet } from '../src/net/http.js';
 import { readReferences, referenceIndexPath } from '../src/report/originality.js';
 import { researchCompetitor } from '../src/research/competitors.js';
 import { researchFamily } from '../src/research/family.js';
-import { inlineLogoCandidates, nameRenderingOf, scanSite } from '../src/research/site.js';
+import { familyHintOf, inlineLogoCandidates, nameRenderingOf, scanSite } from '../src/research/site.js';
 import { researchSite } from '../src/research/site-research.js';
 import { mark, tmp } from './helpers.js';
 
@@ -132,6 +132,12 @@ beforeAll(async () => {
         `<!doctype html><html><head><title>${name}</title><meta property="og:site_name" content="${name}"><link rel="stylesheet" href="/typed.css">${ld}</head><body><header>${logo}</header><h1>Hello</h1></body></html>`,
       );
     }
+    if (url === '/nimbra')
+      return send(
+        200,
+        'text/html',
+        `<!doctype html><html><head><title>Nimbra Mail</title><meta property="og:site_name" content="Nimbra Mail"><script type="application/ld+json">{"@type":"Organization","name":"Nimbra"}</script></head><body><header><a href="/"><svg data-lockup-art="nimbra-loop" role="img" viewBox="0 0 200 40"><g transform="translate(2 0)"><path fill="currentColor" d="M0 0h20v40H0z"/></g><path fill="currentColor" d="M30 0h20v40H30z"/></svg><span class="sr-only">Nimbra Mail</span></a></header><footer><a href="https://nimbra-loop.test/">Loop</a><a href="https://www.nimbradock.test/x">Dock</a><a href="https://nimbrapost.test">Post</a><a href="https://x.com/nimbra">X</a></footer></body></html>`,
+      );
     if (url === '/typed.css') return send(200, 'text/css', 'body{font-family:"Sora",sans-serif}');
     if (url === '/t9')
       return send(
@@ -292,6 +298,49 @@ describe('nameRenderingOf', () => {
     expect(nameRenderingOf(`<header><div class="logo">${icon}<span>Ledger</span></div></header>`)).toBe(
       'live-text',
     );
+  });
+  it('a drawn word beside a visually hidden name is outlined', () => {
+    expect(render(`${word}<span class="sr-only">Ledger</span>`)).toBe('outlined');
+    expect(render(`${word}<span style="position:absolute;clip:rect(0 0 0 0)">Ledger</span>`)).toBe(
+      'outlined',
+    );
+    expect(render(`${icon}<span class="visually-hidden">Ledger</span>`)).toBe('outlined');
+    expect(render(`${icon}<span class="sr-only">x</span><span>Ledger</span>`)).toBe('live-text');
+  });
+  it('a marked or role=img filled drawing in the home link is outlined even beside text', () => {
+    const marked =
+      '<svg data-lockup-art role="img" viewBox="0 0 120 40"><path fill="currentColor" d="M0 0h20v40H0z"/></svg>';
+    expect(render(marked)).toBe('outlined');
+  });
+});
+
+describe('familyHintOf from outbound links', () => {
+  const page = 'https://nimbramail.test/';
+  it('two outbound hosts sharing a name stem make a hint', () => {
+    expect(familyHintOf('', undefined, page, ['nimbra-loop.test', 'nimbradock.test', 'other.test'])).toEqual({
+      hub: 'nimbra-loop.test',
+      siblings: ['nimbra-loop.test', 'nimbradock.test'],
+    });
+    expect(familyHintOf('', undefined, page, ['nimbradock.test', 'other.test'])).toBeUndefined();
+  });
+  it('an organization named differently from the product that matches a host makes a hint', () => {
+    const org = { name: 'Nimbra', url: 'https://nimbra.test', sameAs: [] };
+    expect(familyHintOf('', org, 'https://mail.example.test/', ['nimbra.test'], 'Mail')).toEqual({
+      hub: 'nimbra.test',
+      siblings: ['nimbra.test'],
+    });
+  });
+  it('scanSite records outbound hosts, drops social ones and sets the hint', async () => {
+    const scan = await scanSite(`${base}/nimbra`, { ...local, maxPages: 1 });
+    expect(scan.outboundHosts).toEqual(['nimbra-loop.test', 'nimbradock.test', 'nimbrapost.test']);
+    expect(scan.nameRendering).toBe('outlined');
+    expect(scan.familyHint?.siblings).toEqual(['nimbra-loop.test', 'nimbradock.test', 'nimbrapost.test']);
+  });
+  it('family references take their id from the mark', async () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Nimbra' });
+    await researchFamily(ws, 'nimbra', [`${base}/nimbra`], { ...local, maxPages: 1 });
+    expect(readReferences(ws, 'nimbra').references.map((x) => x.id)).toEqual(['nimbra-loop-1']);
   });
 });
 

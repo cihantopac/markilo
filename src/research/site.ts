@@ -182,6 +182,8 @@ export interface SiteScan {
   nameRendering: NameRendering;
   /** Set when the site points at a hub or lists sibling lockups: the skill asks the family questions. */
   familyHint?: { hub: string; siblings: string[] };
+  /** Hosts the start page links to (social hosts left out), as read from the page; never fetched. */
+  outboundHosts: string[];
   fonts: string[];
   stylesheetsRead: string[];
   language?: string;
@@ -477,6 +479,8 @@ export function nameRenderingOf(
   if (top) {
     if (/<text\b/i.test(top.svg)) return 'live-text';
     if (/<(path|circle|rect|ellipse|polygon|polyline)\b/i.test(top.svg)) {
+      // A marked or role="img" drawing with filled shapes in the home link is the drawn name itself.
+      if (markedDrawing(html, top.at, top.svg, opts.origin)) return 'outlined';
       // An icon beside a live-text name is not an outlined name: the name must be what the SVG draws.
       if (!textBesideSvg(html, top.at)) return 'outlined';
       return 'live-text';
@@ -489,7 +493,7 @@ export function nameRenderingOf(
     const inner = m[2]!;
     if (/<img\b/i.test(inner)) return 'image';
     // An icon too small to be a logo candidate beside the name: the name is still set as text.
-    const text = inner.replace(/<svg\b[\s\S]*?<\/svg>/gi, '').replace(/<[^>]*>/g, '');
+    const text = withoutHiddenText(inner.replace(/<svg\b[\s\S]*?<\/svg>/gi, '')).replace(/<[^>]*>/g, '');
     if (/[\p{L}\p{N}]/u.test(text)) return 'live-text';
   }
   for (const m of zone.matchAll(
@@ -498,6 +502,26 @@ export function nameRenderingOf(
     if (/[\p{L}\p{N}]/u.test(m[3]!)) return 'live-text';
   if (/<img\b[^>]*(logo|brand|wordmark)/i.test(zone)) return 'image';
   return 'unknown';
+}
+
+function markedDrawing(html: string, at: number, svg: string, origin?: string): boolean {
+  const open = /<svg\b[^>]*>/i.exec(svg)?.[0] ?? '';
+  if (!LOCKUP_HINT.test(open) && !/\brole=["']img["']/i.test(open)) return false;
+  if (!/<(path|circle|rect|ellipse|polygon|polyline)\b[^>]*\bfill=["'](?!none)[^"']+["']/i.test(svg))
+    return false;
+  const link = enclosingLink(html, at);
+  return Boolean(link && isHomeHref(/href=["']([^"']*)["']/i.exec(link)?.[1] ?? '', origin));
+}
+
+/** Removes elements a screen reader reads but nobody sees (visually-hidden classes, clipped or 1 px boxes). */
+function withoutHiddenText(fragment: string): string {
+  const hiddenClass =
+    /\bclass=["'][^"']*\b(sr-only|visually-hidden|screen-reader-text|u-hidden-visually)\b[^"']*["']/i;
+  const hiddenStyle =
+    /\bstyle=["'][^"']*(\bclip\s*:|clip-path\s*:\s*inset\(\s*50%|(?:width|height)\s*:\s*1px)[^"']*["']/i;
+  return fragment.replace(/<(\w+)\b([^>]*)>[\s\S]*?<\/\1>/g, (all, _tag: string, attrs: string) =>
+    hiddenClass.test(attrs) || hiddenStyle.test(attrs) ? ' ' : all,
+  );
 }
 
 /** Letters or digits next to the SVG at `at`, inside its home link or logo container (tags and the SVG itself stripped). */
@@ -519,17 +543,64 @@ function textBesideSvg(html: string, at: number): boolean {
     const close = new RegExp(`</${wrap[1]}>`, 'i').exec(after);
     container = before.slice(wrap.index + wrap[0].length) + (close ? after.slice(0, close.index) : after);
   }
-  return /[\p{L}\p{N}]/u.test(container.replace(/<svg\b[\s\S]*?<\/svg>/gi, '').replace(/<[^>]*>/g, ''));
+  return /[\p{L}\p{N}]/u.test(
+    withoutHiddenText(container.replace(/<svg\b[\s\S]*?<\/svg>/gi, '')).replace(/<[^>]*>/g, ''),
+  );
 }
 
 const SOCIAL_HOSTS =
   /(^|\.)(x|twitter|facebook|instagram|linkedin|github|gitlab|youtube|tiktok|medium|reddit|pinterest|threads|mastodon|bsky|discord|crunchbase|wikipedia|wikidata|apple|google|play\.google|npmjs)\./i;
 
-/** A `sameAs` hub (a non-social site elsewhere) or sibling `data-lockup` marks on the page itself. */
+/** Hosts the page links to outside its own host, social hosts left out, in page order. Read from the HTML only. */
+export function outboundHostsOf(html: string, pageUrl: string): string[] {
+  let host = '';
+  try {
+    host = new URL(pageUrl).hostname.replace(/^www\./, '');
+  } catch {
+    return [];
+  }
+  const out = new Set<string>();
+  for (const m of html.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["']/gi)) {
+    let h: string;
+    try {
+      const u = new URL(m[1]!, pageUrl);
+      if (u.protocol !== 'http:' && u.protocol !== 'https:') continue;
+      h = u.hostname.replace(/^www\./, '').toLowerCase();
+    } catch {
+      continue;
+    }
+    if (h && h !== host && !SOCIAL_HOSTS.test(`${h}.`)) out.add(h);
+  }
+  return [...out].slice(0, 50);
+}
+
+const letters = (s: string) => s.toLowerCase().replace(/[^\p{L}]+/gu, '');
+/** The part of a host that names it: the label before the public suffix (nimbra-loop.test -> nimbraloop). */
+const hostStem = (h: string) =>
+  letters(
+    h
+      .replace(/^www\./, '')
+      .split('.')
+      .slice(0, -1)
+      .pop() ?? h,
+  );
+const sharedPrefix = (a: string, b: string) => {
+  let n = 0;
+  while (n < a.length && n < b.length && a[n] === b[n]) n++;
+  return n;
+};
+
+/**
+ * A family hint: a `sameAs` hub (a non-social site elsewhere), sibling `data-lockup` marks on the page itself, two or
+ * more outbound hosts that share a name stem (3+ letters) with the page's host or the organization name, or an
+ * organization named differently from the product that matches an outbound host. Nothing is fetched.
+ */
 export function familyHintOf(
   html: string,
   org: Organization | undefined,
   pageUrl: string,
+  outboundHosts: string[] = [],
+  productName?: string,
 ): { hub: string; siblings: string[] } | undefined {
   let host = '';
   try {
@@ -548,6 +619,28 @@ export function familyHintOf(
   if (others.length) return { hub: others[0]!, siblings: others.slice(1) };
   const lockups = (html.match(/<svg\b[^>]*\bdata-lockup[\w-]*/gi) ?? []).length;
   if (lockups >= 2) return { hub: new URL(pageUrl).origin, siblings: [] };
+
+  const orgStem = letters(org?.name ?? '');
+  const stems = [hostStem(host), orgStem].filter((x) => x.length >= 3);
+  const stemmed = outboundHosts.filter((h) => {
+    const hs = hostStem(h);
+    return stems.some((st) => sharedPrefix(st, hs) >= 3);
+  });
+  const product = letters(productName ?? '');
+  const orgHost =
+    orgStem.length >= 3 && orgStem !== product
+      ? outboundHosts.find((h) => hostStem(h).includes(orgStem) || orgStem.includes(hostStem(h)))
+      : undefined;
+  if (stemmed.length >= 2 || orgHost) {
+    const siblings = stemmed.length ? stemmed : [orgHost!];
+    let orgOwn = '';
+    try {
+      orgOwn = org?.url ? new URL(org.url).hostname.replace(/^www\./, '') : '';
+    } catch {
+      // not a URL
+    }
+    return { hub: orgOwn && orgOwn !== host ? orgOwn : (orgHost ?? siblings[0]!), siblings };
+  }
   return undefined;
 }
 
@@ -773,7 +866,8 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
   const ogImage = metaContent(html, 'og:image');
   const nameCase = nameCaseOf(siteName, org?.name, h.title);
   const nameRendering = nameRenderingOf(html, { origin, ...(brandName ? { brandName } : {}) });
-  const familyHint = familyHintOf(html, org, first.url);
+  const outboundHosts = outboundHostsOf(html, first.url);
+  const familyHint = familyHintOf(html, org, first.url, outboundHosts, siteName ?? brandName);
   return {
     url: rawUrl,
     finalUrl: first.url,
@@ -798,6 +892,7 @@ export async function scanSite(rawUrl: string, opts: CrawlOptions): Promise<Site
     logoIssues,
     nameRendering,
     ...(familyHint ? { familyHint } : {}),
+    outboundHosts,
     fonts: [...new Set(sig.fonts)]
       .map((f) => cleanText(f, 60)!)
       .filter(Boolean)
