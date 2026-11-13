@@ -196,6 +196,20 @@ const extOf = (contentType: string, url: string): NewReference['ext'] | undefine
 const THIRD_PARTY_LOGO =
   /client|customer|partner|referen|testimonial|case-stud|logolar|referans|m[uü][sş]teri|is-?ortak|sponsor/i;
 
+/** Review-site badges and social network marks are not the competitor's own logo either. */
+const NOT_OWN_LOGO =
+  /(^|[^a-z0-9])g2([^a-z0-9]|$)|capterra|trustpilot|badge|otherbrandlogos|tiktok|facebook|instagram|linkedin|youtube|x-twitter|twitter/i;
+
+/** An inline SVG that calls itself a UI control or a social mark (aria-label, title or class on the root). */
+const UI_ICON_WORD = /(^|[^a-z0-9])(close|menu|hamburger|chevron|arrow)([^a-z0-9]|$)/i;
+export function isNonLogoSvg(svg: string): boolean {
+  const root = /<svg\b[^>]*>/i.exec(svg)?.[0] ?? '';
+  const label = /aria-label=["']([^"']*)/i.exec(root)?.[1] ?? '';
+  const cls = /class=["']([^"']*)/i.exec(root)?.[1] ?? '';
+  const title = /<title[^>]*>([^<]*)</i.exec(svg)?.[1] ?? '';
+  return [label, cls, title].some((t) => UI_ICON_WORD.test(t) || NOT_OWN_LOGO.test(t));
+}
+
 export function isThirdPartyLogo(href: string, hint = ''): boolean {
   let path = href;
   try {
@@ -203,7 +217,12 @@ export function isThirdPartyLogo(href: string, hint = ''): boolean {
   } catch {
     // Keep the raw string.
   }
-  return THIRD_PARTY_LOGO.test(path) || THIRD_PARTY_LOGO.test(hint);
+  return (
+    THIRD_PARTY_LOGO.test(path) ||
+    THIRD_PARTY_LOGO.test(hint) ||
+    NOT_OWN_LOGO.test(path) ||
+    NOT_OWN_LOGO.test(hint)
+  );
 }
 
 /** example.co.uk and shop.example.co.uk share "example.co.uk"; an IP address or single label stands for itself. */
@@ -301,6 +320,10 @@ export async function researchCompetitor(
   // Logo: the best-scored inline SVG first (vector, exact), then <img> logos, then the JSON-LD logo. Client, customer,
   // partner and reference logos are skipped; one that names another brand or lives on another domain is low confidence.
   for (const [i, svg] of scan.inlineLogoSvgs.entries()) {
+    if (isNonLogoSvg(svg)) {
+      issues.push('skipped an inline SVG: a social, badge or interface icon, not a logo');
+      continue;
+    }
     const title = /<title[^>]*>([^<]*)</i.exec(svg)?.[1] ?? /aria-label=["']([^"']*)/i.exec(svg)?.[1] ?? '';
     const confidence =
       (scan.inlineLogoConfidence?.[i] ?? 'low') === 'high' && !namesAnotherBrand(title, competitor.name)
@@ -327,7 +350,7 @@ export async function researchCompetitor(
     ...(scan.organization?.logo ? [{ href: scan.organization.logo, hint: '' }] : []),
   ].filter((l) => {
     if (!isThirdPartyLogo(l.href, l.hint)) return true;
-    issues.push(`skipped ${l.href.slice(0, 80)}: a client, partner or reference logo`);
+    issues.push(`skipped ${l.href.slice(0, 80)}: a client, partner, badge or social logo`);
     return false;
   });
   for (const { href: u, hint } of result.logo ? [] : images.slice(0, 4)) {

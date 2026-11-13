@@ -152,7 +152,7 @@ export async function assessQuality(
       message:
         extent >= 0.995
           ? 'Mark touches the artboard edge; leave a little room so antialiasing is not clipped.'
-          : `Mark spans ${Math.round(extent * 100)}% of the artboard (80–98% keeps icon exports consistent).`,
+          : `Mark spans ${(Math.round(extent * 1000) / 10).toFixed(1)} % of the artboard (80–98 % keeps icon exports consistent).`,
     });
     // A geometric fact for app icons and favicons, which are square: a mark twice as wide as it is tall fills at most
     // half of their height.
@@ -241,7 +241,25 @@ export async function assessQuality(
             : 'Under 3:1 on both light and dark grounds; pair it with a stronger color.',
     });
   }
-  if (colors.length >= 2) {
+  const neutral = (c: string) => {
+    const { r, g, b } = hexToRgb(c);
+    return (Math.max(r, g, b) - Math.min(r, g, b)) / 255 < 0.12;
+  };
+  let maxDe = 0;
+  for (let i = 0; i < colors.length; i++)
+    for (let j = i + 1; j < colors.length; j++) maxDe = Math.max(maxDe, deltaE2000(colors[i]!, colors[j]!));
+  // A dark icon beside a black word is one colour in effect: there is nothing to separate.
+  const singleColour = colors.length >= 2 && (maxDe < 10 || colors.every(neutral));
+  if (singleColour)
+    add({
+      id: 'palette-separation',
+      label: 'Palette separation',
+      status: 'pass',
+      value: 'single-colour lockup',
+      message:
+        'single-colour lockup: its colours are all neutral or one hue, so there is nothing to separate.',
+    });
+  else if (colors.length >= 2) {
     let minDe = Number.POSITIVE_INFINITY;
     for (let i = 0; i < colors.length; i++)
       for (let j = i + 1; j < colors.length; j++) minDe = Math.min(minDe, deltaE2000(colors[i]!, colors[j]!));

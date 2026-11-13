@@ -8,7 +8,7 @@ import { writeJson } from '../src/core/fsx.js';
 import { Workspace } from '../src/core/workspace.js';
 import { safeGet } from '../src/net/http.js';
 import { readReferences, referenceIndexPath } from '../src/report/originality.js';
-import { researchCompetitor } from '../src/research/competitors.js';
+import { isThirdPartyLogo, researchCompetitor } from '../src/research/competitors.js';
 import { researchFamily } from '../src/research/family.js';
 import { familyHintOf, inlineLogoCandidates, nameRenderingOf, scanSite } from '../src/research/site.js';
 import { researchSite } from '../src/research/site-research.js';
@@ -150,6 +150,18 @@ beforeAll(async () => {
         200,
         'text/html',
         `<!doctype html><html><head><title>Ledger</title></head><body><section><img src="/img/clients/acme.png" alt="Acme logo"><img src="/img/referanslar/tidepool-logo.png" alt="Tidepool"></section><header><img src="/img/logo.svg" class="logo" alt="Ledger"></header></body></html>`,
+      );
+    if (url === '/t10')
+      return send(
+        200,
+        'text/html',
+        `<!doctype html><html><head><title>Acme</title></head><body><header><a href="/"><svg viewBox="0 0 24 24" aria-label="TikTok"><path d="M0 0h24v24H0z"/></svg></a><img src="/img/otherbrandlogos/g2.svg" alt="G2"><img src="/img/social/tiktok.svg" alt="TikTok"><img src="/img/badge-top.svg" alt="Top"></header></body></html>`,
+      );
+    if (url === '/t10x')
+      return send(
+        200,
+        'text/html',
+        `<!doctype html><html><head><title>Acme</title></head><body><header><a href="/"><svg viewBox="0 0 24 24" class="icon-close"><path d="M0 0l24 24"/></svg></a><a href="/"><svg viewBox="0 0 24 24"><title>Menu</title><path d="M0 0h24"/></svg></a></header></body></html>`,
       );
     if (url === '/img/logo.svg') return send(200, 'image/svg+xml', mark('bolt'));
     if (url === '/fav.svg')
@@ -481,6 +493,44 @@ describe('competitor logo picking', () => {
     expect(r.logo?.from).toBe(`${base}/img/logo.svg`);
     expect(hits).not.toContain('/img/clients/acme.png');
     expect(hits).not.toContain('/img/referanslar/tidepool-logo.png');
+  });
+});
+
+describe('competitor logos that are not the competitor own', () => {
+  it('skips badges, social and UI icons and reports the competitor as missing a logo', async () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Nimbra' });
+    const r = await researchCompetitor(
+      ws,
+      'nimbra',
+      { name: 'Acme', url: `${base}/t10` },
+      { ...local, maxPages: 1 },
+    );
+    expect(r.logo).toBeNull();
+    expect(hits).not.toContain('/img/otherbrandlogos/g2.svg');
+    expect(hits).not.toContain('/img/social/tiktok.svg');
+    expect(hits).not.toContain('/img/badge-top.svg');
+    const x = await researchCompetitor(
+      ws,
+      'nimbra',
+      { name: 'Acme', url: `${base}/t10x` },
+      { ...local, maxPages: 1 },
+    );
+    expect(x.logo).toBeNull();
+  });
+  it('rejects paths and names by pattern', () => {
+    for (const h of [
+      '/a/g2.svg',
+      '/capterra-4.png',
+      '/x/trustpilot.svg',
+      '/otherbrandlogos/x.svg',
+      '/i/x-twitter.svg',
+      '/i/linkedin.png',
+      '/i/youtube.svg',
+    ])
+      expect(isThirdPartyLogo(`https://e.test${h}`)).toBe(true);
+    expect(isThirdPartyLogo('https://e.test/img/g2x-logo.svg')).toBe(false);
+    expect(isThirdPartyLogo('https://e.test/img/logo.svg')).toBe(false);
   });
 });
 
