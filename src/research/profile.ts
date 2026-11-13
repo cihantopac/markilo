@@ -341,7 +341,11 @@ export function mergeSiteScan(
     });
     for (const f of scan.fonts)
       if (!p.existingIdentity.fonts.some((x) => x.family === f))
-        p.existingIdentity.fonts.push({ family: f, source: source.id });
+        p.existingIdentity.fonts.push({
+          family: f,
+          source: source.id,
+          ...(scan.nameRendering === 'outlined' ? { note: 'UI text; the words are custom-drawn' } : {}),
+        });
   }
   return { source, added: p.findings.length - before, gaps: p.gaps.length - gapsBefore };
 }

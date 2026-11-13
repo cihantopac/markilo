@@ -116,6 +116,23 @@ beforeAll(async () => {
         'text/html',
         `<!doctype html><html><head><title>${url === '/hub' ? 'Tidepool' : 'Ledger'}</title><meta property="og:site_name" content="${url === '/hub' ? 'Tidepool' : 'Ledger'}"><link rel="mask-icon" href="/m.svg" color="${url === '/hub' ? '#118a55' : '#3b5bdb'}"></head><body><header><nav><svg viewBox="0 0 24 24" class="menu"><path d="M3 6h18M3 12h18"/></svg></nav></header><main><div class="hero"><svg data-lockup-art viewBox="0 0 200 60"><rect width="60" height="60" fill="${url === '/hub' ? '#118a55' : '#3b5bdb'}"/><path d="M80 10h100v40H80z" fill="#1b2140"/><script>alert(1)</script></svg></div></main></body></html>`,
       );
+    if (url === '/drawn' || url === '/typed' || url === '/hub2') {
+      const hubPage = url === '/hub2';
+      const name = url === '/drawn' ? 'Tidepool' : url === '/typed' ? 'Ledger' : 'Lumen';
+      const logo =
+        url === '/typed'
+          ? '<a href="/" class="brand">Ledger</a>'
+          : '<a href="/"><svg viewBox="0 0 120 40" class="logo"><path d="M0 0h20v40H0z"/><path d="M30 0h20v40H30z"/></svg></a>';
+      const ld = hubPage
+        ? '<script type="application/ld+json">{"@type":"Organization","name":"Lumen","sameAs":["https://x.com/lumen","https://hub.example.test/","https://ledger.example.test/"]}</script>'
+        : '';
+      return send(
+        200,
+        'text/html',
+        `<!doctype html><html><head><title>${name}</title><meta property="og:site_name" content="${name}"><link rel="stylesheet" href="/typed.css">${ld}</head><body><header>${logo}</header><h1>Hello</h1></body></html>`,
+      );
+    }
+    if (url === '/typed.css') return send(200, 'text/css', 'body{font-family:"Sora",sans-serif}');
     if (url === '/t9')
       return send(
         200,
@@ -230,7 +247,7 @@ describe('research family', () => {
     const refs = readReferences(ws, 'lumen').references;
     expect(refs).toHaveLength(2);
     expect(refs.every((x) => x.category === 'family')).toBe(true);
-    expect(refs.map((x) => x.name)).toEqual(['Tidepool', 'Ledger']);
+    expect(refs.map((x) => x.name)).toEqual(['127.0.0.1-1', '127.0.0.1-2']);
     expect(r.takenColors).toEqual(expect.arrayContaining(['#118a55', '#3b5bdb']));
     expect(r.takenColors).not.toContain('#1b2140');
   });
@@ -251,6 +268,46 @@ describe('research family on a reference added before', () => {
     expect(again.members[0]?.issues.join(' ')).toContain(
       `re-categorised ${refs[0]?.id} from direct to family`,
     );
+  });
+});
+
+describe('family naming systems', () => {
+  const fam = async (urls: string[]) => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Lumen' });
+    return researchFamily(ws, 'lumen', urls, { ...local, maxPages: 1 });
+  };
+  it('outlined vs live-text members are reported', async () => {
+    const r = await fam([`${base}/drawn`, `${base}/typed`]);
+    expect(r.members.map((m) => m.nameRendering)).toEqual(['outlined', 'live-text']);
+    expect(r.systems).toEqual({ outlined: ['Tidepool'], liveText: ['Ledger'] });
+    const finding = r.findings.find((f) => f.startsWith('members differ'));
+    expect(finding).toMatch(
+      /Tidepool draw their name, Ledger set it in Sora — the drawn one is likely the current system; ask the user which members are current/,
+    );
+  });
+  it('all-outlined family does not offer the site font as the typeface', async () => {
+    const r = await fam([`${base}/drawn`, `${base}/drawn`]);
+    expect(r.systems.liveText).toEqual([]);
+    expect(r.findings.some((f) => f.startsWith('members differ'))).toBe(false);
+    expect(r.fontsLine).toBe('site font Sora (UI text; the words are custom-drawn — do not substitute it)');
+  });
+  it('family references are named after the member host', async () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Lumen' });
+    await researchFamily(ws, 'lumen', [`${base}/drawn`], { ...local, maxPages: 1 });
+    expect(readReferences(ws, 'lumen').references.map((x) => x.name)).toEqual(['127.0.0.1-1']);
+  });
+  it('sameAs hub sets familyHint', async () => {
+    const scan = await scanSite(`${base}/hub2`, { ...local, maxPages: 1 });
+    expect(scan.nameRendering).toBe('outlined');
+    expect(scan.familyHint).toEqual({
+      hub: 'https://hub.example.test/',
+      siblings: ['https://ledger.example.test/'],
+    });
+    // Social profiles alone are not a family.
+    expect((await scanSite(`${base}/`, { ...local, maxPages: 1 })).familyHint).toBeUndefined();
+    expect((await scanSite(`${base}/typed`, { ...local, maxPages: 1 })).nameRendering).toBe('live-text');
   });
 });
 
