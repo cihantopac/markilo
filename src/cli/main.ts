@@ -125,7 +125,7 @@ main(process.argv.slice(2)).then(
   (err: unknown) => {
     if (err instanceof MarkiloError) {
       process.stderr.write(
-        `${JSON.stringify({ error: { code: err.code, message: err.message, ...(err.hint ? { hint: err.hint } : {}), ...(err.details ?? {}) } }, null, 2)}\n`,
+        `${JSON.stringify({ error: { ...(err.details ?? {}), code: err.code, message: err.message, ...(err.hint ? { hint: err.hint } : {}) } }, null, 2)}\n`,
       );
       process.exitCode = exitCodeFor(err.code);
     } else {

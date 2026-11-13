@@ -16,3 +16,6 @@ Thumbs.db
 /private/
 # Test fixture with a fake secret (verifies the scanner never reads it)
 !tests/fixtures/repo/.env
+
+# Claude Code worktrees
+.claude/worktrees/

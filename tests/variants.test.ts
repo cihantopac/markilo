@@ -20,4 +20,11 @@ describe('adaptToGround maps ground colours both ways', () => {
     expect(out).toContain('#a86f00');
     expect(out).not.toContain('#ffd166');
   });
+  it('art that also carries the primary keeps an accent equal to the other ground colour', () => {
+    const b = { primary: '#e0a22a', onLight: '#3584e4', onDark: '#ffd166' };
+    const two = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M0 0h50v50H0z" fill="#e0a22a"/><path d="M50 50h50v50H50z" fill="#3584e4"/></svg>`;
+    const out = adaptToGround(two, '#111318', {}, b);
+    expect(out).toContain('#3584e4');
+    expect(out).toContain('#ffd166');
+  });
 });

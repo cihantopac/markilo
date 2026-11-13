@@ -123,7 +123,7 @@ suggested answer first:
 **A product joining a family** (`familyHint` is set in `research site`, or the user names one): replace the family part of question 1 and question 2 with two family questions, so the dialog still has at most four.
 (a) _"Which members show the current system?"_ — multiple choice from the `research family` members, with the ones whose `systems` say outlined (custom-drawn) pre-selected; only these are the rule.
 (b) _"Is the family word custom-drawn, and which part does this product share (parent word, suffix, none)?"_
-After the answers, when `family glyphs` finds letters this word needs missing from the current members, ask _"Do you have a newer lockup that contains the letters this word needs?"_ Then follow "A product joining an existing family" in `references/workflow.md`.
+After the answers, when `family word` lists `missing` letters (letters the current members do not have), ask _"Do you have a newer lockup that contains the letters this word needs?"_ Then follow "A product joining an existing family" in `references/workflow.md`.
 
 If the user is away or asked not to be asked, take your suggested answers, write them into the brief's notes as
 assumptions, list them at the top of the first round's message and ask them again there.

@@ -66,9 +66,17 @@ export function adaptToGround(
   const other = brand && (dark ? brand.onLight : brand.onDark);
   const otherKey = other && normalizeColor(other);
   const fallbackPrimary = brand && normalizeColor(brand.primary);
+  // Only a master drawn in the other ground's colour is mapped: art that also carries the primary uses that colour
+  // as a colour of its own (an accent that happens to equal the ground colour), and stays as drawn.
+  let hasPrimary = false;
+  if (otherKey && fallbackPrimary)
+    recolorSvg(svg, (c) => {
+      if (normalizeColor(c) === fallbackPrimary) hasPrimary = true;
+      return undefined;
+    });
   return recolorSvg(svg, (c) => {
     if (primary && normalizeColor(c) === primary) return chosen;
-    if (otherKey && normalizeColor(c) === otherKey && otherKey !== fallbackPrimary) {
+    if (otherKey && !hasPrimary && normalizeColor(c) === otherKey && otherKey !== fallbackPrimary) {
       if (chosen) return chosen;
       if (fallbackPrimary && contrastRatio(fallbackPrimary, ground) >= 3) return fallbackPrimary;
     }

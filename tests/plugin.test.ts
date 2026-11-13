@@ -191,6 +191,24 @@ describe('craft-named directions', () => {
       expect(designer, t).toContain(t);
     expect(critic).toContain('icon and the wordmark separately');
   });
+  it('cli.md documents the 1.5 fields and flags', () => {
+    const cli = readFileSync(join(root, 'plugin/skills/design/references/cli.md'), 'utf8');
+    for (const t of [
+      'letterConflicts',
+      'critiqueElsewhere',
+      'nameRendering',
+      'familyHint',
+      'systems',
+      'fontsLine',
+      '--letter',
+      '--plan',
+      '`<host>-<n>`',
+    ])
+      expect(cli, t).toContain(t);
+    expect(cli).not.toContain('named after the member');
+    const skill = readFileSync(join(root, 'plugin/skills/design/SKILL.md'), 'utf8');
+    expect(skill).not.toContain('`family glyphs` finds');
+  });
   it('cli.md table rows have as many cells as the header', () => {
     const cli = readFileSync(join(root, 'plugin/skills/design/references/cli.md'), 'utf8');
     const cells = (row: string) => row.replace(/\\\|/g, '').split('|').length;
