@@ -458,3 +458,15 @@ The reports also praised parts that should stay as they are:
   it" in the guidelines.
 
 ## Progress record
+
+- Tasks 1–10 implemented by parallel agents (worktrees for 2+3, 5, 6+7, 9, 10) and merged on `v1.5`; one whole-branch
+  review (0 Critical, 3 Important, 14 Minor) and one fix wave, all 17 confirmed fixed by a scoped re-review.
+- Release check (Task 11, 2026-11-13), built CLI against two local member pages: `research family` reported
+  `systems { outlined: [Nimbra Loop], liveText: [Nimbra Dock] }` and the "members differ" finding (the check first
+  found an icon beside a typed name read as `unknown`; fixed in `220a058`); three parallel `concept new --round 1` got
+  C, A, B (distinct); `family glyphs` split the drawn word into 6 glyphs (stem 14, bar 21.23 in cap units);
+  `family word --text BRAVO --take <ref>:BRA` wrote a word with baseline and `missing: [V, O]`; `render --family` drew
+  both words; `cost --plan explore:3,develop:1,critic:1` estimated 46–76 agent-min, 26–44 wall-min, $0.38–0.77.
+  `onLight` in colour logos and the kit typography were checked by their tests (Tasks 6, 7), not in this run.
+- `npm run ci` 381/381, `node scripts/smoke.mjs` passed, `claude plugin validate plugin` passed. Markilo's own kit
+  re-exported: logo files byte-identical; the manifest changed.

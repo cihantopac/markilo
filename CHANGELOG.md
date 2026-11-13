@@ -6,6 +6,52 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-11-13
+
+Fixes from two field reports on 1.4.0, both products joining a family whose words are custom-drawn. Locked identities
+and the logo files of existing kits are byte-for-byte what 1.4.0 wrote, unless a kit sets `onLight`/`onDark` (see
+Fixed).
+
+### Added
+
+- `family glyphs --ref <id|svg> --text <letters> [--part word|auto]`: split a family member's custom-drawn word (or the
+  word part of a lockup) into one glyph per letter under `work/family/glyphs/<ref>/`, normalized to cap height 100,
+  with measured cap height, baseline, overshoot, advance, sidebearings, stem, bar and terminals (`glyphs.json`). An
+  ambiguous split returns the groups it found instead of guessing.
+- `family word --text <WORD> --take <ref>:<LETTERS>[,…] [--draw <char>=<file.svg>…] [--tracking <units>]`: assemble a
+  word from family glyphs and drawn letters; a taken run keeps its own spacing; the word carries `data-baseline` and
+  `data-cap-height`; letters with no source are listed in `missing`.
+- `render <new.svg> --family <ref.svg>[,…]`: the new word below the family's words at one cap height;
+  `palette --sheet --brand --concept --palettes`: one mark in several palettes on tiles and lockups;
+  `render --compare --tile`: a tile row per option, labelled by option.
+- `research site` and `research family` report how each site renders its name (`nameRendering`: outlined, live-text,
+  image) and the family's `systems`; when members differ, a finding says the drawn one is likely the current system.
+  `research site` returns `familyHint` when a `sameAs` hub or sibling lockups are found.
+- `cost --plan explore:3,develop:1,critic:1`: estimated agent minutes, wall minutes and dollars before a round, from
+  this brand's recorded agents or defaults, and whether it fits the budget.
+- `concept update --letter <L>`; `proposals.letterConflicts`.
+
+### Changed
+
+- The design skill asks family questions first when a family is found (which members show the current system; is the
+  family word custom-drawn and which part is shared; a newer lockup with the needed letters), describes the family
+  lettering workflow, asks before spending a develop pass on an ambiguous request, asks icon and wordmark decisions
+  separately, runs `cost --plan` before each round and records a resumed agent's usage as the difference.
+- A family reference is named after the member host it was found on.
+- With custom or family lettering, the kit's typography keeps a stand-in font under `standIn`, not as `fontId`.
+- `proposals` and `svg lint` warn when a word has no baseline; `verify` warns when a master uses a ground colour
+  instead of the primary.
+
+### Fixed
+
+- Two designers starting `concept new --round` at once no longer get the same letter (a brand lock); a stored
+  duplicate is shown once.
+- `logos/*-color` files use the colour the palette chose for their ground (`onLight` on paper), as the other exports
+  already did; a master drawn in one ground colour shows the other ground's colour on that ground.
+- `finalize` and `proposals` say where the critique is, or that a critic ran but its scores were not recorded.
+- `research app --competitor` without `--as-reference` says nothing was stored.
+- An icon beside a typed name is no longer read as a drawn name.
+
 ## [1.4.0] - 2026-11-13
 
 Fixes from four field reports on 1.3.0, all products inside one existing product family. Locked identities and the
