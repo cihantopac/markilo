@@ -18,17 +18,29 @@ export function rounds(concepts: Concept[]): { round: number; concepts: Concept[
     .map(([round, cs]) => ({ round, concepts: roundOrder(cs) }));
 }
 
-/**
- * Concepts in the order they were proposed: by `letter`, then creation time, then id (workspaces written by 1.3.0 have
- * no letters). Everything that presents a round to the user goes through this, so a letter means one concept.
- */
-export function roundOrder(concepts: Concept[]): Concept[] {
+/** Lettered concepts first, then by letter, creation time and id: the order letters are handed out in. */
+function assignmentOrder(concepts: Concept[]): Concept[] {
   const lettered = (c: Concept) => (c.letter === undefined ? 1 : 0);
   return [...concepts].sort(
     (a, b) =>
       lettered(a) - lettered(b) ||
       (a.letter ?? '').length - (b.letter ?? '').length ||
       (a.letter ?? '').localeCompare(b.letter ?? '', 'en', { sensitivity: 'variant' }) ||
+      (a.createdAt < b.createdAt ? -1 : a.createdAt > b.createdAt ? 1 : 0) ||
+      (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
+  );
+}
+
+/**
+ * Concepts in the order of the letter each one shows (A, B, C…), then creation time and id. A round written by 1.3.0
+ * (no letters) and extended in 1.4 therefore reads A, B, C everywhere: proposals, board and gallery.
+ */
+export function roundOrder(concepts: Concept[]): Concept[] {
+  const letters = roundLetters(concepts);
+  return [...concepts].sort(
+    (a, b) =>
+      (letters.get(a.id) ?? '').length - (letters.get(b.id) ?? '').length ||
+      (letters.get(a.id) ?? '').localeCompare(letters.get(b.id) ?? '', 'en', { sensitivity: 'variant' }) ||
       (a.createdAt < b.createdAt ? -1 : a.createdAt > b.createdAt ? 1 : 0) ||
       (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
   );
@@ -41,13 +53,13 @@ export function letterAt(i: number): string {
 
 /**
  * The letter each concept of ONE round shows: its own, or for a concept written by 1.3.0 (no letter) the next free
- * letter, in roundOrder. Board, captions, gallery and `concept new` all use this, so a letter never repeats.
+ * letter, in assignment order. Board, captions, gallery and `concept new` all use this, so a letter never repeats.
  */
 export function roundLetters(inRound: Concept[]): Map<string, string> {
   const out = new Map<string, string>();
   const used = new Set(inRound.flatMap((c) => (c.letter ? [c.letter] : [])));
   let i = 0;
-  for (const c of roundOrder(inRound)) {
+  for (const c of assignmentOrder(inRound)) {
     if (c.letter) {
       out.set(c.id, c.letter);
       continue;

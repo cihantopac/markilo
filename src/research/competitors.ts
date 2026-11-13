@@ -10,7 +10,7 @@ import { type ReferenceEntry, readReferences, referenceIndexPath } from '../repo
 import { brandKeyOf, officialHostsFrom, sourceQualityOf } from '../report/references.js';
 import { sanitizeSvg } from '../svg/sanitize.js';
 import { mergeSiteScan } from './profile.js';
-import { type CrawlOptions, fetchBinary, scanSite } from './site.js';
+import { type CrawlOptions, fetchBinary, robotsGate, scanSite } from './site.js';
 
 export type ReferenceCategory =
   | 'direct'
@@ -319,6 +319,7 @@ export async function researchCompetitor(
       issues.push(`inline SVG logo unusable: ${(err as Error).message.slice(0, 80)}`);
     }
   }
+  const allowed = robotsGate(opts);
   const images = [
     ...scan.logoCandidates,
     ...(scan.organization?.logo ? [{ href: scan.organization.logo, hint: '' }] : []),
@@ -335,6 +336,10 @@ export async function researchCompetitor(
         ? 'low'
         : 'high';
     try {
+      if (!(await allowed(u))) {
+        issues.push(`logo image ${u.slice(0, 80)} skipped: robots.txt disallows it`);
+        continue;
+      }
       const bin = await fetchBinary(u, opts);
       const ext = extOf(bin.contentType, bin.url);
       if (bin.status >= 400 || !ext) continue;
@@ -366,6 +371,10 @@ export async function researchCompetitor(
         ? 'low'
         : 'high';
     try {
+      if (!(await allowed(i.href))) {
+        issues.push(`icon ${i.href.slice(0, 80)} skipped: robots.txt disallows it`);
+        continue;
+      }
       const bin = await fetchBinary(i.href, opts);
       const ext = extOf(bin.contentType, bin.url);
       if (bin.status >= 400 || !ext) continue;

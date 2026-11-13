@@ -439,7 +439,8 @@ export function originalityMarkdown(r: OriginalityReport, concept: Concept): str
       '| Family mark | Likeness |',
       '| --- | --- |',
     );
-    for (const f of r.family) lines.push(`| ${f.name} | ${pct(f.visual)} |`);
+    for (const f of r.family)
+      lines.push(`| ${f.name.replace(/\s+/g, ' ').trim().replace(/\|/g, '\\|')} | ${pct(f.visual)} |`);
     lines.push('');
   }
   lines.push('## Difference from the other concepts', '');

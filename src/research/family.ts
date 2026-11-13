@@ -1,6 +1,8 @@
 import { normalizeColor } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
+import { writeJson } from '../core/fsx.js';
 import type { Workspace } from '../core/workspace.js';
+import { readReferences, referenceIndexPath } from '../report/originality.js';
 import { addReference } from './competitors.js';
 import { addFinding, addSource } from './profile.js';
 import { type CrawlOptions, cleanText, scanSite } from './site.js';
@@ -92,6 +94,17 @@ export async function researchFamily(
             retrievedAt: scan.retrievedAt,
             notes: `family member lockup or logo (inline SVG ${i + 1})`,
           });
+          if (r.duplicate) {
+            // The same file was added earlier under another category: it belongs to the family now.
+            const idx = readReferences(ws, brand);
+            const stored = idx.references.find((x) => x.id === r.id);
+            const was = stored?.category ?? 'direct';
+            if (stored && was !== 'family') {
+              stored.category = 'family';
+              writeJson(referenceIndexPath(ws, brand), idx);
+              issues.push(`re-categorised ${r.id} from ${was} to family`);
+            }
+          }
           if (!lockups.includes(r.id)) lockups.push(r.id);
         } catch (err) {
           issues.push(`inline SVG ${i + 1} unusable: ${(err as Error).message.slice(0, 80)}`);

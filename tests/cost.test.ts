@@ -229,12 +229,22 @@ describe('cost: what it measures', () => {
       { phase: 'refine', at: '2026-11-12T10:05:00.000Z', usd: 1.5, minutes: 2, source: 'session' },
     ];
     const s = costSummary(log(entries));
+    // Every field a 1.3 summary had, pinned (1.4 only adds fields next to them).
     expect(s).toMatchObject({
+      budgetUsd: 12,
       totalUsd: 2.1,
+      remainingUsd: 9.9,
       minutes: 5,
+      estimated: true,
       lowerBound: false,
       basis: 'mixed',
       status: 'ok',
+      note: undefined,
+      next: undefined,
+      phases: [
+        { phase: 'explore', entries: 1, estimated: true, minutes: 3, tokens: 1_000_000, usd: 0.6 },
+        { phase: 'refine', entries: 1, estimated: false, minutes: 2, tokens: 0, usd: 1.5 },
+      ],
     });
     expect('minutesIncomplete' in s).toBe(false);
     expect('agents' in s).toBe(false);

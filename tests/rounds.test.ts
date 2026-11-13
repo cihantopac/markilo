@@ -162,6 +162,12 @@ describe('exploration rounds', () => {
       'C:aaa',
     ]);
     expect(r.orderNote).toMatch(/not their ids/);
+    // The gallery shows the same order: A, B, C.
+    const html = readFileSync(ok(['gallery'], cwd).gallery, 'utf8');
+    const cards = [...html.matchAll(/<span class="letter">([A-Z]+)<\/span>([^<]*)<\/h3>/g)].map(
+      (m) => `${m[1]}:${m[2]}`,
+    );
+    expect(cards).toEqual(['A:Proposal 1', 'B:Proposal 2', 'C:x']);
     // Old concepts keep the letters they showed; the new one took the free one.
     expect(Workspace.locate(cwd).concept('tidepool', 'aaa').letter).toBe('C');
   });
@@ -327,6 +333,27 @@ describe('concept adopt', () => {
     expect(existsSync(ok(['proposals', '--brand', 'tidepool', '--concepts', 'p2'], cwd).compare.p2)).toBe(
       true,
     );
+  }, 60_000);
+  it('adopt marks a review recorded without its drawing as stale', () => {
+    const cwd = proposals(2);
+    const concepts = join(cwd, 'brand', 'brands', 'tidepool', 'concepts');
+    copyFileSync(fixture('marks/leaf-letter.svg'), join(concepts, 'p2', 'symbol.svg'));
+    const json = join(concepts, 'p1', 'concept.json');
+    const c = JSON.parse(readFileSync(json, 'utf8'));
+    delete c.reviewedArt;
+    c.judgment = Object.fromEntries(
+      ['distinctiveness', 'memorability', 'legibility', 'craft', 'brandFit'].map((k) => [
+        k,
+        { score: 9, note: 'ok' },
+      ]),
+    );
+    writeFileSync(json, JSON.stringify(c));
+    ok(
+      ['concept', 'adopt', '--brand', 'tidepool', '--concept', 'p1', '--from', 'p2', '--files', 'symbol'],
+      cwd,
+    );
+    const shown = ok(['concept', 'show', '--brand', 'tidepool', '--concept', 'p1'], cwd);
+    expect(shown.gate.status).toBe('stale');
   }, 60_000);
   it('adopt refuses an approved concept and an unknown --from', () => {
     const cwd = proposals(2);

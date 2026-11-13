@@ -1030,6 +1030,12 @@ export const COMMANDS: CommandSpec[] = [
       if (amend) {
         const answer = c.str('answer');
         if (answer === undefined) throw new MarkiloError('USAGE', '--amend <Qn> needs --answer <text>.');
+        if (c.str('question') !== undefined)
+          throw new MarkiloError(
+            'INVALID_INPUT',
+            '--amend and --question cannot be combined.',
+            'Use --amend <Qn> --answer <text> to change an answer, or --question to record a new one.',
+          );
         const target = log.questions.find((x) => x.id.toLowerCase() === amend.trim().toLowerCase());
         if (!target)
           throw new MarkiloError(
@@ -1944,6 +1950,8 @@ export const COMMANDS: CommandSpec[] = [
       // The adopted word was set in the other concept's typeface: measure and describe it against that one.
       if (taken.includes('wordmark') && src.typography) next.typography = { ...src.typography };
       next.adoptedFrom = { concept: src.id, files: taken, at: nowIso() };
+      // A review recorded without the drawing it judged (1.3.0) would read as current for the new drawing: mark it stale.
+      if ((next.judgment || next.blind || next.critique) && !next.reviewedArt) next.reviewedArt = 'adopted';
       w.saveConcept(next);
       const chosen = keepChosen(w, slug, next, { repin: true });
       w.logDecision(

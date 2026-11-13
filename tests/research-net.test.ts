@@ -4,9 +4,10 @@ import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { normalizeColor } from '../src/analyze/color.js';
+import { writeJson } from '../src/core/fsx.js';
 import { Workspace } from '../src/core/workspace.js';
 import { safeGet } from '../src/net/http.js';
-import { readReferences } from '../src/report/originality.js';
+import { readReferences, referenceIndexPath } from '../src/report/originality.js';
 import { researchCompetitor } from '../src/research/competitors.js';
 import { researchFamily } from '../src/research/family.js';
 import { inlineLogoCandidates, scanSite } from '../src/research/site.js';
@@ -232,6 +233,24 @@ describe('research family', () => {
     expect(refs.map((x) => x.name)).toEqual(['Tidepool', 'Ledger']);
     expect(r.takenColors).toEqual(expect.arrayContaining(['#118a55', '#3b5bdb']));
     expect(r.takenColors).not.toContain('#1b2140');
+  });
+});
+
+describe('research family on a reference added before', () => {
+  it('re-categorises the same file as family', async () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Lumen' });
+    await researchFamily(ws, 'lumen', [`${base}/hub`], { ...local, maxPages: 1 });
+    const idx = readReferences(ws, 'lumen');
+    for (const r of idx.references) r.category = 'direct';
+    writeJson(referenceIndexPath(ws, 'lumen'), idx);
+    const again = await researchFamily(ws, 'lumen', [`${base}/hub`], { ...local, maxPages: 1 });
+    const refs = readReferences(ws, 'lumen').references;
+    expect(refs).toHaveLength(1);
+    expect(refs[0]?.category).toBe('family');
+    expect(again.members[0]?.issues.join(' ')).toContain(
+      `re-categorised ${refs[0]?.id} from direct to family`,
+    );
   });
 });
 

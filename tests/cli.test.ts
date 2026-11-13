@@ -757,6 +757,13 @@ describe('cli frictions', () => {
       'Q3:Calm',
     ]);
     expect(run(['answers', '--brand', 'tidepool', '--amend', 'Q9', '--answer', 'x'], cwd).status).not.toBe(0);
+    const both = run(
+      ['answers', '--brand', 'tidepool', '--amend', 'Q1', '--question', 'New?', '--answer', 'x'],
+      cwd,
+    );
+    expect(both.status).not.toBe(0);
+    expect(both.stderr).toContain('INVALID_INPUT');
+    expect(ok(['answers', '--brand', 'tidepool']).questions).toHaveLength(3);
     writeFileSync(join(cwd, 'bad.json'), '{"question":"x"}');
     const bad = run(['answers', '--brand', 'tidepool', '--file', 'bad.json'], cwd);
     expect(bad.status).not.toBe(0);

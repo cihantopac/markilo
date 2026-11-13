@@ -262,8 +262,9 @@ export const TR: Record<string, string> = {
   'Wordmark: custom (family) lettering — do not retype it.':
     'Logotip: aileye özel çizilmiş harfler — yazı karakteriyle yeniden yazmayın.',
   'Supporting typeface: {0}, weight {1}.': 'Yardımcı yazı karakteri: {0}, ağırlık {1}.',
-  'Where the wordmark stands alone below about 120 px wide, use `logos/wordmark-small.svg`: the same word drawn for small sizes.':
-    'Logotip tek başına yaklaşık 120 px genişliğin altında kullanılacaksa `logos/wordmark-small.svg` dosyasını kullanın: aynı sözcüğün küçük boyutlar için çizilmiş hâli.',
+  'Where the wordmark stands alone below about 120 px wide, use':
+    'Logotip tek başına yaklaşık 120 px genişliğin altında kullanılacaksa şu dosyayı kullanın:',
+  ': the same word drawn for small sizes.': ' aynı sözcüğün küçük boyutlar için çizilmiş hâli.',
   'Originality check': 'Özgünlük denetimi',
   'Approved with originality verdict {0} (confidence {1}), with the remaining risk explicitly accepted.':
     '{0} özgünlük kararıyla onaylandı (güven: {1}); kalan risk açıkça kabul edildi.',
