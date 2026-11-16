@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Copies Markilo's own exported identity (branding/) into the repository's README and plugin images.
-// Nothing is drawn or composed here: every file is an output of `markilo export`.
+// Nothing is drawn or composed here: every file is an output of `markilo export`. (assets/social-preview.png, the
+// repository's GitHub social preview, is rendered from assets/social/social-preview.html instead.)
 // Run after: node plugin/dist/markilo.mjs export --workspace branding --brand markilo --clean
 import { copyFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -15,7 +16,6 @@ const copies = [
   ['logos/primary/primary-reversed.svg', 'assets/logo-dark.svg'],
   ['logos/symbol/symbol-color.svg', 'assets/symbol.svg'],
   ['logos/overview.png', 'assets/kit-overview.png'],
-  ['social/github-social-preview.png', 'assets/social-preview.png'],
   ['logos/appmark/appmark.png', 'plugin/.claude-plugin/icon.png'],
 ];
 for (const [from, to] of copies) {

@@ -52,20 +52,23 @@ The README is also the npm page, so its images use absolute `raw.githubuserconte
 (`markilo--v<version>`): relative paths do not render on npmjs.com. Bump the tag in the URLs with each release that
 changes an image; they resolve once the tag is pushed.
 
-- `assets/logo-*.svg`, `assets/kit-overview.png`, `assets/social-preview.png`: Markilo's own exports
-  (`scripts/readme-assets.mjs`).
+- `assets/logo-*.svg`, `assets/kit-overview.png`: Markilo's own exports (`scripts/readme-assets.mjs`).
+- `assets/social-preview.png`: the GitHub social preview, rendered from `assets/social/social-preview.html` (Markilo's
+  logo, a headline and the README's own `screens/gallery.png` in a window frame) at 1280 × 640, device scale 1, with
+  the repository root served over http.
 - `assets/made-with/*`: the exported `logos/primary` and `social/og-image.png` files of Relivaro, Searvex and Jourilo,
   copied unedited from their kits.
 - `assets/screens/*`: screenshots of real pages, never mockups. `gallery*.png` show the Gallery built from a copy of
   `branding/` with `final/` and `exports/` removed and the Hallmark concept set back to `verified`, so its round of
-  three is waiting for a decision (the decisions in `gallery-request.png` and `gallery-compare.png` were clicked in
-  the page); `kit-preview.png` is `branding/brands/markilo/exports/index.html`. Taken at 1280 px (390 px for the phone
-  view) with device scale 2 in headless Chromium.
+  three is waiting for a decision (the decisions in `gallery.png`, `gallery-request.png` and `gallery-compare.png`
+  were clicked in the page; `gallery-detail.png` has Details open); `kit-preview.png` is
+  `branding/brands/markilo/exports/index.html`. Taken at 1440 px (390 px for the phone view, Turkish and dark) with
+  device scale 2 in headless Chromium.
 
 ## Public presentation
 
 - GitHub About: the description matches `package.json`; topics cover brand identity, logo, SVG, Claude Code and the
   asset kit.
 - Social preview: GitHub has no API for it. In **Settings → General → Social preview**, upload
-  `assets/social-preview.png` (1280×640, Markilo's exported `social/github-social-preview.png`). `gh repo view --json
+  `assets/social-preview.png` (1280×640, rendered from `assets/social/social-preview.html`). `gh repo view --json
   usesCustomOpenGraphImage` shows whether one is set.
