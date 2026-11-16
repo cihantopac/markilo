@@ -211,6 +211,8 @@ Rulings:
 - Task 3: on phones the board is a swipe strip and the action bar shows only Compare and the primary hand-back.
 - Task 4: the side-panel spike was sent to the owner; the skill falls back to the `file://` link, and the page says
   to answer in chat when scripts are blocked.
+  Result (2026-11-16, owner, Claude desktop app side panel, 1.7.0 page): board switching, EN/TR, light/dark and Copy
+  decisions all work, so the skill's "send the file for display" is the default path.
 - Task 6: the gallery page sits on a stage tone (`#e6dfd2` light, `#26201b` dark), so a mark on paper or near-black
   reads as a panel (owner's report: the logo grounds blended into the page).
 - Task 6: README image URLs are pinned to `markilo--v1.7.0`; the README reached `main` with the tag.
