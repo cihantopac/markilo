@@ -93,7 +93,13 @@ import {
   masterColourMessages,
 } from '../export/kit.js';
 import { groundColors, tileGround } from '../export/variants.js';
-import { feedbackRequests, parseFeedback, readLatestFeedback, storeFeedback } from '../gallery/feedback.js';
+import {
+  extractFeedback,
+  feedbackRequests,
+  parseFeedback,
+  readLatestFeedback,
+  storeFeedback,
+} from '../gallery/feedback.js';
 import { buildGallery } from '../gallery/gallery.js';
 import { serveGallery } from '../gallery/serve.js';
 import { centerOptically } from '../geom/center.js';
@@ -3110,11 +3116,15 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'feedback',
     summary:
-      'Read the decisions saved from the gallery (select/change/drop, combine, reject a whole round, revision tags, notes, pinned spots, preferred concept); --import a downloaded file; --apply marks selected concepts shortlisted and dropped or round-rejected ones rejected.',
-    usage: 'feedback [--brand <slug>] [--import <markilo-feedback.json>] [--apply]',
+      'Read the decisions saved from the gallery (select/change/drop, combine, reject a whole round, revision tags, notes, pinned spots, preferred concept); --import a downloaded file or a text with the decisions pasted from "Copy decisions"; --apply marks selected concepts shortlisted and dropped or round-rejected ones rejected.',
+    usage: 'feedback [--brand <slug>] [--import <markilo-feedback.json|pasted.txt>] [--apply]',
     options: {
       ...brandOpt,
-      import: { type: 'string', description: 'A markilo-feedback.json downloaded from the gallery' },
+      import: {
+        type: 'string',
+        description:
+          'A markilo-feedback.json downloaded from the gallery, or a text file with the pasted markilo-feedback block',
+      },
       apply: {
         type: 'boolean',
         description: 'Record sketch picks and apply keep/drop decisions to concept status',
@@ -3126,13 +3136,13 @@ export const COMMANDS: CommandSpec[] = [
         const text = readText(file(c, c.str('import')!));
         if (text.length > 512 * 1024)
           throw new MarkiloError('INVALID_INPUT', 'Feedback file is larger than 512 KB.');
-        storeFeedback(w, parseFeedback(JSON.parse(text)));
+        storeFeedback(w, parseFeedback(extractFeedback(text)));
       }
       const f = readLatestFeedback(w);
       if (!f)
         return {
           feedback: null,
-          next: 'Ask the user to open the gallery (markilo gallery --serve) and press "Send to your agent", or to import a downloaded file.',
+          next: 'Ask the user to open the gallery and press "Copy decisions" (paste it into chat; save it to a file and --import it), "Send to your agent" when served, or import a downloaded file.',
         };
       const brand = c.str('brand');
       const decisions = f.decisions.filter((d) => !brand || d.brand === brand);

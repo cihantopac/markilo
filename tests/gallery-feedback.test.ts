@@ -1,7 +1,13 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { feedbackRequests, parseFeedback, readLatestFeedback } from '../src/gallery/feedback.js';
+import {
+  extractFeedback,
+  feedbackRequests,
+  feedbackText,
+  parseFeedback,
+  readLatestFeedback,
+} from '../src/gallery/feedback.js';
 import { buildGallery } from '../src/gallery/gallery.js';
 import { serveGallery } from '../src/gallery/serve.js';
 import { synthBrand } from './helpers.js';
@@ -78,6 +84,37 @@ describe('gallery feedback', () => {
       srv.close();
     }
     expect((await srv.done).saved).toBe(1);
+  });
+});
+
+describe('gallery feedback pasted from chat', () => {
+  const block = (o: unknown) => `\`\`\`markilo-feedback\n${JSON.stringify(o)}\n\`\`\``;
+  it('reads a whole JSON file as before', () => {
+    expect(extractFeedback(JSON.stringify(sample))).toEqual(sample);
+  });
+  it('takes the block out of chat text with prose around it', () => {
+    const text = `Here are my picks:\n- select nimbra/fold\n\n${block(sample)}\n\nthanks!`;
+    expect(extractFeedback(text)).toEqual(sample);
+  });
+  it('uses the last block when there are two', () => {
+    const later = { ...sample, preferred: null };
+    expect(extractFeedback(`${block(sample)}\nchanged my mind:\n${block(later)}`)).toEqual(later);
+  });
+  it('says clearly when no block is there', () => {
+    expect(() => extractFeedback('I like A best.')).toThrow(
+      'No markilo-feedback block found in the pasted text.',
+    );
+  });
+  it('rejects a block that is not valid JSON', () => {
+    expect(() => extractFeedback('```markilo-feedback\n{"schema": oops}\n```')).toThrow(
+      expect.objectContaining({ code: 'INVALID_INPUT' }),
+    );
+  });
+  it('round-trips the copied text', () => {
+    const f = parseFeedback(sample);
+    const text = feedbackText(f);
+    expect(text).toContain('- refine nimbra/fold');
+    expect(parseFeedback(extractFeedback(text)).decisions).toEqual(f.decisions);
   });
 });
 

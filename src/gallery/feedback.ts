@@ -139,3 +139,33 @@ export function feedbackRequests(f: GalleryFeedback): string[] {
     );
   return out;
 }
+
+const BLOCK = /```markilo-feedback[^\n]*\n([\s\S]*?)\n?```/g;
+
+/**
+ * The feedback inside a pasted text: the whole text when it is JSON (a downloaded file), else the last fenced
+ * `markilo-feedback` block (what "Copy decisions" puts on the clipboard, pasted into chat with prose around it).
+ * Returns the raw value; `parseFeedback` still validates it.
+ */
+export function extractFeedback(text: string): unknown {
+  const parse = (json: string) => {
+    try {
+      return JSON.parse(json) as unknown;
+    } catch {
+      throw new MarkiloError('INVALID_INPUT', 'The markilo-feedback block is not valid JSON.');
+    }
+  };
+  const trimmed = text.trim();
+  if (trimmed.startsWith('{')) return parse(trimmed);
+  const blocks = [...text.matchAll(BLOCK)];
+  if (!blocks.length)
+    throw new MarkiloError('INVALID_INPUT', 'No markilo-feedback block found in the pasted text.');
+  return parse(blocks.at(-1)![1]!);
+}
+
+/** What "Copy decisions" copies: the requests as a short list, then the decisions as a fenced block. */
+export function feedbackText(f: GalleryFeedback): string {
+  return `${feedbackRequests(f)
+    .map((r) => `- ${r}`)
+    .join('\n')}\n\n\`\`\`markilo-feedback\n${JSON.stringify(f)}\n\`\`\``;
+}
