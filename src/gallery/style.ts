@@ -4,7 +4,8 @@
  * ink for text and dark grounds, oxblood for the primary action, the selection, focus and problems. Device mockups
  * are drawn in the same tints. Brand artwork keeps its own colours (they arrive in style attributes and SVG).
  */
-export const GALLERY_CSS = `body{padding-bottom:112px}
+export const GALLERY_CSS = `body{padding-bottom:112px;background:var(--stage)}
+.mk-top{background:color-mix(in srgb,var(--stage) 86%,transparent)}
 button{font:inherit;cursor:pointer;color:inherit}
 .intro{max-width:1200px;margin:0 auto;padding:56px 24px 4px}
 .intro h1{margin:0;font:600 clamp(34px,4.6vw,56px)/1.04 var(--serif);letter-spacing:-.02em}

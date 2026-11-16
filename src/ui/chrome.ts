@@ -36,6 +36,8 @@ const INK = '#16120f';
 const OXBLOOD = '#7e1d2a';
 const L = {
   bg: PAPER,
+  /** The gallery's page: a shade off paper, so a mark on its own paper (or white) still reads as a panel. */
+  stage: '#e6dfd2',
   card: '#fbf8f2',
   sunk: '#e9e2d6',
   ink: INK,
@@ -49,6 +51,8 @@ const L = {
 };
 const D = {
   bg: INK,
+  /** Lifted off ink, so a mark on a near-black ground still reads as a panel. */
+  stage: '#26201b',
   card: '#1e1915',
   sunk: '#29221d',
   ink: PAPER,

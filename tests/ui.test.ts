@@ -231,3 +231,12 @@ describe('gallery: the idea line', () => {
     );
   });
 });
+
+describe('gallery: logos stand out from the page', () => {
+  it('sets the page on a stage tone that is neither paper nor ink, in both themes', () => {
+    expect(review).toMatch(/body\{[^}]*background:var\(--stage\)/);
+    const stages = [...new Set([...review.matchAll(/--stage:(#[0-9a-f]{6})/g)].map((m) => m[1]))];
+    expect(stages).toHaveLength(2);
+    for (const s of stages) expect(['#f2ece1', '#16120f', '#ffffff', '#111318']).not.toContain(s);
+  });
+});
