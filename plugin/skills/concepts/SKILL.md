@@ -29,5 +29,6 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 4. `markilo proposals --brand <slug>` and `Read` `proposals/round-<n>.png`. Send back once only a proposal that
    `missing` flags (a word still its typeface as set, no icon, no pitch) or that has a drafting error. No critic at
    this stage.
-5. Open the gallery (gallery skill) and present the three: per proposal one sentence on the idea, one strength, one
-   risk; ask the user to select, change, combine or reject all three. Do not develop anything before they choose.
+5. Show the gallery (gallery skill: `markilo gallery`, then send `brand/gallery/index.html` to the user, or its
+   link) and present the three: per proposal one sentence on the idea, one strength, one risk; ask the user to select,
+   change, combine or reject all three. Do not develop anything before they choose.

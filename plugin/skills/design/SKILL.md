@@ -168,10 +168,14 @@ assumptions, list them at the top of the first round's message and ask them agai
 Present the round **in the board's order**, each as `A · <title>` exactly as `proposals.order` lists it — never in the
 order you started the designers. Twice a user named a proposal by position, and the wrong concept was developed once
 and finalized and exported once. For each: one sentence on the idea, one strength, one risk — honestly, including what
-you think is weakest. In the desktop app, send `proposals/round-<n>.png` into the chat; the gallery (gallery skill) is
-optional, and `gallery --serve` stops when the session ends. Regenerate the gallery each round. Tell the user they can **select** one, ask for **changes**, **combine** parts of two ("combine with
-another" on each), or **reject all three** with a note. Read the decisions with `markilo feedback --brand <slug>` and,
-after confirming your summary with the user, `--apply`.
+you think is weakest. Regenerate the gallery each round (`markilo gallery`) and **show it** — it is where the user
+sees each proposal large, on dark, at small sizes and on surfaces: when you have a tool that sends a file to the user
+for display (the desktop app renders HTML in its side panel), send `brand/gallery/index.html` with it; otherwise give
+its `file://` link, or the `gallery --serve` URL in a terminal. Also send `proposals/round-<n>.png` into the chat for a
+quick look. Tell the user they can **select** one, ask for **changes**, **combine** parts of two ("combine with
+another" on each), or **reject all three** with a note — in chat, or in the gallery and then **Copy decisions** and
+paste the text here. Save pasted text to a file and run `markilo feedback --brand <slug> --import <file>` (served
+decisions: `markilo feedback --brand <slug>`) and, after confirming your summary with the user, `--apply`.
 
 - **Before develop or finalize**, read the choice back: `<letter> · <title> · <id>`.
 - **Recommended options.** Keep "(Recommended)" on the first option and say in one line that the user's choice overrides it; users chose against the designer twice and that is expected.
@@ -227,7 +231,7 @@ existing family" in the same file: `research family` with the members the user n
 
 ### Choices given in chat
 
-The gallery is optional. When the user answers in chat, record each decision yourself: `markilo concept update
+When the user answers in chat without the gallery's copied text, record each decision yourself: `markilo concept update
 --status shortlisted|rejected` (a shortlist keeps the chosen drawing for `chosen-vs-now.png`) and `markilo answers`.
 
 ### E. Verify, then one decision

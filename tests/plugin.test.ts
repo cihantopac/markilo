@@ -153,6 +153,21 @@ describe('craft-named directions', () => {
     expect(agent).toContain('## Finish now');
     expect(agent).toContain('concepts/<id>/work/');
   });
+  it('1.7: the gallery is shown by default and decisions come back by Copy decisions', () => {
+    const read = (p: string) => readFileSync(join(root, p), 'utf8');
+    const design = read('plugin/skills/design/SKILL.md');
+    const gallery = read('plugin/skills/gallery/SKILL.md');
+    const concepts = read('plugin/skills/concepts/SKILL.md');
+    for (const [name, text] of Object.entries({ design, gallery, concepts })) {
+      expect(text, name).not.toMatch(/gallery[^.\n]*is\s+optional|optional[^.\n]*gallery/i);
+      expect(text, name).toContain('brand/gallery/index.html');
+    }
+    for (const [name, text] of Object.entries({ design, gallery })) {
+      expect(text, name).toContain('Copy decisions');
+      expect(text, name).toMatch(/feedback (--brand <slug> )?--import/);
+    }
+    expect(read('docs/USAGE.md')).toContain('Copy decisions');
+  });
   it('1.6 review: the critic checks real fields, one resumed-agent rule, current gate names', () => {
     const read = (p: string) => readFileSync(join(root, p), 'utf8');
     const critic = read('plugin/agents/design-critic.md');

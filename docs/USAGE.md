@@ -46,18 +46,20 @@ you  › /markilo:design ./ — we're launching this as a product, it needs an i
 
 ## The Brand Preview Gallery
 
-`markilo gallery` writes one offline HTML file. A round of proposals is shown as A, B and C, each with its word, a
-compact icon, light and dark grounds, small sizes, the idea in one sentence, strengths and honest weaknesses, measured
-checks and the originality verdict. For each one you can:
+`markilo gallery` writes one offline HTML file. A round opens with a board of its proposals, A, B and C; one is shown
+large at a time — its word, its icon on dark, small sizes and the lockup, with the idea in one sentence and any problem
+in a word. Strengths and honest weaknesses, measured checks, the originality verdict, the critic and the surfaces are
+one click away under **Details**. For each one you can:
 
 - **Select** it, **request changes** (pick what to change, add a note, or click on the large mark to pin a spot), or
   **drop** it; "combine with another" mixes two;
 - **add it to the comparison** and open two or more side by side, then mark the one you prefer and why;
 - **reject the whole round** with a note on what is missing.
 
-`gallery --serve` serves the page on `127.0.0.1` with a random token so "Send to your agent" saves the decisions for
-`markilo feedback`; opened as a file, the page downloads them as `markilo-feedback.json` for
-`markilo feedback --import`. Once an identity is approved the gallery leads with it, its variants and links to the
+**Copy decisions** puts a short summary and a `markilo-feedback` block on the clipboard: paste it into the chat, and
+your agent saves it and reads it with `markilo feedback --import <file>`. `gallery --serve` serves the page on
+`127.0.0.1` with a random token so "Send to your agent" saves the decisions for `markilo feedback`; opened as a file,
+the page can also download them as `markilo-feedback.json` for `markilo feedback --import`. Once an identity is approved the gallery leads with it, its variants and links to the
 exported kit.
 
 ## Monorepos and product families
