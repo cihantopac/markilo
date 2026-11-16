@@ -192,12 +192,12 @@ export function kitIndexHtml(kit: BrandKit, assets: AssetRecord[]): string {
 <script>${CHROME_SCRIPT}</script>
 <style>
 ${CHROME_CSS}
-:root{--check:#e6ded1}:root[data-theme=dark]{--check:#2a201f}@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--check:#2a201f}}
+:root{--check:var(--sunk)}
 main{max-width:1180px;margin:0 auto;padding:28px 16px 32px}h1{margin:0;font:600 34px/1.1 var(--serif);letter-spacing:-.01em}h2{margin:44px 0 12px;font:600 22px/1.2 var(--serif)}h2 small{font:400 13px/1.4 var(--sans);color:var(--muted)}
 .sub{color:var(--muted);margin:6px 0 16px}.intro{display:grid;gap:14px;margin-bottom:20px}
 nav{display:flex;flex-wrap:wrap;gap:6px;margin:24px 0 0;position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:2;border-bottom:1px solid var(--line)}nav a{padding:5px 12px;border:1px solid var(--line);border-radius:99px;text-decoration:none;background:var(--card);color:var(--ink);font-size:13px}
 .hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}.hero figure{margin:0;border-radius:16px;border:1px solid var(--line);aspect-ratio:2/1;overflow:hidden;position:relative}.hero img{display:block;width:100%;height:100%;object-fit:contain;padding:18% 15%}
-.hero figcaption{position:absolute;left:12px;bottom:10px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.86);color:#16120f;border-radius:99px;padding:3px 8px}
+.hero figcaption{position:absolute;left:12px;bottom:10px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;background:rgba(242,236,225,.9);color:#16120f;border-radius:99px;padding:3px 8px}
 .chips{display:flex;flex-wrap:wrap;gap:8px 14px;margin:16px 0}.chip{display:flex;align-items:center;gap:6px;font-size:13px}.chip i{width:20px;height:20px;border-radius:6px;border:1px solid var(--line)}
 table{border-collapse:collapse;width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}td{padding:8px 12px;border-top:1px solid var(--line);vertical-align:top}tr:first-child td{border-top:0}td:first-child{width:38%}
 .matrix{display:grid;grid-template-columns:minmax(120px,170px) repeat(var(--cols),minmax(0,1fr));gap:10px;align-items:center;overflow-x:auto}.vh{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.rh{margin:0;font-size:13px}

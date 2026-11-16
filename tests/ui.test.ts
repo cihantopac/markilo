@@ -8,6 +8,7 @@ import { finalizeConcept } from '../src/export/kit.js';
 import { buildGallery } from '../src/gallery/gallery.js';
 import { verifyConcept } from '../src/report/quality.js';
 import { decodeEntities } from '../src/svg/xml.js';
+import { INTERFACE_COLOURS } from '../src/ui/chrome.js';
 import { TR } from '../src/ui/tr.js';
 import { synthBrand } from './helpers.js';
 
@@ -95,5 +96,36 @@ describe('page chrome: language and theme', () => {
     expect(review).not.toMatch(/<script>/);
     // Interface text is set with textContent only: no translated string can become markup.
     expect(review).not.toMatch(/innerHTML=(?!'')/);
+  });
+});
+
+/** Hex and rgba colours written in a page's own stylesheets (brand artwork lives in style="…" and SVG, not here). */
+function interfaceColours(html: string): { hex: string[]; rgba: string[] } {
+  const css = [...html.matchAll(/<style>([\s\S]*?)<\/style>/g)].map((m) => m[1]!).join('\n');
+  return {
+    hex: [...new Set([...css.matchAll(/#[0-9a-f]{3,8}\b/gi)].map((m) => m[0].toLowerCase()))],
+    rgba: [...new Set([...css.matchAll(/rgba?\(([^)]*)\)/g)].map((m) => m[1]!.replace(/\s/g, '')))],
+  };
+}
+
+describe('interface colours: paper, ink and oxblood only', () => {
+  const pages = () => ({ kit, guidelines });
+  it('uses only Markilo’s three colours in interface CSS', () => {
+    const allowed = new Set(INTERFACE_COLOURS.map((c) => c.toLowerCase()));
+    for (const [name, html] of Object.entries(pages())) {
+      const { hex, rgba } = interfaceColours(html);
+      expect(
+        hex.filter((c) => !allowed.has(c)),
+        name,
+      ).toEqual([]);
+      expect(
+        rgba.filter((c) => !/^(22,18,15|242,236,225|126,29,42|0,0,0),/.test(c)),
+        name,
+      ).toEqual([]);
+    }
+  });
+  it('has no status hues (good / warn / bad) left', () => {
+    for (const [name, html] of Object.entries(pages()))
+      expect(html, name).not.toMatch(/var\(--(good|warn|bad)\)/);
   });
 });

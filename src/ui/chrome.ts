@@ -26,31 +26,71 @@ export function ta(name: 'placeholder' | 'title' | 'aria-label', en: string): st
   return ` ${name}="${escapeAttr(en)}" data-i18n-${name}="${escapeAttr(en)}"`;
 }
 
-/** Interface tokens: Markilo's palette (tokens/tokens.css of its approved identity) in light and dark. */
-const LIGHT =
-  '--bg:#f2ece1;--card:#fbf8f2;--sunk:#ebe3d6;--ink:#16120f;--muted:#6b625b;--line:#ddd2c4;--accent:#7e1d2a;--accent-ink:#fff;--link:#7e1d2a;--good:#2e6b3d;--warn:#8a5a00;--bad:#b42318;--shadow:0 1px 2px rgba(22,18,15,.06),0 4px 16px rgba(22,18,15,.05)';
-const DARK =
-  '--bg:#120b0b;--card:#1c1414;--sunk:#251b1a;--ink:#f2ece1;--muted:#a89d95;--line:#3a2e2c;--accent:#a33b44;--accent-ink:#fff;--link:#e39a9e;--good:#7cc493;--warn:#e0b25c;--bad:#ff8a7a;--shadow:0 1px 2px rgba(0,0,0,.3)';
+/**
+ * Interface tokens: Markilo's three colours and nothing else — paper (about 60 % of the page), ink (30 %: text, dark
+ * grounds) and oxblood (10 %: primary actions, hover, focus, the selected state and problems). Every other tone is a
+ * mix of paper and ink. Dark theme swaps paper and ink and lifts oxblood for contrast.
+ */
+const PAPER = '#f2ece1';
+const INK = '#16120f';
+const OXBLOOD = '#7e1d2a';
+const L = {
+  bg: PAPER,
+  card: '#fbf8f2',
+  sunk: '#e9e2d6',
+  ink: INK,
+  muted: '#6b625b',
+  line: '#ddd5c9',
+  accent: OXBLOOD,
+  'accent-hover': '#651722',
+  'accent-ink': '#fbf8f2',
+  link: OXBLOOD,
+  problem: OXBLOOD,
+};
+const D = {
+  bg: INK,
+  card: '#1e1915',
+  sunk: '#29221d',
+  ink: PAPER,
+  muted: '#a69d92',
+  line: '#352d27',
+  accent: '#9e3a45',
+  'accent-hover': '#b34f55',
+  'accent-ink': '#fbf8f2',
+  link: '#e3a3a8',
+  problem: '#e3a3a8',
+};
+const vars = (o: Record<string, string>, shadow: string) =>
+  `${Object.entries(o)
+    .map(([k, v]) => `--${k}:${v}`)
+    .join(';')};--shadow:${shadow}`;
+const LIGHT = vars(L, '0 1px 2px rgba(22,18,15,.05),0 8px 24px rgba(22,18,15,.06)');
+const DARK = vars(D, '0 1px 2px rgba(0,0,0,.3)');
+/** Every colour the interface stylesheets may use (brand artwork excluded). Markilo's symbol diamond is #7e1d2a/#b34f55. */
+export const INTERFACE_COLOURS: readonly string[] = [
+  ...new Set([...Object.values(L), ...Object.values(D), '#fff', '#ffffff', '#b34f55']),
+];
 
 export const CHROME_CSS = `:root{${LIGHT};--serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]){${DARK};color-scheme:dark}}
 :root[data-theme=dark]{${DARK};color-scheme:dark}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
-a{color:var(--link)}
-.mk-top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--card)}
-.mk-brand{display:flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;font:600 15px/1 var(--serif);letter-spacing:.01em}.mk-brand svg{width:22px;height:22px}.mk-brand .p{fill:#7e1d2a}
+a{color:var(--link);text-underline-offset:2px}a:hover{color:var(--accent-hover)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mk-top{position:relative;z-index:20;display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;justify-content:space-between;padding:12px 24px;background:color-mix(in srgb,var(--bg) 86%,transparent);-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+.mk-brand{display:flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;font:600 15px/1 var(--serif);letter-spacing:.01em}.mk-brand svg{width:20px;height:20px}.mk-brand .p{fill:#7e1d2a}
 :root[data-theme=dark] .mk-brand .p{fill:#b34f55}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .mk-brand .p{fill:#b34f55}}
-.mk-brand small{font:500 11px/1 var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;border-left:1px solid var(--line);padding-left:8px}
-.mk-prefs{display:flex;gap:8px;visibility:hidden}.mk-js .mk-prefs{visibility:visible}
-.mk-seg{display:inline-flex;border:1px solid var(--line);border-radius:99px;padding:2px;background:var(--bg)}
-.mk-seg button{font:500 12px/1 var(--sans);color:var(--muted);background:transparent;border:0;border-radius:99px;padding:6px 10px;cursor:pointer;min-height:28px}
-.mk-seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}.mk-seg button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.mk-steps{display:flex;flex-wrap:wrap;gap:4px;list-style:none;margin:0;padding:0;counter-reset:s}
-.mk-steps li{counter-increment:s;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);padding:4px 10px 4px 4px;border-radius:99px;border:1px solid transparent}
-.mk-steps li:before{content:counter(s);display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1px solid var(--line);font-size:11px;font-weight:600}
-.mk-steps li.done:before{content:"✓";background:var(--sunk);color:var(--ink)}.mk-steps li.now{color:var(--ink);border-color:var(--accent);font-weight:600}.mk-steps li.now:before{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.mk-foot{max-width:1280px;margin:0 auto;padding:24px 16px 32px;color:var(--muted);font-size:12px;display:flex;gap:6px;align-items:center}.mk-foot svg{width:14px;height:14px}
-@media (max-width:640px){.mk-top{padding:10px 14px}.mk-steps{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.mk-steps li{font-size:11px;padding-right:8px;white-space:nowrap;flex:none}}
+.mk-brand small{font:500 11px/1 var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.1em;border-left:1px solid var(--line);padding-left:8px}
+.mk-prefs{display:flex;gap:6px;visibility:hidden}.mk-js .mk-prefs{visibility:visible}
+.mk-seg{display:inline-flex;border-radius:99px;padding:2px;background:var(--sunk)}
+.mk-seg button{font:500 12px/1 var(--sans);color:var(--muted);background:transparent;border:0;border-radius:99px;padding:6px 11px;cursor:pointer;min-height:28px;transition:color .15s,background .15s}
+.mk-seg button:hover{color:var(--ink)}.mk-seg button[aria-pressed=true]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(22,18,15,.12)}
+.mk-steps{display:flex;flex-wrap:wrap;gap:2px 18px;list-style:none;margin:0;padding:0;counter-reset:s}
+.mk-steps li{counter-increment:s;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.mk-steps li:before{content:counter(s);font-variant-numeric:tabular-nums;font-size:11px;opacity:.7}
+.mk-steps li.done:before{content:"✓";opacity:1}.mk-steps li.now{color:var(--ink);font-weight:600}.mk-steps li.now:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:1}
+.mk-foot{max-width:1200px;margin:0 auto;padding:40px 24px 48px;color:var(--muted);font-size:12px;display:flex;gap:6px;align-items:center}.mk-foot svg{width:14px;height:14px}
+@media (max-width:640px){.mk-top{padding:10px 16px}.mk-steps{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.mk-steps li{font-size:11px;white-space:nowrap;flex:none}}
 @media print{.mk-prefs{display:none}}`;
 
 /** Markilo's approved symbol (branding/brands/markilo/final/symbol.svg), drawn in the interface's ink. */

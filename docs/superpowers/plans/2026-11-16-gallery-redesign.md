@@ -79,7 +79,7 @@ Skills show the gallery by default. README and screenshots are redone from Marki
 
 **Interfaces:**
 - Produces: `extractFeedback(text: string): unknown` — returns the parsed JSON of a whole-JSON text, else of the
-  **last** fenced block whose info string is `markilo-feedback` (```` ```markilo-feedback ```` … ```` ``` ````);
+  **last** fenced block whose info string is `markilo-feedback` (` ```markilo-feedback ` … ` ``` `);
   throws `MarkiloError('INVALID_INPUT', 'No markilo-feedback block found in the pasted text.')` otherwise. The result
   still goes through `parseFeedback`.
 - Produces (used by Task 3's client): `feedbackText(f: GalleryFeedback): string` = `feedbackRequests(f)` lines as

@@ -19,9 +19,9 @@ the session). Users therefore never see the page this design improves.
    - 60 % paper `#f2ece1` (page, surfaces; cards a lighter paper `#fbf8f2`),
    - 30 % ink `#16120f` (text, dark icon grounds, the dark band, primary outline),
    - 10 % oxblood `#7e1d2a` (primary buttons, hover, focus, the active state, the selected proposal).
-   Greys are tints of ink, not new hues. Green/amber status colours go: a problem is shown in oxblood with a word,
-   "all good" in muted ink. Dark theme inverts paper and ink and keeps oxblood (lifted for contrast).
-   Brand artwork keeps the brand's own colours — the rule is for Markilo's interface.
+     Greys are tints of ink, not new hues. Green/amber status colours go: a problem is shown in oxblood with a word,
+     "all good" in muted ink. Dark theme inverts paper and ink and keeps oxblood (lifted for contrast).
+     Brand artwork keeps the brand's own colours — the rule is for Markilo's interface.
 2. **Visual first, words on demand.** Say it in three words, not ten. On the page by default: the marks, the proposal
    letter and title, one short line for the idea (the pitch's first sentence), and the decision buttons. Everything
    else — strengths and weaknesses, checks, originality, critic, rationale, palette codes, surfaces — sits behind one
