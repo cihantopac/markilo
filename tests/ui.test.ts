@@ -1,10 +1,11 @@
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { cpSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 import type { Workspace } from '../src/core/workspace.js';
 import { exportBrand } from '../src/export/exporter.js';
 import { finalizeConcept } from '../src/export/kit.js';
+import { oneLine } from '../src/gallery/cards.js';
 import { buildGallery } from '../src/gallery/gallery.js';
 import { verifyConcept } from '../src/report/quality.js';
 import { decodeEntities } from '../src/svg/xml.js';
@@ -36,7 +37,15 @@ let ws: Workspace;
 beforeAll(async () => {
   // A round of proposals waiting for the user.
   const r = synthBrand();
-  r.ws.saveConcept({ ...r.ws.concept('nimbra', 'fold'), round: 1 });
+  r.ws.saveConcept({
+    ...r.ws.concept('nimbra', 'fold'),
+    round: 1,
+    pitch: {
+      idea: 'A folded page that turns into an N. Every crease holds a note, and the page keeps its corner.',
+      strengths: ['Reads at 16 px'],
+      weaknesses: ['Close to a generic page icon'],
+    },
+  });
   await verifyConcept(r.ws, 'nimbra', 'fold');
   review = readFileSync((await buildGallery(r.ws)).path, 'utf8');
   // The same brand approved and exported.
@@ -109,7 +118,7 @@ function interfaceColours(html: string): { hex: string[]; rgba: string[] } {
 }
 
 describe('interface colours: paper, ink and oxblood only', () => {
-  const pages = () => ({ kit, guidelines });
+  const pages = () => ({ review, approved, kit, guidelines });
   it('uses only Markilo’s three colours in interface CSS', () => {
     const allowed = new Set(INTERFACE_COLOURS.map((c) => c.toLowerCase()));
     for (const [name, html] of Object.entries(pages())) {
@@ -127,5 +136,98 @@ describe('interface colours: paper, ink and oxblood only', () => {
   it('has no status hues (good / warn / bad) left', () => {
     for (const [name, html] of Object.entries(pages()))
       expect(html, name).not.toMatch(/var\(--(good|warn|bad)\)/);
+  });
+});
+
+/** The part of a proposal shown before "Details" is opened. */
+const proposals = (html: string) =>
+  [...html.matchAll(/<article class="proposal[^"]*" id="([^"]+)"[\s\S]*?<\/article>/g)].map((m) => ({
+    id: m[1]!,
+    html: m[0],
+    visible: m[0].split('<details class="more"')[0]!,
+    details: m[0].split('<details class="more"')[1] ?? '',
+  }));
+
+/** A round of n proposals (copies of "fold"), built into a gallery. */
+async function roundOf(n: number): Promise<string> {
+  const { ws: w } = synthBrand();
+  const fold = w.concept('nimbra', 'fold');
+  w.saveConcept({ ...fold, round: 1 });
+  for (let i = 2; i <= n; i++) {
+    const id = `fold${i}`;
+    cpSync(w.conceptDir('nimbra', 'fold'), w.conceptDir('nimbra', id), { recursive: true });
+    w.saveConcept({ ...fold, id, title: `Fold ${i}`, round: 1 });
+  }
+  return readFileSync((await buildGallery(w)).path, 'utf8');
+}
+
+describe('gallery: calm presentation', () => {
+  it('opens with a board of the round, one tile per proposal, each pointing at its proposal', () => {
+    expect(review).toContain('<nav class="board"');
+    const tiles = [...review.matchAll(/<a class="tile[^"]*" href="#([^"]+)"/g)].map((m) => m[1]);
+    expect(tiles).toEqual(proposals(review).map((p) => p.id));
+    expect(tiles).toEqual(['nimbra-fold']);
+  });
+  it('shows the marks, one idea line and the decision; the rest is folded into Details', () => {
+    const [p] = proposals(review);
+    for (const hidden of [
+      'class="pitch"',
+      'class="checks"',
+      'class="swatches"',
+      'Close to a generic page icon',
+    ])
+      expect(p!.visible, hidden).not.toContain(hidden);
+    expect(p!.details).toContain('Close to a generic page icon');
+    expect(p!.details).toContain('Every crease holds a note');
+    expect(p!.visible).toContain('class="decide"');
+  });
+  it('says the idea in one short sentence', () => {
+    const idea = /<p class="idea">([^<]*)<\/p>/.exec(proposals(review)[0]!.visible)?.[1] ?? '';
+    expect(idea).toBe('A folded page that turns into an N.');
+    expect(idea.length).toBeLessThanOrEqual(140);
+  });
+  it('keeps every proposal in the page without script (switching only hides with JS)', () => {
+    for (const p of proposals(review)) expect(p.html).not.toMatch(/<article[^>]*\shidden/);
+  });
+  it('copies decisions instead of the old request text', () => {
+    expect(review).toMatch(/id="copy"[^>]*><span data-i18n>Copy decisions<\/span>/);
+    expect(review).not.toContain('Copy request');
+  });
+  it('shows a failing check on the proposal without opening Details', async () => {
+    const { ws: w } = synthBrand();
+    w.saveConcept({ ...w.concept('nimbra', 'fold'), round: 1 });
+    await verifyConcept(w, 'nimbra', 'fold');
+    const file = join(w.reportsDir('nimbra'), 'quality-fold.json');
+    const q = JSON.parse(readFileSync(file, 'utf8'));
+    q.summary.fail = 1;
+    q.checks.push({ id: 'contrast', label: 'Contrast', status: 'fail', value: 1.2, message: 'too low' });
+    writeFileSync(file, JSON.stringify(q));
+    const [p] = proposals(readFileSync((await buildGallery(w)).path, 'utf8'));
+    expect(p!.visible).toMatch(/class="flags"[\s\S]*1 check failing/);
+  });
+  it.each([1, 2, 4])(
+    'builds a round of %i proposals with that many tiles',
+    async (n) => {
+      const html = await roundOf(n);
+      expect([...html.matchAll(/<a class="tile/g)]).toHaveLength(n);
+      expect(proposals(html)).toHaveLength(n);
+    },
+    60_000,
+  );
+});
+
+describe('gallery: the idea line', () => {
+  it('ends a long first sentence at its clause, not in the middle of a word', () => {
+    expect(
+      oneLine(
+        "A heavy lowercase word cut like a type designer's proof: every join of m, a, r and k carries the same deep ink trap, and the stems rise.",
+        120,
+      ),
+    ).toBe("A heavy lowercase word cut like a type designer's proof.");
+  });
+  it('falls back to a word cut with an ellipsis when there is no clause to end at', () => {
+    expect(oneLine('one two three four five six seven eight nine ten eleven', 30)).toBe(
+      'one two three four five six…',
+    );
   });
 });

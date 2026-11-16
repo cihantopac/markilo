@@ -291,4 +291,26 @@ export const TR: Record<string, string> = {
     'Onaylı bir uygulama simgesi değilse simgeyi kırpmayın veya başka bir şeklin içine yerleştirmeyin.',
   'Originality not verified: no competitor marks were compared. Run research (with network access) before relying on this mark.':
     'Özgünlük doğrulanmadı: hiçbir rakip işaretle karşılaştırma yapılmadı. Bu işarete güvenmeden önce araştırmayı (ağ erişimiyle) çalıştırın.',
+  'Changes requested': 'Değişiklik istendi',
+  'Copied ✓ — paste it into the chat': 'Kopyalandı ✓ — sohbete yapıştırın',
+  'Copy decisions': 'Kararları kopyala',
+  'Copy this text and paste it into the chat with your agent.':
+    'Bu metni kopyalayıp ajanınızla olan sohbete yapıştırın.',
+  Details: 'Ayrıntılar',
+  Dropped: 'Elendi',
+  'Pick one, ask for changes, or compare. The choice is yours.':
+    'Birini seçin, değişiklik isteyin ya da karşılaştırın. Seçim sizin.',
+  Proposals: 'Öneriler',
+  Rationale: 'Gerekçe',
+  Selected: 'Seçildi',
+  'The idea': 'Fikir',
+  'Your decisions': 'Kararlarınız',
+  '{0} of {1} pass': '{1} kontrolün {0} tanesi geçti',
+  '1 check failing': '1 kontrol başarısız',
+  '{0} checks failing': '{0} kontrol başarısız',
+  'originality: redesign': 'özgünlük: yeniden tasarla',
+  'originality: needs review': 'özgünlük: incelenmeli',
+  'Has a problem — see the proposal': 'Bir sorun var — öneriye bakın',
+  'The approved identity, its variants and the exported files.':
+    'Onaylanan kimlik, varyantları ve dışa aktarılan dosyalar.',
 };
