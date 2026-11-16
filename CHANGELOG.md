@@ -6,6 +6,34 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-11-16
+
+A calmer review. The gallery puts the marks first and folds the reading away, uses only Markilo's three colours, and
+is shown in every round — also in the Claude desktop app, where decisions come back by pasting them into the chat.
+
+### Changed
+
+- **Gallery layout.** A round opens with a board of its proposals; one is shown large at a time (its mark, the icon on
+  dark, small sizes and the lockup) with the idea in one sentence, any problem in a word ("1 check failing",
+  "originality: needs review", "critic: below the bar") and Select / Request changes / Drop. Strengths and weaknesses,
+  checks, originality, the critic, the rationale, the palette and the surfaces are under **Details**. ←/→ and the
+  board switch proposals; without script every proposal is listed. Compare, pins, sketch picks and rejecting a round
+  work as before. On a phone the board is a swipe strip and the action bar is one row.
+- **Three interface colours.** The gallery, kit preview and guidelines use paper `#f2ece1`, ink `#16120f` and oxblood
+  `#7e1d2a` only (dark theme: the same, swapped and lifted). Status greens and ambers are gone; a problem is oxblood
+  with a word. Brand artwork keeps its own colours. Quieter top bar with the workflow as a thin line.
+- **The gallery is shown by default.** The design, gallery and concepts skills regenerate and show
+  `brand/gallery/index.html` every round — sent for display in the desktop app, otherwise as a link or the served
+  URL — and still send the round's PNG for a quick look.
+- `src/gallery/gallery.ts` is split into `cards.ts`, `style.ts` and `client.ts`.
+
+### Added
+
+- **Copy decisions** in the gallery (replaces Copy request): a short list of the decisions plus a fenced
+  `markilo-feedback` block, ready to paste into chat; when the clipboard is blocked the text is shown to select.
+- `feedback --import` reads a downloaded `markilo-feedback.json` or any text holding a pasted `markilo-feedback` block
+  (the last one wins), with a clear error when there is none.
+
 ## [1.6.0] - 2026-11-13
 
 Keeps what the user chose. From two field reports on 1.5.0 (two products joining a family whose words are
