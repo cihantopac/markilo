@@ -223,4 +223,5 @@ Verification: `npm run ci` 464/464, `node scripts/smoke.mjs` passed, `claude plu
 own kit re-exported: logo files byte-identical. Social preview rendered from `assets/social/social-preview.html`.
 
 **Released 2026-11-16.** Tag `markilo--v1.7.0` and GitHub release; npm pack shasum
-`f937ef96719e7af875189b5852f4f1990c285aa2` (287 files); npm publish by the owner.
+`f937ef96719e7af875189b5852f4f1990c285aa2` (287 files); `markilo@1.7.0` published by the owner and verified on npm
+(`latest`, same shasum, gitHead `77755d3`); `npx markilo@1.7.0 --version` prints 1.7.0.
