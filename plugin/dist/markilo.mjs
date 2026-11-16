@@ -647,7 +647,7 @@ h4{margin:0 0 10px;font:600 11px/1.2 var(--sans);text-transform:uppercase;letter
 .family .fmrow{display:flex;gap:16px;flex-wrap:wrap}.fm{display:grid;justify-items:center;gap:8px;background:var(--card);color:var(--ink);border-radius:20px;padding:16px;box-shadow:var(--shadow)}
 
 /* Dialogs and the action bar. */
-dialog{max-width:min(1180px,calc(100vw - 32px));width:100%;border:0;border-radius:24px;background:var(--bg);color:var(--ink);padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.35)}dialog::backdrop{background:rgba(22,18,15,.55)}
+dialog{max-width:min(1180px,calc(100vw - 32px));width:100%;border:0;border-radius:24px;background:var(--stage);color:var(--ink);padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.35)}dialog::backdrop{background:rgba(22,18,15,.55)}
 dialog h2{margin:0 0 18px;font:600 26px/1.2 var(--serif)}dialog .btn{margin-top:14px}
 dialog input,dialog textarea{width:100%;border:1px solid var(--line);background:var(--card);color:inherit;font:inherit;border-radius:14px;padding:12px 14px}dialog input{margin:18px 0 6px}
 #copytext{min-height:220px;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical}
