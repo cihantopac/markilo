@@ -41,7 +41,7 @@ const L = {
   card: '#fbf8f2',
   sunk: '#e9e2d6',
   ink: INK,
-  muted: '#6b625b',
+  muted: '#645b54',
   line: '#ddd5c9',
   accent: OXBLOOD,
   'accent-hover': '#651722',

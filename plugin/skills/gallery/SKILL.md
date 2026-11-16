@@ -19,6 +19,8 @@ the surfaces. Regenerate it each round. Name proposals by their board letter and
 1. Run `markilo gallery`: it writes `brand/gallery/index.html`, one self-contained file that works offline.
    - When you have a tool that sends a file to the user for display (the Claude desktop app renders HTML in its side
      panel), send `brand/gallery/index.html` with it.
+   - If the page's buttons do not respond there (scripts blocked), or you have no such tool, give the user its
+     `file://` URL to open in a browser.
    - Otherwise give the user its `file://` URL. In a terminal session you may instead start `markilo gallery --serve`
      as a **background** Bash command; its first output line has `serving`: a `http://127.0.0.1:<port>/…?t=<token>`
      URL. The server only listens on this computer, needs the token, serves only the gallery and exported artwork, and
@@ -31,8 +33,8 @@ the surfaces. Regenerate it each round. Name proposals by their board letter and
    decisions** and paste the text into the chat (served: **Send to your agent**; a file: **Download decisions**). The
    choice is theirs; no critic score decides it. The page has EN/TR and light/dark/system switches at the top; if the
    user writes in Turkish, mention the TR switch. They may also just answer in chat.
-3. Read the decisions. Pasted text from **Copy decisions** (it ends in a fenced `markilo-feedback` block): save it to a
-   file with Write and run `markilo feedback --brand <slug> --import <file>`; a downloaded file: `markilo feedback
+3. Read the decisions. Pasted text from **Copy decisions** (it ends in a fenced `markilo-feedback` block): save it to
+   `brand/feedback/pasted.txt` with Write and run `markilo feedback --brand <slug> --import brand/feedback/pasted.txt`; a downloaded file: `markilo feedback
    --import <file>`; served: `markilo feedback --brand <slug>`. An answer in chat without that text: record it yourself
    (`concept update --status`, `answers`). It
    returns each decision with tags, notes and pinned spots (e.g. "at top-right: thicker stem"), the preferred concept

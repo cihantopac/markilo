@@ -15,12 +15,13 @@ const where=(x,y)=>(y<34?'top':y>66?'bottom':'middle')+'-'+(x<34?'left':x>66?'ri
 const PICK={keep:'select',refine:'change',drop:'drop'};
 const picked=p=>p==='keep'?T('Selected'):p==='refine'?T('Changes requested'):p==='drop'?T('Dropped'):'';
 const sendLabel=()=>T(SERVED?'Send to your agent':'Download decisions');
+const hashId=()=>{try{return decodeURIComponent(location.hash.slice(1))}catch(e){return ''}};
 const groups=[...document.querySelectorAll('.proposals')].map(list=>({list,board:list.parentElement.querySelector(':scope>.board')})).filter(g=>g.board);let cur=groups[0];
 function show(g,id){const a=document.getElementById(id);if(!a||a.parentElement!==g.list)return;cur=g;g.list.classList.add('one');
 [...g.list.children].forEach(x=>x.classList.toggle('on',x===a));g.board.querySelectorAll('.tile').forEach(t=>{const on=t.dataset.target===id;t.classList.toggle('on',on);t.setAttribute('aria-current',on?'true':'false')})}
-groups.forEach(g=>{const first=g.list.querySelector(':scope>.proposal');const h=decodeURIComponent(location.hash.slice(1));const fromHash=h&&g.list.querySelector(':scope>#'+CSS.escape(h));if(first)show(g,(fromHash||first).id);
+groups.forEach(g=>{const first=g.list.querySelector(':scope>.proposal');const h=hashId();const fromHash=h&&g.list.querySelector(':scope>#'+CSS.escape(h));if(first)show(g,(fromHash||first).id);
 g.board.querySelectorAll('.tile').forEach(t=>t.onclick=e=>{e.preventDefault();show(g,t.dataset.target);try{history.replaceState(null,'','#'+t.dataset.target)}catch(e){}})});
-if(groups[0])cur=groups.find(g=>g.list.querySelector('#'+CSS.escape(decodeURIComponent(location.hash.slice(1))||'-')))||groups[0];
+if(groups[0])cur=groups.find(g=>g.list.querySelector('#'+CSS.escape(hashId()||'-')))||groups[0];
 document.addEventListener('keydown',e=>{if(!cur||e.metaKey||e.ctrlKey||e.altKey||(e.target.closest&&e.target.closest('input,textarea,dialog')))return;if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;
 const ids=[...cur.list.children].map(x=>x.id),at=ids.indexOf((cur.list.querySelector(':scope>.on')||{}).id);const next=ids[(at+(e.key==='ArrowRight'?1:ids.length-1))%ids.length];if(next){e.preventDefault();show(cur,next)}});
 function render(){boxes.forEach(b=>{const k=b.dataset.key,v=st[k]||{};b.classList.toggle('refine',v.pick==='refine');
@@ -59,7 +60,7 @@ for(const d of f.decisions){if(d.sketch)out.push(d.sketch==='none'?'no sketch fo
 if(d.decision==='refine'){const w=[...d.tags,...(d.note?[d.note]:[]),...d.pins.map(p=>'at '+p.where+(p.note?': '+p.note:''))];out.push('refine '+d.brand+'/'+d.concept+(w.length?': '+w.join('; '):''))}
 else if(d.decision)out.push((d.decision==='keep'?'select':d.decision)+' '+d.brand+'/'+d.concept+tail(d))}
 if(f.preferred)out.push('preferred '+f.preferred.brand+'/'+f.preferred.concept+(f.preferred.over.length?' over '+f.preferred.over.join(', '):'')+(f.preferred.why?' — '+f.preferred.why:''));return out}
-const text=()=>{const f=feedback();return requests(f).map(r=>'- '+r).join('\\n')+'\\n\\n\`\`\`markilo-feedback\\n'+JSON.stringify(f)+'\\n\`\`\`'};
+const text=()=>{const f=feedback();return requests(f).map(r=>'- '+r).join('\\n')+'\\n\\n\`\`\`markilo-feedback\\n'+JSON.stringify(f).replace(/\`/g,'\\\\u0060')+'\\n\`\`\`'};
 const flash=(id,t,orig)=>{const b=document.getElementById(id);b.textContent=t;setTimeout(()=>b.textContent=orig(),1800)};
 const copyd=document.getElementById('copyd');document.getElementById('copyclose').onclick=()=>copyd.close();
 document.getElementById('copy').onclick=async()=>{const t=text();try{await navigator.clipboard.writeText(t);flash('copy',T('Copied ✓ — paste it into the chat'),()=>T('Copy decisions'))}catch(e){const a=document.getElementById('copytext');a.value=t;copyd.showModal();a.focus();a.select()}};

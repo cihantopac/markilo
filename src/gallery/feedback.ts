@@ -140,7 +140,8 @@ export function feedbackRequests(f: GalleryFeedback): string[] {
   return out;
 }
 
-const BLOCK = /```markilo-feedback[^\n]*\n([\s\S]*?)\n?```/g;
+// The closing fence must start a line: a note may contain ``` (the copied JSON escapes backticks anyway).
+const BLOCK = /```markilo-feedback[^\n]*\n([\s\S]*?)\n```/g;
 
 /**
  * The feedback inside a pasted text: the whole text when it is JSON (a downloaded file), else the last fenced
@@ -156,8 +157,17 @@ export function extractFeedback(text: string): unknown {
     }
   };
   const trimmed = text.trim();
-  if (trimmed.startsWith('{')) return parse(trimmed);
   const blocks = [...text.matchAll(BLOCK)];
+  if (trimmed.startsWith('{') && !blocks.length) {
+    try {
+      return JSON.parse(trimmed) as unknown;
+    } catch {
+      throw new MarkiloError(
+        'INVALID_INPUT',
+        'The file is not valid JSON and holds no markilo-feedback block.',
+      );
+    }
+  }
   if (!blocks.length)
     throw new MarkiloError('INVALID_INPUT', 'No markilo-feedback block found in the pasted text.');
   return parse(blocks.at(-1)![1]!);
@@ -167,5 +177,5 @@ export function extractFeedback(text: string): unknown {
 export function feedbackText(f: GalleryFeedback): string {
   return `${feedbackRequests(f)
     .map((r) => `- ${r}`)
-    .join('\n')}\n\n\`\`\`markilo-feedback\n${JSON.stringify(f)}\n\`\`\``;
+    .join('\n')}\n\n\`\`\`markilo-feedback\n${JSON.stringify(f).replace(/`/g, '\\u0060')}\n\`\`\``;
 }

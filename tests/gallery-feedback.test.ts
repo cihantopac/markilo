@@ -194,3 +194,22 @@ describe('gallery: nothing passed', () => {
     expect(html).toContain('<span data-i18n>would not present it as is</span> — reads as a folded page icon');
   });
 });
+
+describe('gallery feedback pasted from chat: hard cases', () => {
+  it('keeps a note that contains a code fence', () => {
+    const f = parseFeedback({
+      ...sample,
+      decisions: [{ ...sample.decisions[0], note: 'like ```this``` one' }],
+    });
+    expect(parseFeedback(extractFeedback(`ok:\n${feedbackText(f)}\nthanks`)).decisions[0]!.note).toBe(
+      'like ```this``` one',
+    );
+  });
+  it('looks for the block when chat text merely starts with a brace', () => {
+    const text = `{oops} here are my picks\n${feedbackText(parseFeedback(sample))}`;
+    expect(parseFeedback(extractFeedback(text)).decisions[0]!.concept).toBe('fold');
+  });
+  it('says a whole file is not valid JSON when there is no block either', () => {
+    expect(() => extractFeedback('{"schema": oops')).toThrow(/not valid JSON/);
+  });
+});

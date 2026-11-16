@@ -165,6 +165,7 @@ describe('craft-named directions', () => {
     for (const [name, text] of Object.entries({ design, gallery })) {
       expect(text, name).toContain('Copy decisions');
       expect(text, name).toMatch(/feedback (--brand <slug> )?--import/);
+      expect(text, name).toContain('brand/feedback/pasted.txt');
     }
     expect(read('docs/USAGE.md')).toContain('Copy decisions');
   });

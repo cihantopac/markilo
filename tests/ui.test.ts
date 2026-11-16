@@ -240,3 +240,50 @@ describe('gallery: logos stand out from the page', () => {
     for (const s of stages) expect(['#f2ece1', '#16120f', '#ffffff', '#111318']).not.toContain(s);
   });
 });
+
+/** WCAG relative luminance contrast of two #rrggbb colours. */
+function contrast(a: string, b: string): number {
+  const lum = (h: string) => {
+    const [r, g, bl] = [1, 3, 5].map((i) => {
+      const c = Number.parseInt(h.slice(i, i + 2), 16) / 255;
+      return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r! + 0.7152 * g! + 0.0722 * bl!;
+  };
+  const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
+  return (x! + 0.05) / (y! + 0.05);
+}
+
+describe('gallery: review fixes', () => {
+  const css = (html: string) => [...html.matchAll(/<style>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n');
+  it('keeps muted text at AA on the stage, the paper and the cards in both themes', () => {
+    const tok = (name: string) =>
+      [...review.matchAll(new RegExp(`--${name}:(#[0-9a-f]{6})`, 'g'))].map((m) => m[1]!);
+    const [mutedL, mutedD] = [tok('muted')[0]!, tok('muted')[1]!];
+    for (const g of [tok('stage')[0]!, tok('bg')[0]!, tok('card')[0]!])
+      expect(contrast(mutedL, g), `light ${g}`).toBeGreaterThanOrEqual(4.5);
+    for (const g of [tok('stage')[1]!, tok('bg')[1]!, tok('card')[1]!])
+      expect(contrast(mutedD, g), `dark ${g}`).toBeGreaterThanOrEqual(4.5);
+  });
+  it('hides the decision controls without script and says how to decide', () => {
+    expect(css(review)).toMatch(/html:not\(\.mk-js\) :is\(\.decide,\.rejectall,\.actionbar\)\{display:none/);
+    expect(review).toMatch(/<noscript>[\s\S]*answer in chat[\s\S]*<\/noscript>/);
+  });
+  it('gives the size ladder its own row on a phone, and lets long titles and labels shrink', () => {
+    const mobile = /@media \(max-width:760px\)\{([\s\S]*?)\n@media print/.exec(css(review))?.[1] ?? '';
+    expect(mobile).toMatch(/\.sizes\{[^}]*grid-column:1\/-1/);
+    expect(css(review)).toMatch(/\.proposal h3\{[^}]*overflow-wrap:anywhere/);
+    expect(mobile).toMatch(/\.actionbar button\{[^}]*text-overflow:ellipsis/);
+  });
+  it('survives a malformed address hash', () => {
+    const script = /<script nonce="[^"]+">(\(\(\)=>\{const T=[\s\S]*?)<\/script>/.exec(review)?.[1] ?? '';
+    expect(script).toContain('const hashId=');
+    expect(script.match(/decodeURIComponent/g)).toHaveLength(1);
+  });
+  it('words a one-proposal round as one', async () => {
+    const html = await roundOf(1);
+    expect(html).not.toContain('Reject all 1');
+    expect(html).not.toContain('1 proposals');
+    expect(html).toContain('Round 1 — one proposal');
+  }, 60_000);
+});

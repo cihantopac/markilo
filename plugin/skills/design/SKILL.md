@@ -174,7 +174,7 @@ for display (the desktop app renders HTML in its side panel), send `brand/galler
 its `file://` link, or the `gallery --serve` URL in a terminal. Also send `proposals/round-<n>.png` into the chat for a
 quick look. Tell the user they can **select** one, ask for **changes**, **combine** parts of two ("combine with
 another" on each), or **reject all three** with a note — in chat, or in the gallery and then **Copy decisions** and
-paste the text here. Save pasted text to a file and run `markilo feedback --brand <slug> --import <file>` (served
+paste the text here. Save pasted text to `brand/feedback/pasted.txt` and run `markilo feedback --brand <slug> --import brand/feedback/pasted.txt` (served
 decisions: `markilo feedback --brand <slug>`) and, after confirming your summary with the user, `--apply`.
 
 - **Before develop or finalize**, read the choice back: `<letter> · <title> · <id>`.

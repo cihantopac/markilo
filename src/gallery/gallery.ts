@@ -189,7 +189,7 @@ export async function buildGallery(
       .sort((a, b) => b[0] - a[0])
       .map(
         ([r, cards], i) =>
-          `<${i ? 'details class="round"' : 'div class="round"'}>${i ? `<summary>${t('Round {0} ({1})', [r, cards.length])}</summary>` : `<p class="eyebrow">${cards.length === 3 ? t('Round {0} — three directions', [r]) : t('Round {0} — {1} proposals', [r, cards.length])}</p>`}${boardHtml(cards.map((c) => c.tile))}<div class="proposals">${cards.map((c) => c.card).join('\n')}</div>${i ? '' : `<div class="rejectall" data-brand="${escapeAttr(b.slug)}" data-round="${r}"><span class="muted">${t('None of them right?')}</span><button type="button" class="chip" data-reject-all>${cards.length === 3 ? t('Reject all three') : t('Reject all {0}', [cards.length])}</button><input type="text" class="note"${ta('placeholder', 'What is missing? What should the next round try?')}></div>`}</${i ? 'details' : 'div'}>`,
+          `<${i ? 'details class="round"' : 'div class="round"'}>${i ? `<summary>${t('Round {0} ({1})', [r, cards.length])}</summary>` : `<p class="eyebrow">${cards.length === 3 ? t('Round {0} — three directions', [r]) : cards.length === 1 ? t('Round {0} — one proposal', [r]) : t('Round {0} — {1} proposals', [r, cards.length])}</p>`}${boardHtml(cards.map((c) => c.tile))}<div class="proposals">${cards.map((c) => c.card).join('\n')}</div>${i ? '' : `<div class="rejectall" data-brand="${escapeAttr(b.slug)}" data-round="${r}"><span class="muted">${t('None of them right?')}</span><button type="button" class="chip" data-reject-all>${cards.length === 3 ? t('Reject all three') : cards.length === 1 ? t('Reject it') : t('Reject all {0}', [cards.length])}</button><input type="text" class="note"${ta('placeholder', 'What is missing? What should the next round try?')}></div>`}</${i ? 'details' : 'div'}>`,
       )
       .join('');
     const sketches = b.locked ? [] : sketchCards(ws, b);
@@ -248,7 +248,7 @@ ${CHROME_CSS}
 ${GALLERY_CSS}
 </style></head><body>
 ${topBar(reviewing ? 'Review' : 'Brand identity', stepsHtml(steps))}
-<header class="intro"><h1>${escapeText(title)}</h1><p class="lede">${lede}</p></header>
+<header class="intro"><h1>${escapeText(title)}</h1><p class="lede">${lede}</p>${reviewing ? `<noscript><p class="noscript">${t('Scripts are off here: look at the proposals and answer in chat, or open this file in a browser to record decisions.')}</p></noscript>` : ''}</header>
 <main>${body}</main>
 ${footHtml()}
 ${reviewing ? '' : '<style>.actionbar{display:none}body{padding-bottom:0}</style>'}<div class="actionbar"><span class="sum" id="sum">${t('No decisions yet.')}</span><button type="button" id="clear">${t('Clear')}</button><button type="button" id="cmpbtn" disabled>${t('Compare ({0})', [0])}</button><button type="button" id="send">${t('Download decisions')}</button><button type="button" class="primary" id="copy">${t('Copy decisions')}</button></div>

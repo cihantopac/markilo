@@ -313,4 +313,8 @@ export const TR: Record<string, string> = {
   'Has a problem — see the proposal': 'Bir sorun var — öneriye bakın',
   'The approved identity, its variants and the exported files.':
     'Onaylanan kimlik, varyantları ve dışa aktarılan dosyalar.',
+  'Round {0} — one proposal': '{0}. tur — tek öneri',
+  'Reject it': 'Bunu reddet',
+  'Scripts are off here: look at the proposals and answer in chat, or open this file in a browser to record decisions.':
+    'Burada betikler kapalı: önerilere bakıp sohbette yanıt verin ya da kararları kaydetmek için bu dosyayı bir tarayıcıda açın.',
 };
