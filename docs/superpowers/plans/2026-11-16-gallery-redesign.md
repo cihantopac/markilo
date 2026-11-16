@@ -201,4 +201,26 @@ with `concept update --status` and `answers`.
 
 ## Progress
 
-(executor records rulings, spike result and verification here)
+Implemented 2026-11-16 inline (one session), then one independent whole-branch review: 0 Critical, 4 Important
+(fixed), 5 Minors re-graded to Important by effect (fixed), 5 Minors deferred to 1.8.
+
+Rulings:
+
+- Task 1: the colour test covered the kit pages first; the review pages joined it in Task 3.
+- Task 3: the idea line ends at its first clause (`:` `;` `—`) before falling back to a word cut with an ellipsis.
+- Task 3: on phones the board is a swipe strip and the action bar shows only Compare and the primary hand-back.
+- Task 4: the side-panel spike was sent to the owner; the skill falls back to the `file://` link, and the page says
+  to answer in chat when scripts are blocked.
+- Task 6: the gallery page sits on a stage tone (`#e6dfd2` light, `#26201b` dark), so a mark on paper or near-black
+  reads as a panel (owner's report: the logo grounds blended into the page).
+- Task 6: README image URLs are pinned to `markilo--v1.7.0`; the README reached `main` with the tag.
+
+Deferred to 1.8: arrow keys follow the first group rather than the focused one; proposal ids `slug-key` can collide
+across brands; the tile's "!" has no accessible name; the colour test trusts the token table; no test runs the client's
+copied text against `feedbackText`, and none covers the originality flag or rejected and older rounds on the board.
+
+Verification: `npm run ci` 464/464, `node scripts/smoke.mjs` passed, `claude plugin validate plugin` passed. Markilo's
+own kit re-exported: logo files byte-identical. Social preview rendered from `assets/social/social-preview.html`.
+
+**Released 2026-11-16.** Tag `markilo--v1.7.0` and GitHub release; npm pack shasum
+`f937ef96719e7af875189b5852f4f1990c285aa2` (287 files); npm publish by the owner.
