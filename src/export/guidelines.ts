@@ -2,6 +2,7 @@ import { contrastRatio, wcagRating } from '../analyze/color.js';
 import type { Palette } from '../design/palette.js';
 import { nestSvg, svgDocument } from '../svg/compose.js';
 import { escapeText } from '../svg/xml.js';
+import { type BoardLang, boardText } from '../ui/board-text.js';
 import { CHROME_CSS, CHROME_HASH, CHROME_SCRIPT, footHtml, t, topBar, withChrome } from '../ui/chrome.js';
 import { type BrandKit, drawnLettering, textTypeface } from './kit.js';
 import { groundsFor } from './variants.js';
@@ -15,6 +16,8 @@ export interface GuidelinesInput {
   /** The logo that leads (the wordmark for a wordmark-led identity). */
   primary?: string | undefined;
   lockupS: string | undefined;
+  /** The language of guidelines.md; English unless set. */
+  lang?: BoardLang;
   reversed: (svg: string) => string;
 }
 
@@ -61,84 +64,110 @@ function colorRows(k: BrandKit) {
 
 export function guidelinesMarkdown(g: GuidelinesInput): string {
   const { kit } = g;
+  const T = (en: string, vars?: (string | number)[]) => boardText(en, g.lang, vars);
   const L: string[] = [];
-  L.push(`# ${kit.name} brand guidelines`, '');
+  L.push(`# ${T('{0} brand guidelines', [kit.name])}`, '');
   if (kit.locked)
     L.push(
-      '> This identity is **locked**: it is reproduced exactly as provided. Do not modify the artwork.',
+      `> ${T('This identity is **locked**: it is reproduced exactly as provided. Do not modify the artwork.')}`,
       '',
     );
-  L.push('## Logo files', '');
-  L.push('| Use | File |', '| --- | --- |');
+  L.push(`## ${T('Logo files')}`, '');
+  L.push(`| ${T('Use')} | ${T('File')} |`, '| --- | --- |');
   if (g.primary ?? g.lockupH)
     L.push(
-      `| Primary logo (default${g.kit.lead === 'wordmark' ? ', the wordmark' : ''}) | \`logos/primary/primary-color.svg\` |`,
+      `| ${g.kit.lead === 'wordmark' ? T('Primary logo (default, the wordmark)') : T('Primary logo (default)')} | \`logos/primary/primary-color.svg\` |`,
     );
-  if (g.lockupS) L.push('| Secondary logo (square-ish spaces) | `logos/secondary/secondary-color.svg` |');
-  if (g.symbol) L.push('| Symbol (favicons, avatars, small spaces) | `logos/symbol/symbol-color.svg` |');
+  if (g.lockupS)
+    L.push(`| ${T('Secondary logo (square-ish spaces)')} | \`logos/secondary/secondary-color.svg\` |`);
+  if (g.symbol)
+    L.push(`| ${T('Symbol (favicons, avatars, small spaces)')} | \`logos/symbol/symbol-color.svg\` |`);
   if (g.wordmark && g.primary !== g.wordmark)
-    L.push('| Wordmark (when the symbol is shown nearby) | `logos/wordmark/wordmark-color.svg` |');
+    L.push(`| ${T('Wordmark (when the symbol is shown nearby)')} | \`logos/wordmark/wordmark-color.svg\` |`);
   if (!kit.locked)
-    L.push('| On dark backgrounds | `*-reversed.svg` |', '| One-color | `*-black.svg`, `*-white.svg` |');
+    L.push(
+      `| ${T('On dark backgrounds')} | \`*-reversed.svg\` |`,
+      `| ${T('One-color')} | \`*-black.svg\`, \`*-white.svg\` |`,
+    );
   L.push('');
-  L.push('## Clear space and minimum size', '');
+  L.push(`## ${T('Clear space and minimum size')}`, '');
   L.push(
-    '- Keep clear space on all sides equal to the cap height of the wordmark (the height of a capital letter).',
+    `- ${T('Keep clear space on all sides equal to the cap height of the wordmark (the height of a capital letter).')}`,
   );
   L.push(
-    '- Minimum sizes: symbol 16 px on screen / 5 mm in print; horizontal logo 96 px wide on screen / 25 mm in print.',
+    `- ${T('Minimum sizes: symbol 16 px on screen / 5 mm in print; horizontal logo 96 px wide on screen / 25 mm in print.')}`,
   );
-  L.push('- Use the compact lockup below 120 px width.');
-  if (kit.files.wordmarkSmall) L.push(`- ${WORDMARK_SMALL_RULE}`);
+  L.push(`- ${T('Use the compact lockup below 120 px width.')}`);
+  if (kit.files.wordmarkSmall)
+    L.push(
+      g.lang === 'tr'
+        ? `- ${T(WORDMARK_SMALL_BEFORE)} \`${WORDMARK_SMALL_FILE}\`${T(WORDMARK_SMALL_AFTER)}`
+        : `- ${WORDMARK_SMALL_RULE}`,
+    );
   L.push('');
-  L.push('## Color', '');
-  L.push('| Color | Hex | On white | On dark |', '| --- | --- | --- | --- |');
+  L.push(`## ${T('Color')}`, '');
+  L.push(`| ${T('Color')} | ${T('Hex')} | ${T('On white')} | ${T('On dark')} |`, '| --- | --- | --- | --- |');
   for (const r of colorRows(kit))
     L.push(
-      `| ${r.name} | \`${r.hex}\` | ${r.onWhite.toFixed(2)}:1 (${wcagRating(r.onWhite)}) | ${r.onDark.toFixed(2)}:1 (${wcagRating(r.onDark)}) |`,
+      `| ${T(r.name)} | \`${r.hex}\` | ${r.onWhite.toFixed(2)}:1 (${wcagRating(r.onWhite)}) | ${r.onDark.toFixed(2)}:1 (${wcagRating(r.onDark)}) |`,
     );
-  L.push('', 'Full tonal scales are in `tokens/tokens.json` and `tokens/tokens.css`.', '');
+  L.push('', T('Full tonal scales are in `tokens/tokens.json` and `tokens/tokens.css`.'), '');
   L.push(
-    '### Accessible pairings',
+    `### ${T('Accessible pairings')}`,
     '',
-    '| Foreground | Background | Ratio | WCAG | Use |',
+    `| ${T('Foreground')} | ${T('Background')} | ${T('Ratio')} | WCAG | ${T('Use')} |`,
     '| --- | --- | --- | --- | --- |',
   );
   for (const p of g.palette.pairs)
-    L.push(`| \`${p.foreground}\` | \`${p.background}\` | ${p.ratio}:1 | ${p.rating} | ${p.use} |`);
+    L.push(
+      `| \`${p.foreground}\` | \`${p.background}\` | ${p.ratio}:1 | ${p.rating} | ${g.lang === 'tr' ? T(p.use) : p.use} |`,
+    );
   for (const w of g.palette.warnings) L.push('', `> ⚠️ ${w}`);
-  L.push('', '## Typography', '');
+  L.push('', `## ${T('Typography')}`, '');
   const drawn = drawnLettering(kit);
   if (kit.typography && drawn) {
     // Custom or family lettering: the font recorded with it is a stand-in, never the brand typeface.
-    L.push(`- Wordmark: ${LETTERING_LABEL[drawn]} lettering — do not retype it.`);
+    L.push(
+      `- ${T(drawn === 'family' ? 'Wordmark: custom (family) lettering — do not retype it.' : 'Wordmark: custom lettering — do not retype it.')}`,
+    );
     const s = textTypeface(kit);
-    if (s) L.push(`- Supporting typeface: **${s.family ?? s.fontId}**, weight ${s.weight}.`);
-    L.push('- The wordmark is outlined artwork, so using the logo never requires a font.');
+    if (s)
+      L.push(`- ${T('Supporting typeface: **{0}**, weight {1}.', [s.family ?? s.fontId, String(s.weight)])}`);
+    L.push(`- ${T('The wordmark is outlined artwork, so using the logo never requires a font.')}`);
   } else if (kit.typography?.fontId) {
     L.push(
-      `- Brand typeface: **${kit.typography.family ?? kit.typography.fontId}**, weight ${kit.typography.weight}.`,
+      `- ${T('Brand typeface: **{0}**, weight {1}.', [kit.typography.family ?? kit.typography.fontId, String(kit.typography.weight)])}`,
     );
     L.push(
-      `- License: ${kit.typography.license ?? 'see fonts/ license file'}. The wordmark is outlined, so using the logo never requires the font.`,
+      `- ${T('License: {0}. The wordmark is outlined, so using the logo never requires the font.', [kit.typography.license ?? T('see fonts/ license file')])}`,
     );
-  } else L.push('- No brand typeface recorded. The wordmark is outlined artwork.');
+  } else L.push(`- ${T('No brand typeface recorded. The wordmark is outlined artwork.')}`);
   if (kit.originality) {
-    L.push('', '## Originality check', '');
-    if (kit.originality.verdict === 'insufficient-evidence') L.push(`> ⚠️ ${NOT_VERIFIED}`, '');
+    L.push('', `## ${T('Originality check')}`, '');
+    if (kit.originality.verdict === 'insufficient-evidence') L.push(`> ⚠️ ${T(NOT_VERIFIED)}`, '');
     L.push(
-      `Approved with originality verdict **${kit.originality.verdict}** (confidence ${kit.originality.confidence})${kit.originality.acceptedRisk ? ', with the remaining risk explicitly accepted' : ''}. See \`${kit.originality.report}\`.`,
+      `${T(
+        kit.originality.acceptedRisk
+          ? 'Approved with originality verdict **{0}** (confidence {1}), with the remaining risk explicitly accepted. See `{2}`.'
+          : 'Approved with originality verdict **{0}** (confidence {1}). See `{2}`.',
+        [kit.originality.verdict, kit.originality.confidence, kit.originality.report],
+      )}`,
     );
-    for (const line of evidenceLines(kit)) L.push('', line);
+    for (const [text, vars] of evidence(kit)) L.push('', T(text, vars));
   }
-  const rules = kit.wordmarkOnly ? [WORDMARK_ONLY_RULE] : [];
+  const rules = kit.wordmarkOnly ? [T(WORDMARK_ONLY_RULE)] : [];
   if (rules.length || kit.notes?.length)
-    L.push('', '## Usage notes', '', ...[...rules, ...(kit.notes ?? [])].map((n) => `- ${n}`));
-  L.push('', '## Do not', '', ...donts(kit).map((d) => `- ${d}`), '');
+    L.push('', `## ${T('Usage notes')}`, '', ...[...rules, ...(kit.notes ?? [])].map((n) => `- ${n}`));
+  L.push('', `## ${T('Do not')}`, '', ...donts(kit).map((d) => `- ${T(d)}`), '');
   L.push(
     '---',
     '',
-    `Generated by Markilo on ${new Date().toISOString().slice(0, 10)}${kit.concept ? ` from concept \`${kit.concept}\`` : ''}.`,
+    kit.concept
+      ? T('Generated by Markilo on {0} from concept `{1}`.', [
+          new Date().toISOString().slice(0, 10),
+          kit.concept,
+        ])
+      : T('Generated by Markilo on {0}.', [new Date().toISOString().slice(0, 10)]),
     '',
   );
   return L.join('\n');
@@ -169,10 +198,6 @@ function evidence(kit: BrandKit): [template: string, vars?: string[]][] {
   if (!e || e.registryCoverage === 'none') out.push([NO_REGISTRY]);
   else out.push([REGISTRY_LOGGED, [e.registry]]);
   return out;
-}
-
-function evidenceLines(kit: BrandKit): string[] {
-  return evidence(kit).map(([s, v]) => s.replace(/\{(\d)\}/g, (_, i: string) => v?.[Number(i)] ?? ''));
 }
 
 export function guidelinesHtml(g: GuidelinesInput): string {

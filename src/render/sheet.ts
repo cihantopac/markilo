@@ -6,6 +6,7 @@ import { type GroundPalette, groundsFor, markOnGround, tileGround } from '../exp
 import { aspectOf, fmt, nestSvg, svgDocument } from '../svg/compose.js';
 import { monochrome, substitute } from '../svg/variants.js';
 import { intrinsicBox, parseXml } from '../svg/xml.js';
+import { type BoardLang, boardText } from '../ui/board-text.js';
 import { renderPng } from './resvg.js';
 
 /** The tile ground of a tile row when no --primary is given. */
@@ -25,9 +26,9 @@ export interface SheetRow {
  */
 export function reviewSheetSvg(
   svg: string,
-  opts: { title?: string; dark?: string; light?: string; palette?: GroundPalette } = {},
+  opts: { title?: string; dark?: string; light?: string; palette?: GroundPalette; lang?: BoardLang } = {},
 ): string {
-  return sheetSvg(reviewSheetRows(svg, opts), SHEET_SIZES, opts.title);
+  return sheetSvg(reviewSheetRows(svg, opts), SHEET_SIZES, opts.title, 1, undefined, opts.lang);
 }
 
 /**
@@ -37,19 +38,20 @@ export function reviewSheetSvg(
  */
 export function reviewSheetRows(
   svg: string,
-  opts: { dark?: string; light?: string; palette?: GroundPalette } = {},
+  opts: { dark?: string; light?: string; palette?: GroundPalette; lang?: BoardLang } = {},
 ): SheetRow[] {
+  const bt = (text: string) => boardText(text, opts.lang);
   const light = opts.light ?? '#ffffff';
   const dark = opts.dark ?? '#111318';
   return [
-    { label: 'Color on light', background: light, svg: markOnGround(svg, light, opts.palette) },
+    { label: bt('Color on light'), background: light, svg: markOnGround(svg, light, opts.palette) },
     {
-      label: opts.palette?.onDark ? 'Color on dark' : 'Color on dark (adapted)',
+      label: bt(opts.palette?.onDark ? 'Color on dark' : 'Color on dark (adapted)'),
       background: dark,
       svg: markOnGround(svg, dark, opts.palette),
     },
-    { label: 'Black', background: light, svg: monochrome(svg, '#000000') },
-    { label: 'White (reversed)', background: dark, svg: monochrome(svg, '#ffffff') },
+    { label: bt('Black'), background: light, svg: monochrome(svg, '#000000') },
+    { label: bt('White (reversed)'), background: dark, svg: monochrome(svg, '#ffffff') },
   ];
 }
 
@@ -64,8 +66,9 @@ export const SMALL_COMPARE_SIZES = [16, 24, 32, 48];
 export function smallCompareSheetSvg(
   main: string,
   small: string,
-  opts: { palette?: GroundPalette; title?: string; dark?: string; light?: string } = {},
+  opts: { palette?: GroundPalette; title?: string; dark?: string; light?: string; lang?: BoardLang } = {},
 ): string {
+  const bt = (text: string) => boardText(text, opts.lang);
   const light = opts.light ?? '#ffffff';
   const dark = opts.dark ?? '#111318';
   const rows: SheetRow[] = [];
@@ -74,10 +77,18 @@ export function smallCompareSheetSvg(
     ['Small version', small],
   ] as const)
     rows.push(
-      { label: `${name} · on light`, background: light, svg: markOnGround(svg, light, opts.palette) },
-      { label: `${name} · on dark`, background: dark, svg: markOnGround(svg, dark, opts.palette) },
+      {
+        label: `${bt(name)} · ${bt('on light')}`,
+        background: light,
+        svg: markOnGround(svg, light, opts.palette),
+      },
+      {
+        label: `${bt(name)} · ${bt('on dark')}`,
+        background: dark,
+        svg: markOnGround(svg, dark, opts.palette),
+      },
     );
-  return sheetSvg(rows, SMALL_COMPARE_SIZES, opts.title);
+  return sheetSvg(rows, SMALL_COMPARE_SIZES, opts.title, 1, undefined, opts.lang);
 }
 
 /** Text rendered as outlines (Inter) so labels look the same on every machine. */
@@ -159,6 +170,7 @@ export function zoomRowsSvg(
   zooms: Zoom[],
   width: number,
   background = '#ffffff',
+  lang?: BoardLang,
 ): { svg: string; height: number } {
   // Crops are in the before file's coordinates: the after art is fitted (centred, aspect kept) into the before
   // file's viewBox, the way the main panels fit both into one box, so one window covers the same part of both marks.
@@ -175,8 +187,8 @@ export function zoomRowsSvg(
     body += label(z.label, ZOOM_PAD, y + 17, 11, ink);
     const panelY = y + ZOOM_HEAD + ZOOM_CAPTION;
     const xs = [ZOOM_PAD, ZOOM_PAD * 2 + w];
-    body += label('Before', xs[0]!, panelY - 5, 10, ink);
-    body += label('After', xs[1]!, panelY - 5, 10, ink);
+    body += label(boardText('Before', lang), xs[0]!, panelY - 5, 10, ink);
+    body += label(boardText('After', lang), xs[1]!, panelY - 5, 10, ink);
     body += cropMarkup(before, frame, z, xs[0]!, panelY, 'before');
     body += cropMarkup(after, frame, z, xs[1]!, panelY, 'after');
     body += '</g>';
@@ -191,6 +203,7 @@ export function sheetSvg(
   title?: string,
   aspect = 1,
   zoom?: { before: string; after: string; zooms: Zoom[]; background: string },
+  lang?: BoardLang,
 ): string {
   const pad = 16;
   const labelH = 22;
@@ -205,7 +218,9 @@ export function sheetSvg(
   const headerH = title ? 34 : 0;
   const rowsH = headerH + rows.length * rowH;
   const zoomed =
-    zoom && zooms.length ? zoomRowsSvg(zoom.before, zoom.after, zooms, width, zoom.background) : undefined;
+    zoom && zooms.length
+      ? zoomRowsSvg(zoom.before, zoom.after, zooms, width, zoom.background, lang)
+      : undefined;
   const height = rowsH + (zoomed?.height ?? 0);
   let body = '';
   if (title) body += label(title, pad, 23, 15, '#30343c');
@@ -233,8 +248,13 @@ export async function renderReviewSheet(
   svg: string,
   title?: string,
   palette?: GroundPalette,
+  lang?: BoardLang,
 ): Promise<Buffer> {
-  const sheet = reviewSheetSvg(svg, { ...(title ? { title } : {}), ...(palette ? { palette } : {}) });
+  const sheet = reviewSheetSvg(svg, {
+    ...(title ? { title } : {}),
+    ...(palette ? { palette } : {}),
+    ...(lang ? { lang } : {}),
+  });
   const width = Number(/width="(\d+)"/.exec(sheet)![1]);
   return renderPng(sheet, { width });
 }
@@ -250,9 +270,17 @@ export async function renderWordmarkSheet(
   svg: string,
   title?: string,
   palette?: GroundPalette,
+  lang?: BoardLang,
 ): Promise<Buffer> {
-  const rows = reviewSheetRows(svg, palette ? { palette } : {});
-  const sheet = sheetSvg(rows, WORDMARK_HEIGHTS, title, Math.min(8, Math.max(1, aspectOf(svg))));
+  const rows = reviewSheetRows(svg, { ...(palette ? { palette } : {}), ...(lang ? { lang } : {}) });
+  const sheet = sheetSvg(
+    rows,
+    WORDMARK_HEIGHTS,
+    title,
+    Math.min(8, Math.max(1, aspectOf(svg))),
+    undefined,
+    lang,
+  );
   return renderPng(sheet, { width: Number(/width="(\d+)"/.exec(sheet)![1]) });
 }
 
@@ -265,21 +293,23 @@ export function compareSheetSvg(
   paper = '#ffffff',
   title = 'Options',
   palette?: GroundPalette,
-  opts: { tile?: boolean; zooms?: Zoom[] } = {},
+  opts: { tile?: boolean; zooms?: Zoom[]; lang?: BoardLang } = {},
 ): string {
+  const bt = (text: string) => boardText(text, opts.lang);
+  title = bt(title);
   const g = groundsFor(paper);
   const tileGroundHex = palette ? tileGround(palette) : DEFAULT_TILE;
   const rows: SheetRow[] = items.flatMap((it) => [
     { label: it.label, background: g.native, svg: it.svg },
     {
-      label: `${it.label} · on ${g.darkFirst ? 'light' : 'dark'}`,
+      label: `${it.label} · ${bt(g.darkFirst ? 'on light' : 'on dark')}`,
       background: g.opposite,
       svg: markOnGround(it.svg, g.opposite, palette),
     },
     ...(opts.tile
       ? [
           {
-            label: `${it.label} · tile`,
+            label: `${it.label} · ${bt('tile')}`,
             background: tileGroundHex,
             svg: markOnGround(it.svg, tileGroundHex, palette, { tile: true }),
           },
@@ -290,12 +320,19 @@ export function compareSheetSvg(
   if (opts.zooms?.length) {
     if (items.length !== 2)
       throw new MarkiloError('USAGE', '--zoom compares exactly two files: before, then after.');
-    return sheetSvg(rows, sizes, title, 1, {
-      before: items[0]!.svg,
-      after: items[1]!.svg,
-      zooms: opts.zooms,
-      background: g.native,
-    });
+    return sheetSvg(
+      rows,
+      sizes,
+      title,
+      1,
+      {
+        before: items[0]!.svg,
+        after: items[1]!.svg,
+        zooms: opts.zooms,
+        background: g.native,
+      },
+      opts.lang,
+    );
   }
   return sheetSvg(rows, sizes, title);
 }
@@ -305,7 +342,7 @@ export async function renderCompareSheet(
   paper = '#ffffff',
   title = 'Options',
   palette?: GroundPalette,
-  opts: { tile?: boolean; zooms?: Zoom[] } = {},
+  opts: { tile?: boolean; zooms?: Zoom[]; lang?: BoardLang } = {},
 ): Promise<Buffer> {
   const sheet = compareSheetSvg(items, paper, title, palette, opts);
   const width = Number(/width="(\d+)"/.exec(sheet)![1]);

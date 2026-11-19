@@ -87,7 +87,10 @@ export function assessEvidence(input: {
   officialHosts?: string[];
 }): EvidenceAssessment {
   const V = EVIDENCE_CRITERIA.visual;
-  const brands = brandsOf(input.references, input.officialHosts);
+  const brands = brandsOf(
+    input.references.filter((r) => r.category !== 'in-situ'),
+    input.officialHosts,
+  );
   const direct = brands.filter((b) => b.category === 'direct').length;
   const other = brands.length - direct;
   const total = brands.length;

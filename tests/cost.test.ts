@@ -325,3 +325,15 @@ describe('cost --plan', () => {
     expect(short.shortfall).toEqual({ usd: 0, busyMinutes: 6 });
   });
 });
+
+describe('cost --session-usd in a single-agent session', () => {
+  it('records the session on its own, with no subagent lower-bound label', () => {
+    const cwd = workspace();
+    const s = ok(['cost', '--brand', 'tidepool', '--phase', 'understand', '--session-usd', '1.25'], cwd);
+    expect(s).toMatchObject({ totalUsd: 1.25, lowerBound: false, basis: 'measured' });
+    expect(s.label).toBeUndefined();
+    const f = JSON.parse(readFileSync(costFile(cwd), 'utf8'));
+    expect(f.entries).toHaveLength(1);
+    expect(f.entries[0]).toMatchObject({ usd: 1.25, source: 'session', agentUsdIncluded: 0 });
+  });
+});

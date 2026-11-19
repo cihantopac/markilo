@@ -254,6 +254,16 @@ describe('craft-named directions', () => {
     }
     expect(read('plugin/skills/design/references/cli.md')).toContain('--small-compare');
   });
+  it('1.8: in-situ photos, board language and single-agent cost are documented', () => {
+    const read = (p: string) => readFileSync(join(root, p), 'utf8').replace(/\s+/g, ' ');
+    const audit = read('plugin/skills/audit/SKILL.md');
+    expect(audit).toContain('--category in-situ');
+    expect(audit).toContain('markilo analyze');
+    expect(read('plugin/skills/design/SKILL.md')).toContain('single-agent session');
+    const cli = read('plugin/skills/design/references/cli.md');
+    expect(cli).toContain('--lang en\\|tr');
+    expect(cli).toContain('existing\\|family\\|in-situ');
+  });
   it('cli.md table rows have as many cells as the header', () => {
     const cli = readFileSync(join(root, 'plugin/skills/design/references/cli.md'), 'utf8');
     const cells = (row: string) => row.replace(/\\\|/g, '').split('|').length;

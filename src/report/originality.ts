@@ -174,7 +174,7 @@ export async function buildOriginalityReport(
   });
 
   const all = readReferences(ws, brand).references;
-  const refs = all.filter((r) => r.category !== 'family');
+  const refs = all.filter((r) => r.category !== 'family' && r.category !== 'in-situ');
   const familyRefs = all.filter((r) => r.category === 'family');
   const outDir = join(ws.reportsDir(brand), `originality-${conceptId}`);
   const matches: OriginalityReport['visual']['matches'] = [];
