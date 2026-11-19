@@ -1,3 +1,6 @@
+/** Largest raster (in pixels) any decoder allocates; declared sizes are checked against it before decoding. */
+export const MAX_IMAGE_PIXELS = 40_000_000;
+
 /** Straight (non-premultiplied) RGBA8 raster. */
 export interface Raster {
   width: number;

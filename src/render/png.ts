@@ -2,7 +2,10 @@ import { deflateSync } from 'node:zlib';
 import jpeg from 'jpeg-js';
 import { PNG } from 'pngjs';
 import { MarkiloError } from '../core/errors.js';
-import type { Raster } from './image.js';
+import { MAX_IMAGE_PIXELS, type Raster } from './image.js';
+import { decodeWebp, isWebp } from './webp.js';
+
+export { MAX_IMAGE_PIXELS };
 
 const CRC_TABLE = (() => {
   const t = new Uint32Array(256);
@@ -50,8 +53,6 @@ export function encodePng(img: Raster): Buffer {
   ]);
 }
 
-export const MAX_IMAGE_PIXELS = 40_000_000;
-
 export function decodeImage(buf: Uint8Array): Raster {
   if (buf[0] === 0x89 && buf[1] === 0x50) {
     if (buf.length < 24) throw new MarkiloError('INVALID_INPUT', 'Truncated PNG.');
@@ -80,9 +81,10 @@ export function decodeImage(buf: Uint8Array): Raster {
     }
     return { width: j.width, height: j.height, data: new Uint8Array(j.data) };
   }
+  if (isWebp(buf)) return decodeWebp(buf);
   throw new MarkiloError(
     'INVALID_INPUT',
-    'Unsupported raster format (PNG and JPEG are supported; use SVG for vectors).',
+    'Unsupported raster format (PNG, JPEG and WebP are supported; use SVG for vectors).',
   );
 }
 
