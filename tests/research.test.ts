@@ -1,11 +1,16 @@
+import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { parseCommand } from '../src/cli/args.js';
+import { findCommand } from '../src/cli/commands.js';
 import { MarkiloError } from '../src/core/errors.js';
 import { Workspace } from '../src/core/workspace.js';
+import { renderPng } from '../src/render/resvg.js';
+import { readReferences } from '../src/report/originality.js';
 import { addFinding, mergeRepoScan } from '../src/research/profile.js';
 import { scanRepo } from '../src/research/repo.js';
 import { robotsAllows, scanSite } from '../src/research/site.js';
-import { fixture, tmp } from './helpers.js';
+import { fixture, mark, tmp } from './helpers.js';
 
 describe('repository scan', () => {
   const scan = scanRepo(fixture('repo'));
@@ -132,4 +137,55 @@ describe('in-situ references', () => {
     expect(after.visual.matches.map((m) => m.name)).not.toContain('Home screen photo');
     expect(after.visual.risk).toBe(before.visual.risk);
   }, 60_000);
+});
+
+describe('reference dedupe and list', () => {
+  async function refCmd(name: string, argv: string[], cwd: string) {
+    const f = findCommand([name])!;
+    return (await f.spec.run(parseCommand(f.spec, argv, cwd))) as Record<string, unknown>;
+  }
+  /** Lumen with a competitor logo, the same artwork under two more names: an in-situ photo and a family mark. */
+  async function lumen() {
+    const dir = tmp();
+    const ws = Workspace.init(join(dir, 'brand'), 'T');
+    ws.addBrand({ name: 'Lumen' });
+    writeFileSync(join(dir, 'orbit.svg'), mark('orbit'));
+    writeFileSync(join(dir, 'orbit.png'), await renderPng(mark('orbit'), { width: 256 }));
+    writeFileSync(join(dir, 'orbit-big.png'), await renderPng(mark('orbit'), { width: 300 }));
+    const add = (file: string, name: string, category: string) =>
+      refCmd(
+        'reference add',
+        ['--brand', 'lumen', '--file', file, '--name', name, '--source', 'note', '--category', category],
+        dir,
+      );
+    await add('orbit.svg', 'Acme', 'direct');
+    await add('orbit.png', 'Shop front', 'in-situ');
+    await add('orbit-big.png', 'Nimbra', 'family');
+    return { dir, ws };
+  }
+
+  it('never offers an in-situ photo or a family mark as a duplicate, so --apply keeps them', async () => {
+    const { dir, ws } = await lumen();
+    const r = (await refCmd('reference dedupe', ['--brand', 'lumen', '--apply'], dir)) as {
+      duplicates: number;
+      total: number;
+    };
+    expect(r.duplicates).toBe(0);
+    expect(
+      readReferences(ws, 'lumen')
+        .references.map((x) => x.category)
+        .sort(),
+    ).toEqual(['direct', 'family', 'in-situ']);
+  });
+
+  it('lists in-situ photos apart from the brands', async () => {
+    const { dir } = await lumen();
+    const r = (await refCmd('reference list', ['--brand', 'lumen'], dir)) as {
+      brands: number;
+      byBrand: { brand: string }[];
+      photos: { id: string; name: string }[];
+    };
+    expect(r.byBrand.map((b) => b.brand)).not.toContain('shop front');
+    expect(r.photos.map((p) => p.name)).toEqual(['Shop front']);
+  });
 });

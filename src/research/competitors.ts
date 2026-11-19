@@ -145,14 +145,15 @@ export interface DuplicateGroup {
 
 /**
  * Finds reference files that add no evidence: near-identical files of the same brand (≥ 0.90 visual similarity) and
- * the same artwork filed under two names (≥ 0.97). In each group the file with the best source is kept.
+ * the same artwork filed under two names (≥ 0.97). In each group the file with the best source is kept. In-situ photos
+ * and family marks are not evidence of originality at all, so they are never offered for removal.
  */
 export async function findDuplicateReferences(ws: Workspace, brand: string): Promise<DuplicateGroup[]> {
   const idx = readReferences(ws, brand);
   const hosts = officialHostsFrom(ws.brief(brand).competitors);
   const rank: Record<string, number> = { official: 3, store: 2, catalog: 1, unknown: 0 };
   const items: { ref: ReferenceEntry; key: string; quality: number; sample: MarkSample }[] = [];
-  for (const r of idx.references) {
+  for (const r of idx.references.filter((x) => x.category !== 'in-situ' && x.category !== 'family')) {
     const file = join(ws.referencesDir(brand), r.file);
     try {
       const key = brandKeyOf(r.name);

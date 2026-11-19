@@ -2041,18 +2041,27 @@ export const COMMANDS: CommandSpec[] = [
   },
   {
     name: 'reference list',
-    summary: 'List collected reference marks, grouped by brand with the quality of their sources.',
+    summary:
+      'List collected reference marks, grouped by brand with the quality of their sources; in-situ photos are listed apart under photos.',
     usage: 'reference list --brand <slug>',
     options: brandOpt,
     async run(c) {
       const w = ws(c);
       const slug = c.req('brand');
       const idx = readReferences(w, slug);
-      const brands = brandsOf(idx.references, officialHostsFrom(w.brief(slug).competitors));
+      // In-situ photos show the mark in use; they are not marks of a brand, so they are listed apart.
+      const photos = idx.references.filter((r) => r.category === 'in-situ');
+      const brands = brandsOf(
+        idx.references.filter((r) => r.category !== 'in-situ'),
+        officialHostsFrom(w.brief(slug).competitors),
+      );
       return {
         brands: brands.length,
         files: idx.references.length,
         byBrand: brands,
+        ...(photos.length
+          ? { photos: photos.map((r) => ({ id: r.id, name: r.name, source: r.source, file: r.file })) }
+          : {}),
         references: idx.references,
       };
     },
