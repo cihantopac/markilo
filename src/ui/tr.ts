@@ -26,6 +26,8 @@ export const TR: Record<string, string> = {
   // Boards (render --compare --zoom)
   Before: 'Önce',
   After: 'Sonra',
+  'Main symbol': 'Ana simge',
+  'Small version': 'Küçük sürüm',
 
   // Gallery: introduction and action bar
   'Compare the proposals: tick “Add to comparison” on two or more to see them side by side.':

@@ -253,7 +253,7 @@ When the user answers in chat without the gallery's copied text, record each dec
    want the word alone, add `--wordmark-only`: no symbol lockups, and the symbol stays the app icon and favicon.
    Before finalize, ask the tile colours: the mark on a brand-filled tile (`concept update --on-brand <#hex|auto>`) and
    the tile ground (`--tile`). Colour rules said only in `finalize --note` reach the guidelines, not the files — set the
-   palette fields. Ask whether small sizes use the small version or the main symbol (`--small-sizes small|main`).
+   palette fields. Small sizes: whenever a develop or refresh pass has made a small version, show the board (`markilo render --brand <slug> --concept <id> --small-compare -o review/small-compare.png`: the main symbol and the small version at 16 / 24 / 32 / 48 px on light and dark), `Read` it, and ask `small|main` before any export or finalize. Record the answer with `markilo concept update --brand <slug> --concept <id> --small-sizes small|main`. Never assume `small`: the user rejected a simplified small version at the very end once.
 
 ### F. Export and deliver
 

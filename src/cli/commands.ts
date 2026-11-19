@@ -118,6 +118,8 @@ import {
   renderCompareSheet,
   renderFamilySheet,
   renderReviewSheet,
+  SMALL_COMPARE_SIZES,
+  smallCompareSheetSvg,
 } from '../render/sheet.js';
 import {
   costSummary,
@@ -4442,7 +4444,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Render an SVG to PNG, or a review contact sheet (sizes 16–256 on light/dark/mono) with --sheet.',
     usage:
-      'render <in.svg> -o <out.png> [--width <px>] [--bg <#hex>] [--pad <percent>] [--sheet] | render <a.svg> <b.svg>… --out-dir <dir> [--width <px>] [--bg <#hex>] [--pad <percent>] | render <before.svg> <after.svg> --compare [--paper <#hex>] [--tile] [--zoom x,y,w,h[:label]]… -o <out.png> | render <a.svg> <b.svg>… --compare … | render <new-word.svg> --family <ref-word.svg>[,<ref-word.svg>] -o <out.png> [--width 1600]  (--sheet / --compare: [--primary <#hex> --on-dark|--on-light <#hex>])',
+      'render <in.svg> -o <out.png> [--width <px>] [--bg <#hex>] [--pad <percent>] [--sheet] | render --brand <slug> --concept <id> --small-compare -o <out.png> | render <a.svg> <b.svg>… --out-dir <dir> [--width <px>] [--bg <#hex>] [--pad <percent>] | render <before.svg> <after.svg> --compare [--paper <#hex>] [--tile] [--zoom x,y,w,h[:label]]… -o <out.png> | render <a.svg> <b.svg>… --compare … | render <new-word.svg> --family <ref-word.svg>[,<ref-word.svg>] -o <out.png> [--width 1600]  (--sheet / --compare: [--primary <#hex> --on-dark|--on-light <#hex>])',
     options: {
       out: { type: 'string', short: 'o', description: 'Output PNG' },
       'out-dir': {
@@ -4462,6 +4464,13 @@ export const COMMANDS: CommandSpec[] = [
       width: { type: 'string', description: 'Output width in px (default 512; 1600 with --family)' },
       bg: { type: 'string', description: 'Background color' },
       sheet: { type: 'boolean', description: 'Render a review contact sheet' },
+      ...brandOpt,
+      concept: { type: 'string', description: '--small-compare: the concept whose symbols are shown' },
+      'small-compare': {
+        type: 'boolean',
+        description:
+          'The concept’s main symbol above its small version at 16 / 24 / 32 / 48 px on light and dark; ask small|main before export',
+      },
       family: {
         type: 'string',
         description: 'Reference word(s), comma-separated: stack them above the new word at one cap height',
@@ -4496,13 +4505,15 @@ export const COMMANDS: CommandSpec[] = [
           );
         palette = { primary, ...grounds };
       }
-      const mode = c.str('family')
-        ? 'family'
-        : c.bool('compare')
-          ? 'compare'
-          : c.bool('sheet')
-            ? 'sheet'
-            : 'plain';
+      const mode = c.bool('small-compare')
+        ? 'small-compare'
+        : c.str('family')
+          ? 'family'
+          : c.bool('compare')
+            ? 'compare'
+            : c.bool('sheet')
+              ? 'sheet'
+              : 'plain';
       const batch = c.str('out-dir') !== undefined;
       const padPct = c.num('pad', 0)!;
       if (padPct < 0) throw new MarkiloError('USAGE', '--pad must be 0 or more (a percent).');
@@ -4518,6 +4529,29 @@ export const COMMANDS: CommandSpec[] = [
         throw new MarkiloError('USAGE', '--out-dir renders plain PNGs, not --sheet, --compare or --family.');
       if (batch && c.str('out'))
         throw new MarkiloError('USAGE', 'Use either -o (one file) or --out-dir (a folder), not both.');
+      if (mode === 'small-compare') {
+        if (!c.str('brand') || !c.str('concept'))
+          throw new MarkiloError('USAGE', '--small-compare needs --brand <slug> and --concept <id>.');
+        if (c.positionals.length)
+          throw new MarkiloError('USAGE', '--small-compare reads the concept’s files; give no SVG inputs.');
+        const w = ws(c);
+        const cpt = w.concept(c.str('brand')!, c.str('concept')!);
+        if (!cpt.files.symbol) throw new MarkiloError('USAGE', `Concept ${cpt.id} has no symbol to compare.`);
+        if (!cpt.files.small)
+          throw new MarkiloError(
+            'USAGE',
+            `Concept ${cpt.id} has no small version to compare.`,
+            'Make one with `construct <spec.json> --brand <slug> --concept <id> --role small` (or register a file with `concept update --small <file>`), then run this again.',
+          );
+        const sheet = smallCompareSheetSvg(
+          readText(w.conceptFile(c.str('brand')!, cpt.id, cpt.files.symbol)),
+          readText(w.conceptFile(c.str('brand')!, cpt.id, cpt.files.small)),
+          { palette: cpt.palette, title: `${cpt.title} — main symbol and small version` },
+        );
+        const png = await renderPng(sheet, { width: Number(/width="(\d+)"/.exec(sheet)![1]) });
+        writeGenerated(file(c, c.req('out')), png);
+        return { out: c.req('out'), concept: cpt.id, sizes: SMALL_COMPARE_SIZES, bytes: png.length };
+      }
       if (mode === 'family') {
         const refs = c.list('family');
         const words = [

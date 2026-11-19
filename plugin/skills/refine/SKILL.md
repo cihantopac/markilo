@@ -48,6 +48,7 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    part's `subagent_tokens` (which are cumulative) or as the total once at the end, never both.
 5. Show the user the refined identity (`markilo proposals --brand <slug> --concepts <id>`, the gallery), the measured
    checks, the originality verdict and the critic's notes labelled as judgment. Further changes go back to step 2.
+   When the pass made a small version (`symbol-small.svg`), also show `markilo render --brand <slug> --concept <id> --small-compare -o review/small-compare.png` (main symbol and small version at 16 / 24 / 32 / 48 px on light and dark), `Read` it, and ask `small|main` before any export or finalize. Record the answer with `markilo concept update --brand <slug> --concept <id> --small-sizes small|main`. Never assume `small`.
 6. When the user approves: `markilo finalize --brand <slug> --concept <id> --user-choice "<their words>" --tagline "<tagline>"`
    (`--accept-risk` only on their explicit yes to an `insufficient-evidence` or `needs-review` verdict; add
    `--wordmark-only` when they want the word alone: no symbol lockups, the symbol only makes the app icon and favicon), append the

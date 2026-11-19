@@ -53,6 +53,33 @@ export function reviewSheetRows(
   ];
 }
 
+/** The sizes a small version is judged at: the ones the app icon, favicon and tab are drawn at. */
+export const SMALL_COMPARE_SIZES = [16, 24, 32, 48];
+
+/**
+ * The main symbol above its small version, each at 16 / 24 / 32 / 48 px on a light and a dark ground (colours
+ * adapted per ground as exports do). The labels are the sheets' own; "Main symbol" and "Small version" have
+ * Turkish entries in src/ui/tr.ts.
+ */
+export function smallCompareSheetSvg(
+  main: string,
+  small: string,
+  opts: { palette?: GroundPalette; title?: string; dark?: string; light?: string } = {},
+): string {
+  const light = opts.light ?? '#ffffff';
+  const dark = opts.dark ?? '#111318';
+  const rows: SheetRow[] = [];
+  for (const [name, svg] of [
+    ['Main symbol', main],
+    ['Small version', small],
+  ] as const)
+    rows.push(
+      { label: `${name} · on light`, background: light, svg: markOnGround(svg, light, opts.palette) },
+      { label: `${name} · on dark`, background: dark, svg: markOnGround(svg, dark, opts.palette) },
+    );
+  return sheetSvg(rows, SMALL_COMPARE_SIZES, opts.title);
+}
+
 /** Text rendered as outlines (Inter) so labels look the same on every machine. */
 export function label(text: string, x: number, y: number, size: number, fill: string): string {
   return textPathMarkup(loadBundledFace('inter', 500), text, x, y, size, fill).markup;
