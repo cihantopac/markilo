@@ -4,7 +4,7 @@
   "name": "Markilo",
   "concept": "hallmark",
   "locked": false,
-  "generatedAt": "2026-11-16T14:41:02.276Z",
+  "generatedAt": "2026-11-19T12:24:37.579Z",
   "generator": "markilo",
   "specSources": {
     "web": [
@@ -26,7 +26,14 @@
       "https://developer.android.com/develop/ui/views/launch/icon_design_adaptive",
       "https://developer.android.com/distribute/google-play/resources/icon-design-specifications",
       "https://developer.android.com/training/multiscreen/screendensities",
-      "https://developer.android.com/training/tv/get-started/create"
+      "https://developer.android.com/training/tv/get-started/create",
+      "https://developer.android.com/design/ui/tv/guides/system/tv-app-icon-guidelines",
+      "https://support.google.com/googleplay/android-developer/answer/9866151"
+    ],
+    "tv": [
+      "https://developer.amazon.com/docs/app-submission/add-store-listing-information.html",
+      "https://webostv.developer.lge.com/develop/references/appinfo-json",
+      "https://developer.samsung.com/smarttv/design/app-icons-and-screenshots.html"
     ],
     "windows": [
       "https://learn.microsoft.com/en-us/windows/apps/design/style/iconography/app-icon-construction",
@@ -663,7 +670,7 @@
       "derivedFrom": "brand.json",
       "format": "md",
       "bytes": 3008,
-      "sha256": "54f9c1c6a28982a104d2f037ca35602b5dde5b34e450ebbda48b0ed256be3bb5"
+      "sha256": "b9286c838f561aee3573391d8efa63de2fc7a02241fa57782a9c925c55dd13af"
     },
     {
       "path": "guidelines/index.html",
@@ -671,8 +678,8 @@
       "purpose": "Brand usage guidelines (self-contained HTML)",
       "derivedFrom": "brand.json",
       "format": "html",
-      "bytes": 26689,
-      "sha256": "1a37b75d5227a1f59737b239daf58856b292814d3753dac73f44c76a90c9311f"
+      "bytes": 26802,
+      "sha256": "ff6683aefc88259401f682906d542ea60fc72168e7d93da067fe0f090ade91b8"
     }
   ],
   "skipped": [],
