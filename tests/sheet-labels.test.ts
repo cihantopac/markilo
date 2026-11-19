@@ -9,7 +9,9 @@ import {
   familySheetSvg,
   label,
   paletteSheetSvg,
+  SMALL_COMPARE_SIZES,
   sheetSvg,
+  smallCompareSheetSvg,
   zoomRowsSvg,
 } from '../src/render/sheet.js';
 import { TR } from '../src/ui/tr.js';
@@ -190,5 +192,35 @@ describe('zoom rows', () => {
   it('has Turkish entries for the new labels', () => {
     expect(TR.Before).toBeTruthy();
     expect(TR.After).toBeTruthy();
+  });
+});
+
+describe('small compare board', () => {
+  const main = mark('fold-n');
+  const small = mark('plain-circle');
+  it('has a main and a small row at 16 / 24 / 32 / 48 on light and dark, with the sheets labels', () => {
+    expect(SMALL_COMPARE_SIZES).toEqual([16, 24, 32, 48]);
+    const got = smallCompareSheetSvg(main, small);
+    const rows = (a: string, b: string) => [
+      ['Main symbol · on light', '#ffffff', a],
+      ['Main symbol · on dark', '#111318', a],
+      ['Small version · on light', '#ffffff', b],
+      ['Small version · on dark', '#111318', b],
+    ];
+    const expected = sheetSvg(
+      rows(main, small).map(([l, bg, svg]) => ({
+        label: l!,
+        background: bg!,
+        svg: markOnGround(svg!, bg!, undefined),
+      })),
+      [16, 24, 32, 48],
+    );
+    expect(got).toBe(expected);
+    // Swapping the small version changes only its rows.
+    expect(smallCompareSheetSvg(main, main)).not.toBe(got);
+  });
+  it('has Turkish entries for the new labels', () => {
+    expect(TR['Main symbol']).toBeTruthy();
+    expect(TR['Small version']).toBeTruthy();
   });
 });

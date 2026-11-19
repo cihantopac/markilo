@@ -17,7 +17,7 @@ import { findCommand } from '../src/cli/commands.js';
 import { loadKit } from '../src/export/kit.js';
 import { decodeImage } from '../src/render/png.js';
 import { verifyConcept } from '../src/report/quality.js';
-import { fixture, synthBrand, tmp } from './helpers.js';
+import { fixture, mark, synthBrand, tmp } from './helpers.js';
 
 vi.mock('../src/research/appstore.js', async (orig) => ({
   ...(await orig<typeof import('../src/research/appstore.js')>()),
@@ -172,6 +172,25 @@ describe('cli (bundled)', () => {
       cwd,
     );
     expect(sheet.status, sheet.stderr).toBe(0);
+  });
+  it('render --small-compare draws the main symbol and the small version, and names `small` when there is none', () => {
+    const { ws, dir: cwd } = synthBrand();
+    const base = ['render', '--brand', 'nimbra', '--concept', 'fold', '--small-compare', '-o', 'board.png'];
+    const none = run(base, cwd);
+    expect(none.status).not.toBe(0);
+    const err = JSON.parse(none.stderr).error;
+    expect(err.code).toBe('USAGE');
+    expect(`${err.message} ${err.hint ?? ''}`).toContain('small');
+    const noConcept = run(['render', '--brand', 'nimbra', '--small-compare', '-o', 'board.png'], cwd);
+    expect(JSON.parse(noConcept.stderr).error.code).toBe('USAGE');
+    writeFileSync(join(ws.conceptDir('nimbra', 'fold'), 'symbol-small.svg'), mark('fold-n'));
+    const c = ws.concept('nimbra', 'fold');
+    ws.saveConcept({ ...c, files: { ...c.files, small: 'symbol-small.svg' } });
+    const r = run(base, cwd);
+    expect(r.status, r.stderr).toBe(0);
+    const img = decodeImage(readFileSync(join(cwd, 'board.png')));
+    expect(img.width).toBeGreaterThan(100);
+    expect(JSON.parse(r.stdout).sizes).toEqual([16, 24, 32, 48]);
   });
   describe('render batch, padding and zoom', () => {
     const art = (x: number) =>

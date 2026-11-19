@@ -243,6 +243,17 @@ describe('craft-named directions', () => {
     const skill = readFileSync(join(root, 'plugin/skills/design/SKILL.md'), 'utf8');
     expect(skill).not.toContain('`family glyphs` finds');
   });
+  it('1.8: small sizes are shown side by side and asked before any export or finalize', () => {
+    const read = (p: string) => readFileSync(join(root, p), 'utf8');
+    for (const p of ['plugin/skills/design/SKILL.md', 'plugin/skills/refine/SKILL.md']) {
+      const text = read(p).replace(/\s+/g, ' ');
+      expect(text, p).toContain('render --brand <slug> --concept <id> --small-compare');
+      expect(text, p).toMatch(/small\|main[^.]*before any export or finalize/);
+      expect(text, p).toContain('--small-sizes');
+      expect(text, p).toMatch(/never assume `?small/i);
+    }
+    expect(read('plugin/skills/design/references/cli.md')).toContain('--small-compare');
+  });
   it('cli.md table rows have as many cells as the header', () => {
     const cli = readFileSync(join(root, 'plugin/skills/design/references/cli.md'), 'utf8');
     const cells = (row: string) => row.replace(/\\\|/g, '').split('|').length;
