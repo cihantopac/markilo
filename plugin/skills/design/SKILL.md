@@ -47,7 +47,10 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
    agent cannot see its usage). At `status: over` (money or time), stop paid work, show what exists and ask. Agent
    usage alone is a lower bound: when Claude Code shows a session total, record it at the end of each phase (`markilo
    cost --brand <slug> --phase <p> --session-usd <total>`; it covers the agents and Markilo subtracts what they
-   recorded). In an app that shows no session total, record `--session-usd` from the app's usage view or tool when one
+   recorded). A single-agent session (no subagents, nothing else to sum) records only the session itself: `cost --brand <slug>
+   --phase <p> --session-usd <total>` after each phase, with the running total the agent reports for its own
+   session; Markilo records the difference since the last call, so the summary is a measured figure, not a subagent
+   lower bound. In an app that shows no session total, record `--session-usd` from the app's usage view or tool when one
    exists; otherwise say the dollar figure is subagents only — the session itself is not counted (`cost` labels it so).
    `--minutes` are agent minutes: parallel agents add up; `cost` also shows `busyMinutes` (working time, which the time budget uses) and `elapsedMinutes` (including waiting). An agent stopped by a
    usage limit and resumed is recorded once per part under one name: `cost --brand <slug> --phase <p> --tokens <n>

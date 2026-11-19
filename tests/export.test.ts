@@ -989,3 +989,23 @@ describe('rich files: lint profile, freshness and lockups', () => {
     expect(r.warnings.some((x) => /rich horizontal lockup was not exported/.test(x))).toBe(true);
   }, 120_000);
 });
+
+describe('guidelines.md language', () => {
+  it('is Turkish with lang tr and unchanged English otherwise', async () => {
+    const en = readFileSync(out('guidelines/brand-guidelines.md'), 'utf8');
+    expect(en).toContain('# Nimbra brand guidelines');
+    const outDir = join(tmp(), 'tr-kit');
+    await exportBrand(ws, 'nimbra', { groups: ['guidelines'], lang: 'tr', outDir });
+    const tr = readFileSync(join(outDir, 'guidelines/brand-guidelines.md'), 'utf8');
+    expect(tr).toContain('# Nimbra marka kılavuzu');
+    expect(tr).toContain('## Logo dosyaları');
+    expect(tr).toContain('## Boşluk alanı ve en küçük boyut');
+    expect(tr).toContain('## Yapmayın');
+    expect(tr).toContain('Logoyu germeyin, ezmeyin, eğmeyin veya döndürmeyin.');
+    expect(tr).toContain('`logos/primary/primary-color.svg`');
+    expect(tr).not.toContain('## Logo files');
+    const enAgain = join(tmp(), 'en-kit');
+    await exportBrand(ws, 'nimbra', { groups: ['guidelines'], outDir: enAgain });
+    expect(readFileSync(join(enAgain, 'guidelines/brand-guidelines.md'), 'utf8')).toBe(en);
+  }, 60_000);
+});
