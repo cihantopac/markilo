@@ -1,9 +1,16 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { transformed } from '../src/analyze/calibrate.js';
+import { loadMark } from '../src/analyze/mark.js';
+import { silhouetteIoU } from '../src/analyze/silhouette.js';
+import { parseCommand } from '../src/cli/args.js';
+import { findCommand } from '../src/cli/commands.js';
 import { MarkiloError } from '../src/core/errors.js';
 import { inkMask, type Raster } from '../src/render/image.js';
 import { decodeImage } from '../src/render/png.js';
 import { decodeWebp } from '../src/render/webp.js';
+import { mark, tmp } from './helpers.js';
 
 // Fixtures: synthetic marks from tests/fixtures/marks rendered in Chromium by scripts/make-webp-fixtures.mjs.
 const fixture = (name: string) =>
@@ -169,6 +176,26 @@ function vp8lBits(fields: [number, number][]): Uint8Array {
   return new Uint8Array(out);
 }
 
+/** A one-frame animated WebP: leaf-lossless.webp placed at (4, 2) on a canvas 10 × 6 px larger. */
+function animatedWebp(): Uint8Array {
+  const still = fixture('leaf-lossless.webp');
+  const frame = decodeWebp(still);
+  const anmf = new Uint8Array([
+    ...u24(2), // x / 2
+    ...u24(1), // y / 2
+    ...u24(frame.width - 1),
+    ...u24(frame.height - 1),
+    ...u24(100), // duration
+    0,
+    ...riff([['VP8L', chunk(still, 'VP8L')]]).subarray(12),
+  ]);
+  return riff([
+    ['VP8X', vp8x(0x02, frame.width + 10, frame.height + 6)],
+    ['ANIM', new Uint8Array([0, 0, 0, 0, 0, 0])],
+    ['ANMF', anmf],
+  ]);
+}
+
 /** Deterministic PRNG for the corruption sweep. */
 function prng(seed: number): () => number {
   let s = seed >>> 0;
@@ -221,8 +248,7 @@ describe('WebP decoding', () => {
     }
   });
 
-  // The plan's test runs `trace` on the lossy file (IoU >= 0.95). `trace` lands in another task; until then the
-  // decoded ink mask is compared with the reference render's mask directly.
+  // The decoded ink mask against the reference render's mask; `trace` on the same file is tested end to end below.
   it('keeps the silhouette of a lossy WebP (mask IoU >= 0.95)', () => {
     expect(
       maskIoU(decodeImage(fixture('orbit-lossy.webp')), decodeImage(fixture('orbit.png'))),
@@ -276,26 +302,10 @@ describe('WebP decoding', () => {
   });
 
   it('decodes the first frame of an animated WebP and says so', () => {
-    const still = fixture('leaf-lossless.webp');
-    const frame = decodeWebp(still);
-    const anmf = new Uint8Array([
-      ...u24(2), // x / 2
-      ...u24(1), // y / 2
-      ...u24(frame.width - 1),
-      ...u24(frame.height - 1),
-      ...u24(100), // duration
-      0,
-      ...riff([['VP8L', chunk(still, 'VP8L')]]).subarray(12),
-    ]);
+    const frame = decodeWebp(fixture('leaf-lossless.webp'));
     const w = frame.width + 10;
     const h = frame.height + 6;
-    const out = decodeWebp(
-      riff([
-        ['VP8X', vp8x(0x02, w, h)],
-        ['ANIM', new Uint8Array([0, 0, 0, 0, 0, 0])],
-        ['ANMF', anmf],
-      ]),
-    );
+    const out = decodeWebp(animatedWebp());
     expect([out.width, out.height]).toEqual([w, h]);
     expect(out.warnings?.join(' ')).toMatch(/animated/i);
     expect(out.data[3]).toBe(0); // outside the frame
@@ -423,5 +433,49 @@ describe('WebP decoding', () => {
         }
       }
     }
+  });
+});
+
+async function cmd(name: string, argv: string[], cwd: string): Promise<Record<string, unknown>> {
+  const f = findCommand([name])!;
+  return (await f.spec.run(parseCommand(f.spec, argv, cwd))) as Record<string, unknown>;
+}
+
+describe('WebP end to end', () => {
+  it('trace on orbit-lossy.webp reaches IoU >= 0.95 against the SVG it was rendered from', async () => {
+    const cwd = tmp();
+    writeFileSync(join(cwd, 'orbit.webp'), fixture('orbit-lossy.webp'));
+    const r = await cmd('trace', ['orbit.webp', '-o', 'orbit.svg'], cwd);
+    expect(r.iou).toBeGreaterThanOrEqual(0.95);
+    const svg = readFileSync(join(cwd, 'orbit.svg'), 'utf8');
+    expect(await silhouetteIoU(svg, mark('orbit'))).toBeGreaterThanOrEqual(0.95);
+    expect(r.warnings).toBeUndefined();
+  });
+
+  it('carries the animated-file warning into the JSON of trace and score', async () => {
+    const cwd = tmp();
+    writeFileSync(join(cwd, 'anim.webp'), animatedWebp());
+    const t = await cmd('trace', ['anim.webp', '-o', 'anim.svg'], cwd);
+    expect((t.warnings as string[]).join(' ')).toMatch(/animated webp/i);
+    const s = await cmd('score', ['anim.webp'], cwd);
+    expect(((s.tracedFrom as { warnings: string[] }).warnings ?? []).join(' ')).toMatch(/animated webp/i);
+  });
+
+  it('carries the animated-file warning into rebuild --against', async () => {
+    const cwd = tmp();
+    writeFileSync(join(cwd, 'anim.webp'), animatedWebp());
+    await cmd('trace', ['anim.webp', '-o', 'anim.svg'], cwd);
+    const r = await cmd('rebuild', ['anim.svg', '-o', 'clean.svg', '--against', 'anim.webp'], cwd);
+    expect((r.warnings as string[]).join(' ')).toMatch(/animated webp/i);
+  });
+
+  it('loads a WebP as a mark and embeds it as image/webp in calibration', async () => {
+    const m = await loadMark(new URL('./fixtures/raster/orbit-lossless.webp', import.meta.url).pathname);
+    expect(m.kind).toBe('raster');
+    const png = await loadMark(new URL('./fixtures/raster/orbit.png', import.meta.url).pathname);
+    expect(m.hashes).toEqual(png.hashes);
+    const svg = transformed({ id: 'orbit', raster: fixture('orbit-lossy.webp') }, 'mirror')!;
+    expect(svg).toContain('data:image/webp;base64,');
+    expect(svg).not.toContain('image/jpeg');
   });
 });

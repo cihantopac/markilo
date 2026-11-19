@@ -139,7 +139,7 @@ export async function loadMark(
   const base = { id, label: meta.label ?? id, source: path };
   const buf = readFileSync(path);
   if (ext === '.svg') return sampleFromSvg(buf.toString('utf8'), base);
-  if (['.png', '.jpg', '.jpeg'].includes(ext)) return sampleFromRaster(buf, base);
+  if (['.png', '.jpg', '.jpeg', '.webp'].includes(ext)) return sampleFromRaster(buf, base);
   throw new MarkiloError('INVALID_INPUT', `Unsupported file type ${ext} for ${path}.`);
 }
 

@@ -53,7 +53,10 @@ export function encodePng(img: Raster): Buffer {
   ]);
 }
 
-export function decodeImage(buf: Uint8Array): Raster {
+/** A decoded raster, with the decoder's doubts about it (an animated WebP decoded to its first frame). */
+export type DecodedImage = Raster & { warnings?: string[] };
+
+export function decodeImage(buf: Uint8Array): DecodedImage {
   if (buf[0] === 0x89 && buf[1] === 0x50) {
     if (buf.length < 24) throw new MarkiloError('INVALID_INPUT', 'Truncated PNG.');
     const { width, height } = pngSize(buf);
