@@ -210,6 +210,20 @@ export interface Concept {
    * originality verdict without gating on it; `redesign` still blocks.
    */
   equity?: { note: string; since?: string };
+  /**
+   * A refresh (`markilo refresh`): the owner's current mark this concept rebuilds, copied into the concept folder
+   * (`file`), how closely the kept drawing matches it (`iou`), and whether the rebuild or the plain trace was kept
+   * (below `minIou` the rebuild falls back to the trace, or to an SVG original as it is). The gallery shows the original beside the concept.
+   */
+  refreshedFrom?: {
+    file: string;
+    iou: number;
+    kept: 'rebuild' | 'trace' | 'original';
+    minIou: number;
+    at: string;
+    /** sha256 of every file the last refresh wrote, by name: a file that no longer matches was edited by the owner. */
+    written?: Record<string, string>;
+  };
   status: ConceptStatus;
   createdAt: string;
   updatedAt: string;

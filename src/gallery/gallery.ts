@@ -1,14 +1,16 @@
 import { randomBytes } from 'node:crypto';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { extname, join } from 'node:path';
 import type { QualityReport } from '../analyze/quality.js';
 import { readJson, readText, writeGenerated } from '../core/fsx.js';
 import { portableRelative, resolveInsideReal } from '../core/paths.js';
-import type { WorkspaceBrand } from '../core/types.js';
+import type { Concept, WorkspaceBrand } from '../core/types.js';
 import type { Workspace } from '../core/workspace.js';
 import { composeLockup } from '../design/lockup.js';
 import { roundLetters, rounds } from '../design/rounds.js';
 import { type BrandKit, kitPath } from '../export/kit.js';
+import { rasterSvg } from '../render/refresh.js';
+import { renderPng } from '../render/resvg.js';
 import { artHash } from '../report/gate.js';
 import type { OriginalityReport } from '../report/originality.js';
 import { escapeAttr, escapeText } from '../svg/xml.js';
@@ -37,7 +39,7 @@ import {
 import { GALLERY_SCRIPT } from './client.js';
 import { GALLERY_CSS } from './style.js';
 
-function subjectsFor(ws: Workspace, b: WorkspaceBrand): Subject[] {
+async function subjectsFor(ws: Workspace, b: WorkspaceBrand): Promise<Subject[]> {
   const out: Subject[] = [];
   const reports = ws.reportsDir(b.slug);
   const kitFile = kitPath(ws, b.slug);
@@ -98,10 +100,51 @@ function subjectsFor(ws: Workspace, b: WorkspaceBrand): Subject[] {
       art: artHash(symbol, wordmark),
       ...(q ? { quality: q } : {}),
       ...(o ? { originality: o } : {}),
+      ...(c.refreshedFrom ? await originalOf(ws, b.slug, c) : {}),
       locked: false,
     });
   }
   return out;
+}
+
+/** Raster originals larger than this are shown downscaled to PREVIEW_SIDE px (the page inlines every image). */
+const MAX_INLINE_ORIGINAL = 4 * 1024 * 1024;
+const PREVIEW_SIDE = 512;
+const RASTER_MIME: Record<string, string> = {
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+};
+
+/** A refresh concept's original mark as gallery markup: the SVG inlined (sanitized), a raster as a data: image. */
+async function originalOf(ws: Workspace, slug: string, c: Concept): Promise<{ original?: string }> {
+  const rel = c.refreshedFrom?.file;
+  if (!rel) return {};
+  const path = ws.conceptFile(slug, c.id, rel);
+  if (!existsSync(path)) return {};
+  const name = 'The original mark';
+  try {
+    const ext = extname(path).toLowerCase();
+    if (ext === '.svg')
+      return {
+        original: inline(readText(path), 220, 220, '', name).replace(
+          `aria-label="${name}"`,
+          ta('aria-label', name).trim(),
+        ),
+      };
+    const mime = RASTER_MIME[ext];
+    if (!mime) return {};
+    const bytes = readFileSync(path);
+    const src =
+      bytes.length <= MAX_INLINE_ORIGINAL
+        ? `data:${mime};base64,${bytes.toString('base64')}`
+        : `data:image/png;base64,${(await renderPng(rasterSvg(bytes), { width: PREVIEW_SIDE })).toString('base64')}`;
+    return { original: `<img src="${src}" alt=""${ta('aria-label', name)}>` };
+  } catch {
+    // An unreadable original is left out; the concept itself is still shown.
+    return {};
+  }
 }
 
 export async function buildGallery(
@@ -116,7 +159,7 @@ export async function buildGallery(
   let delivered = 0;
   let exported = 0;
   for (const b of brands) {
-    const subjects = subjectsFor(ws, b);
+    const subjects = await subjectsFor(ws, b);
     count += subjects.length;
     const first = subjects.find((s) => s.symbol);
     if (first?.symbol)

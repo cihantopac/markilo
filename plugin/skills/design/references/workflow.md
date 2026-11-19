@@ -40,23 +40,27 @@ unchanged, while a refresh redraws them.
 
 1. **Audit** the current mark (the audit skill): measurements, what is equity, what is weak. Agree with the user that
    this is a refresh.
-2. **Vectorise**: a raster is traced (`markilo trace <file.png> -o <work>/trace.svg`, `--colors n` for a mark of n
-   colours); when the owner has an SVG, start from it.
-3. **Rebuild**: `markilo rebuild <work>/trace.svg -o <concept>/symbol.svg --against <the original file> --min-iou 0.95`.
-   It refuses a rebuild that no longer matches the original form; fix or relax `--tolerance`, never lower
-   `--min-iou` without telling the user. Register the result on one concept (`concept new`, then
-   `concept update --symbol` / `--wordmark`), and the trace of the original on a second concept titled "Current", so
-   the gallery shows the rebuild beside the original.
-4. **Small sizes**: show the small-size board (`render --small-compare`) and ask whether 32 px and below use a small
-   version or the main symbol (`concept update --small-sizes small|main`).
-5. **Layout**: lockup options (`markilo lockup … --layout horizontal|stacked`) on one `render --compare` board; the
-   user picks.
+2. **Refresh in one command**:
+   `markilo refresh --brand <slug> --from <current.svg|png|jpg|webp> [--wordmark <file>] [--equity "<since when and where>"] [--colors n]`
+   runs the mechanical steps on the concept `refresh`: it traces a raster (`--colors n` for a mark of n colours) or
+   takes the SVG, rebuilds it under the fidelity gate (`--min-iou 0.95`; below it the trace is kept and the result
+   says so — never lower `--min-iou` without telling the user), registers `symbol.svg`, drafts a small version the way
+   `construct --role small` builds one, composes horizontal and stacked lockups when a wordmark is given, and renders
+   `review/refresh.png` (original beside the rebuild at 512/64/32/16 px with the IoU, the lockups, the small-size
+   board). The concept records the original (`refreshedFrom`), so the gallery shows it beside the rebuild. It never
+   finalizes or exports; its `next` lists the owner's questions. Rerunning it is safe: files the owner changed since
+   the last refresh are kept (with a warning) unless `--force`. The single steps stay available
+   (`markilo trace`, `markilo rebuild … --against <original>`, `markilo lockup`, `render --small-compare`).
+3. **Small sizes**: show the small-size board and ask whether 32 px and below use the small version or the main
+   symbol (`concept update --small-sizes small|main`).
+4. **Layout**: show the lockups on `review/refresh.png` (or one `render --compare` board); the user picks.
+5. **Equity**: confirm since when and where the mark is in use (`concept update --equity "<…>"`, prefilled by
+   `refresh --equity`).
 6. **Rich rendering** only when the identity is metallic or gradient: rich rendering (`concept update --rich-symbol`)
    keeps the flat master for small sizes.
 7. **Verify** (`markilo verify`), then show the gallery: rebuild beside the original, the measured checks and the
    originality verdict.
-8. **Finalize with equity**: record where and since when the mark is in use —
-   `markilo concept update --brand <slug> --concept <id> --equity "in use since 2014 on the TV app"` — then
+8. **Finalize with equity**: with the equity recorded (step 5, e.g. `--equity "in use since 2014 on the TV app"`),
    `markilo finalize … --user-choice "<their words>"`. With `--equity`, an `insufficient-evidence` or `needs-review`
    verdict does not need `--accept-risk`: the kit records `originality.equity` and the guidelines say originality was
    reported, not used as a gate. The verdict is still reported. A `redesign` verdict still blocks finalize, with or

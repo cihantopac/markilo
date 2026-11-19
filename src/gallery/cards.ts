@@ -31,6 +31,8 @@ export interface Subject {
   art?: string;
   quality?: QualityReport;
   originality?: OriginalityReport;
+  /** A refresh: the owner's current mark (inline SVG or an <img> of the raster), shown beside the concept. */
+  original?: string;
   locked: boolean;
 }
 
@@ -324,6 +326,7 @@ export async function proposalHtml(
     ${sizes ? `<div class="ground sizes" style="background:${g.native}">${sizes}</div>` : ''}
     ${lock && s.symbol ? `<div class="ground lockup" style="background:${g.native}">${fitInline(lock, 440, 70)}</div>` : ''}
   </div>
+  ${refreshPair(s, g.native)}
   ${flags.length ? `<p class="flags">${flags.map((f) => `<span class="flag">${f}</span>`).join('')}</p>` : ''}
   ${s.locked ? `<p class="muted">${t('locked')}</p>` : ''}
   ${decide}
@@ -343,6 +346,22 @@ export async function proposalHtml(
     <div class="mockups">${await mockups(s)}</div>
   </details>
 </article>`;
+}
+
+/**
+ * A refresh: the owner's current mark beside the drawing the refresh keeps (the rebuild, or the trace when the
+ * rebuild fell below the bar), on one ground, with how closely they match.
+ */
+function refreshPair(s: Subject, ground: string): string {
+  const from = s.concept?.refreshedFrom;
+  if (!from || !s.original || !s.symbol) return '';
+  const caption = { rebuild: 'Rebuild', trace: 'Trace', original: 'Kept as it is' }[from.kept];
+  const name = 'The refreshed mark';
+  const kept = inline(s.symbol, 220, 220, '', name).replace(
+    `aria-label="${name}"`,
+    ta('aria-label', name).trim(),
+  );
+  return `<div class="refresh-pair"><figure class="ground" data-refresh="original" style="background:${ground}">${s.original}<figcaption>${t('Original')}</figcaption></figure><figure class="ground" data-refresh="${from.kept}" style="background:${ground}">${kept}<figcaption>${t(caption)}</figcaption></figure><p class="muted">${t('IoU {0} against the original', [from.iou])}</p></div>`;
 }
 
 /** The approved (or locked) identity, presented as the result: variants, grounds, palette and where the files are. */

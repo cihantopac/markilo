@@ -28,6 +28,23 @@ export const TR: Record<string, string> = {
   After: 'Sonra',
   'Main symbol': 'Ana simge',
   'Small version': 'Küçük sürüm',
+  // Boards (refresh)
+  Refresh: 'Yenileme',
+  Original: 'Özgün',
+  Rebuild: 'Yeniden çizim',
+  Trace: 'İz',
+  'IoU {0} against the original': 'Özgüne karşı IoU {0}',
+  'The rebuild fell below --min-iou {0}: the trace is kept':
+    'Yeniden çizim --min-iou {0} altında kaldı: iz korundu',
+  'Kept as it is': 'Olduğu gibi korundu',
+  'The rebuild fell below --min-iou {0}: the original is kept':
+    'Yeniden çizim --min-iou {0} altında kaldı: özgün korundu',
+  'The original mark': 'Özgün işaret',
+  'The refreshed mark': 'Yenilenen işaret',
+  Lockups: 'Logo düzenleri',
+  Horizontal: 'Yatay',
+  Stacked: 'Dikey',
+  'Small sizes': 'Küçük boyutlar',
   'Color on light': 'Açık zeminde renkli',
   'Color on dark': 'Koyu zeminde renkli',
   'Color on dark (adapted)': 'Koyu zeminde renkli (uyarlanmış)',

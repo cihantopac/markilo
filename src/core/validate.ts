@@ -120,6 +120,17 @@ export function validateConcept(v: unknown): Issues {
   const sizes = (v as unknown as Concept).smallSizes;
   if (sizes !== undefined && sizes !== 'small' && sizes !== 'main')
     issues.push('smallSizes must be small or main');
+  const rf = (v as unknown as Concept).refreshedFrom;
+  if (
+    rf !== undefined &&
+    (!isObj(rf) ||
+      typeof rf.file !== 'string' ||
+      !rf.file ||
+      typeof rf.iou !== 'number' ||
+      !['rebuild', 'trace', 'original'].includes(rf.kept as string) ||
+      (rf.written !== undefined && !isObj(rf.written)))
+  )
+    issues.push('refreshedFrom needs file, iou and kept (rebuild, trace or original)');
   const t = (v as unknown as Concept).typography;
   if (t !== undefined && (typeof t.fontId !== 'string' || typeof t.weight !== 'number'))
     issues.push('typography needs fontId and weight');

@@ -43,6 +43,7 @@ main{max-width:1200px;margin:0 auto;padding:0 24px}
 .ground svg{max-width:84%;height:auto}
 .hero{grid-row:span 2;min-height:400px}.icon{min-height:220px}.sizes{display:flex;align-items:flex-end;justify-content:center;gap:20px;padding:22px;min-height:120px}.sizes svg{max-width:none}
 .lockup{grid-column:1/-1;height:150px}
+.refresh-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}.refresh-pair .ground{margin:0;min-height:240px;padding:16px 16px 40px}.refresh-pair img{max-width:84%;max-height:200px;height:auto}.refresh-pair figcaption{position:absolute;left:18px;bottom:12px;margin:0}.refresh-pair .muted{grid-column:1/-1;margin:0}
 .rejected{opacity:.55}
 .flags{display:flex;flex-wrap:wrap;gap:8px 18px;margin:-6px 0 0;font-size:14px;font-weight:600;color:var(--problem)}
 .flag{display:inline-flex;align-items:center;gap:8px}.flag:before{content:"!";display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--problem);color:var(--bg);font-size:11px;font-weight:700}
