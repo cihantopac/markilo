@@ -371,7 +371,8 @@ async function traceImageFile(path: string, opts: TraceOptions) {
   if (!t.faces.length)
     throw new MarkiloError('INVALID_INPUT', `${basename(path)}: no ink found to trace.`, 'Try --threshold.');
   const iou = await silhouetteIoU(t.svg, rasterMaskSvg(img, opts));
-  return { ...t, iou: Math.round(iou * 1000) / 1000 };
+  // The decoder's doubts (an animated WebP read as its first frame) come first: they are about the input itself.
+  return { ...t, warnings: [...(img.warnings ?? []), ...t.warnings], iou: Math.round(iou * 1000) / 1000 };
 }
 
 /** Default `rebuild` tolerance: this share of the drawing's diagonal (about half a pixel on a 600 px trace). */
@@ -433,7 +434,9 @@ async function rebuildSvgFile(c: RunContext) {
     const p = file(c, against);
     if (RASTER_EXT.has(extname(p).toLowerCase())) {
       if (!existsSync(p)) throw new MarkiloError('NOT_FOUND', `File not found: ${against}`);
-      reference = rasterMaskSvg(decodeImage(readFileSync(p)));
+      const img = decodeImage(readFileSync(p));
+      warnings.push(...(img.warnings ?? []));
+      reference = rasterMaskSvg(img);
     } else reference = readText(p);
   }
   const iou = Math.round((await silhouetteIoU(svg, reference)) * 1000) / 1000;
@@ -4401,7 +4404,7 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'analyze',
     summary: 'Measure a mark: shape features, perceptual hashes, colors and closeness to stock primitives.',
-    usage: 'analyze <file.svg|png|jpg>',
+    usage: 'analyze <file.svg|png|jpg|webp>',
     async run(c) {
       const m = await loadMark(file(c, pos(c, 0, 'file')));
       const { radial: _r, ...features } = m.features;
@@ -4417,7 +4420,7 @@ export const COMMANDS: CommandSpec[] = [
   },
   {
     name: 'compare',
-    summary: 'Compare two marks (SVG/PNG/JPEG): silhouette, perceptual hashes, structure, color, risk.',
+    summary: 'Compare two marks (SVG/PNG/JPEG/WebP): silhouette, perceptual hashes, structure, color, risk.',
     usage: 'compare <a> <b>',
     async run(c) {
       const a = await loadMark(file(c, pos(c, 0, 'a')));
@@ -4428,9 +4431,9 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'trace',
     summary:
-      'Trace a raster mark (PNG/JPEG) to SVG: one evenodd path per colour, holes kept, curves fitted. Reports the IoU of the trace against the raster.',
+      'Trace a raster mark (PNG/JPEG/WebP) to SVG: one evenodd path per colour, holes kept, curves fitted. Reports the IoU of the trace against the raster.',
     usage:
-      'trace <in.png|jpg> -o <out.svg> [--colors n] [--threshold 0-255] [--background #hex] [--tolerance px] [--force]',
+      'trace <in.png|jpg|webp> -o <out.svg> [--colors n] [--threshold 0-255] [--background #hex] [--tolerance px] [--force]',
     options: {
       out: { type: 'string', short: 'o', description: 'Output SVG' },
       ...traceOptions,

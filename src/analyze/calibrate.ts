@@ -1,5 +1,6 @@
 import { maskBBox } from '../render/image.js';
 import { decodeImage } from '../render/png.js';
+import { isWebp } from '../render/webp.js';
 import { nestSvg } from '../svg/compose.js';
 import { monochrome } from '../svg/variants.js';
 import { type MarkSample, sampleFromSvg } from './mark.js';
@@ -26,7 +27,7 @@ const S = 512;
 function asSvg(m: CalibrationMark): string {
   if (m.svg) return m.svg;
   const img = decodeImage(m.raster!);
-  const mime = m.raster![0] === 0x89 ? 'image/png' : 'image/jpeg';
+  const mime = m.raster![0] === 0x89 ? 'image/png' : isWebp(m.raster!) ? 'image/webp' : 'image/jpeg';
   const href = `data:${mime};base64,${Buffer.from(m.raster!).toString('base64')}`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${img.width} ${img.height}"><image href="${href}" width="${img.width}" height="${img.height}"/></svg>`;
 }
