@@ -94,6 +94,11 @@ export interface OriginalityReport {
    * reported apart, and never part of the visual risk, the evidence or the name comparison.
    */
   family?: { name: string; source: string; visual: number; reasons: string[] }[];
+  /**
+   * Likeness to the owner's own mark (`reference add --category existing`, or a file named after the brand itself):
+   * a refresh is meant to look like it, so it is reported apart and never part of the visual risk or the evidence.
+   */
+  existing?: { name: string; source: string; visual: number; reasons: string[] }[];
   genericity?: Genericity;
   name: {
     candidate: string;
@@ -174,8 +179,13 @@ export async function buildOriginalityReport(
   });
 
   const all = readReferences(ws, brand).references;
-  const refs = all.filter((r) => r.category !== 'family' && r.category !== 'in-situ');
+  const brief = ws.brief(brand);
+  // The owner's own mark is not a competitor: an `existing` reference, or a file named after the brand itself.
+  const ownKey = brandKeyOf(brief.name);
+  const isOwn = (r: ReferenceEntry) => r.category === 'existing' || brandKeyOf(r.name) === ownKey;
+  const refs = all.filter((r) => r.category !== 'family' && r.category !== 'in-situ' && !isOwn(r));
   const familyRefs = all.filter((r) => r.category === 'family');
+  const existingRefs = all.filter((r) => r.category !== 'family' && r.category !== 'in-situ' && isOwn(r));
   const outDir = join(ws.reportsDir(brand), `originality-${conceptId}`);
   const matches: OriginalityReport['visual']['matches'] = [];
   for (const r of refs) {
@@ -217,6 +227,18 @@ export async function buildOriginalityReport(
     }
   }
   family.sort((a, b) => b.visual - a.visual);
+  const existing: NonNullable<OriginalityReport['existing']> = [];
+  for (const r of existingRefs) {
+    const file = join(ws.referencesDir(brand), r.file);
+    if (!existsSync(file)) continue;
+    try {
+      const c = await compareMarks(sample, await loadMark(file, { id: r.id, label: r.name }));
+      existing.push({ name: r.name, source: r.source, visual: c.visual, reasons: c.reasons });
+    } catch {
+      // An unreadable file of the owner's mark says nothing about originality either way.
+    }
+  }
+  existing.sort((a, b) => b.visual - a.visual);
   // Keep the closest file of each brand: a brand's second and third logo add no new evidence, only noise.
   const perBrand = matches.filter((m, i) => matches.findIndex((x) => x.brand === m.brand) === i);
 
@@ -229,7 +251,6 @@ export async function buildOriginalityReport(
     diversity.push({ concept: o.id, visual: c.visual, risk: c.risk, reasons: c.reasons });
   }
 
-  const brief = ws.brief(brand);
   const competitorNames = [
     ...(brief.competitors ?? []).map((c) => c.name),
     ...refs.map((r) => r.name),
@@ -330,6 +351,7 @@ export async function buildOriginalityReport(
     visual: { risk: visualRisk, thresholds: RISK_THRESHOLDS, matches: perBrand.slice(0, 10) },
     diversity,
     ...(family.length ? { family } : {}),
+    ...(existing.length ? { existing } : {}),
     ...(g ? { genericity: g } : {}),
     name: {
       candidate: brief.name,
@@ -440,6 +462,18 @@ export function originalityMarkdown(r: OriginalityReport, concept: Concept): str
       '| --- | --- |',
     );
     for (const f of r.family)
+      lines.push(`| ${f.name.replace(/\s+/g, ' ').trim().replace(/\|/g, '\\|')} | ${pct(f.visual)} |`);
+    lines.push('');
+  }
+  if (r.existing?.length) {
+    lines.push('## Likeness to the existing mark', '');
+    lines.push(
+      "_The owner's own mark, already in use. A refresh is meant to look like it: likeness here is not an originality risk._",
+      '',
+      '| Existing mark | Likeness |',
+      '| --- | --- |',
+    );
+    for (const f of r.existing)
       lines.push(`| ${f.name.replace(/\s+/g, ' ').trim().replace(/\|/g, '\\|')} | ${pct(f.visual)} |`);
     lines.push('');
   }

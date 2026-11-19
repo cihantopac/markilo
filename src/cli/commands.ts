@@ -885,9 +885,16 @@ function letteringOptions(c: RunContext, cur: Concept['typography']): { typograp
 
 async function loadReferences(w: Workspace, brand: string): Promise<Reference[]> {
   const out: Reference[] = [];
-  // A family reference is expected to look alike: it never steers sketches or variants away.
+  // A family reference, or the owner's own mark, is expected to look alike: it never steers sketches or variants away.
+  const own = brandKeyOf(w.brand(brand).name);
   for (const r of readReferences(w, brand)
-    .references.filter((x) => x.category !== 'family' && x.category !== 'in-situ')
+    .references.filter(
+      (x) =>
+        x.category !== 'family' &&
+        x.category !== 'in-situ' &&
+        x.category !== 'existing' &&
+        brandKeyOf(x.name) !== own,
+    )
     .slice(0, 60)) {
     try {
       out.push({
@@ -3004,6 +3011,7 @@ export const COMMANDS: CommandSpec[] = [
         nameRiskReasons: nameRiskReasons(r.report.name),
         genericity: r.report.genericity ?? null,
         ...(r.report.family?.length ? { family: r.report.family } : {}),
+        ...(r.report.existing?.length ? { existing: r.report.existing } : {}),
         report: r.mdPath,
         json: r.jsonPath,
       };

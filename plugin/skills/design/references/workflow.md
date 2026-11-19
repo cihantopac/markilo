@@ -61,7 +61,9 @@ unchanged, while a refresh redraws them.
 6. **Rich rendering** only when the identity is metallic or gradient: rich rendering (`concept update --rich-symbol`)
    keeps the flat master for small sizes.
 7. **Verify** (`markilo verify`), then show the gallery: rebuild beside the original, the measured checks and the
-   originality verdict. A refresh needs no critique unless the user asks for one; the Verify gate's critique applies
+   originality verdict. The owner's own mark (`existing` references, which `research site` saves from the site's own
+   logo, or a file named after the brand) is listed as likeness to the existing mark, never as an originality risk,
+   so a refresh is not called `redesign` for looking like the mark it refreshes. A refresh needs no critique unless the user asks for one; the Verify gate's critique applies
    to developed identities.
 8. **Finalize with equity**: with the equity recorded (step 5, e.g. `--equity "in use since 2014 on the TV app"`),
    `markilo finalize … --user-choice "<their words>"`. With `--equity`, an `insufficient-evidence` or `needs-review`

@@ -172,6 +172,90 @@ describe('markilo refresh', () => {
   }, 180_000);
 });
 
+describe('refresh originality', () => {
+  it('reports the owner’s existing mark as likeness, never as risk, so a refresh with equity can finalize', async () => {
+    const { dir, ws, png } = await tidepool();
+    // The owner's own mark, saved as `existing` (as `research site` does), under another label.
+    await cmd(
+      'reference add',
+      [
+        '--brand',
+        'tidepool',
+        '--file',
+        png,
+        '--name',
+        'Acme',
+        '--source',
+        'own app',
+        '--category',
+        'existing',
+      ],
+      dir,
+    );
+    // A file named after the brand itself is the brand's own mark too, whatever its category.
+    const small = join(dir, 'tidepool-256.png');
+    writeFileSync(small, await renderPng(mark('orbit'), { width: 256 }));
+    await cmd(
+      'reference add',
+      [
+        '--brand',
+        'tidepool',
+        '--file',
+        small,
+        '--name',
+        'Tidepool logo',
+        '--source',
+        'tidepool.example',
+        '--category',
+        'direct',
+      ],
+      dir,
+    );
+    await cmd(
+      'refresh',
+      [
+        '--brand',
+        'tidepool',
+        '--from',
+        png,
+        '--colors',
+        '2',
+        '--equity',
+        'in use since 2014 on the Tidepool app',
+      ],
+      dir,
+    );
+    const v = (await cmd('verify', ['--brand', 'tidepool', '--concept', 'refresh'], dir)) as {
+      originality: { verdict: string };
+    };
+    const report = JSON.parse(
+      readFileSync(join(ws.reportsDir('tidepool'), 'originality-refresh.json'), 'utf8'),
+    ) as {
+      verdict: string;
+      visual: { matches: { name: string }[] };
+      existing?: { name: string; visual: number }[];
+    };
+    expect(report.verdict).not.toBe('redesign');
+    expect(report.visual.matches).toEqual([]);
+    expect(report.existing?.map((e) => e.name).sort()).toEqual(['Acme', 'Tidepool logo']);
+    expect(report.existing![0]!.visual).toBeGreaterThan(0.9);
+    expect(readFileSync(join(ws.reportsDir('tidepool'), 'originality-refresh.md'), 'utf8')).toMatch(
+      /## Likeness to the existing mark/,
+    );
+    expect(v).toBeTruthy();
+    await cmd(
+      'finalize',
+      ['--brand', 'tidepool', '--concept', 'refresh', '--user-choice', 'Keep our mark.', '--accept-risk'],
+      dir,
+    );
+    const kit = JSON.parse(readFileSync(kitPath(ws, 'tidepool'), 'utf8')) as {
+      originality: { verdict: string; existing?: { name: string; visual: number }[] };
+    };
+    expect(kit.originality.verdict).not.toBe('redesign');
+    expect(kit.originality.existing?.map((e) => e.name).sort()).toEqual(['Acme', 'Tidepool logo']);
+  }, 180_000);
+});
+
 describe('refresh reruns', () => {
   it('keeps what the owner changed since the last refresh, and replaces it only with --force', async () => {
     const { dir, ws, png, word } = await tidepool();

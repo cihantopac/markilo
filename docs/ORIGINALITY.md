@@ -6,7 +6,10 @@ _are our concepts actually different from each other?_ It is a design tool, not 
 ## Inputs
 
 - The concept's symbol (or wordmark when there is no symbol), rendered with resvg at 256 px.
-- Reference marks collected during research (`markilo reference add`): SVG, PNG or JPEG, any background.
+- Reference marks collected during research (`markilo reference add`): SVG, PNG, JPEG or WebP, any background.
+  The owner's own mark (category `existing`, or a file named after the brand itself) and marks of the product family
+  (`family`) are compared too, but reported apart as likeness and never counted as originality risk or evidence;
+  `in-situ` photos are never compared.
 - The other concepts for the same brand.
 - Competitor names from the brief and references.
 
@@ -90,7 +93,8 @@ Confidence is **high** when all three are adequate, **medium** when none is miss
 
 `reports/originality-<concept>.md|json` (schema `markilo/originality@2`): verdict and confidence, the evidence table
 with what is missing for the next level, research scope with sources and retrieval dates, per-reference signal
-breakdown, side-by-side overlay images for flagged pairs, genericity, concept diversity, name comparison with
+breakdown, side-by-side overlay images for flagged pairs, genericity, family likeness and likeness to the owner's existing mark (both reported apart, never a risk), concept
+diversity, name comparison with
 pronunciation notes and logged registry conflicts, Nice class suggestions and official registry entry points, and
 limitations.
 

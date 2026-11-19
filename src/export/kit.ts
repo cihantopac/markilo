@@ -111,6 +111,8 @@ export interface BrandKit {
     equity?: string;
     /** The year the mark has been in use since, when the note names one. */
     equitySince?: string;
+    /** Likeness to the owner's own existing mark (reported apart in the originality report, never a risk). */
+    existing?: { name: string; visual: number }[];
   };
   /** What was accepted knowingly at approval (e.g. master colours outside the palette, with --accept-colours). */
   warnings?: string[];
@@ -345,6 +347,7 @@ export async function finalizeConcept(
     confidence?: string;
     evidence?: { visual: { have: string }; registry: { have: string; coverage: string } };
     scope?: { referencesCompared?: number };
+    existing?: { name: string; visual: number }[];
   }>(reportFile);
   if (orig.verdict === 'redesign') {
     throw new MarkiloError(
@@ -533,6 +536,14 @@ export async function finalizeConcept(
           }
         : {}),
       ...(equity ? { equity: equity.note, ...(equity.since ? { equitySince: equity.since } : {}) } : {}),
+      ...(orig.existing?.length
+        ? {
+            existing: orig.existing.map((e) => ({
+              name: e.name,
+              visual: Math.round(e.visual * 1000) / 1000,
+            })),
+          }
+        : {}),
     },
     ...(colourWarnings.length ? { warnings: colourWarnings } : {}),
     gate: {
