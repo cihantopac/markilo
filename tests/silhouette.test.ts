@@ -115,3 +115,31 @@ describe('wordmarkIoU', () => {
     expect(await wordmarkIoU(word(), word({ squareO: true, gap: 15 }))).toBeLessThan(FORM_CHANGE_LIMIT);
   });
 });
+
+/**
+ * "arn": an `a` (box), then `r` (stem + arm) and `n` (two stems + bridge). `kern` pulls the n left by that many units;
+ * a negative gap between r and n makes the two read as one connected shape.
+ */
+function rn(kern: number): string {
+  const s = 14;
+  const bar = (x: number, y: number, w: number, h: number) => `M${x} ${y}h${w}v${h}h-${w}z`;
+  const a = bar(0, 0, 60, s) + bar(0, 0, s, 100) + bar(46, 0, s, 100) + bar(0, 43, 60, s);
+  const rx = 80;
+  const r = bar(rx, 0, s, 100) + bar(rx, 0, 44, s) + bar(rx + 30, 0, s, 30);
+  const nx = rx + 44 + 10 - kern;
+  const n = bar(nx, 0, s, 100) + bar(nx + 46, 0, s, 100) + bar(nx, 0, 60, s);
+  const end = nx + 60;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 ${end + 20} 120"><path fill="#111" d="${a}${r}${n}"/></svg>`;
+}
+
+describe('wordmarkIoU, kerned pairs', () => {
+  it('an r and n that touch after kerning are not a change of form', async () => {
+    expect(await wordmarkIoU(rn(0), rn(14))).toBeGreaterThan(FORM_CHANGE_LIMIT);
+    expect(await wordmarkIoU(rn(0), rn(24))).toBeGreaterThan(FORM_CHANGE_LIMIT);
+  });
+
+  it('a reshaped n is still a change of form while the pair is kerned', async () => {
+    const reshaped = rn(14).replace('</svg>', '<path fill="#111" d="M150 40h40v60h-40z"/></svg>');
+    expect(await wordmarkIoU(rn(0), reshaped)).toBeLessThan(FORM_CHANGE_LIMIT);
+  });
+});

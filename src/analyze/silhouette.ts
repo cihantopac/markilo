@@ -143,7 +143,70 @@ function shiftedIoU(a: Uint8Array[], b: Uint8Array[], shift: number): number {
 export async function wordmarkIoU(a: string, b: string): Promise<number> {
   const [la, lb] = await Promise.all([letterColumns(a), letterColumns(b)]);
   if (la.length === lb.length && la.length > 1) return Math.min(...la.map((l, i) => columnsIoU(l, lb[i]!)));
+  // Different letter counts: kerning may have joined two letters (r+n) in one word. Place the letters of the word that
+  // has more of them into the other and compare there; the gap-free whole-word IoU cannot, because an overlap shifts
+  // every later column.
+  if (la.length !== lb.length && Math.min(la.length, lb.length) > 0) {
+    const [fine, coarse] = la.length > lb.length ? [la, lb] : [lb, la];
+    return Math.max(columnsIoU(la.flat(), lb.flat()), placedLettersIoU(fine, coarse.flat()));
+  }
   return columnsIoU(la.flat(), lb.flat());
+}
+
+const inkAt = (c: Uint8Array | undefined, y: number) => (c?.[y] ? 1 : 0);
+
+/**
+ * The letters of one word laid left to right into the columns of another, each at the offset where it fits best
+ * (it may start up to 60 % of its width before the previous one ended: kerned letters overlap). The result is the
+ * lowest of each letter's IoU, with the neighbours' ink left out of its union, and the IoU of the whole composite.
+ */
+function placedLettersIoU(letters: Uint8Array[][], target: Uint8Array[]): number {
+  const height = target[0]?.length ?? letters[0]?.[0]?.length ?? 0;
+  const placed: { at: number; cols: Uint8Array[] }[] = [];
+  const explained = (x: number, y: number, except: number) =>
+    placed.some((p, i) => i !== except && inkAt(p.cols[x - p.at], y));
+  let cursor = 0;
+  for (const cols of letters) {
+    let best = { at: cursor, score: -1 };
+    for (let at = Math.max(0, cursor - Math.ceil(cols.length * 0.6)); at <= cursor + 8; at++) {
+      let inter = 0;
+      let union = 0;
+      for (let x = at; x < at + cols.length; x++)
+        for (let y = 0; y < height; y++) {
+          const a = inkAt(cols[x - at], y);
+          const t = inkAt(target[x], y);
+          if (a && t) inter++;
+          if (a || (t && !explained(x, y, -1))) union++;
+        }
+      const score = union ? inter / union : 0;
+      if (score > best.score) best = { at, score };
+    }
+    placed.push({ at: best.at, cols });
+    cursor = best.at + cols.length;
+  }
+  let lowest = 1;
+  for (const [i, p] of placed.entries()) {
+    let inter = 0;
+    let union = 0;
+    for (let x = p.at; x < p.at + p.cols.length; x++)
+      for (let y = 0; y < height; y++) {
+        const a = inkAt(p.cols[x - p.at], y);
+        const t = inkAt(target[x], y);
+        if (a && t) inter++;
+        if (a || (t && !explained(x, y, i))) union++;
+      }
+    lowest = Math.min(lowest, union ? inter / union : 1);
+  }
+  let inter = 0;
+  let union = 0;
+  for (let x = 0; x < Math.max(target.length, cursor); x++)
+    for (let y = 0; y < height; y++) {
+      const a = explained(x, y, -1) ? 1 : 0;
+      const b = inkAt(target[x], y);
+      if (a && b) inter++;
+      if (a || b) union++;
+    }
+  return Math.min(lowest, union ? inter / union : 1);
 }
 
 /** The form comparison for a kind of master: per letter for a wordmark, whole silhouette for a symbol. */

@@ -12,3 +12,11 @@ describe('slugifyOrHash', () => {
     expect(slugifyOrHash('日本語')).toEqual({ slug: `brand-${hex}`, hashed: true });
   });
 });
+
+describe('slugify for Greek and Cyrillic', () => {
+  it('transliterates to Latin', () => {
+    expect(slugify('Ναύς')).toBe('naus');
+    expect(slugify('Нива Почта')).toBe('niva-pochta');
+    expect(slugifyOrHash('Ναύς')).toEqual({ slug: 'naus', hashed: false });
+  });
+});
