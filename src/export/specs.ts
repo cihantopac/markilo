@@ -51,17 +51,53 @@ export const SPECS = {
     playStore: 512,
     /** Play applies its own mask (corner radius 30% of the icon size); upload a full square. */
     playMaskRadius: 0.3,
-    /** Android TV home-screen banner: xhdpi resource, 320 x 180 px (API 25 and lower; text in the image). */
+    /**
+     * Android TV home-screen banner: xhdpi resource, 320 x 180 px (API 25 and lower; text in the image).
+     * The TV icon guidelines list the full density table; 640 x 360 is the xxxhdpi size (xxhdpi is 480 x 270).
+     */
     tvBanner: {
       width: 320,
       height: 180,
       source: 'https://developer.android.com/training/tv/get-started/create',
+    },
+    tvBannerXxxhdpi: {
+      width: 640,
+      height: 360,
+      source: 'https://developer.android.com/design/ui/tv/guides/system/tv-app-icon-guidelines',
+    },
+    /** Play feature graphic: 1024 x 500 px, JPEG or 24-bit PNG without alpha. */
+    playFeatureGraphic: {
+      width: 1024,
+      height: 500,
+      source: 'https://support.google.com/googleplay/android-developer/answer/9866151',
     },
     sources: [
       'https://developer.android.com/develop/ui/views/launch/icon_design_adaptive',
       'https://developer.android.com/distribute/google-play/resources/icon-design-specifications',
       'https://developer.android.com/training/multiscreen/screendensities',
       'https://developer.android.com/training/tv/get-started/create',
+      'https://developer.android.com/design/ui/tv/guides/system/tv-app-icon-guidelines',
+      'https://support.google.com/googleplay/android-developer/answer/9866151',
+    ],
+  },
+  tv: {
+    /** Banners and splash screens keep the logo inside this margin on every side (10 % of each dimension). */
+    safeMargin: 0.1,
+    /** The lettering of a banner must stay at least this share of the banner height; otherwise a warning. */
+    minTextShare: 0.08,
+    /** Amazon Appstore listing: Fire TV app icon 1280 x 720 PNG (no transparency); background 1920 x 1080 JPG or 24-bit PNG. */
+    fireTv: { icon: { width: 1280, height: 720 }, background: { width: 1920, height: 1080 } },
+    /** LG webOS TV appinfo.json: icon 80 x 80, largeIcon 130 x 130, splashBackground 1920 x 1080, all PNG. */
+    webos: { icon: 80, largeIcon: 130, splash: { width: 1920, height: 1080 } },
+    /**
+     * Samsung Tizen TV: the official "App Icons and Screenshots" guide asks for 1920 x 1080 (logo + background) and
+     * 512 x 423 store icons, not 512 x 512, so no Tizen file is exported (see the 1.8.0 plan's Progress record).
+     */
+    unconfirmed: ['tizen-512'],
+    sources: [
+      'https://developer.amazon.com/docs/app-submission/add-store-listing-information.html',
+      'https://webostv.developer.lge.com/develop/references/appinfo-json',
+      'https://developer.samsung.com/smarttv/design/app-icons-and-screenshots.html',
     ],
   },
   windows: {

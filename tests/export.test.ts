@@ -7,6 +7,7 @@ import type { Workspace } from '../src/core/workspace.js';
 import { readIcnsTypes, readIcoSizes } from '../src/export/encoders.js';
 import { cssFontFamily, type ExportResult, exportBrand } from '../src/export/exporter.js';
 import { finalizeConcept, kitPath, lockIdentity } from '../src/export/kit.js';
+import { tvSurface } from '../src/export/tv.js';
 import { isDarkGround, onFillVariant } from '../src/export/variants.js';
 import { buildGallery } from '../src/gallery/gallery.js';
 import { decodeImage, pngSize } from '../src/render/png.js';
@@ -58,6 +59,7 @@ describe('export kit', () => {
       'ios',
       'macos',
       'android',
+      'tv',
       'windows',
       'social',
       'marketing',
@@ -202,6 +204,56 @@ describe('export kit', () => {
     const entry = manifest.assets.find((f: { path: string }) => f.path === path);
     expect(entry.purpose).toContain('android:banner="@drawable/banner"');
     expect(existsSync(out('android/tv-banner.png'))).toBe(false);
+  });
+  it('emits the TV and store surfaces at their exact pixel sizes', () => {
+    const sizes: Record<string, [number, number]> = {
+      'android/res/drawable-xxxhdpi/banner.png': [640, 360],
+      'android/play-feature-graphic-1024x500.png': [1024, 500],
+      'tv/firetv/icon-1280x720.png': [1280, 720],
+      'tv/firetv/background-1920x1080.png': [1920, 1080],
+      'tv/webos/icon-80.png': [80, 80],
+      'tv/webos/largeIcon-130.png': [130, 130],
+      'tv/webos/splash-1920x1080.png': [1920, 1080],
+    };
+    for (const [path, [width, height]] of Object.entries(sizes))
+      expect(pngSize(readFileSync(out(path))), path).toEqual({ width, height });
+    // Samsung's guide does not confirm a 512 px icon, so nothing is made for Tizen.
+    expect(existsSync(out('tv/tizen'))).toBe(false);
+  });
+  it('warns when the lettering of a TV surface is too small', () => {
+    const base = {
+      textShare: 1,
+      width: 640,
+      height: 360,
+      ground: '#ffffff',
+      locked: true,
+      inks: { dark: '#000000', light: '#ffffff' },
+    };
+    const wordmark = (w: number) =>
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} 10"><rect width="${w}" height="10" fill="#123456"/></svg>`;
+    expect(tvSurface({ ...base, art: wordmark(60) }, 'banner').warning).toBeUndefined();
+    const long = tvSurface({ ...base, art: wordmark(200) }, 'banner');
+    expect(long.warning).toMatch(/lettering/);
+    expect(long.textShare).toBeLessThan(0.08);
+    // A symbol-only identity has no lettering to check.
+    const none = tvSurface({ ...base, textShare: 0, art: wordmark(10) }, 'banner');
+    expect(none.warning).toBeUndefined();
+  });
+  it('puts the lettering warning of a long wordmark into the export result', async () => {
+    const d = tmp();
+    const sym = join(d, 'symbol.svg');
+    const wm = join(d, 'wordmark.svg');
+    writeFileSync(sym, mark('bars'));
+    writeFileSync(
+      wm,
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 10"><rect width="400" height="10" fill="#123456"/></svg>',
+    );
+    ws.addBrand({ name: 'Longword', locked: true });
+    lockIdentity(ws, 'longword', { symbol: sym, wordmark: wm, primary: '#7a3cf0', paper: '#ffffff' });
+    const r = await exportBrand(ws, 'longword', { groups: ['tv'] });
+    expect(r.warnings.some((w) => w.includes('tv/firetv/icon-1280x720.png') && /lettering/.test(w))).toBe(
+      true,
+    );
   });
   it('builds a self-contained gallery', async () => {
     const g = await buildGallery(ws);

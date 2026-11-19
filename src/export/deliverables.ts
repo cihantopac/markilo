@@ -6,7 +6,8 @@ export const GROUP_INFO: Record<ExportGroup, string> = {
   logos: 'logo files: symbol, wordmark and lockups in color, reversed, black and white (SVG + PNG)',
   web: 'favicons, PWA and maskable icons, apple-touch-icon, web manifest and an HTML head snippet',
   ios: 'iOS / iPadOS app icon set (light, dark, tinted) and Icon Composer sources',
-  android: 'Android adaptive and legacy launcher icons, Play Store icon, TV banners',
+  android: 'Android adaptive and legacy launcher icons, Play Store icon and feature graphic, TV banners',
+  tv: 'TV store and launcher surfaces: Fire TV icon and background, webOS icons and splash',
   macos: 'macOS app icon (.icns and icon set)',
   windows: 'Windows app icons (.ico, tiles and unplated variants)',
   social: 'Open Graph images, X / LinkedIn covers and profile avatars',
@@ -59,11 +60,13 @@ export function suggestDeliverables(
   const desktop = has(text, /\b(desktop|electron|tauri)\b/);
   const mac = desktop || has(text, /\b(macos|mac app|os x)\b/);
   const win = desktop || has(text, /\b(windows|win32|uwp)\b/);
+  const tv = has(text, /\b(tv|fire ?tv|tizen|webos|android tv|smart tv|google tv)\b/);
   const onlyNative = (ios || android || mac || win) && !web;
   if (!onlyNative) reasons.web = 'browser tab icons, home-screen icons and link previews';
   if (ios) reasons.ios = 'the product ships on iOS / iPadOS';
   if (android) reasons.android = 'the product ships on Android';
   if (mac) reasons.macos = 'the product ships as a Mac app';
+  if (tv) reasons.tv = 'the brief names a TV platform';
   if (win) reasons.windows = 'the product ships as a Windows app';
   reasons.social = 'link previews and profile images wherever the product is shared';
   const groups = EXPORT_GROUPS.filter((g) => g in reasons);

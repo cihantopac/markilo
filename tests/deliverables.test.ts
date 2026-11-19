@@ -15,7 +15,7 @@ describe('deliverables', () => {
   it('gives a web app web assets but no native icon sets', () => {
     const s = suggestDeliverables(brief({ type: 'web app', platforms: ['web'] }));
     expect(s.groups).toEqual(['logos', 'web', 'social', 'tokens', 'guidelines']);
-    expect(s.optional.map((o) => o.group)).toEqual(['ios', 'macos', 'android', 'windows', 'marketing']);
+    expect(s.optional.map((o) => o.group)).toEqual(['ios', 'macos', 'android', 'tv', 'windows', 'marketing']);
   });
   it('adds mobile and desktop sets only when the product ships there', () => {
     expect(suggestDeliverables(brief({ platforms: ['iOS', 'Android'] })).groups).toEqual([
@@ -73,5 +73,10 @@ describe('deliverables', () => {
       oneLiner: 'An online store for mobile users',
     });
     expect(s.groups).toEqual(expect.arrayContaining(['ios', 'android']));
+  });
+  it('proposes tv when the brief names a TV platform', () => {
+    for (const p of ['Android TV', 'Fire TV', 'Tizen', 'webOS', 'smart TV'])
+      expect(suggestDeliverables(brief({ platforms: ['web', p] })).groups).toContain('tv');
+    expect(suggestDeliverables(brief({ platforms: ['web'] })).groups).not.toContain('tv');
   });
 });
