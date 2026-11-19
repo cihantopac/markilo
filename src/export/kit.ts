@@ -9,6 +9,7 @@ import type { Workspace } from '../core/workspace.js';
 import { fontInfo } from '../design/fonts.js';
 import { composeLockup } from '../design/lockup.js';
 import { currentArt, type GateResult, gateOf } from '../report/gate.js';
+import { richArt, richCheckId } from '../report/quality.js';
 import { CSS_PAINT, lintSvg, paintOf } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
 import { localName, parseXml, walk } from '../svg/xml.js';
@@ -350,9 +351,25 @@ export async function finalizeConcept(
   }
   const qualityFile = join(ws.reportsDir(brand), `quality-${conceptId}.json`);
   const quality = existsSync(qualityFile)
-    ? readJson<{ checks: { label: string; status: string; message: string }[] }>(qualityFile)
+    ? readJson<{ checks: { id?: string; label: string; status: string; message: string; art?: string }[] }>(
+        qualityFile,
+      )
     : undefined;
   const fails = quality?.checks.filter((c) => c.status === 'fail') ?? [];
+  // A rich file is frozen only when verify checked these very files against their master: one registered, changed or
+  // redrawn (or a master changed) since is unchecked, whatever --accept-risk says.
+  const unchecked = RICH_KEYS.filter((key) => {
+    if (!concept.files.rich?.[key]) return false;
+    const art = richArt(ws, brand, concept, key);
+    const check = quality?.checks.find((c) => c.id === richCheckId(key));
+    return !art || !check || check.art !== art;
+  });
+  if (unchecked.length)
+    throw new MarkiloError(
+      'INVALID_INPUT',
+      `Concept ${conceptId} has rich renderings verify has not checked as they are now: ${unchecked.map((k) => concept.files.rich![k]).join(', ')}.`,
+      `Run "markilo verify --brand ${brand} --concept ${conceptId}" first.`,
+    );
   if (fails.length && !opts.acceptRisk) {
     throw new MarkiloError(
       'INVALID_INPUT',
@@ -388,10 +405,10 @@ export async function finalizeConcept(
     );
   }
   const files: BrandKit['files'] = {};
-  const take = (rel: string | undefined, out: string) => {
+  const take = (rel: string | undefined, out: string, profile: 'master' | 'rich' = 'master') => {
     if (!rel) return undefined;
     const src = readText(ws.conceptFile(brand, conceptId, rel));
-    const lint = lintSvg(src, { master: true });
+    const lint = lintSvg(src, profile === 'rich' ? { rich: true } : { master: true });
     const errors = lint.issues.filter((i) => i.severity === 'error');
     if (errors.length)
       throw new MarkiloError(
@@ -445,7 +462,7 @@ export async function finalizeConcept(
   // Rich renderings stand on a flat master: one whose master the kit does not have is not frozen.
   const rich: RichFiles = {};
   for (const key of RICH_KEYS)
-    if (files[key] && take(concept.files.rich?.[key], RICH_FINAL[key])) rich[key] = RICH_FINAL[key];
+    if (files[key] && take(concept.files.rich?.[key], RICH_FINAL[key], 'rich')) rich[key] = RICH_FINAL[key];
   if (Object.keys(rich).length) files.rich = rich;
   // A kit replaced with --force: a master the earlier kit wrote and this one does not list (a small symbol now that
   // small sizes use the main one, say) is removed, so final/ holds exactly what brand.json lists.

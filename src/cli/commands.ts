@@ -2535,7 +2535,9 @@ export const COMMANDS: CommandSpec[] = [
       const stamp = nowIso().replace(/[:.]/g, '-');
       let movedTo: string | undefined;
       // A file another key still points at (two keys shared it, one is restored) stays registered.
-      const stillUsed = new Set(Object.values(next.files));
+      const stillUsed = new Set(
+        Object.values(next.files).flatMap((f) => (typeof f === 'string' ? [f] : Object.values(f ?? {}))),
+      );
       for (const rel of new Set(aside)) {
         if (stillUsed.has(rel)) continue;
         unregistered.push(rel);

@@ -1,12 +1,14 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { installAssets } from '../src/cli/system.js';
 import { sha256 } from '../src/core/fsx.js';
 import type { Workspace } from '../src/core/workspace.js';
+import { composeLockup } from '../src/design/lockup.js';
 import { readIcnsTypes, readIcoSizes } from '../src/export/encoders.js';
 import { cssFontFamily, type ExportResult, exportBrand } from '../src/export/exporter.js';
+import { inkMetrics } from '../src/export/geometry.js';
 import { finalizeConcept, kitPath, lockIdentity } from '../src/export/kit.js';
 import { tvSurface } from '../src/export/tv.js';
 import { isDarkGround, onFillVariant } from '../src/export/variants.js';
@@ -808,4 +810,124 @@ describe('rich flags', () => {
     expect(bad.status).not.toBe(0);
     expect(JSON.parse(bad.stderr).error.code).toBe('USAGE');
   });
+});
+
+describe('rich files: lint profile, freshness and lockups', () => {
+  /** fold-n with a soft drop shadow and an eight-stop gradient: a typical metallic rendering. */
+  const shadowed = () =>
+    richFoldN()
+      .replace(
+        '<defs>',
+        `<defs><filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.3"/></filter><linearGradient id="g8">${[
+          '#ffffff',
+          '#e8ecf8',
+          '#c9d2ee',
+          '#9fb0e4',
+          '#6f86d6',
+          '#3b5bdb',
+          '#22379a',
+          '#0b1440',
+        ]
+          .map((c, i) => `<stop offset="${i / 7}" stop-color="${c}"/>`)
+          .join('')}</linearGradient>`,
+      )
+      .replace('<g transform', '<g filter="url(#sh)" transform')
+      .replace('fill="url(#g0)"', 'fill="url(#g8)"');
+  const setup = (rich: string, extra: Record<string, string> = { symbol: 'symbol-rich.svg' }) => {
+    const { ws } = synthBrand();
+    writeFileSync(ws.conceptFile('nimbra', 'fold', 'symbol-rich.svg'), rich);
+    const c = ws.concept('nimbra', 'fold');
+    ws.saveConcept({ ...c, files: { ...c.files, rich: extra } });
+    return ws;
+  };
+  const report = (w: Workspace) =>
+    JSON.parse(readFileSync(join(w.reportsDir('nimbra'), 'quality-fold.json'), 'utf8')).checks as {
+      id: string;
+      status: string;
+      message: string;
+    }[];
+
+  it('a drop shadow and eight gradient stops pass svg-integrity and finalize', async () => {
+    const w = setup(shadowed());
+    await verifyConcept(w, 'nimbra', 'fold');
+    const checks = report(w);
+    expect(checks.find((c) => c.id === 'rich-symbol:svg-integrity')?.status).toBe('pass');
+    expect(checks.find((c) => c.id === 'rich-symbol:silhouette-match')?.status).toBe('pass');
+    const kit = await finalizeConcept(w, 'nimbra', 'fold', {
+      acceptRisk: true,
+      userChoice: 'Chosen in a test.',
+    });
+    expect(kit.files.rich).toEqual({ symbol: 'symbol-rich.svg' });
+    expect(readFileSync(join(w.finalDir('nimbra'), 'symbol-rich.svg'), 'utf8')).toContain('feDropShadow');
+  }, 120_000);
+
+  it('a script or an external reference still fails', async () => {
+    for (const bad of [
+      richFoldN().replace('</svg>', '<script>alert(1)</script></svg>'),
+      richFoldN().replace('</svg>', '<use href="https://example.com/x.svg#a"/></svg>'),
+    ]) {
+      const w = setup(bad);
+      await verifyConcept(w, 'nimbra', 'fold');
+      expect(report(w).find((c) => c.id === 'rich-symbol:svg-integrity')?.status).toBe('fail');
+    }
+  }, 120_000);
+
+  it('finalize refuses a rich file changed or registered after verify', async () => {
+    const w = setup(richFoldN());
+    await verifyConcept(w, 'nimbra', 'fold');
+    writeFileSync(w.conceptFile('nimbra', 'fold', 'symbol-rich.svg'), richFoldN(18));
+    await expect(
+      finalizeConcept(w, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' }),
+    ).rejects.toThrow(/rich renderings verify has not checked/);
+    const v = synthBrand().ws;
+    await verifyConcept(v, 'nimbra', 'fold');
+    writeFileSync(v.conceptFile('nimbra', 'fold', 'symbol-rich.svg'), richFoldN());
+    const c = v.concept('nimbra', 'fold');
+    v.saveConcept({ ...c, files: { ...c.files, rich: { symbol: 'symbol-rich.svg' } } });
+    await expect(
+      finalizeConcept(v, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' }),
+    ).rejects.toThrow(/rich renderings verify has not checked/);
+  }, 120_000);
+
+  it('a deleted rich file fails silhouette-match with a clear message', async () => {
+    const w = setup(richFoldN());
+    rmSync(w.conceptFile('nimbra', 'fold', 'symbol-rich.svg'));
+    const r = await verifyConcept(w, 'nimbra', 'fold');
+    const m = report(w).find((c) => c.id === 'rich-symbol:silhouette-match');
+    expect(m?.status).toBe('fail');
+    expect(m?.message).toMatch(/not in the concept folder/);
+    expect(r.status).toBe('needs-work');
+  }, 60_000);
+
+  it('a rich composed lockup is checked on its artboard; a wordmark-led kit keeps it out of logos/', async () => {
+    const { ws: w } = synthBrand();
+    const c = w.concept('nimbra', 'fold');
+    const symbol = readFileSync(w.conceptFile('nimbra', 'fold', 'symbol.svg'), 'utf8');
+    const wordmark = readFileSync(w.conceptFile('nimbra', 'fold', 'wordmark.svg'), 'utf8');
+    const composed = composeLockup(symbol, wordmark, {
+      layout: 'horizontal',
+      symbolInk: (await inkMetrics(symbol)).bbox,
+      title: c.title,
+    }).svg;
+    const vb = composed
+      .match(/viewBox="([^"]+)"/)![1]!
+      .split(/\s+/)
+      .map(Number);
+    const moved = composed
+      .replace(/(<svg[^>]*>)/, `$1<g transform="translate(${vb[2]! * 0.15} 0)">`)
+      .replace(/<\/svg>\s*$/, '</g></svg>');
+    writeFileSync(w.conceptFile('nimbra', 'fold', 'lockup-rich.svg'), moved);
+    w.saveConcept({ ...c, files: { ...c.files, rich: { lockupHorizontal: 'lockup-rich.svg' } } });
+    await verifyConcept(w, 'nimbra', 'fold');
+    expect(report(w).find((x) => x.id === 'rich-lockup-horizontal:silhouette-match')?.status).toBe('fail');
+    writeFileSync(w.conceptFile('nimbra', 'fold', 'lockup-rich.svg'), composed);
+    w.saveConcept({ ...w.concept('nimbra', 'fold'), lead: 'wordmark' });
+    await verifyConcept(w, 'nimbra', 'fold');
+    expect(report(w).find((x) => x.id === 'rich-lockup-horizontal:silhouette-match')?.status).toBe('pass');
+    await finalizeConcept(w, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
+    const r = await exportBrand(w, 'nimbra', { groups: ['logos'] });
+    expect(r.assets.some((a) => a.path.includes('-rich'))).toBe(false);
+    expect(existsSync(join(w.exportsDir('nimbra'), 'logos', 'lockup-horizontal'))).toBe(false);
+    expect(r.warnings.some((x) => /rich horizontal lockup was not exported/.test(x))).toBe(true);
+  }, 120_000);
 });

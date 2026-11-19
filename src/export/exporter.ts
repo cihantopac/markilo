@@ -195,9 +195,11 @@ async function exportLogos(ctx: Ctx) {
   // Rich renderings, beside the flat files of the logo they render (as drawn: never recoloured or made one-colour).
   const richLogos: [string, string | undefined, string, string][] = [
     ['symbol', ctx.rich.symbol, 'Symbol', 'symbol-rich.svg'],
+    // The horizontal lockup's flat files live in primary/; a wordmark-led kit has no logos/ folder for it, so its
+    // rich rendering stays in final/ only (a warning says so) rather than standing alone in a folder of its own.
     [
-      ctx.primary === ctx.lockupH ? 'primary' : 'lockup-horizontal',
-      ctx.rich.lockupH,
+      'primary',
+      ctx.primary === ctx.lockupH ? ctx.rich.lockupH : undefined,
       'Horizontal lockup',
       'lockup-horizontal-rich.svg',
     ],
@@ -297,6 +299,10 @@ async function exportLogos(ctx: Ctx) {
       derivedFrom: 'brand.json',
     });
   }
+  if (ctx.rich.lockupH && ctx.primary !== ctx.lockupH)
+    ctx.warnings.push(
+      'logos/: the rich horizontal lockup was not exported, because the wordmark leads and the horizontal lockup has no logos/ folder; it stays in final/lockup-horizontal-rich.svg.',
+    );
   for (const [name, art, what, from] of richLogos) {
     if (!art) continue;
     const purpose = `${what}, rich rendering (gradients and highlights) for ${grounds(kit).native} — screens and large sizes; the flat files stay the master`;
@@ -758,10 +764,10 @@ async function exportAndroid(ctx: Ctx) {
     derivedFrom: from,
   });
   const { width: bw, height: bh } = A.tvBanner;
-  const bg = grounds(kit).native;
   const bart0 = ctx.primary ?? sym;
   const richBanner = richLead(ctx);
-  // Rich art is drawn as it is, on the brand's own ground it was drawn for.
+  // Rich art is drawn as it is, on the ground the other TV surfaces give it (the tile set, else the paper).
+  const bg = richBanner ? tvGround(ctx, true).ground : grounds(kit).native;
   const bart = richBanner
     ? richBanner.art
     : kit.locked

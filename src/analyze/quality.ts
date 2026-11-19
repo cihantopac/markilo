@@ -14,6 +14,8 @@ export interface QualityCheck {
   status: CheckStatus;
   value: number | string;
   message: string;
+  /** For a rich file's silhouette-match: a hash of the files it judged (finalize refuses a check of other files). */
+  art?: string;
 }
 
 export interface QualityReport {
@@ -324,9 +326,10 @@ export function richSilhouetteStatus(iou: number): CheckStatus {
  * The checks of a rich rendering (gradients, highlights, shadows) of a flat master. Only two: `svg-integrity` (the
  * same lint as a master) and `silhouette-match` against the master. Every other check — one-colour reproduction,
  * palette separation, contrast, complexity — reads the flat master, so a gradient's stops never count as palette
- * roles here. `registered`: the rich file is drawn on the master's own artboard, so a move (beyond 2 % registration
- * slack) or a resize on it counts as drift too; silhouetteIoU alone fits each drawing to its ink and cannot see
- * either. Off for a lockup composed at finalize, which has no artboard on disk to draw on.
+ * roles here. `registered`: the rich file is drawn on the master's own artboard, so the match is taken there
+ * (artboardIoU with 2 % registration slack): a move, a resize or a redraw counts as drift. silhouetteIoU, which fits
+ * each drawing to its own ink box, cannot see a move, and a soft shadow's faint ink rescales it; it is used only when
+ * the two share no artboard.
  */
 export async function assessRich(
   rich: string,
@@ -336,7 +339,7 @@ export async function assessRich(
   opts: { registered?: boolean } = {},
 ): Promise<QualityReport> {
   const checks: QualityCheck[] = [];
-  const lint = lintSvg(rich, { master: true });
+  const lint = lintSvg(rich, { rich: true });
   const errors = lint.issues.filter((i) => i.severity === 'error');
   const warnings = lint.issues.filter((i) => i.severity === 'warning');
   checks.push({
@@ -350,21 +353,19 @@ export async function assessRich(
         ? warnings.map((e) => e.message).join(' ')
         : 'Pure vector, self-contained, scalable.',
   });
+  // On the master's artboard (with registration slack), the silhouette is compared where it is drawn: a soft shadow
+  // that only widens the faint ink does not rescale it, and a move or redraw shows. Without an artboard to share,
+  // each drawing is fitted to its own ink (silhouetteIoU).
   let iou = 0;
-  let form = 0;
-  let placed: number | undefined;
   try {
-    form = await silhouetteIoU(rich, master);
-    placed = opts.registered
+    iou = opts.registered
       ? await artboardIoU(rich, master, { slack: RICH_REGISTRATION_SLACK })
-      : undefined;
-    iou = Math.min(form, placed ?? 1);
+      : await silhouetteIoU(rich, master);
   } catch {
     iou = 0;
   }
   const st = richSilhouetteStatus(iou);
   const pct = (n: number) => `${Math.round(n * 1000) / 10} %`;
-  const moved = placed !== undefined && placed < form;
   checks.push({
     id: 'silhouette-match',
     label: 'Keeps the master’s silhouette',
@@ -373,7 +374,7 @@ export async function assessRich(
     message:
       st === 'pass'
         ? `The rich rendering covers the master's silhouette (${pct(iou)} overlap, ≥ ${pct(RICH_SILHOUETTE.pass)} passes).`
-        : `The rich rendering ${moved ? 'sits off the master on its artboard' : 'has drifted from the master’s form'}: ${pct(iou)} overlap (≥ ${pct(RICH_SILHOUETTE.pass)} passes, under ${pct(RICH_SILHOUETTE.fail)} fails). Redraw it on the master's artboard over the flat shapes.`,
+        : `The rich rendering ${opts.registered ? 'no longer covers the master’s shapes on its artboard (moved, resized or redrawn)' : 'has drifted from the master’s form'}: ${pct(iou)} overlap (≥ ${pct(RICH_SILHOUETTE.pass)} passes, under ${pct(RICH_SILHOUETTE.fail)} fails). Redraw it on the master's artboard over the flat shapes.`,
   });
   const summary: Record<CheckStatus, number> = { pass: 0, warn: 0, fail: 0, info: 0 };
   for (const c of checks) summary[c.status]++;
