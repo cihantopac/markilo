@@ -180,9 +180,9 @@ export async function buildOriginalityReport(
 
   const all = readReferences(ws, brand).references;
   const brief = ws.brief(brand);
-  // The owner's own mark is not a competitor: an `existing` reference, or a file named after the brand itself.
-  const ownKey = brandKeyOf(brief.name);
-  const isOwn = (r: ReferenceEntry) => r.category === 'existing' || brandKeyOf(r.name) === ownKey;
+  // The owner's own mark is not a competitor: only an `existing` reference counts as one. A name match alone
+  // never does, so a competitor that shares the brand's name still counts as a risk.
+  const isOwn = (r: ReferenceEntry) => r.category === 'existing';
   const refs = all.filter((r) => r.category !== 'family' && r.category !== 'in-situ' && !isOwn(r));
   const familyRefs = all.filter((r) => r.category === 'family');
   const existingRefs = all.filter((r) => r.category !== 'family' && r.category !== 'in-situ' && isOwn(r));

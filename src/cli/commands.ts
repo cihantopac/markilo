@@ -886,14 +886,9 @@ function letteringOptions(c: RunContext, cur: Concept['typography']): { typograp
 async function loadReferences(w: Workspace, brand: string): Promise<Reference[]> {
   const out: Reference[] = [];
   // A family reference, or the owner's own mark, is expected to look alike: it never steers sketches or variants away.
-  const own = brandKeyOf(w.brand(brand).name);
   for (const r of readReferences(w, brand)
     .references.filter(
-      (x) =>
-        x.category !== 'family' &&
-        x.category !== 'in-situ' &&
-        x.category !== 'existing' &&
-        brandKeyOf(x.name) !== own,
+      (x) => x.category !== 'family' && x.category !== 'in-situ' && x.category !== 'existing',
     )
     .slice(0, 60)) {
     try {

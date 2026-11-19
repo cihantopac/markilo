@@ -200,25 +200,6 @@ describe('refresh originality', () => {
       ],
       dir,
     );
-    // A file named after the brand itself is the brand's own mark too, whatever its category.
-    const small = join(dir, 'tidepool-256.png');
-    writeFileSync(small, await renderPng(mark('orbit'), { width: 256 }));
-    await cmd(
-      'reference add',
-      [
-        '--brand',
-        'tidepool',
-        '--file',
-        small,
-        '--name',
-        'Tidepool logo',
-        '--source',
-        'tidepool.example',
-        '--category',
-        'direct',
-      ],
-      dir,
-    );
     await cmd(
       'refresh',
       [
@@ -245,7 +226,7 @@ describe('refresh originality', () => {
     };
     expect(report.verdict).not.toBe('redesign');
     expect(report.visual.matches).toEqual([]);
-    expect(report.existing?.map((e) => e.name).sort()).toEqual(['Acme', 'Tidepool logo']);
+    expect(report.existing?.map((e) => e.name)).toEqual(['Acme']);
     expect(report.existing![0]!.visual).toBeGreaterThan(0.9);
     expect(readFileSync(join(ws.reportsDir('tidepool'), 'originality-refresh.md'), 'utf8')).toMatch(
       /## Likeness to the existing mark/,
@@ -260,7 +241,37 @@ describe('refresh originality', () => {
       originality: { verdict: string; existing?: { name: string; visual: number }[] };
     };
     expect(kit.originality.verdict).not.toBe('redesign');
-    expect(kit.originality.existing?.map((e) => e.name).sort()).toEqual(['Acme', 'Tidepool logo']);
+    expect(kit.originality.existing?.map((e) => e.name)).toEqual(['Acme']);
+  }, 180_000);
+
+  it('still counts a competitor reference as risk when it shares the brand’s name', async () => {
+    const { dir, ws } = await tidepool();
+    // Another company's mark under the same name, saved as a direct competitor: a name match never makes it "own".
+    const small = join(dir, 'tidepool-256.png');
+    writeFileSync(small, await renderPng(mark('orbit'), { width: 256 }));
+    await cmd(
+      'reference add',
+      [
+        '--brand',
+        'tidepool',
+        '--file',
+        small,
+        '--name',
+        'Tidepool logo',
+        '--source',
+        'other.example',
+        '--category',
+        'direct',
+      ],
+      dir,
+    );
+    await cmd('refresh', ['--brand', 'tidepool', '--from', small, '--colors', '2'], dir);
+    await cmd('verify', ['--brand', 'tidepool', '--concept', 'refresh'], dir);
+    const report = JSON.parse(
+      readFileSync(join(ws.reportsDir('tidepool'), 'originality-refresh.json'), 'utf8'),
+    ) as { visual: { matches: { name: string }[] }; existing?: unknown[] };
+    expect(report.visual.matches.map((m) => m.name)).toContain('Tidepool logo');
+    expect(report.existing ?? []).toEqual([]);
   }, 180_000);
 });
 
