@@ -17,13 +17,17 @@ rejected at the very end. In 1.8.0:
 - TV and store surfaces export.
 - Android projects get their own resource names.
 
-The items parked from 1.6.0 and the minors deferred from 1.7.0 are closed in the same release.
+`markilo refresh` runs the mechanical steps of a refresh in one command. An audit can find the mark in a photo of
+the real screen and measure it there. WebP logos decode. The items parked from 1.6.0 (with its three nits) and the
+minors deferred from 1.7.0 are closed in the same release. Nothing is deferred.
 
 **Architecture:** Three new modules:
 
 - `src/geom/trace.ts`: raster to contours to curves.
 - `src/geom/rebuild.ts`: segment fitting and angle snapping.
 - `src/export/tv.ts`: TV and store surfaces.
+- `src/render/webp.ts`: a WebP decoder (lossless and lossy, with alpha).
+- `src/analyze/locate.ts`: finding a mark in a photo.
 
 The rest changes existing code:
 
@@ -38,8 +42,8 @@ The rest changes existing code:
 - `gallery/*`
 - skill text
 
-No new dependencies. PNG and JPEG decoding already exist (`render/png.ts:55`). WebP stays unsupported, with a clear
-message.
+No new dependencies. PNG and JPEG decoding already exist (`render/png.ts:55`). WebP gets its own decoder
+(Task 14).
 
 **Tech Stack:** TypeScript (Node ≥ 20.10, ESM), vitest, biome, resvg-wasm, CanvasKit/PathKit, pngjs, jpeg-js, esbuild
 bundle in `plugin/dist/markilo.mjs`.
@@ -67,7 +71,7 @@ verification table), the items parked in `docs/RELEASE-1.6.md` → Progress reco
 - Commits stage explicit paths only and end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 - Parallel agents work in worktrees and do not stage `plugin/dist`; the controller merges and rebuilds it. One
   whole-branch review at the end, then one fix wave.
-- Tags, GitHub releases and npm publish need the user's explicit approval at the time (Task 15).
+- Tags, GitHub releases and npm publish need the user's explicit approval at the time (Task 18).
 
 ## Review Focus
 
@@ -87,6 +91,11 @@ verification table), the items parked in `docs/RELEASE-1.6.md` → Progress reco
    from the master must fail, not warn quietly.
 5. **Android install profile (Task 7)** writes only into resource folders it read, in dry-run unless `--apply`, and
    never overwrites a file without `--force`. This is the existing install-assets rule.
+6. **The WebP decoder (Task 14) reads untrusted bytes.** Truncated chunks, huge declared sizes, bad Huffman tables and
+   a VP8 frame that claims more partitions than it has must end in `INVALID_INPUT`. They must never hang, read out of
+   bounds or allocate past the pixel cap.
+7. **Locating a mark in a photo (Task 16) must not report a false match** on a busy screen. Below the score threshold
+   it says "not found" rather than measuring the wrong tile.
 
 ---
 
@@ -115,8 +124,8 @@ installed potrace + OpenCV.
   - Specks: areas below `turdSize` (default 0.05 % of the image) are dropped.
 - CLI: `trace <in.png|jpg> -o <out.svg> [--colors n] [--threshold 0-255] [--tolerance px]`. It prints
   `{ out, faces, nodes, iou }`, where `iou` is `silhouetteIoU` of the result against the raster's own mask.
-- `score <file.png|jpg>` traces internally and adds `tracedFrom: { file, iou }` to its result. WebP gives
-  `INVALID_INPUT` with "convert to PNG first".
+- `score <file.png|jpg|webp>` traces internally and adds `tracedFrom: { file, iou }` to its result. WebP reaches
+  `decodeImage` through Task 14; until that lands it gives `INVALID_INPUT`.
 
 - [ ] **Step 1: Failing tests.**
   - Render the synthetic `fold-n` fixture to a 552 px PNG with resvg; trace it; `silhouetteIoU` against the original
@@ -385,10 +394,22 @@ Several gaps slowed the run:
   `angle`. It keeps the stem's area within ±3 % and never cuts a bowl.
 - `{ "op": "slit", "of": "<id>", "from": [x, y], "to": [x, y], "width": 3 }`. Subtracts a thin rotated rectangle, so a
   designer can detach a bowl or open a join at a point they choose.
+- `{ "op": "detach-bowl", "of": "<id>", "gap": 3 }`. Finds each bowl: a counter (inner contour) whose outer contour
+  meets a vertical stem. At the junction's narrowest neck it cuts a gap of `gap` units across the joining wall, at the
+  wall's local normal, so the bowl separates from the stem as a ribbon. A glyph with no bowl is left unchanged and
+  listed in the result's `skipped`.
+- `{ "op": "point-apex", "of": "<id>", "where": "top|bottom" }`. Finds the flat or rounded join where two diagonal
+  strokes meet (A, V, W, M and N apexes). It extends both diagonals' outer edges to their intersection and the inner
+  edges to theirs, so the join becomes a sharp point. An extension is capped at 25 % of the cap height; above that the
+  glyph is skipped and reported.
 - Results drop contours under 0.05 % of the glyph's area (slivers).
 
-- [ ] Failing tests (an "H" from the bundled Sora gets four cut ends at 32°, area within ±3 %; a slit across a "P" bowl
-  leaves two contours) → implement → commit `feat(construct): cut-terminals and slit for custom lettering`.
+- [ ] Failing tests, then implement and commit `feat(construct): cut-terminals, slit, detach-bowl and point-apex`:
+  - an "H" from the bundled Sora gets four cut ends at 32°, with area within ±3 %;
+  - a slit across a "P" bowl leaves two contours;
+  - `detach-bowl` on "P", "R" and "b" leaves the bowl and the stem as separate contours, with the gap within ±0.2;
+  - `point-apex` on "A" and "V" gives a single vertex at the apex, with the stem angles unchanged within 0.5°;
+  - "o" and "I" are reported as `skipped`.
 
 ### Task 10: Turkish boards and guidelines, in-situ photos, single-agent cost
 
@@ -444,6 +465,11 @@ Four items are still open:
   checks.
 - **A palette-only change makes the critique stale.** `artHash` hashes the files after recolouring, and a pure recolour
   is not a form change.
+- **Three nits from the 1.6.0 review:**
+  - `concept revert` can list a still-restored file under `unregistered` when two keys shared it
+    (`commands.ts:2403`);
+  - `--recolor-from` with a role set to `none` gives a misleading message;
+  - `reviews` is not cleared on a new critique.
 - **A navy icon with a black word still warns** palette separation. The single-colour rule at `quality.ts:253` needs
   ΔE < 10 or all neutral, and navy against black is about 12.
 
@@ -456,8 +482,17 @@ Four items are still open:
   the hash of the art with colours normalized to their roles.
 - Single-colour rule: dark (L* < 30) and neutral, or within ΔE 15 of each other.
 
-- [ ] Failing tests for each (style block recoloured; critique kept after `--primary` change; navy + black passes) →
-  implement → commit `fix(colour): style blocks, recolours keep the critique, dark lockups read as one colour`.
+- `revert` lists a file under `unregistered` only when no restored key still points at it.
+- `--recolor-from` on a `none` role says the role has no colour to replace.
+- A new critique clears `reviews`.
+- [ ] Failing tests for each, then implement and commit `fix(colour): style blocks, recolours keep the critique, dark
+  lockups read as one colour; review nits`:
+  - a `<style>` block is recoloured;
+  - the critique is kept after a `--primary` change;
+  - navy + black passes;
+  - a shared key is not listed as unregistered;
+  - the `none`-role message;
+  - `reviews` is emptied.
 
 ### Task 13: Gallery minors deferred from 1.7.0
 
@@ -485,19 +520,126 @@ Four items are still open:
 
 - [ ] Failing tests → implement → commit `fix(gallery): focus-aware arrows, unique ids, flag label, stricter tests`.
 
-### Task 14: Skill and agent text
+### Task 14: WebP input — a decoder without a dependency
+
+Legacy logos often exist only as WebP (the field run had PNG and WebP). Neither resvg-wasm nor PathKit decodes WebP,
+and adding a dependency is not allowed.
+
+**Files:**
+
+- Create: `src/render/webp.ts`
+- Modify: `src/render/png.ts` (`decodeImage` dispatches on `RIFF....WEBP`)
+- Test: `tests/webp.test.ts`, `tests/fixtures/raster/*.webp`
+
+**Interfaces:**
+
+- `decodeWebp(buf: Uint8Array): Raster`, following the WebP container and bitstream specification (RFC 9649):
+  - `VP8L` lossless, with its transforms (predictor, colour, subtract-green, colour-indexing) and colour cache;
+  - `VP8` lossy key frames: boolean decoder, DCT/WHT, loop filter and YUV 4:2:0 to RGB;
+  - `VP8X` extended files with an `ALPH` chunk (raw or lossless-compressed, with its filters).
+
+  Animated files decode their first frame and say so in a warning. The existing pixel cap applies before decoding.
+- Fixtures: render synthetic marks with the cached Chromium (`canvas.toDataURL('image/webp', q)` at q = 1.0 for
+  lossless and 0.6 for lossy, with alpha), commit the small files, and keep the script that made them in
+  `scripts/make-webp-fixtures.mjs`.
+
+- [ ] Failing tests:
+  - lossless WebP decodes pixel-identical to the PNG of the same render;
+  - lossy WebP is within a mean absolute error of 6 per channel;
+  - an alpha WebP keeps transparent corners;
+  - a truncated file gives `INVALID_INPUT`, not a crash;
+  - `trace` on the lossy WebP reaches IoU ≥ 0.95.
+
+  Implement, then commit `feat(raster): decode WebP (lossless, lossy, alpha) without a dependency`.
+
+### Task 15: `markilo refresh` — the mechanical steps in one command
+
+The decisions in a refresh are the owner's, but the steps between them are mechanical:
+
+- trace;
+- rebuild under a fidelity gate;
+- a small version;
+- lockup layouts;
+- the boards that show them.
+
+The field run did each by hand. Task 3 makes refresh a stage; this command runs its mechanical part.
+
+**Files:**
+
+- Modify: `src/cli/commands.ts` (new `refresh`), `src/design/rounds.ts` (a refresh board), `src/gallery/gallery.ts`
+  (show the refresh beside the original)
+- Test: `tests/refresh.test.ts`
+
+**Interfaces:**
+
+- `refresh --brand <slug> --from <file.svg|png|jpg|webp> [--wordmark <file>] [--min-iou 0.95] [--angles auto]
+  [--colors n]`. It:
+  - creates or updates the concept `refresh`, with `equity` prefilled from `--equity`;
+  - traces a raster (Task 1) or takes the SVG;
+  - rebuilds it (Task 2) and keeps the trace when the rebuild falls below `--min-iou`, saying so;
+  - registers `symbol.svg`;
+  - drafts a small version with `small` (existing);
+  - composes horizontal and stacked lockups when a wordmark is given;
+  - renders `review/refresh.png`: the original and the rebuild side by side at 512, 64, 32 and 16 px, with the IoU,
+    then the lockups, then the small-size board (Task 5).
+- It prints the questions for the owner (`smallSizes`, layout, equity) as `next`. It never finalizes or exports.
+
+- [ ] Failing test: a synthetic PNG mark and a wordmark run through `refresh`, and then:
+  - `symbol.svg`, two lockups, `review/refresh.png` and `iou ≥ 0.95` exist;
+  - nothing is finalized;
+  - the gallery shows the concept with the original beside it.
+
+  Implement, then commit `feat(refresh): trace, rebuild, small and lockups in one command, stopping at the owner's
+  decisions`.
+
+### Task 16: Find the mark in a photo of the real screen
+
+The run's best evidence was a photo of the TV home screen: the banner was invisible next to the launcher's other
+tiles. Task 10 stores such photos; this task measures them.
+
+**Files:**
+
+- Create: `src/analyze/locate.ts`
+- Modify: `src/cli/commands.ts` (`audit in-situ`), `plugin/skills/audit/SKILL.md`
+- Test: `tests/locate.test.ts`
+
+**Interfaces:**
+
+- `locateMark(photo: Raster, mark: string, opts?: { minScale?: number; maxScale?: number }):
+  { box: { x: number; y: number; w: number; h: number }; scale: number; score: number } | undefined`.
+  It runs multi-scale normalized cross-correlation on edge maps, coarse to fine over an image pyramid. A small rotation
+  (±5°) is tolerated by matching rotated templates at the best scale. A `score` below 0.5 means "not found".
+- `audit in-situ --brand <slug> --photo <ref id|file> --mark <svg>` returns:
+  - the box;
+  - the mark's share of the frame and of its tile;
+  - the contrast between the mark's ink and the ring around it, and between the tile and its surroundings (the 1.27:1
+    of the field report);
+  - the smallest stroke in photo pixels.
+
+  It writes `reports/in-situ-<id>.png` with the box drawn.
+
+- [ ] Failing tests: a synthetic "launcher" image, made of tiles on a grey ground with the synthetic mark placed at a
+  known box, scaled and slightly rotated:
+  - `locateMark` returns the box within 4 % and score ≥ 0.7;
+  - the tile-to-ground contrast is within 0.05 of the constructed value;
+  - a photo without the mark returns "not found".
+
+  Implement, then commit `feat(audit): find the mark in an in-situ photo and measure it there`.
+
+### Task 17: Skill and agent text
 
 - **Design skill:** the refresh stage (Task 3); ask about small sizes early (Task 5); `rich` art (Task 4); `--lang`
   (Task 10); `render --out-dir` instead of loops (Task 8).
-- **Audit skill:** trace rasters, then score (Task 1); read in-situ photos (Task 10).
+- **Audit skill:** trace rasters, then score (Tasks 1, 14); measure in-situ photos with `audit in-situ` (Tasks 10, 16).
+- **Refresh:** `markilo refresh` for the mechanical part of the stage (Task 15).
 - **`cli.md`:** the new commands and flags. Table rows keep their cell count (existing test).
-- **concept-designer agent, develop mode:** `rebuild` for geometric clean-ups, and `cut-terminals`/`slit` for
-  whole-word treatments.
+- **concept-designer agent, develop mode:** `rebuild` for geometric clean-ups, and `cut-terminals`, `slit`,
+  `detach-bowl` and `point-apex` for whole-word treatments.
 
 - [ ] Plugin test asserting each mention, then commit `docs(skills): refresh stage, trace and rebuild, rich art, early
   small-size question`.
 
-### Task 15: Release 1.8.0
+### Task 18: Release 1.8.0
 
 - [ ] Version 1.8.0 in `package.json`, `package-lock.json` (lines 3 and 9), `plugin/.claude-plugin/plugin.json`,
   `.claude-plugin/marketplace.json`; a CHANGELOG entry.
@@ -506,7 +648,9 @@ Four items are still open:
   - finalize with `--equity`;
   - add a rich symbol;
   - export `--all` with `tv`;
-  - run `install-assets --framework android` on the fixture project (dry run).
+  - run `install-assets --framework android` on the fixture project (dry run);
+  - run `refresh` from a WebP of a synthetic mark;
+  - run `audit in-situ` on the synthetic launcher photo.
 
   Re-export Markilo's own kit: its logo files must be byte-identical.
 - [ ] `npm run ci`, `node scripts/smoke.mjs`, `claude plugin validate plugin`.
@@ -514,31 +658,29 @@ Four items are still open:
 
 ## Not in 1.8.0
 
-| Request                                                          | Why not now                                                                                                                              |
-| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `detach-bowl` and `point-apex` as automatic lettering operations | They need glyph-structure detection that is not calibrated; Task 9's `slit` and `cut-terminals` let a designer do both at a chosen spot. |
-| WebP input                                                       | No decoder without a new dependency; the error says to convert to PNG.                                                                   |
-| A full refresh run without a designer (one command)              | Every step needs the owner's eye (fidelity, small sizes, layout); Task 3 makes them a stage with commands, not an automation.            |
-| Measuring contrast inside an in-situ photo automatically         | Needs locating the mark in a photo; the audit crops it with `analyze` instead.                                                           |
-| The three cosmetic nits from the 1.6.0 review                    | Not recorded in detail when parked; they return if they show up again.                                                                   |
+Nothing. Everything open at planning time is in a task above, including what the first draft of this plan left
+out (automatic `detach-bowl` and `point-apex`, WebP, a one-command refresh, measuring in a photo, the 1.6.0 nits).
 
 ## Sources
 
 - **Field report on 1.7.0 (2026-11-18).** A single agent refreshed a raster logo for a TV and mobile media app. The
   owner approved the result and got a 182-file kit, built by the agent's own script. Its findings map to tasks:
   1 → Task 1, 2 → Tasks 1–2, 3 → Task 3, 4 → Task 4, 5 → Task 3, 6 → Task 5, 7 → Task 6, 8 → Task 7, 9–10 and 12 →
-  Task 8, 11 → Task 9, 13 and the small notes → Task 10.
-- **Parked from 1.6.0** (`docs/RELEASE-1.6.md`, Progress record) → Tasks 11–12.
+  Task 8, 11 → Task 9, 13 and the small notes → Task 10, WebP (the report's raster sources) → Task 14, a refresh
+  without hand-running each step → Task 15, the in-situ photo → Tasks 10 and 16.
+- **Parked from 1.6.0** (`docs/RELEASE-1.6.md`, Progress record, and the three nits of its re-review) → Tasks 11–12.
 - **Deferred from 1.7.0** (`docs/superpowers/plans/2026-11-16-gallery-redesign.md`, Progress) → Task 13.
 
 ## Execution
 
 Dependency waves (at most four parallel worktrees):
 
-- **Wave 1:** Task 1, Task 6, Task 7, Task 11.
-- **Wave 2:** Task 2 (needs Task 1), Task 8, Task 12, Task 13.
-- **Wave 3:** Task 3 (needs 1–2), Task 4, Task 5, Task 9, Task 10.
-- **Then:** Task 14, one whole-branch review, one fix wave, Task 15.
+- **Wave 1:** Task 1, Task 6, Task 7, Task 14.
+- **Wave 2:** Task 2 (needs Task 1), Task 11, Task 12, Task 13.
+- **Wave 3:** Task 4, Task 5, Task 8, Task 9.
+- **Wave 4:** Task 3 (needs 1–2), Task 10, Task 16 (needs 10).
+- **Wave 5:** Task 15 (needs 1–5).
+- **Then:** Task 17, one whole-branch review, one fix wave, Task 18.
 
 ## Progress record
 
