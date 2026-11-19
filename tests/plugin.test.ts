@@ -289,6 +289,60 @@ describe('craft-named directions', () => {
     expect(cli).toContain('--lang en\\|tr');
     expect(cli).toContain('existing\\|family\\|in-situ');
   });
+  it('1.8: skills and agent mention every refresh-path feature', () => {
+    const read = (f: string) => readFileSync(join(root, f), 'utf8').replace(/\s+/g, ' ');
+    const design = read('plugin/skills/design/SKILL.md');
+    const workflow = read('plugin/skills/design/references/workflow.md');
+    const cli = read('plugin/skills/design/references/cli.md');
+    const audit = read('plugin/skills/audit/SKILL.md');
+    const exp = read('plugin/skills/export/SKILL.md');
+    const agent = read('plugin/agents/concept-designer.md');
+    // refresh stage
+    expect(design).toMatch(/### Refresh: the owner's own mark/);
+    expect(design).toContain('markilo refresh --brand <slug> --from <current mark>');
+    expect(workflow).toMatch(/lower `--tolerance` or pass `--angles none`/);
+    expect(workflow).toMatch(/`refreshedFrom`\), so the gallery shows the rebuild beside the original/);
+    expect(workflow).toMatch(/A refresh needs no critique unless the user asks/);
+    expect(workflow).toMatch(/\(a refresh: only on request\)/);
+    // small sizes early, rich art, --lang, --out-dir
+    expect(design).toMatch(/\*\*Small sizes, asked early:\*\*/);
+    expect(design).toContain(
+      '`concept update --rich-symbol|--rich-lockup-horizontal|--rich-lockup-stacked <file>`',
+    );
+    expect(design).toContain('`markilo export --icon-art rich`');
+    expect(design).toContain(
+      'pass `--lang en|tr` to `render`, `proposals`, `sketches`, `refresh` or `export`',
+    );
+    expect(design).toContain('`markilo render a.svg b.svg … --out-dir <dir>`');
+    expect(exp).toContain('`--icon-art rich`');
+    expect(exp).toContain('`--lang en|tr`');
+    // audit: trace rasters, then score; in-situ photos
+    expect(audit).toMatch(
+      /A raster asset \(PNG, JPEG\) is traced first: `markilo trace <file\.png> -o <tmp>\.svg`/,
+    );
+    expect(audit).toContain('`markilo audit in-situ --brand <slug> --photo <ref id|file> --mark <svg>`');
+    expect(audit).toContain('--category in-situ');
+    // concept-designer develop mode
+    expect(agent).toContain('`markilo rebuild in.svg -o out.svg --against <original>`');
+    for (const op of ['cut-terminals', 'slit', 'detach-bowl', 'point-apex'])
+      expect(agent, op).toContain(`\`${op}\``);
+    // cli.md
+    for (const t of [
+      '`trace in.png -o out.svg',
+      '`rebuild in.svg -o out.svg',
+      '`refresh --brand s --from',
+      '--out-dir dir',
+      '[--pad <percent>]',
+      '[--zoom x,y,w,h[:label]]',
+      '--small-compare',
+      '[--icon-art flat\\|rich]',
+      '--session-usd',
+      '`audit in-situ --brand s --photo',
+      '`install-assets --brand s --framework auto\\|next\\|laravel\\|flutter\\|android\\|static [--map <name>=<export path>]',
+      '(`cut-terminals`, `slit`, `detach-bowl`, `point-apex`)',
+    ])
+      expect(cli, t).toContain(t);
+  });
   it('cli.md table rows have as many cells as the header', () => {
     const cli = readFileSync(join(root, 'plugin/skills/design/references/cli.md'), 'utf8');
     const cells = (row: string) => row.replace(/\\\|/g, '').split('|').length;

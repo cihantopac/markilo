@@ -2,14 +2,14 @@
 
 ## Stage gates
 
-| Stage      | Done when                                                                                        | Saved in                          |
-| ---------- | ------------------------------------------------------------------------------------------------ | --------------------------------- |
-| Understand | Sources read, existing identity seen, concise brief, essential questions answered, references in | profile.json, brief.json, answers |
-| Explore    | Three proposals in the round: word, icon, idea, strengths, weaknesses, rendered board            | concepts/<id>/, proposals/round-N |
-| Choose     | The user selected, asked for changes, combined, or rejected the round with a note                | feedback/, concept status         |
-| Develop    | The chosen concept refined: letterforms, spacing, icon, small version, lockups, colour           | concepts/<id>/                    |
-| Verify     | No `fail` checks, originality not `redesign`, one independent critique applied, user approved    | reports/, final/                  |
-| Export     | Export ran without skipped groups the user needs                                                 | exports/                          |
+| Stage      | Done when                                                                                                                  | Saved in                          |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| Understand | Sources read, existing identity seen, concise brief, essential questions answered, references in                           | profile.json, brief.json, answers |
+| Explore    | Three proposals in the round: word, icon, idea, strengths, weaknesses, rendered board                                      | concepts/<id>/, proposals/round-N |
+| Choose     | The user selected, asked for changes, combined, or rejected the round with a note                                          | feedback/, concept status         |
+| Develop    | The chosen concept refined: letterforms, spacing, icon, small version, lockups, colour                                     | concepts/<id>/                    |
+| Verify     | No `fail` checks, originality not `redesign`, one independent critique applied (a refresh: only on request), user approved | reports/, final/                  |
+| Export     | Export ran without skipped groups the user needs                                                                           | exports/                          |
 
 A refresh replaces Explore, Choose and Develop with the **Refresh** stage below; Verify and Export stay.
 
@@ -44,10 +44,12 @@ unchanged, while a refresh redraws them.
    `markilo refresh --brand <slug> --from <current.svg|png|jpg|webp> [--wordmark <file>] [--equity "<since when and where>"] [--colors n]`
    runs the mechanical steps on the concept `refresh`: it traces a raster (`--colors n` for a mark of n colours) or
    takes the SVG, rebuilds it under the fidelity gate (`--min-iou 0.95`; below it the trace is kept and the result
-   says so — never lower `--min-iou` without telling the user), registers `symbol.svg`, drafts a small version the way
+   says so — never lower `--min-iou` without telling the user; when the gate refuses, lower `--tolerance` or pass
+   `--angles none` first, then say what happened), registers `symbol.svg`, drafts a small version the way
    `construct --role small` builds one, composes horizontal and stacked lockups when a wordmark is given, and renders
    `review/refresh.png` (original beside the rebuild at 512/64/32/16 px with the IoU, the lockups, the small-size
-   board). The concept records the original (`refreshedFrom`), so the gallery shows it beside the rebuild. It never
+   board). The concept records the original (`refreshedFrom`), so the gallery shows the rebuild beside the original
+   (there is no separate "Current" concept to make). It never
    finalizes or exports; its `next` lists the owner's questions. Rerunning it is safe: files the owner changed since
    the last refresh are kept (with a warning) unless `--force`. The single steps stay available
    (`markilo trace`, `markilo rebuild … --against <original>`, `markilo lockup`, `render --small-compare`).
@@ -59,7 +61,8 @@ unchanged, while a refresh redraws them.
 6. **Rich rendering** only when the identity is metallic or gradient: rich rendering (`concept update --rich-symbol`)
    keeps the flat master for small sizes.
 7. **Verify** (`markilo verify`), then show the gallery: rebuild beside the original, the measured checks and the
-   originality verdict.
+   originality verdict. A refresh needs no critique unless the user asks for one; the Verify gate's critique applies
+   to developed identities.
 8. **Finalize with equity**: with the equity recorded (step 5, e.g. `--equity "in use since 2014 on the TV app"`),
    `markilo finalize … --user-choice "<their words>"`. With `--equity`, an `insufficient-evidence` or `needs-review`
    verdict does not need `--accept-risk`: the kit records `originality.equity` and the guidelines say originality was
