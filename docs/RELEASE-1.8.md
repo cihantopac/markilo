@@ -710,7 +710,7 @@ pass; `scripts/smoke.mjs` and `claude plugin validate` (strict) pass.
 | 15 `markilo refresh`        | one command up to the owner's decisions; `refreshedFrom` in the gallery                                              | fix round: a rerun keeps the owner's edits unless `--force`                                                                                |
 | 16 in-situ locate           | `audit in-situ`, `src/analyze/locate.ts`                                                                             | fix round: a colour-part check rejects near-misses (23 hard negatives not found)                                                           |
 | 17 skill text               | every 1.8 mention asserted by one plugin test                                                                        | clean                                                                                                                                      |
-| 18 release                  | version 1.8.0, CHANGELOG, release check; own kit re-exported with byte-identical logos                               | tag, GitHub release and npm publish wait for the user                                                                                      |
+| 18 release                  | version 1.8.0, CHANGELOG, release check; own kit re-exported with byte-identical logos                               | released 2026-11-19: tag `markilo--v1.8.0`, GitHub release, npm `markilo@1.8.0` (latest, shasum `e6127c77`, gitHead `42584d1`, 287 files)  |
 
 ### Whole-branch review and fix wave
 
@@ -806,4 +806,4 @@ Each: what was decided — why — what it costs if wrong.
   a contour whose snaps would fold keeps none of them.
 - Locate: leaf-letter is never found; a plain disc is found in a ring's hole; marks under ~32 px need a 0.65 score.
 - Small-compare board: it ignores the paper colour and clips long labels.
-- README asset URLs still pin `markilo--v1.7.0`; update them once the 1.8.0 tag exists.
+- README asset URLs still pin `markilo--v1.7.0`; the assets did not change in 1.8.0, so they still show the right images.
