@@ -19,7 +19,7 @@ const hashId=()=>{try{return decodeURIComponent(location.hash.slice(1))}catch(e)
 const groups=[...document.querySelectorAll('.proposals')].map(list=>({list,board:list.parentElement.querySelector(':scope>.board')})).filter(g=>g.board);let cur=groups[0];
 function show(g,id){const a=document.getElementById(id);if(!a||a.parentElement!==g.list)return;cur=g;g.list.classList.add('one');
 [...g.list.children].forEach(x=>x.classList.toggle('on',x===a));g.board.querySelectorAll('.tile').forEach(t=>{const on=t.dataset.target===id;t.classList.toggle('on',on);t.setAttribute('aria-current',on?'true':'false')})}
-const byId=h=>h?document.getElementById(h)||[...document.querySelectorAll('.proposal')].find(x=>x.id.replace('--','-')===h):null;
+const byId=h=>{if(!h)return null;const x=document.getElementById(h);if(x)return x;const m=[...document.querySelectorAll('.proposal')].filter(p=>p.id.replace(/--/g,'-')===h);return m.length===1?m[0]:null};
 const mark=id=>{try{history.replaceState(null,'','#'+id)}catch(e){}};
 groups.forEach(g=>{g.list.querySelectorAll(':scope>.proposal h3').forEach(h=>h.setAttribute('tabindex','-1'));const first=g.list.querySelector(':scope>.proposal');const a=byId(hashId());const fromHash=a&&a.parentElement===g.list?a:null;if(first)show(g,(fromHash||first).id);
 g.board.querySelectorAll('.tile').forEach(t=>t.onclick=e=>{e.preventDefault();show(g,t.dataset.target);mark(t.dataset.target)})});

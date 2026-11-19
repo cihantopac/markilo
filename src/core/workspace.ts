@@ -15,7 +15,7 @@ import {
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { MarkiloError } from './errors.js';
 import { isDir, nowIso, readJson, writeFileSafe, writeJson } from './fsx.js';
-import { isSlug, portableRef, resolveInsideReal, slugify } from './paths.js';
+import { assertNewSlug, isSlug, portableRef, resolveInsideReal, slugify } from './paths.js';
 import type {
   AnswerLog,
   BrandProfile,
@@ -158,6 +158,7 @@ export class Workspace {
   }): WorkspaceBrand {
     const slug = input.slug ?? slugify(input.name);
     if (!isSlug(slug)) throw new MarkiloError('INVALID_INPUT', `"${slug}" is not a valid slug.`);
+    assertNewSlug(slug, 'Brand slug');
     const m = structuredClone(this.manifest);
     if (m.brands.some((b) => b.slug === slug))
       throw new MarkiloError('EXISTS', `Brand "${slug}" already exists.`);
@@ -273,7 +274,9 @@ export class Workspace {
   saveConcept(c: Concept): void {
     const issues = validateConcept(c);
     if (issues.length) throw new MarkiloError('INVALID_INPUT', `Invalid concept: ${issues.join('; ')}`);
-    writeJson(join(this.conceptDir(c.brand, c.id), 'concept.json'), { ...c, updatedAt: nowIso() });
+    const file = join(this.conceptDir(c.brand, c.id), 'concept.json');
+    if (!existsSync(file)) assertNewSlug(c.id, 'Concept id');
+    writeJson(file, { ...c, updatedAt: nowIso() });
   }
 
   assertNotLocked(slug: string): void {

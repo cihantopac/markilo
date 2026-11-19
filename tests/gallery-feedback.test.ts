@@ -342,3 +342,87 @@ describe('gallery: ids, flags and the board', () => {
     expect(html).toMatch(/<details class="rejected-list"[\s\S]*id="nimbra--fold3"/);
   });
 });
+
+describe('gallery: ids are safe to join', () => {
+  it('refuses "--" in a new brand slug or concept id, but still reads one that exists', () => {
+    const { ws } = synthBrand();
+    expect(() => ws.addBrand({ name: 'Odd', slug: 'a--b' })).toThrow(
+      expect.objectContaining({ code: 'USAGE' }),
+    );
+    const fold = ws.concept('nimbra', 'fold');
+    expect(() => ws.saveConcept({ ...fold, id: 'b--x' })).toThrow(expect.objectContaining({ code: 'USAGE' }));
+    // A workspace made before the rule keeps working: an existing concept with "--" is still saved.
+    cpSync(ws.conceptDir('nimbra', 'fold'), ws.conceptDir('nimbra', 'old--one'), { recursive: true });
+    writeFileSync(
+      join(ws.conceptDir('nimbra', 'old--one'), 'concept.json'),
+      JSON.stringify({ ...fold, id: 'old--one' }),
+    );
+    expect(ws.concept('nimbra', 'old--one').id).toBe('old--one');
+    expect(() => ws.saveConcept({ ...fold, id: 'old--one' })).not.toThrow();
+  });
+  it('no longer lets two brand and concept pairs share an id', () => {
+    const id = (slug: string, key: string) => proposalId({ brand: { slug }, key } as never);
+    expect(id('a', 'b-x')).not.toBe(id('a-b', 'x'));
+  });
+  /** Run the client against a page of these proposal ids; returns the id it brings forward. */
+  const shown = (ids: string[], hash: string) => {
+    const on: Record<string, boolean> = {};
+    const stub: unknown = new Proxy(() => {}, {
+      get: (_t, k) => (k === Symbol.toPrimitive ? () => '' : k === 'length' ? 0 : stub),
+      apply: () => stub,
+      set: () => true,
+    });
+    const list: Record<string, unknown> = {};
+    const cards = ids.map((id) => ({
+      id,
+      parentElement: list,
+      classList: {
+        toggle: (n: string, v: boolean) => {
+          if (n === 'on') on[id] = v;
+        },
+      },
+      querySelectorAll: () => [],
+      querySelector: () => null,
+    }));
+    Object.assign(list, {
+      children: cards,
+      classList: { add: () => {} },
+      querySelector: (sel: string) => (sel === ':scope>.proposal' ? cards[0] : null),
+      querySelectorAll: () => [],
+      contains: () => false,
+      getClientRects: () => [1],
+      getBoundingClientRect: () => ({ top: 0 }),
+      parentElement: { querySelector: () => ({ querySelectorAll: () => [], contains: () => false }) },
+    });
+    const document = {
+      querySelectorAll: (sel: string) => (sel === '.proposals' ? [list] : sel === '.proposal' ? cards : []),
+      querySelector: () => null,
+      addEventListener: () => {},
+      activeElement: null,
+      getElementById: (id: string) => cards.find((c) => c.id === id) ?? (id.includes('-') ? null : stub),
+    };
+    const sandbox = {
+      document,
+      location: { pathname: '/g.html', search: '', hash, protocol: 'file:' },
+      localStorage: { getItem: () => '{}', setItem: () => {} },
+      navigator: {},
+      CSS: { escape: (x: string) => x },
+      history: { replaceState: () => {} },
+      URLSearchParams,
+      setTimeout: () => 0,
+      JSON,
+      Date,
+      Object,
+      Number,
+      Math,
+    };
+    vm.runInNewContext(GALLERY_SCRIPT, { ...sandbox, window: sandbox });
+    return ids.filter((id) => on[id]);
+  };
+  it('opens an old "#slug-key" link only when exactly one proposal matches', () => {
+    expect(shown(['nimbra--other', 'nimbra--fold'], '#nimbra-fold')).toEqual(['nimbra--fold']);
+    expect(shown(['nimbra--other', 'nimbra--fold'], '#nimbra--fold')).toEqual(['nimbra--fold']);
+    // "#acme-pro-x" could be acme--pro-x or acme-pro--x: bring neither forward (the first stays).
+    expect(shown(['zzz--q', 'acme-pro--x', 'acme--pro-x'], '#acme-pro-x')).toEqual(['zzz--q']);
+  });
+});

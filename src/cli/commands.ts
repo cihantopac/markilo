@@ -29,6 +29,7 @@ import {
 import { MarkiloError } from '../core/errors.js';
 import { isDir, nowIso, readJson, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
 import {
+  assertNewSlug,
   isSlug,
   portableRelative,
   realExisting,
@@ -1693,6 +1694,7 @@ export const COMMANDS: CommandSpec[] = [
           '--id must be a slug (a-z, 0-9, -).',
           `Try --id ${slugify(id.replace(/([a-z0-9])([A-Z])/g, '$1-$2'))}.`,
         );
+      assertNewSlug(id, '--id');
       const dir = w.conceptDir(slug, id);
       const font = c.str('font');
       const lead = c.str('lead');
