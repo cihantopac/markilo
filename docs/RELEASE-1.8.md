@@ -678,10 +678,132 @@ Dependency waves (at most four parallel worktrees):
 - **Wave 1:** Task 1, Task 6, Task 7, Task 14.
 - **Wave 2:** Task 2 (needs Task 1), Task 11, Task 12, Task 13.
 - **Wave 3:** Task 4, Task 5, Task 8, Task 9.
-- **Wave 4:** Task 3 (needs 1–2), Task 10, Task 16 (needs 10).
-- **Wave 5:** Task 15 (needs 1–5).
+- **Wave 4:** Task 3 (needs 1–2), Task 10.
+- **Wave 5:** Task 15 (needs 1–5), Task 16 (needs 10).
 - **Then:** Task 17, one whole-branch review, one fix wave, Task 18.
 
 ## Progress record
 
-(filled in during the work)
+Executed 2026-11-19 with subagent-driven development: one worktree agent per task (at most four at once), a task
+review (spec + quality) after each with fix rounds where needed, the controller merging each task into `v1.8` and
+rebuilding `plugin/dist`, then one whole-branch review, one fix wave and a scoped re-review. `npm run ci`: 639 tests
+pass; `scripts/smoke.mjs` and `claude plugin validate` (strict) pass.
+
+### Tasks
+
+| Task                        | Result                                                                                                               | Review                                                                                                                                     |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1 trace                     | `src/geom/trace.ts`; fold-n IoU 0.979 with 29 nodes; 4000 px in ~0.6 s                                               | fix round: inverted ground on tight crops; node blow-up at non-integer downsampling (area-weighted filter, `--background`, ground warning) |
+| 2 rebuild                   | `src/geom/rebuild.ts`; circle → 2 arcs at 0.999; fold-n 29 → 18 nodes at 0.998                                       | fix round: the gate also measures every path alone (`worstPath`); a snap never reverses a neighbour; `auto` angles shared across paths     |
+| 3 refresh + equity          | `concept update --equity`; equity stops gating only `insufficient-evidence` / `needs-review`; `redesign` still fails | clean                                                                                                                                      |
+| 4 rich                      | `files.rich`, `silhouette-match`, `export --icon-art`                                                                | fix round: a rich lint profile (filters allowed); finalize refuses an unchecked rich file                                                  |
+| 5 small sizes               | `render --small-compare`; the skill asks `small\|main` before export                                                 | clean                                                                                                                                      |
+| 6 TV / store                | `tv` group (Fire TV, webOS), Android TV 640×360 banner, Play feature graphic                                         | fix round: no lettering warning for symbol-only identities                                                                                 |
+| 7 Android install           | `install-assets --framework android`, `--map`                                                                        | clean                                                                                                                                      |
+| 8 render                    | `--out-dir`, `--pad`, `--zoom`, `wordmark --pad`                                                                     | fix round: zoom crops share the before frame; atomic batch                                                                                 |
+| 9 lettering                 | `cut-terminals`, `slit`, `detach-bowl`, `point-apex` in `src/construct/lettering.ts`                                 | clean                                                                                                                                      |
+| 10 Turkish / in-situ / cost | `--lang en\|tr`, Turkish `guidelines.md`, `in-situ` references                                                       | clean                                                                                                                                      |
+| 11 research leftovers       | family stems, Greek/Cyrillic transliteration, nested hidden text, kerned pairs                                       | clean                                                                                                                                      |
+| 12 colour leftovers         | `<style>` colours, recolours keep the critique, navy + black as one colour, three nits                               | fix round: the critique is kept only across an exact colour map                                                                            |
+| 13 gallery minors           | `<slug>--<key>` ids, focus-aware arrows, flag label, stricter tests                                                  | fix round: `--` refused in new slugs and ids                                                                                               |
+| 14 WebP                     | `src/render/webp.ts` (VP8L, VP8, ALPH); 6000-case fuzz clean                                                         | clean                                                                                                                                      |
+| 15 `markilo refresh`        | one command up to the owner's decisions; `refreshedFrom` in the gallery                                              | fix round: a rerun keeps the owner's edits unless `--force`                                                                                |
+| 16 in-situ locate           | `audit in-situ`, `src/analyze/locate.ts`                                                                             | fix round: a colour-part check rejects near-misses (23 hard negatives not found)                                                           |
+| 17 skill text               | every 1.8 mention asserted by one plugin test                                                                        | clean                                                                                                                                      |
+| 18 release                  | version 1.8.0, CHANGELOG, release check; own kit re-exported with byte-identical logos                               | tag, GitHub release and npm publish wait for the user                                                                                      |
+
+### Whole-branch review and fix wave
+
+- **Critical, fixed:** the owner's own logo (an `existing` reference, saved automatically by `research site`)
+  scored as originality risk, so a refresh came out `redesign` and could not finalize. `existing` references are
+  now reported as likeness and never count as risk.
+- **Important, fixed:** WebP was refused by `reference add`, `similarity calibrate`, the quality report's MIME type
+  and competitor logo downloads; `reference dedupe --apply` could delete in-situ photos.
+- **Important, fixed after the re-review:** a reference named after the brand counted as the owner's mark whatever
+  its category, which hid a same-name competitor. Only the `existing` category counts now.
+- Ten minors fixed: top-level help, docs and help text, a refresh rerun keeping a hand-registered symbol, board
+  language on variant sheets, an unused constant, a cap on Android render sizes, a quiet locate test, EXIF note,
+  `--colors` range, workflow wording, a finalize warning for equity on a fresh design, `--map` outside Android.
+
+### Rulings
+
+Each: what was decided — why — what it costs if wrong.
+
+1. Task 16 moved from wave 4 to wave 5 — it needs Task 10's in-situ references — one wave of latency.
+2. Task 1 routes `score` through `decodeImage`; WebP scoring was asserted after Task 14 merged — the two ran in
+   parallel — none.
+3. Merge conflicts in `src/cli/commands.ts` (touched by most tasks) resolved by the controller at each merge, with
+   a full ci after — parallel waves — merge work (one merge corrupted the `cli.md` table; it was found by a review
+   and repaired).
+4. Task 5 started after Task 8 merged — both edit `render` and `sheet.ts` — later start for Task 5.
+5. `refresh` accepts `--equity` — Task 15's text prefills equity from it but its synopsis omitted the flag — none.
+6. Task 17 audits and completes all skill mentions with one plugin test — earlier tasks wrote their own lines —
+   none.
+7. Parallel worktree implementers — the user asked for parallel waves — merge work.
+8. Task 14 tested its lossy WebP with a mask IoU; the trace-based test was added after merge — 1 and 14 ran in
+   parallel — none.
+9. The Android TV 640×360 banner goes to `drawable-xxxhdpi` (the platform docs give xxhdpi as 480×270) — the plan
+   text was wrong — a path rename if the docs are read differently.
+10. Samsung Tizen 512 is not exported — it could not be confirmed (Samsung lists 1920×1080 and 512×423 store
+    images) — Tizen users make it by hand.
+11. `planFrameworkInstall` became async — resvg initialises asynchronously — callers must await.
+12. The WebP end-to-end follow-up (`loadMark`, calibrate MIME, decode warnings, the trace-on-WebP test) rode with
+    Task 2 — keeps four agents at most — a larger Task 2 diff.
+13. The gallery colour test keeps four named exceptions (`#fbf8f2`, `#fff`, and the dark theme's lifted oxbloods
+    `#b34f55`, `#e3a3a8`) — the 1.7.0 palette is owner-approved — a slightly weaker test; any new stray token still
+    fails.
+14. `--` is refused when a brand slug or concept id is created, and still read — protects existing workspaces — a
+    legacy `--` brand can still get new concepts.
+15. The single-colour rule is `ΔE < 15 or all neutral` — the old rule had no lightness clause and adding one would
+    narrow it — none visible (navy + black passes either way).
+16. Tasks 4, 8 and 9 started while Task 2 still ran — none depends on it — merge work.
+17. CLI errors stay JSON on stderr — the existing convention and tests; the plan's stdout line is about results —
+    none.
+18. A zoom crop fits the after file into the before file's viewBox, as the compare panels do — one crop window must
+    show the same part of both — a padded after file is shrunk in the crop.
+19. `rebuild --angles auto` snaps to the length-weighted mean of a cluster — on a JPEG trace it raised IoU from
+    0.981 to 0.992; equal to the plain mean for equal lengths — none.
+20. `silhouette-match` for rich art measures overlap on the master's artboard with 2 % registration slack —
+    refitting ink boxes passed a 15 % move and failed a soft drop shadow — a rich file must share its master's
+    artboard.
+21. Rich icon art stands on the user's tile colour, otherwise on paper — its own colours would vanish on the primary
+    tile — a different ground than the flat icon.
+22. `point-apex` is tested on the bundled Inter 400 — Sora's A and V overshoot the plan's 25 % cap (54 % and 62 %)
+    and are skipped as the plan requires; a test pins that — no Sora apex coverage.
+23. The lettering operations live in `src/construct/lettering.ts` — keeps `compile.ts` focused — none.
+24. Rich files get their own lint profile: every security and integrity error stays, filters become info,
+    `color-count` and `opacity` are not reported — the feature exists for gradients and shadows — a second profile
+    to maintain.
+25. The rebuild-beside-original view is Task 15's `refreshedFrom`, not a stand-in "Current" concept — Task 15 owns
+    the gallery — none.
+26. Task 16 started beside Task 15 with file paths for `--photo`; reference ids were wired after Task 10 merged —
+    none.
+27. `verify`'s gate sheets stay English — they are read by the agent, not the owner — none.
+28. The refresh board lives in `src/render/refresh.ts` with the other boards — none.
+29. `locateMark` uses a colour-part check after the correlation, not oriented gradients — the check rejects every
+    hard negative including a mirrored mark, which gradients would not — a mark within ΔE 10 of its surroundings,
+    or on a busy ground, is reported not found.
+30. `existing` references are the owner's own marks: their likeness is reported apart and never counts as
+    originality risk, for every concept — the plan's aim is that originality never gates the owner's mark — a new
+    design too close to the old logo is shown as likeness, not flagged as risk.
+31. The fix wave fixed every Critical, Important and Minor finding except the JPEG budget and the slug change, which
+    went into the CHANGELOG — none.
+32. Existing-mark references also stay out of `construct --vary` and sketch distance scoring — likeness, not risk —
+    variants for a redesign are not pushed away from the old mark.
+33. Only the `existing` category makes a reference the owner's mark; a name match alone never does — a same-name
+    competitor must stay a risk — an own logo filed under another category counts as risk until recategorised.
+34. Markilo's own kit was re-exported and committed: logo files are byte-identical; the manifest, guidelines and
+    preview pages pick up new surface sources — keeps the published kit current — a noisy diff.
+
+### Left open (minor, recorded for a later release)
+
+- `research site` run on a foreign host saves that site's logo as `existing`; it could warn when the host is not the
+  brand's own.
+- `verify` output and the guidelines do not show likeness to the existing mark (the kit and the originality report
+  do).
+- `concept revert` does not carry a critique across a palette-only recolour (it asks for a new critique).
+- Rebuild: a speck smaller than the tolerance can block a whole rebuild (`--min-iou` / `--tolerance` get past it);
+  a contour whose snaps would fold keeps none of them.
+- Locate: leaf-letter is never found; a plain disc is found in a ring's hole; marks under ~32 px need a 0.65 score.
+- Small-compare board: it ignores the paper colour and clips long labels.
+- README asset URLs still pin `markilo--v1.7.0`; update them once the 1.8.0 tag exists.
