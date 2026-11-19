@@ -190,6 +190,12 @@ export interface Concept {
    * choice, the main symbol (`main`), whose 16/32 px results then read as warnings.
    */
   smallSizes?: 'small' | 'main';
+  /**
+   * Equity: the concept continues the owner's own mark, already in use (`note`: since when and where, in the user's
+   * words; `since`: a year read from it). `finalize` then reports an `insufficient-evidence` or `needs-review`
+   * originality verdict without gating on it; `redesign` still blocks.
+   */
+  equity?: { note: string; since?: string };
   status: ConceptStatus;
   createdAt: string;
   updatedAt: string;

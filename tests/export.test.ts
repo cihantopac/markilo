@@ -628,6 +628,64 @@ describe('originality band', () => {
   }, 120_000);
 });
 
+describe("equity mode: a refresh of the owner's own mark", () => {
+  const EQUITY = 'In use since 2014 on the TV app and the website.';
+  const setVerdict = (ws: Workspace, verdict: string) => {
+    const f = join(ws.reportsDir('nimbra'), 'originality-fold.json');
+    writeFileSync(f, JSON.stringify({ ...JSON.parse(readFileSync(f, 'utf8')), verdict }));
+  };
+  const withEquity = async (equity?: { note: string; since?: string }) => {
+    const { ws } = synthBrand();
+    if (equity) ws.saveConcept({ ...ws.concept('nimbra', 'fold'), equity });
+    await verifyConcept(ws, 'nimbra', 'fold');
+    return ws;
+  };
+  it('insufficient-evidence does not need --accept-risk, the verdict is still reported and the kit says why', async () => {
+    const ws = await withEquity({ note: EQUITY, since: '2014' });
+    const kit = await finalizeConcept(ws, 'nimbra', 'fold', { userChoice: 'Chosen in a test.' });
+    expect(kit.originality?.verdict).toBe('insufficient-evidence');
+    expect(kit.originality?.equity).toBe(EQUITY);
+    expect(kit.originality?.acceptedRisk).toBe(false);
+    await exportBrand(ws, 'nimbra', { groups: ['guidelines'] });
+    const g = (f: string) => readFileSync(join(ws.exportsDir('nimbra'), 'guidelines', f), 'utf8');
+    const SENTENCE =
+      'Continues an existing mark in use since 2014; originality was reported, not used as a gate.';
+    expect(g('brand-guidelines.md')).toContain(SENTENCE);
+    expect(g('index.html')).toContain(SENTENCE);
+    expect(g('index.html')).toContain('insufficient-evidence');
+    expect(g('brand-guidelines.md')).toContain(EQUITY);
+  }, 120_000);
+  it('needs-review does not need --accept-risk either', async () => {
+    const ws = await withEquity({ note: EQUITY });
+    setVerdict(ws, 'needs-review');
+    const kit = await finalizeConcept(ws, 'nimbra', 'fold', { userChoice: 'Chosen in a test.' });
+    expect(kit.originality?.verdict).toBe('needs-review');
+    expect(kit.originality?.equity).toBe(EQUITY);
+  }, 120_000);
+  it('a redesign verdict still blocks finalize, with or without --accept-risk', async () => {
+    for (const equity of [{ note: EQUITY }, undefined]) {
+      const ws = await withEquity(equity);
+      setVerdict(ws, 'redesign');
+      for (const acceptRisk of [false, true])
+        await expect(
+          finalizeConcept(ws, 'nimbra', 'fold', { userChoice: 'Chosen in a test.', acceptRisk }),
+        ).rejects.toThrow(/originality verdict "redesign"/);
+    }
+  }, 120_000);
+  it('without equity, insufficient-evidence still needs --accept-risk', async () => {
+    const ws = await withEquity();
+    await expect(finalizeConcept(ws, 'nimbra', 'fold', { userChoice: 'Chosen in a test.' })).rejects.toThrow(
+      /insufficient-evidence/,
+    );
+    const kit = await finalizeConcept(ws, 'nimbra', 'fold', {
+      userChoice: 'Chosen in a test.',
+      acceptRisk: true,
+    });
+    expect(kit.originality?.equity).toBeUndefined();
+    expect(kit.originality?.acceptedRisk).toBe(true);
+  }, 120_000);
+});
+
 describe('a stand-in font stays out of the kit typography', () => {
   const finalizeWith = async (typography: Record<string, unknown>) => {
     const { ws } = synthBrand();

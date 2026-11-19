@@ -129,6 +129,7 @@ export function guidelinesMarkdown(g: GuidelinesInput): string {
     L.push(
       `Approved with originality verdict **${kit.originality.verdict}** (confidence ${kit.originality.confidence})${kit.originality.acceptedRisk ? ', with the remaining risk explicitly accepted' : ''}. See \`${kit.originality.report}\`.`,
     );
+    for (const [tpl, v] of equityLines(kit)) L.push('', fillVars(tpl, v));
     for (const line of evidenceLines(kit)) L.push('', line);
   }
   const rules = kit.wordmarkOnly ? [WORDMARK_ONLY_RULE] : [];
@@ -171,8 +172,24 @@ function evidence(kit: BrandKit): [template: string, vars?: string[]][] {
   return out;
 }
 
+function fillVars(s: string, v?: string[]): string {
+  return s.replace(/\{(\d)\}/g, (_, i: string) => v?.[Number(i)] ?? '');
+}
+
 function evidenceLines(kit: BrandKit): string[] {
-  return evidence(kit).map(([s, v]) => s.replace(/\{(\d)\}/g, (_, i: string) => v?.[Number(i)] ?? ''));
+  return evidence(kit).map(([s, v]) => fillVars(s, v));
+}
+
+const EQUITY_SINCE =
+  'Continues an existing mark in use since {0}; originality was reported, not used as a gate.';
+const EQUITY_IN_USE =
+  'Continues an existing mark already in use; originality was reported, not used as a gate.';
+
+/** A refresh of the owner's own mark: why the verdict above did not gate approval, and the user's note. */
+function equityLines(kit: BrandKit): [template: string, vars?: string[]][] {
+  const o = kit.originality;
+  if (!o?.equity) return [];
+  return [o.equitySince ? [EQUITY_SINCE, [o.equitySince]] : [EQUITY_IN_USE], ['Equity: {0}', [o.equity]]];
 }
 
 export function guidelinesHtml(g: GuidelinesInput): string {
@@ -225,9 +242,11 @@ ${kit.locked ? `<p class="locked">${t('This identity is locked and reproduced ex
 <h2>${n()}${t('Typography')}</h2><p>${kit.typography && drawn ? `${t(drawn === 'family' ? 'Wordmark: custom (family) lettering — do not retype it.' : 'Wordmark: custom lettering — do not retype it.')}${supporting ? `</p><p>${t('Supporting typeface: {0}, weight {1}.', [supporting.family ?? supporting.fontId, String(supporting.weight)])}` : ''}` : kit.typography?.fontId ? `${escapeText(kit.typography.family ?? kit.typography.fontId)} ${kit.typography.weight} — ${escapeText(kit.typography.license ?? '')}` : t('Outlined wordmark; no typeface required.')}</p>
 ${
   o
-    ? `<h2>${n()}${t('Originality check')}</h2>${o.verdict === 'insufficient-evidence' ? `<p class="band warn">${t(NOT_VERIFIED)}</p>` : ''}<p>${t(o.acceptedRisk ? 'Approved with originality verdict {0} (confidence {1}), with the remaining risk explicitly accepted.' : 'Approved with originality verdict {0} (confidence {1}).', [o.verdict, o.confidence])}</p>${evidence(
+    ? `<h2>${n()}${t('Originality check')}</h2>${o.verdict === 'insufficient-evidence' ? `<p class="band warn">${t(NOT_VERIFIED)}</p>` : ''}<p>${t(o.acceptedRisk ? 'Approved with originality verdict {0} (confidence {1}), with the remaining risk explicitly accepted.' : 'Approved with originality verdict {0} (confidence {1}).', [o.verdict, o.confidence])}</p>${equityLines(
         kit,
       )
+        .map(([s, v]) => `<p>${t(s, v)}</p>`)
+        .join('')}${evidence(kit)
         .map(([s, v]) => `<p class="note">${t(s, v)}</p>`)
         .join('')}`
     : ''

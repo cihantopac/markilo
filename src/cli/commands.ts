@@ -606,6 +606,18 @@ function tileColorOptions(c: RunContext): { onBrand?: string; tile?: string } {
   return out;
 }
 
+/** `--equity "<note>"`: the user's words, and the year the mark is in use since when the note names one. */
+export function parseEquity(raw: string): { note: string; since?: string } {
+  const note = raw.trim();
+  if (!note)
+    throw new MarkiloError(
+      'INVALID_INPUT',
+      '--equity needs a note: since when and where the mark is in use (or "none" to clear it).',
+    );
+  const year = /\bsince\s+((?:19|20)\d{2})\b/i.exec(note) ?? /\b((?:19|20)\d{2})\b/.exec(note);
+  return year ? { note, since: year[1]! } : { note };
+}
+
 /**
  * `--lettering` and `--supporting-font/-weight`: what the wordmark is, and the typeface used beside custom lettering.
  * Returns the typography to store (unchanged when neither flag is given).
@@ -1976,7 +1988,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--no-recolor] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--semantics "<a>; <b>"] [--letter <L>] [--show] [--wordmark <file>] [--symbol <file>] [--small <file|none>] [--small-sizes small|main] [--wordmark-small <file|none>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--no-recolor] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--semantics "<a>; <b>"] [--letter <L>] [--show] [--wordmark <file>] [--symbol <file>] [--small <file|none>] [--small-sizes small|main] [--wordmark-small <file|none>] [--equity "<since when and where the mark is in use>"|none] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1998,6 +2010,11 @@ export const COMMANDS: CommandSpec[] = [
         type: 'string',
         description:
           'small (default: the simplified small version at 32 px and below) or main (the user chose the main symbol at every size)',
+      },
+      equity: {
+        type: 'string',
+        description:
+          'The concept continues the owner\'s own mark: since when and where it is in use ("in use since 2014 on the TV app"); finalize then reports insufficient-evidence or needs-review without gating on it ("none" clears it)',
       },
       judgment: {
         type: 'string',
@@ -2152,6 +2169,9 @@ export const COMMANDS: CommandSpec[] = [
         }
         next.files[key] = conceptRelative(w, slug, cur.id, v, c);
       }
+      const equity = c.str('equity');
+      if (equity === 'none') delete next.equity;
+      else if (equity !== undefined) next.equity = parseEquity(equity);
       const sizes = c.str('small-sizes');
       if (sizes === 'main') next.smallSizes = 'main';
       else if (sizes === 'small') delete next.smallSizes;

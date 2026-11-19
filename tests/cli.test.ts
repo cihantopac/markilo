@@ -1024,6 +1024,30 @@ describe('cli (bundled)', () => {
       /keep masters in the primary/,
     );
   }, 60_000);
+  it('concept update --equity records the mark in use, parses a year as since, and none clears it', () => {
+    const cwd = tmp();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    ok(['init', '--name', 'Demo']);
+    ok(['brand', 'add', 'Ledger']);
+    // biome-ignore format: one flag per pair reads better
+    ok(['concept', 'new', '--brand', 'ledger', '--id', 'p1', '--title', 'One', '--direction', 'd', '--rationale', 'r',
+      '--semantics', 'a', '--primary', '#1d4e89']);
+    const set = ['concept', 'update', '--brand', 'ledger', '--concept', 'p1'];
+    const json = () =>
+      JSON.parse(readFileSync(join(cwd, 'brand/brands/ledger/concepts/p1/concept.json'), 'utf8'));
+    ok([...set, '--equity', 'in use since 2014 on the TV app']);
+    expect(json().equity).toEqual({ note: 'in use since 2014 on the TV app', since: '2014' });
+    ok([...set, '--equity', 'on every invoice the company sends']);
+    expect(json().equity).toEqual({ note: 'on every invoice the company sends' });
+    ok([...set, '--equity', 'none']);
+    expect(json().equity).toBeUndefined();
+    const bad = run([...set, '--equity', '  '], cwd);
+    expect(JSON.parse(bad.stderr).error.code).toBe('INVALID_INPUT');
+  });
   it('concept update takes paths from the cwd, stored relative, and keeps a chat choice', () => {
     const cwd = tmp();
     const ok = (args: string[]) => {

@@ -274,6 +274,11 @@ export const TR: Record<string, string> = {
     '{0} özgünlük kararıyla onaylandı (güven: {1}); kalan risk açıkça kabul edildi.',
   'Approved with originality verdict {0} (confidence {1}).': '{0} özgünlük kararıyla onaylandı (güven: {1}).',
   'Compared against: {0}.': 'Karşılaştırılanlar: {0}.',
+  'Continues an existing mark in use since {0}; originality was reported, not used as a gate.':
+    '{0} yılından beri kullanılan mevcut bir işaretin devamıdır; özgünlük sonucu raporlandı, onay koşulu olarak kullanılmadı.',
+  'Continues an existing mark already in use; originality was reported, not used as a gate.':
+    'Hâlihazırda kullanılan mevcut bir işaretin devamıdır; özgünlük sonucu raporlandı, onay koşulu olarak kullanılmadı.',
+  'Equity: {0}': 'Mevcut kullanım: {0}',
   'No trademark registry search was done (WIPO Global Brand Database, TMview, national registers). Search them, or have a trademark attorney do it, before registering or launching widely.':
     'Marka tescil araması yapılmadı (WIPO Global Brand Database, TMview, ulusal siciller). Tescil ettirmeden ya da geniş çapta yayına almadan önce bunları siz tarayın veya bir marka vekiline taratın.',
   "Registry searches logged: {0}. Markilo's checks are still not a trademark clearance; have a trademark attorney confirm before registering.":
