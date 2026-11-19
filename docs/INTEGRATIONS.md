@@ -72,7 +72,8 @@ node tools/markilo/plugin/dist/markilo.mjs agent-setup --target codex --cli "nod
 ## Installing assets into a project
 
 `install-assets --framework auto` detects the project (pubspec.yaml → Flutter, composer.json with laravel/framework →
-Laravel, package.json with next → Next.js, otherwise static) and places every exported file where that framework
+Laravel, package.json with next → Next.js, an `AndroidManifest.xml` (in `app/src/main`, `src/main` or the root) or
+`app/src/main/res` → Android, otherwise static) and places every exported file where that framework
 expects it. It is a plan until `--apply`; existing files are kept unless `--force`, files already identical are left
 alone, and replaced files are copied to `.markilo-backup/<time>/` first. Applying is one transaction: each file is
 written through a temp file and a rename, a journal records every change, and a failure halfway puts every file back.
@@ -80,13 +81,46 @@ Pass the dry run's `planId` with `--expect` and the apply refuses if anything in
 was shown. `install-assets --undo` reverses the last installation (a dry run until `--apply`); files you edited after
 the installation are kept, never deleted or restored over.
 
-| Framework            | Where files go                                                                                                                                    | What you add by hand                                                                                           |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Next.js App Router   | `app/favicon.ico`, `app/icon.svg`, `app/apple-icon.png`, `app/opengraph-image.png`, `app/manifest.webmanifest`; PWA icons in `public/`            | Nothing: Next.js writes the head tags. Remove older favicons from `public/` and any `metadata.icons` override. |
-| Next.js Pages Router | `public/`                                                                                                                                         | The head snippet in `pages/_document`.                                                                         |
-| Laravel              | `public/`                                                                                                                                         | The Blade head snippet (uses `asset()`), in your main layout.                                                  |
-| Flutter              | `android/app/src/main/res/mipmap-*` (+ adaptive icon), `ios/Runner/Assets.xcassets/AppIcon.appiconset`, `web/favicon.png`, `web/icons/Icon-*.png` | Nothing. Export `ios` and `android` groups first (`markilo deliverables --add ios,android`).                   |
-| Static / Vite        | `public/` (or `--into <dir>`)                                                                                                                     | The head snippet in your HTML.                                                                                 |
+| Framework            | Where files go                                                                                                                                                                                                      | What you add by hand                                                                                           |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Next.js App Router   | `app/favicon.ico`, `app/icon.svg`, `app/apple-icon.png`, `app/opengraph-image.png`, `app/manifest.webmanifest`; PWA icons in `public/`                                                                              | Nothing: Next.js writes the head tags. Remove older favicons from `public/` and any `metadata.icons` override. |
+| Next.js Pages Router | `public/`                                                                                                                                                                                                           | The head snippet in `pages/_document`.                                                                         |
+| Laravel              | `public/`                                                                                                                                                                                                           | The Blade head snippet (uses `asset()`), in your main layout.                                                  |
+| Flutter              | `android/app/src/main/res/mipmap-*` (+ adaptive icon), `ios/Runner/Assets.xcassets/AppIcon.appiconset`, `web/favicon.png`, `web/icons/Icon-*.png`                                                                   | Nothing. Export `ios` and `android` groups first (`markilo deliverables --add ios,android`).                   |
+| Android              | The project's own files: `res/mipmap-*dpi` and `res/drawable-*dpi` images that `android:icon`, `android:roundIcon`, `android:banner` or `ic_launcher*` name, with their names, density folders and pixel sizes kept | Nothing. Export the `android` group first. Other drawables are listed under `unmatched` (see below).           |
+| Static / Vite        | `public/` (or `--into <dir>`)                                                                                                                                                                                       | The head snippet in your HTML.                                                                                 |
+
+### Android: the project's own resource names and densities
+
+`--framework android` (or `auto` in a project with an `AndroidManifest.xml`) reads `AndroidManifest.xml` and every
+`res/mipmap-*dpi/` and `res/drawable-*dpi/` image, and maps each to the exported file with the same role:
+
+| In the project                                                  | Exported file                         | Pixel size (density × dp)                                  |
+| --------------------------------------------------------------- | ------------------------------------- | ---------------------------------------------------------- |
+| the file named by `android:icon` (and any `ic_launcher`)        | `ic_launcher.png`                     | 48 dp: mdpi 1×, hdpi 1.5×, xhdpi 2×, xxhdpi 3×, xxxhdpi 4× |
+| the file named by `android:roundIcon` (and `ic_launcher_round`) | `ic_launcher_round.png`               | 48 dp                                                      |
+| `ic_launcher_foreground`, `_background`, `_monochrome`          | the same name                         | 108 dp (adaptive layers)                                   |
+| the file named by `android:banner` (e.g. `tv_banner`)           | the exported TV banner (`banner.png`) | 320 × 180 px at xhdpi (160 × 90 dp)                        |
+
+Names stay as the project has them (`@mipmap/app_icon` keeps `app_icon.png`). A file's target size is the size it has
+now; when that differs from the table above the plan notes it. Only files the project already has are planned, in the
+density folders it already has: nothing is added elsewhere, and the manifest and the adaptive icon XML
+(`mipmap-anydpi-v26`) are not touched. An export file of exactly that size is copied byte for byte; otherwise the
+largest exported variant is scaled. WebP, JPEG and nine-patch files are listed as unmatched, not replaced.
+
+Every other image (for example `brand_lockup_wide`, 240 × 87 dp) is listed under `unmatched` with its current pixel
+size per density. `--map <name>=<export path>` (repeatable) renders that export, fitted and centered, at the size of
+each project file with that name; the export path is relative to the exports folder and can be an SVG or a PNG:
+
+```bash
+node plugin/dist/markilo.mjs install-assets --brand acme --framework android --project ../acme-android \
+  --map brand_lockup_wide=logos/primary/primary-color.svg
+node plugin/dist/markilo.mjs install-assets --brand acme --framework android --project ../acme-android \
+  --map brand_lockup_wide=logos/primary/primary-color.svg --apply --force --expect <planId>
+```
+
+As everywhere, the first command is a dry run, `--apply` writes, and existing files are replaced only with `--force`
+(backed up first).
 
 ```bash
 node plugin/dist/markilo.mjs install-assets --brand acme --framework auto --project ../acme-app

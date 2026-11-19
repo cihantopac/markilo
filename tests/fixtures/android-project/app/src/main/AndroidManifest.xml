@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="example.acme.app">
+    <application
+        android:label="Acme"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:banner="@drawable/tv_banner">
+        <activity android:name=".MainActivity" android:exported="true" />
+    </application>
+</manifest>

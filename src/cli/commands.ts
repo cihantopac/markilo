@@ -3211,16 +3211,22 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'install-assets',
     summary:
-      'Put exported assets into your project. With --framework (next, laravel, flutter, static, or auto to detect) every file goes where that framework expects it; without it, one export group is copied into --into. Dry run unless --apply; never overwrites without --force. Applying is one transaction: replaced files are backed up, a failure puts everything back, and --undo reverses the last installation (files edited since are kept).',
+      'Put exported assets into your project. With --framework (next, laravel, flutter, android, static, or auto to detect; Android keeps the project resource names and densities and lists unknown drawables as unmatched for --map) every file goes where that framework expects it; without it, one export group is copied into --into. Dry run unless --apply; never overwrites without --force. Applying is one transaction: replaced files are backed up, a failure puts everything back, and --undo reverses the last installation (files edited since are kept).',
     usage:
-      'install-assets --brand <slug> (--framework auto|next|laravel|flutter|static | --group web --into <dir>) [--project <dir>] [--apply [--expect <planId>]] [--force] | install-assets --undo [--project <dir>] [--apply]',
+      'install-assets --brand <slug> (--framework auto|next|laravel|flutter|android|static | --group web --into <dir>) [--map <name>=<export path>]... [--project <dir>] [--apply [--expect <planId>]] [--force] | install-assets --undo [--project <dir>] [--apply]',
     options: {
       project: {
         type: 'string',
         description: 'Project folder to install into (default: current folder). Ask the user first.',
       },
       ...brandOpt,
-      framework: { type: 'string', description: 'auto | next | laravel | flutter | static' },
+      framework: { type: 'string', description: 'auto | next | laravel | flutter | android | static' },
+      map: {
+        type: 'string',
+        multiple: true,
+        description:
+          'Android: <drawable name>=<export path>, e.g. brand_lockup_wide=logos/primary/primary-color.svg: renders that export at the size of each project file with that name',
+      },
       group: { type: 'string', description: 'Export group to copy (without --framework)' },
       into: {
         type: 'string',
@@ -3247,7 +3253,14 @@ export const COMMANDS: CommandSpec[] = [
       if (fw) {
         if (fw !== 'auto' && !(FRAMEWORKS as readonly string[]).includes(fw))
           throw new MarkiloError('USAGE', `--framework must be auto, ${FRAMEWORKS.join(', ')}.`);
-        return planFrameworkInstall(ws(c), c.req('brand'), projectDir, {
+        const map: Record<string, string> = {};
+        for (const v of c.list('map')) {
+          const m = /^\s*([A-Za-z0-9_]+)\s*=\s*(.+?)\s*$/.exec(v);
+          if (!m) throw new MarkiloError('USAGE', `--map expects <drawable name>=<export path>, got "${v}".`);
+          map[m[1]!] = m[2]!;
+        }
+        return await planFrameworkInstall(ws(c), c.req('brand'), projectDir, {
+          ...(Object.keys(map).length ? { map } : {}),
           ...(fw !== 'auto' ? { framework: fw as Framework } : {}),
           ...(c.str('into') ? { into: c.str('into')! } : {}),
           apply: c.bool('apply'),

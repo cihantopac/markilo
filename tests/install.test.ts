@@ -53,11 +53,11 @@ describe('install-assets keeps the user’s files safe', () => {
     expect(backups(project)).toEqual([]);
   });
 
-  it('puts every file back when a copy fails halfway', () => {
+  it('puts every file back when a copy fails halfway', async () => {
     const project = tmp();
     mkdirSync(join(project, 'public'));
     writeFileSync(join(project, 'public', 'favicon.svg'), 'mine');
-    const plan = planFrameworkInstall(ws, 'nimbra', project, { framework: 'static', force: true });
+    const plan = await planFrameworkInstall(ws, 'nimbra', project, { framework: 'static', force: true });
     const writes = plan.steps.filter((s) => s.action === 'create' || s.action === 'overwrite');
     expect(writes.length).toBeGreaterThan(3);
     let n = 0;
@@ -95,9 +95,9 @@ describe('install-assets keeps the user’s files safe', () => {
     expect(() => rollbackInstall(project, { apply: true })).toThrow(/Nothing to undo/);
   });
 
-  it('applies framework plans through the same journal', () => {
+  it('applies framework plans through the same journal', async () => {
     const project = tmp();
-    const plan = planFrameworkInstall(ws, 'nimbra', project, { framework: 'static', apply: true });
+    const plan = await planFrameworkInstall(ws, 'nimbra', project, { framework: 'static', apply: true });
     expect(plan.applied).toBe(true);
     const undo = rollbackInstall(project, { apply: true });
     expect(undo.removed.length).toBe(plan.steps.filter((s) => s.action === 'create').length);

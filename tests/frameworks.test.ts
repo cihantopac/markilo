@@ -1,12 +1,14 @@
-import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { detectFramework, planFrameworkInstall } from '../src/cli/frameworks.js';
 import type { Workspace } from '../src/core/workspace.js';
 import { exportBrand } from '../src/export/exporter.js';
 import { finalizeConcept } from '../src/export/kit.js';
+import { createRaster } from '../src/render/image.js';
+import { decodeImage, encodePng, pngSize } from '../src/render/png.js';
 import { verifyConcept } from '../src/report/quality.js';
-import { synthBrand, tmp } from './helpers.js';
+import { fixture, synthBrand, tmp } from './helpers.js';
 
 let ws: Workspace;
 const project = (fixture: string) => {
@@ -32,9 +34,9 @@ describe('framework-aware asset installation', () => {
     expect(detectFramework(tmp()).framework).toBe('static');
   });
 
-  it('puts Next.js App Router metadata files in app/ and only plans without --apply', () => {
+  it('puts Next.js App Router metadata files in app/ and only plans without --apply', async () => {
     const dir = project('saas-invoicing');
-    const plan = planFrameworkInstall(ws, 'nimbra', dir);
+    const plan = await planFrameworkInstall(ws, 'nimbra', dir);
     const to = plan.steps.map((s) => s.to);
     expect(to).toEqual(
       expect.arrayContaining([
@@ -48,40 +50,215 @@ describe('framework-aware asset installation', () => {
     );
     expect(plan.steps.every((s) => s.action === 'create')).toBe(true);
     expect(existsSync(join(dir, 'app', 'favicon.ico'))).toBe(false);
-    expect(planFrameworkInstall(ws, 'nimbra', dir, { apply: true }).applied).toBe(true);
+    expect((await planFrameworkInstall(ws, 'nimbra', dir, { apply: true })).applied).toBe(true);
     expect(existsSync(join(dir, 'app', 'icon.svg'))).toBe(true);
   });
 
-  it('installs Flutter launcher icons, keeps existing files unless forced, and backs them up', () => {
+  it('installs Flutter launcher icons, keeps existing files unless forced, and backs them up', async () => {
     const dir = project('mobile-sleep');
     mkdirSync(join(dir, 'android/app/src/main/res/mipmap-mdpi'), { recursive: true });
     writeFileSync(join(dir, 'android/app/src/main/res/mipmap-mdpi/ic_launcher.png'), 'old');
-    const plan = planFrameworkInstall(ws, 'nimbra', dir);
+    const plan = await planFrameworkInstall(ws, 'nimbra', dir);
     expect(plan.framework).toBe('flutter');
     const by = Object.fromEntries(plan.steps.map((s) => [s.to, s.action]));
     expect(by['android/app/src/main/res/mipmap-mdpi/ic_launcher.png']).toBe('skip-existing');
     expect(by['ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json']).toBe('create');
     expect(by['web/icons/Icon-maskable-512.png']).toBe('create');
     expect(by['web/favicon.png']).toBe('create');
-    planFrameworkInstall(ws, 'nimbra', dir, { apply: true });
+    await planFrameworkInstall(ws, 'nimbra', dir, { apply: true });
     expect(readFileSync(join(dir, 'android/app/src/main/res/mipmap-mdpi/ic_launcher.png'), 'utf8')).toBe(
       'old',
     );
-    const forced = planFrameworkInstall(ws, 'nimbra', dir, { apply: true, force: true });
+    const forced = await planFrameworkInstall(ws, 'nimbra', dir, { apply: true, force: true });
     expect(readFileSync(join(dir, 'android/app/src/main/res/mipmap-mdpi/ic_launcher.png'))[0]).toBe(0x89);
     expect(
       readFileSync(join(dir, forced.backup!, 'android/app/src/main/res/mipmap-mdpi/ic_launcher.png'), 'utf8'),
     ).toBe('old');
   });
 
-  it('gives Laravel a Blade head snippet with asset() URLs', () => {
+  it('gives Laravel a Blade head snippet with asset() URLs', async () => {
     const dir = tmp();
     writeFileSync(join(dir, 'composer.json'), JSON.stringify({ require: { 'laravel/framework': '^11.0' } }));
-    const plan = planFrameworkInstall(ws, 'nimbra', dir);
+    const plan = await planFrameworkInstall(ws, 'nimbra', dir);
     expect(plan.steps.map((s) => s.to)).toEqual(
       expect.arrayContaining(['public/favicon.ico', 'public/site.webmanifest', 'public/og-image.png']),
     );
     expect(plan.snippet).toContain(`href="{{ asset('favicon.ico') }}"`);
+  });
+});
+
+describe('Android profile', () => {
+  const res = 'app/src/main/res';
+  const androidProject = () => {
+    const dir = tmp();
+    cpSync(fixture('android-project'), dir, { recursive: true });
+    return dir;
+  };
+  const size = (dir: string, rel: string) => {
+    const { width, height } = pngSize(readFileSync(join(dir, rel)));
+    return `${width}×${height}`;
+  };
+
+  it('detects an Android project from its manifest', () => {
+    expect(detectFramework(androidProject())).toEqual({
+      framework: 'android',
+      by: 'app/src/main/AndroidManifest.xml',
+    });
+    const resOnly = tmp();
+    mkdirSync(join(resOnly, 'app/src/main/res/mipmap-mdpi'), { recursive: true });
+    expect(detectFramework(resOnly).framework).toBe('android');
+    mkdirSync(join(tmp(), 'res'));
+    expect(detectFramework(tmp()).framework).toBe('static');
+  });
+
+  it('keeps the project names, folders and sizes, and lists unknown drawables as unmatched', async () => {
+    const dir = androidProject();
+    const plan = await planFrameworkInstall(ws, 'nimbra', dir);
+    expect(plan.framework).toBe('android');
+    const by = Object.fromEntries(plan.steps.map((s) => [s.to, s]));
+    // Only files the project has, in the folders it has (no hdpi, no xxxhdpi, nothing created).
+    expect(Object.keys(by).sort()).toEqual(
+      [
+        'mipmap-mdpi/ic_launcher.png',
+        'mipmap-mdpi/ic_launcher_foreground.png',
+        'mipmap-mdpi/ic_launcher_round.png',
+        'mipmap-xhdpi/ic_launcher.png',
+        'mipmap-xhdpi/ic_launcher_foreground.png',
+        'mipmap-xhdpi/ic_launcher_round.png',
+        'mipmap-xxhdpi/ic_launcher.png',
+        'mipmap-xxhdpi/ic_launcher_foreground.png',
+        'mipmap-xxhdpi/ic_launcher_round.png',
+        'drawable-xhdpi/tv_banner.png',
+      ]
+        .map((p) => `${res}/${p}`)
+        .sort(),
+    );
+    expect(by[`${res}/mipmap-xxhdpi/ic_launcher.png`]).toMatchObject({
+      from: 'android/res/mipmap-xxhdpi/ic_launcher.png',
+      size: '144×144',
+      action: 'skip-existing',
+    });
+    expect(by[`${res}/mipmap-xhdpi/ic_launcher_foreground.png`]).toMatchObject({
+      from: 'android/res/mipmap-xhdpi/ic_launcher_foreground.png',
+      size: '216×216',
+    });
+    // android:banner="@drawable/tv_banner" takes the exported banner.
+    expect(by[`${res}/drawable-xhdpi/tv_banner.png`]).toMatchObject({
+      from: 'android/res/drawable-xhdpi/banner.png',
+      size: '320×180',
+    });
+    expect(plan.unmatched).toEqual([
+      {
+        name: 'brand_lockup_wide',
+        files: [
+          { path: `${res}/drawable-mdpi/brand_lockup_wide.png`, density: 'mdpi', width: 240, height: 87 },
+          {
+            path: `${res}/drawable-xxhdpi/brand_lockup_wide.png`,
+            density: 'xxhdpi',
+            width: 720,
+            height: 261,
+          },
+        ],
+      },
+      {
+        name: 'ic_splash',
+        files: [{ path: `${res}/drawable-xxhdpi/ic_splash.png`, density: 'xxhdpi', width: 192, height: 192 }],
+      },
+    ]);
+    expect(plan.notes.join(' ')).toMatch(/--map <name>=<export path>/);
+  });
+
+  it('writes nothing in a dry run, and replaces existing files only with --force', async () => {
+    const dir = androidProject();
+    const before = readFileSync(join(dir, res, 'mipmap-xhdpi/ic_launcher.png'));
+    const dry = await planFrameworkInstall(ws, 'nimbra', dir, { framework: 'android', force: true });
+    expect(dry.applied).toBe(false);
+    expect(readFileSync(join(dir, res, 'mipmap-xhdpi/ic_launcher.png')).equals(before)).toBe(true);
+
+    const kept = await planFrameworkInstall(ws, 'nimbra', dir, { apply: true });
+    expect(kept.applied).toBe(true);
+    expect(readFileSync(join(dir, res, 'mipmap-xhdpi/ic_launcher.png')).equals(before)).toBe(true);
+
+    const forced = await planFrameworkInstall(ws, 'nimbra', dir, { apply: true, force: true });
+    const exported = (rel: string) => readFileSync(join(ws.exportsDir('nimbra'), rel));
+    expect(
+      readFileSync(join(dir, res, 'mipmap-xhdpi/ic_launcher.png')).equals(
+        exported('android/res/mipmap-xhdpi/ic_launcher.png'),
+      ),
+    ).toBe(true);
+    expect(size(dir, `${res}/mipmap-mdpi/ic_launcher_foreground.png`)).toBe('108×108');
+    expect(size(dir, `${res}/mipmap-xxhdpi/ic_launcher_round.png`)).toBe('144×144');
+    expect(size(dir, `${res}/drawable-xhdpi/tv_banner.png`)).toBe('320×180');
+    // Unmatched drawables and the manifest are not touched; no folder was added.
+    expect(size(dir, `${res}/drawable-xxhdpi/ic_splash.png`)).toBe('192×192');
+    expect(readdirSync(join(dir, res)).sort()).toEqual([
+      'drawable-mdpi',
+      'drawable-xhdpi',
+      'drawable-xxhdpi',
+      'mipmap-anydpi-v26',
+      'mipmap-mdpi',
+      'mipmap-xhdpi',
+      'mipmap-xxhdpi',
+    ]);
+    expect(readFileSync(join(dir, 'app/src/main/AndroidManifest.xml'), 'utf8')).toBe(
+      readFileSync(join(fixture('android-project'), 'app/src/main/AndroidManifest.xml'), 'utf8'),
+    );
+    expect(forced.backup).toBeTruthy();
+  });
+
+  it('scales an export to the size the project file has at its density', async () => {
+    const dir = androidProject();
+    // A project that ships its xxhdpi banner too: 480×270 is rendered from the export, not copied.
+    mkdirSync(join(dir, res, 'drawable-xxhdpi'), { recursive: true });
+    writeFileSync(join(dir, res, 'drawable-xxhdpi/tv_banner.png'), encodePng(createRaster(480, 270)));
+    const plan = await planFrameworkInstall(ws, 'nimbra', dir, {
+      framework: 'android',
+      force: true,
+      apply: true,
+    });
+    expect(plan.steps.find((s) => s.to.endsWith('drawable-xxhdpi/tv_banner.png'))?.size).toBe('480×270');
+    expect(size(dir, `${res}/drawable-xxhdpi/tv_banner.png`)).toBe('480×270');
+    expect(size(dir, `${res}/drawable-xhdpi/tv_banner.png`)).toBe('320×180');
+  });
+
+  it('--map renders an export at the size of each project file with that name', async () => {
+    const dir = androidProject();
+    const source = readdirSync(join(ws.exportsDir('nimbra'), 'logos'), { recursive: true })
+      .map(String)
+      .find((f) => f.endsWith('.svg'))!;
+    const map = { brand_lockup_wide: `logos/${source}` };
+    const plan = await planFrameworkInstall(ws, 'nimbra', dir, {
+      framework: 'android',
+      map,
+      force: true,
+      apply: true,
+    });
+    expect(size(dir, `${res}/drawable-mdpi/brand_lockup_wide.png`)).toBe('240×87');
+    expect(size(dir, `${res}/drawable-xxhdpi/brand_lockup_wide.png`)).toBe('720×261');
+    // The picture is really there (opaque pixels), not an empty canvas.
+    const drawn = decodeImage(readFileSync(join(dir, res, 'drawable-mdpi/brand_lockup_wide.png')));
+    expect(drawn.data.some((v, i) => i % 4 === 3 && v > 200)).toBe(true);
+    expect(plan.unmatched?.find((u) => u.name === 'brand_lockup_wide')?.mappedTo).toBe(`logos/${source}`);
+    expect(plan.unmatched?.map((u) => u.name)).toEqual(['brand_lockup_wide', 'ic_splash']);
+    // Still unchanged without --map.
+    await expect(
+      planFrameworkInstall(ws, 'nimbra', androidProject(), {
+        framework: 'android',
+        map: { nope: `logos/${source}` },
+      }),
+    ).rejects.toThrow(/no drawable or mipmap named "nope"/);
+    await expect(
+      planFrameworkInstall(ws, 'nimbra', androidProject(), {
+        framework: 'android',
+        map: { ic_launcher: `logos/${source}` },
+      }),
+    ).rejects.toThrow(/already matched/);
+    await expect(
+      planFrameworkInstall(ws, 'nimbra', androidProject(), {
+        framework: 'android',
+        map: { ic_splash: 'logos/missing.svg' },
+      }),
+    ).rejects.toThrow(/no exported file/);
   });
 });
 
