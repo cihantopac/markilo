@@ -109,3 +109,27 @@ describe('source references', () => {
     expect(portableRef('https://example.com/a', '/home/ana/project')).toBe('https://example.com/a');
   });
 });
+
+describe('in-situ references', () => {
+  it('are stored and listed but never compared for originality', async () => {
+    const { buildOriginalityReport, readReferences } = await import('../src/report/originality.js');
+    const { addReference, REFERENCE_CATEGORIES } = await import('../src/research/competitors.js');
+    const { mark, synthBrand } = await import('./helpers.js');
+    expect(REFERENCE_CATEGORIES).toContain('in-situ');
+    const { ws } = synthBrand();
+    const before = (await buildOriginalityReport(ws, 'nimbra', 'fold')).report;
+    // A photo of the real mark on a screen: near-identical to the concept, and expected to be.
+    await addReference(ws, 'nimbra', {
+      name: 'Home screen photo',
+      source: 'photo taken by the user',
+      bytes: new TextEncoder().encode(mark('fold-n')),
+      ext: '.svg',
+      category: 'in-situ',
+    });
+    expect(readReferences(ws, 'nimbra').references.map((r) => r.category)).toEqual(['in-situ']);
+    const after = (await buildOriginalityReport(ws, 'nimbra', 'fold')).report;
+    expect(after.scope.referencesCompared).toBe(before.scope.referencesCompared);
+    expect(after.visual.matches.map((m) => m.name)).not.toContain('Home screen photo');
+    expect(after.visual.risk).toBe(before.visual.risk);
+  }, 60_000);
+});

@@ -14,6 +14,7 @@ import { label } from '../render/sheet.js';
 import { aspectOf, fmt, nestSvg, svgDocument } from '../svg/compose.js';
 import { optimizeSvg } from '../svg/optimize.js';
 import { escapeAttr, localName, parseXml, serializeXml, walk } from '../svg/xml.js';
+import type { BoardLang } from '../ui/board-text.js';
 import { encodeIcns, encodeIco, ICNS_TYPES } from './encoders.js';
 import { placeMark, squircle } from './geometry.js';
 import { guidelinesHtml, guidelinesMarkdown } from './guidelines.js';
@@ -92,6 +93,8 @@ interface Ctx {
   iconArt: IconArt;
   /** The browser/OS chrome colour (theme-color meta, manifest theme_color), resolved once. */
   themeColor: string;
+  /** The language of guidelines.md (the HTML page switches in the browser). */
+  lang: BoardLang;
   assets: AssetRecord[];
   warnings: string[];
 }
@@ -1305,6 +1308,7 @@ async function exportGuidelines(ctx: Ctx) {
     lockupH: ctx.lockupH,
     lockupS: ctx.lockupS,
     primary: ctx.primary,
+    lang: ctx.lang,
     reversed: (s: string) =>
       ctx.kit.locked
         ? s
@@ -1389,6 +1393,8 @@ export async function exportBrand(
     groups?: ExportGroup[];
     clean?: boolean;
     themeColor?: 'primary' | 'paper' | string;
+    /** Language of brand-guidelines.md; English unless set. */
+    lang?: BoardLang;
     /** Absolute folder to write the kit to; defaults to the brand's exports folder. */
     outDir?: string;
     /** `--icon-art`: what app icons, banners and OG images draw (default flat). */
@@ -1438,6 +1444,7 @@ export async function exportBrand(
     kit,
     outDir,
     themeColor,
+    lang: opts.lang ?? 'en',
     ...(kit.files.symbol ? { symbol: kit.read('symbol') } : {}),
     // The user may choose the main symbol at every size: then the small version is kept but not drawn.
     ...(kit.files.symbolSmall && kit.smallSizes !== 'main' ? { small: kit.read('symbolSmall') } : {}),

@@ -28,6 +28,30 @@ export const TR: Record<string, string> = {
   After: 'Sonra',
   'Main symbol': 'Ana simge',
   'Small version': 'Küçük sürüm',
+  'Color on light': 'Açık zeminde renkli',
+  'Color on dark': 'Koyu zeminde renkli',
+  'Color on dark (adapted)': 'Koyu zeminde renkli (uyarlanmış)',
+  Black: 'Siyah',
+  'White (reversed)': 'Beyaz (ters)',
+  'on light': 'açık zeminde',
+  'on dark': 'koyu zeminde',
+  tile: 'karo',
+  Options: 'Seçenekler',
+  Now: 'Şimdi',
+  'As the user chose it': 'Kullanıcının seçtiği hâliyle',
+  'As the user chose it (from {0})': 'Kullanıcının seçtiği hâliyle ({0} konseptinden)',
+  'Round {0}': '{0}. tur',
+  'wordmark-led': 'logotip öncelikli',
+  'symbol-led': 'simge öncelikli',
+  'No compact icon yet': 'Henüz kompakt simge yok',
+  FAIL: 'BAŞARISIZ',
+  'Variants, best first (score · 16 px legibility · stock-shape similarity)':
+    'Varyantlar, en iyisi önce (puan · 16 px okunabilirlik · hazır şekillere benzerlik)',
+  '{0}: sketches (id · score · 16 px legibility · stock-shape similarity)':
+    '{0}: eskizler (kimlik · puan · 16 px okunabilirlik · hazır şekillere benzerlik)',
+  "{0}: family — each sketch's master and members at 160, 32 and 16 px":
+    '{0}: aile — her eskizin ana işareti ve üyeleri 160, 32 ve 16 px’te',
+  '{0} — main symbol and small version': '{0} — ana simge ve küçük sürüm',
 
   // Gallery: introduction and action bar
   'Compare the proposals: tick “Add to comparison” on two or more to see them side by side.':
@@ -201,7 +225,6 @@ export const TR: Record<string, string> = {
   'On surfaces': 'Yüzeylerde',
 
   // Asset kit preview
-  'On dark backgrounds': 'Koyu zeminlerde',
   '{0} files · every file below is shown on the background it is made for':
     '{0} dosya · aşağıdaki her dosya, yapıldığı zeminde gösterilir',
   '{0} files': '{0} dosya',
@@ -328,4 +351,58 @@ export const TR: Record<string, string> = {
   'Reject it': 'Bunu reddet',
   'Scripts are off here: look at the proposals and answer in chat, or open this file in a browser to record decisions.':
     'Burada betikler kapalı: önerilere bakıp sohbette yanıt verin ya da kararları kaydetmek için bu dosyayı bir tarayıcıda açın.',
+  // guidelines.md
+  '{0} brand guidelines': '{0} marka kılavuzu',
+  'This identity is **locked**: it is reproduced exactly as provided. Do not modify the artwork.':
+    'Bu kimlik **kilitlidir**: verildiği gibi birebir yeniden üretilir. Çizimi değiştirmeyin.',
+  'Logo files': 'Logo dosyaları',
+  Use: 'Kullanım',
+  File: 'Dosya',
+  'Primary logo (default)': 'Birincil logo (varsayılan)',
+  'Primary logo (default, the wordmark)': 'Birincil logo (varsayılan, logotip)',
+  'Secondary logo (square-ish spaces)': 'İkincil logo (kareye yakın alanlar)',
+  'Symbol (favicons, avatars, small spaces)': 'Simge (favicon, avatar, küçük alanlar)',
+  'Wordmark (when the symbol is shown nearby)': 'Logotip (simge yakında gösteriliyorsa)',
+  'On dark backgrounds': 'Koyu zeminlerde',
+  'One-color': 'Tek renk',
+  'Clear space and minimum size': 'Boşluk alanı ve en küçük boyut',
+  'Keep clear space on all sides equal to the cap height of the wordmark (the height of a capital letter).':
+    'Her yanda logotipin büyük harf yüksekliği (bir büyük harfin boyu) kadar boşluk bırakın.',
+  'Minimum sizes: symbol 16 px on screen / 5 mm in print; horizontal logo 96 px wide on screen / 25 mm in print.':
+    'En küçük boyutlar: simge ekranda 16 px / baskıda 5 mm; yatay logo ekranda 96 px genişlik / baskıda 25 mm.',
+  'Use the compact lockup below 120 px width.': '120 px genişliğin altında kompakt logo düzenini kullanın.',
+  Hex: 'Hex',
+  'On white': 'Beyazda',
+  'On dark': 'Koyuda',
+  'Full tonal scales are in `tokens/tokens.json` and `tokens/tokens.css`.':
+    'Tüm ton ölçekleri `tokens/tokens.json` ve `tokens/tokens.css` dosyalarındadır.',
+  'Accessible pairings': 'Erişilebilir eşleşmeler',
+  Foreground: 'Ön plan',
+  Background: 'Arka plan',
+  Ratio: 'Oran',
+  'brand color on white (logo, large text)': 'beyaz üzerinde marka rengi (logo, büyük metin)',
+  'brand color on dark (logo on dark UI)': 'koyu üzerinde marka rengi (koyu arayüzde logo)',
+  'white text on brand fill (buttons)': 'marka dolgusu üzerinde beyaz metin (düğmeler)',
+  'dark text on brand fill': 'marka dolgusu üzerinde koyu metin',
+  'brand-dark text on white (links, body accents)':
+    'beyaz üzerinde koyu marka rengi metin (bağlantılar, vurgular)',
+  'body text': 'gövde metni',
+  'secondary text': 'ikincil metin',
+  'secondary color on white': 'beyaz üzerinde ikincil renk',
+  'accent on dark': 'koyu üzerinde vurgu rengi',
+  'Supporting typeface: **{0}**, weight {1}.': 'Yardımcı yazı karakteri: **{0}**, ağırlık {1}.',
+  'The wordmark is outlined artwork, so using the logo never requires a font.':
+    'Logotip çizgiye dönüştürülmüş bir çizimdir; logoyu kullanmak hiçbir zaman yazı karakteri gerektirmez.',
+  'Brand typeface: **{0}**, weight {1}.': 'Marka yazı karakteri: **{0}**, ağırlık {1}.',
+  'License: {0}. The wordmark is outlined, so using the logo never requires the font.':
+    'Lisans: {0}. Logotip çizgiye dönüştürülmüştür; logoyu kullanmak yazı karakterini gerektirmez.',
+  'see fonts/ license file': 'fonts/ içindeki lisans dosyasına bakın',
+  'No brand typeface recorded. The wordmark is outlined artwork.':
+    'Kayıtlı marka yazı karakteri yok. Logotip çizgiye dönüştürülmüş bir çizimdir.',
+  'Approved with originality verdict **{0}** (confidence {1}), with the remaining risk explicitly accepted. See `{2}`.':
+    '**{0}** özgünlük kararıyla onaylandı (güven: {1}); kalan risk açıkça kabul edildi. Bkz. `{2}`.',
+  'Approved with originality verdict **{0}** (confidence {1}). See `{2}`.':
+    '**{0}** özgünlük kararıyla onaylandı (güven: {1}). Bkz. `{2}`.',
+  'Generated by Markilo on {0} from concept `{1}`.': '{0} tarihinde Markilo ile `{1}` konseptinden üretildi.',
+  'Generated by Markilo on {0}.': '{0} tarihinde Markilo ile üretildi.',
 };
