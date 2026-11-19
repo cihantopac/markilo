@@ -72,7 +72,7 @@ Markilo runs `research monorepo`, shows you the packages it considers brands, an
 (with their folders) and scans each one. Work then proceeds family-first: shared system, master brand, sites one by one,
 and many apps as one coherent app-icon system. Locked identities are reproduced byte-for-byte and never redesigned.
 Exports can be copied into any package with `install-assets --project <folder>` (dry run first);
-`install-assets --framework auto` puts files where Next.js, Laravel, Flutter or a static site expects them, with backups
+`install-assets --framework auto` puts files where Next.js, Laravel, Flutter, Android (keeping the project's own resource names and densities) or a static site expects them, with backups
 before anything is replaced.
 
 ## What you get
