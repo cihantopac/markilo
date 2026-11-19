@@ -14,7 +14,7 @@ import { contrastRatio, deltaE2000, normalizeColor } from '../analyze/color.js';
 import { checkLetters, letterAdvice } from '../analyze/letters.js';
 import { loadMark, sampleFromSvg } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
-import { FORM_CHANGE_LIMIT, formChangeWarning, formIoU } from '../analyze/silhouette.js';
+import { FORM_CHANGE_LIMIT, formChangeWarning, formIoU, silhouetteIoU } from '../analyze/silhouette.js';
 import { compareMarks, genericity } from '../analyze/similarity.js';
 import { carriesTile, TYPESET_LIMIT, typesetLikeness, wordmarkFont } from '../analyze/typeset.js';
 import { type ConstructionSpec, compileSpec, constructionSvg, memberOf } from '../construct/compile.js';
@@ -103,8 +103,10 @@ import {
 import { buildGallery } from '../gallery/gallery.js';
 import { serveGallery } from '../gallery/serve.js';
 import { centerOptically } from '../geom/center.js';
+import { MAX_TRACE_COLORS, rasterMaskSvg, type TraceOptions, traceRaster } from '../geom/trace.js';
 import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarity.js';
 import { suggestNiceClasses, trademarkSearchPlan } from '../name/trademark.js';
+import { decodeImage } from '../render/png.js';
 import { type ProposalInput, renderProposal, renderRoundBoard } from '../render/proposal.js';
 import { renderPng } from '../render/resvg.js';
 import {
@@ -327,6 +329,41 @@ const pos = (c: RunContext, i: number, label: string): string => {
   return v;
 };
 const file = (c: RunContext, p: string) => resolve(c.cwd, p);
+
+/** Raster formats `score` traces before scoring (WebP decodes once decodeImage reads it). */
+const RASTER_EXT = new Set(['.png', '.jpg', '.jpeg', '.webp']);
+
+const traceOptions = {
+  colors: {
+    type: 'string',
+    description: `Split the ink into this many colours, one face each (2–${MAX_TRACE_COLORS}; default: one silhouette)`,
+  },
+  threshold: {
+    type: 'string',
+    description:
+      'Ink cut-off 0–255: alpha, or distance from the background on an opaque image (default: 128 / automatic)',
+  },
+} as const;
+
+function traceOpts(c: RunContext): TraceOptions {
+  const o: TraceOptions = {};
+  for (const k of ['colors', 'threshold', 'tolerance'] as const) {
+    const v = c.num(k);
+    if (v !== undefined) o[k] = v;
+  }
+  return o;
+}
+
+/** Traces a PNG/JPEG (WebP via decodeImage) and measures the trace against the raster's own ink mask. */
+async function traceImageFile(path: string, opts: TraceOptions) {
+  if (!existsSync(path)) throw new MarkiloError('NOT_FOUND', `File not found: ${path}`);
+  const img = decodeImage(readFileSync(path));
+  const t = traceRaster(img, opts);
+  if (!t.faces.length)
+    throw new MarkiloError('INVALID_INPUT', `${basename(path)}: no ink found to trace.`, 'Try --threshold.');
+  const iou = await silhouetteIoU(t.svg, rasterMaskSvg(img, opts));
+  return { ...t, iou: Math.round(iou * 1000) / 1000 };
+}
 
 /**
  * A file option of "concept update": a path inside the concept folder, given relative to that folder or to the
@@ -4284,14 +4321,42 @@ export const COMMANDS: CommandSpec[] = [
     },
   },
   {
+    name: 'trace',
+    summary:
+      'Trace a raster mark (PNG/JPEG) to SVG: one evenodd path per colour, holes kept, curves fitted. Reports the IoU of the trace against the raster.',
+    usage: 'trace <in.png|jpg> -o <out.svg> [--colors n] [--threshold 0-255] [--tolerance px] [--force]',
+    options: {
+      out: { type: 'string', short: 'o', description: 'Output SVG' },
+      ...traceOptions,
+      tolerance: {
+        type: 'string',
+        description:
+          'Largest distance a fitted curve may stray from the traced edge, in source pixels (default 0.25)',
+      },
+      force: { type: 'boolean', description: 'Overwrite output' },
+    },
+    async run(c) {
+      const out = file(c, c.req('out'));
+      const t = await traceImageFile(file(c, pos(c, 0, 'in.png')), traceOpts(c));
+      writeFileSafe(out, t.svg, { force: c.bool('force') });
+      return { out: c.req('out'), faces: t.faces, nodes: t.nodes, iou: t.iou };
+    },
+  },
+  {
     name: 'score',
     summary:
-      'Technical quality scorecard for one SVG (legibility, balance, monochrome, contrast, genericity).',
-    usage: 'score <file.svg> [--role symbol|wordmark|lockup]',
-    options: { role: { type: 'string', description: 'symbol | wordmark | lockup' } },
+      'Technical quality scorecard for one SVG (legibility, balance, monochrome, contrast, genericity). A PNG or JPEG is traced first.',
+    usage: 'score <file.svg|png|jpg|webp> [--role symbol|wordmark|lockup] [--colors n] [--threshold 0-255]',
+    options: { role: { type: 'string', description: 'symbol | wordmark | lockup' }, ...traceOptions },
     async run(c) {
       const p = pos(c, 0, 'file.svg');
-      return assessQuality(readText(file(c, p)), p, (c.str('role') ?? 'symbol') as 'symbol');
+      const role = (c.str('role') ?? 'symbol') as 'symbol';
+      if (RASTER_EXT.has(extname(p).toLowerCase())) {
+        const t = await traceImageFile(file(c, p), traceOpts(c));
+        // Scored as the trace: say so, and how closely the trace follows the raster.
+        return { ...(await assessQuality(t.svg, p, role)), tracedFrom: { file: p, iou: t.iou } };
+      }
+      return assessQuality(readText(file(c, p)), p, role);
     },
   },
   {

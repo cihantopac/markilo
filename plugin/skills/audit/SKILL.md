@@ -14,8 +14,11 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 
 1. Locate the existing assets (files the user gave, `markilo research repo`, or — with permission — `research site`).
    `Read` them.
-2. Measure: `markilo score <file> --role symbol|wordmark|lockup`, `markilo analyze <file>`,
-   `markilo render <file> -o <tmp>.png --sheet` and `Read` the sheet.
+2. Measure. A raster asset (PNG, JPEG) is traced first: `markilo trace <file.png> -o <tmp>.svg` (add `--colors n`
+   for a mark of n colours) — check its `iou` against the raster — and the trace is what you measure. `markilo score`
+   on the raster does the same and adds `tracedFrom { file, iou }`. Say in the report that the scores are of a trace
+   and give its IoU. Then `markilo score <file> --role symbol|wordmark|lockup`, `markilo analyze <file>`,
+   `markilo render <the SVG or the trace> -o <tmp>.png --sheet` and `Read` the sheet.
 3. Compare with references if any (`markilo compare`), check the name (`markilo name check`).
 4. Report: what works (equity worth keeping), measured problems, judgment-based problems (labeled), and a
    recommendation — keep, refresh or redesign — with the evidence. Do not redesign during an audit; offer it.
