@@ -11,6 +11,8 @@
 | Verify     | No `fail` checks, originality not `redesign`, one independent critique applied, user approved    | reports/, final/                  |
 | Export     | Export ran without skipped groups the user needs                                                 | exports/                          |
 
+A refresh replaces Explore, Choose and Develop with the **Refresh** stage below; Verify and Export stay.
+
 Rounds: at most two rounds of three proposals on Markilo's own initiative; a third needs the user's direction
 (`concept new --round 3 --directed "<their words>"`). Track cost per phase with `markilo cost`; the default budget is
 $12 per brand (`markilo cost --brand <slug> --budget <usd>` to change it); `--budget-minutes <m>` adds a time budget (agent minutes: parallel agents add up; `wallMinutes` shows the clock),
@@ -23,11 +25,43 @@ what was decided, why, and the evidence.
 
 - **evaluate**: the user wants an opinion or the brand is locked. Run `markilo score` / `analyze` /
   `compare` on existing files, then report strengths, risks and recommendations without designing.
-- **refresh**: equity is strong but craft is weak → keep the idea, rebuild geometry, wordmark, palette.
+- **refresh**: equity is strong but craft is weak → keep the idea, rebuild geometry, wordmark, palette. Follow
+  "The refresh path" below.
 - **redesign**: the mark fails measurably or contradicts the strategy → new directions.
 - **new**: no identity exists.
 
 Recommend a mode with evidence (measurements of the current mark + findings) and let the user decide.
+
+## The refresh path
+
+The owner's own mark, often a raster, in use for years: keep what people recognise and rebuild the craft. There are
+no three proposals and no critic unless the user asks for them. `lock` is not this path: it preserves files
+unchanged, while a refresh redraws them.
+
+1. **Audit** the current mark (the audit skill): measurements, what is equity, what is weak. Agree with the user that
+   this is a refresh.
+2. **Vectorise**: a raster is traced (`markilo trace <file.png> -o <work>/trace.svg`, `--colors n` for a mark of n
+   colours); when the owner has an SVG, start from it.
+3. **Rebuild**: `markilo rebuild <work>/trace.svg -o <concept>/symbol.svg --against <the original file> --min-iou 0.95`.
+   It refuses a rebuild that no longer matches the original form; fix or relax `--tolerance`, never lower
+   `--min-iou` without telling the user. Register the result on one concept (`concept new`, then
+   `concept update --symbol` / `--wordmark`), and the trace of the original on a second concept titled "Current", so
+   the gallery shows the rebuild beside the original.
+4. **Small sizes**: show the small-size board (`render --small-compare`) and ask whether 32 px and below use a small
+   version or the main symbol (`concept update --small-sizes small|main`).
+5. **Layout**: lockup options (`markilo lockup … --layout horizontal|stacked`) on one `render --compare` board; the
+   user picks.
+6. **Rich rendering** only when the identity is metallic or gradient: rich rendering (`concept update --rich-symbol`)
+   keeps the flat master for small sizes.
+7. **Verify** (`markilo verify`), then show the gallery: rebuild beside the original, the measured checks and the
+   originality verdict.
+8. **Finalize with equity**: record where and since when the mark is in use —
+   `markilo concept update --brand <slug> --concept <id> --equity "in use since 2014 on the TV app"` — then
+   `markilo finalize … --user-choice "<their words>"`. With `--equity`, an `insufficient-evidence` or `needs-review`
+   verdict does not need `--accept-risk`: the kit records `originality.equity` and the guidelines say originality was
+   reported, not used as a gate. The verdict is still reported. A `redesign` verdict still blocks finalize, with or
+   without `--accept-risk`: a real conflict is never hidden by equity. `--equity none` clears it.
+9. **Export** as usual.
 
 ## Partial requests
 

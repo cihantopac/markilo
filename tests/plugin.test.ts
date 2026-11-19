@@ -153,6 +153,31 @@ describe('craft-named directions', () => {
     expect(agent).toContain('## Finish now');
     expect(agent).toContain('concepts/<id>/work/');
   });
+  it('1.8: the refresh path is its own stage and finalizes with --equity', () => {
+    const read = (p: string) => readFileSync(join(root, p), 'utf8');
+    const design = read('plugin/skills/design/SKILL.md');
+    const workflow = read('plugin/skills/design/references/workflow.md');
+    const audit = read('plugin/skills/audit/SKILL.md');
+    for (const [name, text] of Object.entries({ design, workflow })) {
+      expect(text, name).toMatch(/^#{2,3} .*refresh/im);
+      for (const t of [
+        '--equity',
+        'trace',
+        'rebuild',
+        '--against',
+        '--min-iou',
+        'render --small-compare',
+        'lockup',
+        'render --compare',
+        'concept update --rich-symbol',
+      ])
+        expect(text, `${name}: ${t}`).toContain(t);
+      expect(text, name).toMatch(/no three proposals/i);
+      expect(text, name).toMatch(/`redesign`[^.]*still blocks/);
+    }
+    expect(audit).toMatch(/refresh stage/i);
+    expect(read('plugin/skills/design/references/cli.md')).toContain('--equity');
+  });
   it('1.7: the gallery is shown by default and decisions come back by Copy decisions', () => {
     const read = (p: string) => readFileSync(join(root, p), 'utf8');
     const design = read('plugin/skills/design/SKILL.md');

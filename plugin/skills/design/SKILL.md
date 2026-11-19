@@ -136,6 +136,18 @@ After the answers, when `family word` lists `missing` letters (letters the curre
 If the user is away or asked not to be asked, take your suggested answers, write them into the brief's notes as
 assumptions, list them at the top of the first round's message and ask them again there.
 
+### Refresh: the owner's own mark, rebuilt (instead of B–D)
+
+When the user chose **refresh** (the audit found strong equity and weak craft), there are no three proposals and no
+critic unless the user asks. Follow "The refresh path" in `references/workflow.md`: audit → `trace` (or the owner's
+SVG) → `rebuild` with `--against <the original>` and `--min-iou 0.95` → the small-size board
+(`render --small-compare`) and the small-size question → layout options (`lockup`, one `render --compare` board) →
+rich rendering (`concept update --rich-symbol`) only when the identity is metallic or gradient → verify, with the
+gallery showing the rebuild beside the original → `concept update --equity "<since when and where it is in use>"`, then
+finalize → export. With `--equity`, `insufficient-evidence` and `needs-review` are reported, not gated on (no
+`--accept-risk`); a `redesign` verdict still blocks finalize, with or without `--accept-risk`. `lock` is not a
+refresh: it only preserves files unchanged.
+
 ### B. Explore: exactly three proposals
 
 1. **Write the three directions yourself** — you hold the brief. For each, in a few lines: the stance; what leads
@@ -249,7 +261,8 @@ When the user answers in chat without the gallery's copied text, record each dec
    evidence is missing. Ask for **one decision**: which icon, and approve or change. When they approve:
    `markilo finalize --brand <slug> --concept <id> --user-choice "<their words>" --tagline …`. Finalize succeeds only when the
    originality verdict is `no-conflicts-found`; for `insufficient-evidence` or `needs-review`, say so in that same
-   message and add `--accept-risk` only on their explicit yes. Never present `insufficient-evidence` as "original". When they
+   message and add `--accept-risk` only on their explicit yes (a refresh of the owner's mark records `--equity`
+   instead, see Refresh). Never present `insufficient-evidence` as "original". When they
    want the word alone, add `--wordmark-only`: no symbol lockups, and the symbol stays the app icon and favicon.
    Before finalize, ask the tile colours: the mark on a brand-filled tile (`concept update --on-brand <#hex|auto>`) and
    the tile ground (`--tile`). Colour rules said only in `finalize --note` reach the guidelines, not the files — set the

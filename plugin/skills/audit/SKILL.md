@@ -24,4 +24,6 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 3. Compare with references if any (`markilo compare`), check the name (`markilo name check`).
 4. Report: what works (equity worth keeping), measured problems, judgment-based problems (labeled), and a
    recommendation — keep, refresh or redesign — with the evidence. Do not redesign during an audit; offer it.
+   A refresh is its own stage in the design skill (the refresh stage: trace, `rebuild --against`, finalize with
+   `concept update --equity`), not three new proposals; offer it when the equity is worth keeping.
 5. Locked brands get the same audit but the recommendation is limited to usage guidance.

@@ -107,6 +107,10 @@ export interface BrandKit {
     note?: string;
     /** What the verdict rests on, so guidelines can state it plainly (e.g. that no registry search was done). */
     evidence?: { visual: string; registry: string; registryCoverage: string };
+    /** The concept continues an existing mark in use (the user's note): the verdict was reported, not used as a gate. */
+    equity?: string;
+    /** The year the mark has been in use since, when the note names one. */
+    equitySince?: string;
   };
   /** What was accepted knowingly at approval (e.g. master colours outside the palette, with --accept-colours). */
   warnings?: string[];
@@ -377,11 +381,18 @@ export async function finalizeConcept(
       `${fails[0]!.message} Fix and verify again, or pass --accept-risk only if the user knowingly accepts it.`,
     );
   }
-  if (orig.verdict !== 'no-conflicts-found' && !opts.acceptRisk) {
+  // Equity: the owner's own mark, already in use. Missing evidence or an open review is reported, not gated on;
+  // a `redesign` verdict (a real conflict) was refused above whatever the equity.
+  const equity = concept.equity;
+  const equityCovers =
+    !!equity && (orig.verdict === 'insufficient-evidence' || orig.verdict === 'needs-review');
+  if (orig.verdict !== 'no-conflicts-found' && !opts.acceptRisk && !equityCovers) {
     throw new MarkiloError(
       'INVALID_INPUT',
       `Originality verdict is "${orig.verdict}" (confidence ${orig.confidence ?? 'unknown'}).`,
-      'Collect the missing evidence and verify again, or, if the user knowingly accepts the risk, pass --accept-risk.',
+      orig.verdict === 'redesign'
+        ? 'Rework the concept and verify it again.'
+        : 'Collect the missing evidence and verify again, or, if the user knowingly accepts the risk, pass --accept-risk. If the concept continues the user\'s own mark already in use, record that with concept update --equity "<since when and where>".',
     );
   }
   // A master still drawn in a colour the palette no longer holds would reach every export unnoticed.
@@ -505,7 +516,7 @@ export async function finalizeConcept(
     originality: {
       verdict: orig.verdict,
       confidence: orig.confidence ?? 'unknown',
-      acceptedRisk: orig.verdict !== 'no-conflicts-found',
+      acceptedRisk: orig.verdict !== 'no-conflicts-found' && !equityCovers,
       report: `../reports/originality-${conceptId}.md`,
       ...(orig.verdict === 'insufficient-evidence' && orig.scope?.referencesCompared === 0
         ? {
@@ -521,6 +532,7 @@ export async function finalizeConcept(
             },
           }
         : {}),
+      ...(equity ? { equity: equity.note, ...(equity.since ? { equitySince: equity.since } : {}) } : {}),
     },
     ...(colourWarnings.length ? { warnings: colourWarnings } : {}),
     gate: {
