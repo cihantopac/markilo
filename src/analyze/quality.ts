@@ -248,8 +248,8 @@ export async function assessQuality(
   let maxDe = 0;
   for (let i = 0; i < colors.length; i++)
     for (let j = i + 1; j < colors.length; j++) maxDe = Math.max(maxDe, deltaE2000(colors[i]!, colors[j]!));
-  // A dark icon beside a black word is one colour in effect: there is nothing to separate.
-  const singleColour = colors.length >= 2 && (maxDe < 10 || colors.every(neutral));
+  // A dark icon beside a black word is one colour in effect (navy against black is about ΔE 12): nothing to separate.
+  const singleColour = colors.length >= 2 && (maxDe < 15 || colors.every(neutral));
   if (singleColour)
     add({
       id: 'palette-separation',

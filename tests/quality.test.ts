@@ -51,9 +51,23 @@ describe('verify messages', () => {
     expect(sep?.message).toContain('single-colour lockup');
     expect(await check(svg, 'lightness-contrast')).toBeUndefined();
   });
+  it('reads a navy icon beside a black word as one colour', async () => {
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="10" y="10" width="30" height="30" fill="#060f26"/><rect x="50" y="50" width="40" height="30" fill="#000000"/></svg>';
+    const sep = await check(svg, 'palette-separation');
+    expect(sep?.status).toBe('pass');
+    expect(sep?.message).toContain('single-colour lockup');
+  });
+  it('reads colours declared in a <style> block', async () => {
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><style>.a{fill:#1d4ed8}.b{fill:#f97316}</style><rect class="a" x="10" y="10" width="40" height="80"/><rect class="b" x="50" y="10" width="40" height="80"/></svg>';
+    const sep = await check(svg, 'palette-separation');
+    expect(sep).toBeDefined();
+    expect(sep?.message).not.toContain('single-colour');
+  });
   it('still checks a two-colour mark', async () => {
     const svg =
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="10" y="10" width="40" height="80" fill="#1d4ed8"/><rect x="50" y="10" width="40" height="80" fill="#7c3aed"/></svg>';
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="10" y="10" width="40" height="80" fill="#1d4ed8"/><rect x="50" y="10" width="40" height="80" fill="#f97316"/></svg>';
     expect((await check(svg, 'palette-separation'))?.message).not.toContain('single-colour');
   });
 });

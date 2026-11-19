@@ -9,7 +9,7 @@ import type { Workspace } from '../core/workspace.js';
 import { fontInfo } from '../design/fonts.js';
 import { composeLockup } from '../design/lockup.js';
 import { currentArt, type GateResult, gateOf } from '../report/gate.js';
-import { lintSvg, paintOf } from '../svg/lint.js';
+import { CSS_PAINT, lintSvg, paintOf } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
 import { localName, parseXml, walk } from '../svg/xml.js';
 import { inkMetrics } from './geometry.js';
@@ -217,6 +217,14 @@ export function masterColourCheck(ws: Workspace, brand: string, id: string): Mas
     const gradEnds = new Map<unknown, string[]>();
     walk(root, (el, parents) => {
       const name = localName(el.name);
+      if (name === 'style')
+        for (const m of el.children
+          .map((ch) => (ch.type === 'text' ? ch.value : ''))
+          .join('')
+          .matchAll(CSS_PAINT)) {
+          const hex = normalizeColor(m[2]!);
+          if (hex) used.add(hex);
+        }
       for (const prop of ['fill', 'stroke', 'stop-color', 'color', 'flood-color']) {
         const hex = normalizeColor(paintOf(el, prop) ?? '');
         if (!hex) continue;

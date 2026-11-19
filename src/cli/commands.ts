@@ -162,7 +162,7 @@ import { addFinding, addSource, mergeRepoScan, summarizeProfile } from '../resea
 import { DEFAULT_MAX_FILES, scanRepo, summarizeScan } from '../research/repo.js';
 import type { SiteScan } from '../research/site.js';
 import { researchSite } from '../research/site-research.js';
-import { lintSvg } from '../svg/lint.js';
+import { CSS_PAINT, lintSvg } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
 import { type AgentTarget, agentSetup, ROLE_IDS, type Role } from './agents.js';
 import type { CommandSpec, RunContext } from './args.js';
@@ -258,6 +258,18 @@ function recolorSvgText(
     );
     return `${pre}${q}${inner}${q}`;
   });
+  text = text.replace(
+    /(<style\b[^>]*>)([\s\S]*?)(<\/style\s*>)/gi,
+    (_m, open: string, css: string, close: string) => {
+      const inner = css.replace(CSS_PAINT, (m2, p2: string, val: string) => {
+        const to = swap(val.trim());
+        if (!to) return m2;
+        // Keep the whitespace that followed the colour.
+        return `${p2}${to}${/\s*$/.exec(val)![0]}`;
+      });
+      return `${open}${inner}${close}`;
+    },
+  );
   return { text, counts };
 }
 
@@ -2022,7 +2034,13 @@ export const COMMANDS: CommandSpec[] = [
         if (staleFrom) {
           const role = rolesSet[0] as 'primary' | 'secondary' | 'accent' | 'ink';
           const to = normalizeColor(next.palette[role] ?? '');
-          if (!to || to === staleFrom)
+          if (!to)
+            throw new MarkiloError(
+              'USAGE',
+              `--${role} none leaves the ${role} role with no colour, so there is nothing to replace ${staleFrom} with.`,
+              `Give --${role} a hex colour, or drop --recolor-from.`,
+            );
+          if (to === staleFrom)
             throw new MarkiloError('USAGE', `--recolor-from ${staleFrom} is the ${role} colour itself.`);
           map.set(staleFrom, to);
         }
@@ -2039,14 +2057,20 @@ export const COMMANDS: CommandSpec[] = [
         };
         return artHash(read(next.files.symbol), read(next.files.wordmark));
       };
+      // A pure recolour (exact colour map, nothing else touched) is not a form change: the critique that judged the
+      // drawing as it was stays attached to the recoloured drawing. Only when that critique was current before.
+      const palettePlanned = recolor.writes.length > 0;
       const critiquing = ['judgment', 'blind', 'present', 'look', 'look-present', 'reads-as'].some((k) =>
         k === 'judgment' ? c.list('judgment').length : c.str(k),
       );
       // A critique of a changed drawing starts clean: the old drawing's verdict goes to the history (archiveCritique
       // below), and none of its scores, answer or looks carry over into the new drawing's record.
       const freshCritique = critiquing && !!cur.reviewedArt && cur.reviewedArt !== plannedArt();
+      if (!critiquing && palettePlanned && cur.reviewedArt && cur.reviewedArt === currentArt(w, slug, cur))
+        next.reviewedArt = plannedArt();
       if (freshCritique)
-        for (const k of ['judgment', 'critique', 'blind', 'looks', 'readsAs'] as const) delete next[k];
+        for (const k of ['judgment', 'critique', 'blind', 'looks', 'readsAs', 'reviews'] as const)
+          delete next[k];
       if (c.str('on-brand') === 'none') delete next.palette.onBrand;
       if (c.str('tile') === 'none') delete next.palette.tile;
       // A colour that stopped being a role is remembered, so a master still drawn in it reads as stale at finalize.
@@ -2113,7 +2137,7 @@ export const COMMANDS: CommandSpec[] = [
       Object.assign(next, letteringOptions(c, next.typography));
       const presentAs = (answer: string, reason: string) => {
         // A new drawing has no answer yet (construct clears it): this is the critic's first verdict on it.
-        if (!next.critique) next.reviews = (cur.reviews ?? 0) + 1;
+        if (!next.critique) next.reviews = (next.reviews ?? 0) + 1;
         next.critique = { present: /^y/i.test(answer), reason: reason.trim(), at: nowIso() };
       };
       if (c.str('present')) {
@@ -2457,7 +2481,10 @@ export const COMMANDS: CommandSpec[] = [
       const unregistered: string[] = [];
       const stamp = nowIso().replace(/[:.]/g, '-');
       let movedTo: string | undefined;
+      // A file another key still points at (two keys shared it, one is restored) stays registered.
+      const stillUsed = new Set(Object.values(next.files));
       for (const rel of new Set(aside)) {
+        if (stillUsed.has(rel)) continue;
         unregistered.push(rel);
         const target = w.conceptFile(slug, cur.id, rel);
         if (copies.has(rel) || !existsSync(target)) continue;

@@ -46,6 +46,9 @@ function styleDecls(style: string | undefined): Record<string, string> {
   return out;
 }
 
+/** Paint declarations (`fill`, `stroke`, `stop-color`) in CSS text: match[1] is the property and colon, match[2] the value. */
+export const CSS_PAINT = /((?:^|[;{\s])(?:fill|stroke|stop-color)\s*:\s*)([^;}!]+)/gi;
+
 /** Paint value of an element from attributes or inline style (style wins, as in CSS). */
 export function paintOf(el: XmlElement, prop: string): string | undefined {
   return styleDecls(el.attrs.style)[prop] ?? el.attrs[prop];
@@ -123,6 +126,10 @@ export function lintSvg(source: string, opts: LintOptions = {}): LintResult {
       const css = el.children.map((c) => (c.type === 'text' ? c.value : '')).join('');
       if (/@import|url\(\s*['"]?(?:https?:|\/\/)/i.test(css))
         add('no-external', 'error', '<style> loads external resources.');
+      for (const m of css.matchAll(CSS_PAINT)) {
+        const c = normalizeColor(m[2]!);
+        if (c) colors.add(c);
+      }
       if (/@font-face/i.test(css)) add('no-webfont', 'error', '@font-face in SVG; outline text instead.');
       add(
         'prefer-attributes',
