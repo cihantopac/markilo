@@ -4201,6 +4201,7 @@ export const COMMANDS: CommandSpec[] = [
               hint: `Placeholder colours used for: ${compiled.defaultColors.join(', ')}. Pass --brand and --concept to use the concept palette, or --set primary=#rrggbb.`,
             }
           : {}),
+        ...(compiled.skipped ? { skipped: compiled.skipped } : {}),
         warnings: compiled.warnings,
       };
     },
