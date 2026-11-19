@@ -103,8 +103,8 @@ import {
 import { buildGallery } from '../gallery/gallery.js';
 import { serveGallery } from '../gallery/serve.js';
 import { centerOptically } from '../geom/center.js';
-import { ensurePathKit } from '../geom/pathkit.js';
-import { countSegments, rebuildPath } from '../geom/rebuild.js';
+import { boundsOf, ensurePathKit } from '../geom/pathkit.js';
+import { countSegments, rebuildPaths } from '../geom/rebuild.js';
 import { MAX_TRACE_COLORS, rasterMaskSvg, type TraceOptions, traceRaster } from '../geom/trace.js';
 import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarity.js';
 import { suggestNiceClasses, trademarkSearchPlan } from '../name/trademark.js';
@@ -166,7 +166,15 @@ import type { SiteScan } from '../research/site.js';
 import { researchSite } from '../research/site-research.js';
 import { lintSvg } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
-import { intrinsicBox, localName, parseXml, serializeXml, walk } from '../svg/xml.js';
+import {
+  escapeAttr,
+  intrinsicBox,
+  localName,
+  parseXml,
+  serializeXml,
+  walk,
+  type XmlElement,
+} from '../svg/xml.js';
 import { type AgentTarget, agentSetup, ROLE_IDS, type Role } from './agents.js';
 import type { CommandSpec, RunContext } from './args.js';
 import { FRAMEWORKS, type Framework, planFrameworkInstall } from './frameworks.js';
@@ -388,6 +396,41 @@ function rebuildAngles(c: RunContext): number[] | 'auto' | undefined {
   return list.map(Number);
 }
 
+/** Drawing elements `rebuild` leaves as they are (it rewrites <path> data only). */
+const NON_PATH_SHAPES = new Set([
+  'rect',
+  'circle',
+  'ellipse',
+  'line',
+  'polyline',
+  'polygon',
+  'text',
+  'image',
+  'use',
+]);
+
+/** The fill rule a path is painted with: its own, or inherited from its nearest ancestor that sets one. */
+function fillRuleOf(chain: XmlElement[]): 'evenodd' | 'nonzero' {
+  for (let i = chain.length - 1; i >= 0; i--) {
+    const el = chain[i]!;
+    const v = /fill-rule\s*:\s*(evenodd|nonzero)/.exec(el.attrs.style ?? '')?.[1] ?? el.attrs['fill-rule'];
+    if (v === 'evenodd' || v === 'nonzero') return v;
+  }
+  return 'nonzero';
+}
+
+/** One path alone, filled, on a viewBox around it and its counterpart (so both are drawn on the same box). */
+function pathAloneSvg(d: string, other: string, rule: 'evenodd' | 'nonzero'): string {
+  const a = boundsOf(d || 'M0 0');
+  const b = boundsOf(other || 'M0 0');
+  const x = Math.min(a.x, b.x);
+  const y = Math.min(a.y, b.y);
+  const w = Math.max(a.x + a.w, b.x + b.w) - x;
+  const h = Math.max(a.y + a.h, b.y + b.h) - y;
+  const pad = Math.max(w, h, 1) * 0.05;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x - pad} ${y - pad} ${w + 2 * pad} ${h + 2 * pad}"><path fill="#000" fill-rule="${rule}" d="${escapeAttr(d)}"/></svg>`;
+}
+
 /**
  * Rebuilds every path of an SVG as clean geometry and measures the result against a reference (the input itself, or
  * --against: an SVG or a raster's ink mask). Throws, without writing, when the IoU is below minIou.
@@ -405,30 +448,38 @@ async function rebuildSvgFile(c: RunContext) {
   if (!(minIou >= 0 && minIou <= 1)) throw new MarkiloError('USAGE', '--min-iou must be between 0 and 1.');
   const angles = rebuildAngles(c);
   await ensurePathKit();
-  let nodesBefore = 0;
-  const segments = { lines: 0, arcs: 0, cubics: 0 };
-  const snapped = new Map<number, number>();
-  const paths: Record<string, string>[] = [];
-  walk(root, (el) => {
-    if (localName(el.name) === 'path' && el.attrs.d?.trim()) paths.push(el.attrs);
+  const paths: { attrs: Record<string, string>; rule: 'evenodd' | 'nonzero' }[] = [];
+  const untouched = new Map<string, number>();
+  walk(root, (el, parents) => {
+    const name = localName(el.name);
+    if (name === 'path' && el.attrs.d?.trim())
+      paths.push({ attrs: el.attrs, rule: fillRuleOf([...parents, el]) });
+    else if (NON_PATH_SHAPES.has(name) && !parents.some((p) => localName(p.name) === 'defs'))
+      untouched.set(name, (untouched.get(name) ?? 0) + 1);
   });
   if (!paths.length) throw new MarkiloError('INVALID_INPUT', `${inPath}: no <path> to rebuild.`);
-  for (const attrs of paths) {
-    nodesBefore += countSegments(attrs.d!);
-    const r = rebuildPath(attrs.d!, {
-      tolerance,
-      ...(angles ? { angles } : {}),
-      arcs: !c.bool('no-arcs'),
-    });
-    attrs.d = r.d;
+  const before = paths.map((p) => p.attrs.d!);
+  const rebuilt = rebuildPaths(before, {
+    tolerance,
+    ...(angles ? { angles } : {}),
+    arcs: !c.bool('no-arcs'),
+  });
+  const segments = { lines: 0, arcs: 0, cubics: 0 };
+  rebuilt.paths.forEach((r, i) => {
+    paths[i]!.attrs.d = r.d;
     segments.lines += r.segments.lines;
     segments.arcs += r.segments.arcs;
     segments.cubics += r.segments.cubics;
-    for (const s of r.snapped) snapped.set(s.angle, (snapped.get(s.angle) ?? 0) + s.count);
-  }
+  });
   const svg = `${serializeXml(root)}\n`;
   const against = c.str('against');
   const warnings: string[] = [];
+  if (untouched.size) {
+    const n = [...untouched.values()].reduce((x, y) => x + y, 0);
+    warnings.push(
+      `${n} shape${n === 1 ? '' : 's'} that ${n === 1 ? 'is' : 'are'} not a <path> (${[...untouched.keys()].join(', ')}) left unchanged; convert ${n === 1 ? 'it' : 'them'} to paths to rebuild ${n === 1 ? 'it' : 'them'}.`,
+    );
+  }
   let reference = source;
   if (against) {
     const p = file(c, against);
@@ -439,23 +490,41 @@ async function rebuildSvgFile(c: RunContext) {
       reference = rasterMaskSvg(img);
     } else reference = readText(p);
   }
-  const iou = Math.round((await silhouetteIoU(svg, reference)) * 1000) / 1000;
-  if (iou < minIou)
+  const round3 = (v: number) => Math.round(v * 1000) / 1000;
+  const iou = round3(await silhouetteIoU(svg, reference));
+  // The whole silhouette cannot see a change inside it (a glyph on a tile, a face inside another): every path is
+  // also measured alone against its own original.
+  let worstPath: { index: number; id?: string; iou: number } | undefined;
+  for (let i = 0; i < paths.length; i++) {
+    const one = round3(
+      await silhouetteIoU(
+        pathAloneSvg(rebuilt.paths[i]!.d, before[i]!, paths[i]!.rule),
+        pathAloneSvg(before[i]!, rebuilt.paths[i]!.d, paths[i]!.rule),
+      ),
+    );
+    if (!worstPath || one < worstPath.iou)
+      worstPath = { index: i, ...(paths[i]!.attrs.id ? { id: paths[i]!.attrs.id } : {}), iou: one };
+  }
+  if (Math.min(iou, worstPath!.iou) < minIou) {
+    const which =
+      worstPath!.iou < iou
+        ? `path ${worstPath!.id ?? `#${worstPath!.index + 1}`} measured alone has IoU ${worstPath!.iou} against its original`
+        : `IoU ${iou} against ${against ?? inPath}`;
     throw new MarkiloError(
       'INVALID_INPUT',
-      `The rebuild changes the form: IoU ${iou} against ${against ?? inPath} is below --min-iou ${minIou}. Nothing was written.`,
+      `The rebuild changes the form: ${which}, below --min-iou ${minIou}. Nothing was written.`,
       'Lower --tolerance, pass --angles none or --no-arcs; lower --min-iou only if the change is intended.',
-      { iou, minIou },
+      { iou, worstPath, minIou },
     );
+  }
   return {
     svg,
     iou,
-    nodesBefore,
+    worstPath: worstPath!,
+    nodesBefore: before.reduce((n, d) => n + countSegments(d), 0),
     nodesAfter: segments.lines + segments.arcs + segments.cubics,
     segments,
-    snapped: [...snapped]
-      .map(([angle, count]) => ({ angle, count }))
-      .sort((a, b) => b.count - a.count || a.angle - b.angle),
+    snapped: rebuilt.snapped,
     warnings,
   };
 }

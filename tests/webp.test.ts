@@ -461,6 +461,14 @@ describe('WebP end to end', () => {
     expect(((s.tracedFrom as { warnings: string[] }).warnings ?? []).join(' ')).toMatch(/animated webp/i);
   });
 
+  it('carries the animated-file warning into rebuild --against', async () => {
+    const cwd = tmp();
+    writeFileSync(join(cwd, 'anim.webp'), animatedWebp());
+    await cmd('trace', ['anim.webp', '-o', 'anim.svg'], cwd);
+    const r = await cmd('rebuild', ['anim.svg', '-o', 'clean.svg', '--against', 'anim.webp'], cwd);
+    expect((r.warnings as string[]).join(' ')).toMatch(/animated webp/i);
+  });
+
   it('loads a WebP as a mark and embeds it as image/webp in calibration', async () => {
     const m = await loadMark(new URL('./fixtures/raster/orbit-lossless.webp', import.meta.url).pathname);
     expect(m.kind).toBe('raster');

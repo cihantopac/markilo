@@ -570,6 +570,17 @@ function snapContour(c: Contour, target: Map<number, number>): Contour {
     return { p: mul(add(p.a, p.b), 0.5), d };
   };
   const vertex = (prev: number | undefined, next: number | undefined, at: Pt): Pt => {
+    // The new corner must stay on the near side of an unsnapped neighbouring line's far end.
+    const keepsNeighbour = (x: Pt): boolean => {
+      for (const [k, far] of [
+        [prev, prims[prev ?? 0]?.a],
+        [next, prims[next ?? 0]?.b],
+      ] as const) {
+        if (k === undefined || target.has(k) || prims[k]!.k !== 'L' || !far) continue;
+        if (dot(sub(at, far), sub(x, far)) <= 0 || dist(x, far) < 0.5 * dist(at, far)) return false;
+      }
+      return true;
+    };
     const sp = prev !== undefined && target.has(prev);
     const sn = next !== undefined && target.has(next);
     if (!sp && !sn) return at;
@@ -581,7 +592,7 @@ function snapContour(c: Contour, target: Map<number, number>): Contour {
     const onto = sp && sn ? mul(add(project(at, lp!), project(at, ln!)), 0.5) : project(at, (sp ? lp : ln)!);
     // A snapped line next to an unsnapped one: keep the neighbour's direction too, unless that slides the corner
     // far along a shallow joint (a short neighbour would fold over); then the corner moves straight onto the line.
-    if (x && dist(x, at) <= 2 * dist(onto, at) + 1e-9) return x;
+    if (x && dist(x, at) <= 2 * dist(onto, at) + 1e-9 && keepsNeighbour(x)) return x;
     return onto;
   };
   const v: Pt[] = [];
@@ -597,7 +608,7 @@ function snapContour(c: Contour, target: Map<number, number>): Contour {
 }
 
 /** Whether a snapped contour still is the same shape: same winding, about the same area, no new crossings. */
-function snapKeepsShape(before: Contour, after: Contour, target: Map<number, number>): boolean {
+function snapKeepsShape(before: Contour, after: Contour): boolean {
   const pb = polygonOf(before);
   const pa = polygonOf(after);
   if (before.closed) {
@@ -607,9 +618,12 @@ function snapKeepsShape(before: Contour, after: Contour, target: Map<number, num
     const ratio = aa / ab;
     if (!(ratio > 0.8 && ratio < 1.25)) return false;
   }
-  for (const k of target.keys()) {
+  // Every line whose ends moved — snapped, or a neighbour re-solved — must keep its direction and most of its
+  // length: a reversed short neighbour is a spike, even when the area and the crossings look fine.
+  for (let k = 0; k < before.prims.length; k++) {
     const o = before.prims[k]!;
     const s = after.prims[k]!;
+    if (o.k !== 'L' || (dist(o.a, s.a) < 1e-9 && dist(o.b, s.b) < 1e-9)) continue;
     const od = sub(o.b, o.a);
     const sd = sub(s.b, s.a);
     if (dot(od, sd) <= 0 || len(sd) < 0.5 * len(od)) return false;
@@ -617,10 +631,16 @@ function snapKeepsShape(before: Contour, after: Contour, target: Map<number, num
   return selfCrossings(pa, after.closed) <= selfCrossings(pb, before.closed);
 }
 
+/**
+ * Snaps the lines of all contours together (one shared angle across every path of a drawing). `pathOf` says which
+ * path each contour belongs to: contours of different paths may overlap, so only contours of one path are checked
+ * for new crossings.
+ */
 function snapAll(
   contours: Contour[],
+  pathOf: number[],
   angles: number[] | 'auto',
-): { contours: Contour[]; snapped: { angle: number; count: number }[] } {
+): { contours: Contour[]; groups: { angle: number; members: LineRef[] }[] } {
   const excluded = new Set<number>();
   for (let round = 0; round <= contours.length; round++) {
     const lines: LineRef[] = [];
@@ -646,13 +666,13 @@ function snapAll(
       return t ? snapContour(c, t) : c;
     });
     const bad = new Set<number>();
-    for (const [ci, t] of perContour) if (!snapKeepsShape(contours[ci]!, next[ci]!, t)) bad.add(ci);
+    for (const ci of perContour.keys()) if (!snapKeepsShape(contours[ci]!, next[ci]!)) bad.add(ci);
     // Contours that did not cross before (a hole inside its outline) must not cross after.
     const polysB = contours.map(polygonOf);
     const polysA = next.map(polygonOf);
     for (const ci of perContour.keys())
       for (let cj = 0; cj < contours.length; cj++) {
-        if (cj === ci || (perContour.has(cj) && cj < ci)) continue;
+        if (cj === ci || pathOf[cj] !== pathOf[ci] || (perContour.has(cj) && cj < ci)) continue;
         const b = crossings(polysB[ci]!, contours[ci]!.closed, polysB[cj]!, contours[cj]!.closed);
         const a = crossings(polysA[ci]!, next[ci]!.closed, polysA[cj]!, next[cj]!.closed);
         if (a > b) {
@@ -660,15 +680,17 @@ function snapAll(
           if (perContour.has(cj)) bad.add(cj);
         }
       }
-    if (!bad.size) {
-      const snapped = groups
-        .map((g) => ({ angle: Math.round(g.angle * 100) / 100, count: g.members.length }))
-        .sort((x, y) => y.count - x.count || x.angle - y.angle);
-      return { contours: next, snapped };
-    }
+    if (!bad.size) return { contours: next, groups };
     for (const ci of bad) excluded.add(ci);
   }
-  return { contours, snapped: [] };
+  return { contours, groups: [] };
+}
+
+function snapReport(groups: { angle: number; members: LineRef[] }[], keep: (m: LineRef) => boolean) {
+  return groups
+    .map((g) => ({ angle: Math.round(g.angle * 100) / 100, count: g.members.filter(keep).length }))
+    .filter((g) => g.count > 0)
+    .sort((x, y) => y.count - x.count || x.angle - y.angle);
 }
 
 // ---- Output ---------------------------------------------------------------------------------------------------
@@ -702,22 +724,43 @@ function emit(contours: Contour[]): string {
   return d;
 }
 
-export function rebuildPath(d: string, opts: RebuildOptions): RebuildResult {
+/**
+ * Rebuilds several paths of one drawing with the same options. Angles are snapped across all of them, so the
+ * drawing gets one shared cut angle; `snapped` counts every path's lines, each result its own.
+ */
+export function rebuildPaths(
+  ds: string[],
+  opts: RebuildOptions,
+): { paths: RebuildResult[]; snapped: RebuildResult['snapped'] } {
   if (!(opts.tolerance > 0))
     throw new MarkiloError('USAGE', 'The rebuild tolerance must be a positive number.');
   if (Array.isArray(opts.angles) && opts.angles.some((a) => !Number.isFinite(a)))
     throw new MarkiloError('USAGE', 'Snap angles must be numbers of degrees.');
-  let contours = readContours(d).map((c) => rebuildContour(c, opts.tolerance, opts.arcs ?? true));
-  let snapped: RebuildResult['snapped'] = [];
-  if (opts.angles && (opts.angles === 'auto' || opts.angles.length)) {
-    ({ contours, snapped } = snapAll(contours, opts.angles));
-  }
-  const segments = { lines: 0, arcs: 0, cubics: 0 };
-  for (const c of contours)
-    for (const p of c.prims) {
-      if (p.k === 'L') segments.lines++;
-      else if (p.k === 'A') segments.arcs++;
-      else segments.cubics++;
+  let contours: Contour[] = [];
+  const pathOf: number[] = [];
+  ds.forEach((d, pi) => {
+    for (const c of readContours(d)) {
+      contours.push(rebuildContour(c, opts.tolerance, opts.arcs ?? true));
+      pathOf.push(pi);
     }
-  return { d: emit(contours), segments, snapped };
+  });
+  let groups: { angle: number; members: LineRef[] }[] = [];
+  if (opts.angles && (opts.angles === 'auto' || opts.angles.length))
+    ({ contours, groups } = snapAll(contours, pathOf, opts.angles));
+  const paths = ds.map((_, pi) => {
+    const own = contours.filter((_c, ci) => pathOf[ci] === pi);
+    const segments = { lines: 0, arcs: 0, cubics: 0 };
+    for (const c of own)
+      for (const p of c.prims) {
+        if (p.k === 'L') segments.lines++;
+        else if (p.k === 'A') segments.arcs++;
+        else segments.cubics++;
+      }
+    return { d: emit(own), segments, snapped: snapReport(groups, (m) => pathOf[m.contour] === pi) };
+  });
+  return { paths, snapped: snapReport(groups, () => true) };
+}
+
+export function rebuildPath(d: string, opts: RebuildOptions): RebuildResult {
+  return rebuildPaths([d], opts).paths[0]!;
 }

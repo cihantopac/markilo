@@ -7,7 +7,7 @@ import { parseCommand } from '../src/cli/args.js';
 import { findCommand } from '../src/cli/commands.js';
 import { exitCodeFor, type MarkiloError } from '../src/core/errors.js';
 import { ensurePathKit } from '../src/geom/pathkit.js';
-import { contourAreas, rebuildPath } from '../src/geom/rebuild.js';
+import { contourAreas, rebuildPath, rebuildPaths } from '../src/geom/rebuild.js';
 import { traceRaster } from '../src/geom/trace.js';
 import { encodePng } from '../src/render/png.js';
 import { renderSvg } from '../src/render/resvg.js';
@@ -150,6 +150,43 @@ describe('rebuildPath', () => {
     expect(Math.abs(after[0]! / before[0]!)).toBeLessThan(1.25);
   });
 
+  it('keeps the direction of a short neighbour when the snap next to it would reverse it', () => {
+    // A hypotenuse at 33.5° snapped towards two at ~30.5°, ending in a 1-unit neighbour heading down at -100°:
+    // re-solving the shared corner on the intersection would flip that neighbour into a spike.
+    const R = (deg: number) => (deg * Math.PI) / 180;
+    const p0 = [10, 90];
+    const p1 = [p0[0]! + 90 * Math.cos(R(33.5)), p0[1]! - 90 * Math.sin(R(33.5))];
+    const p2 = [p1[0]! + Math.cos(R(-100)), p1[1]! - Math.sin(R(-100))];
+    const f = (q: number[]) => q.map((v) => v.toFixed(4)).join(' ');
+    const tri = (x: number, deg: number) => `M${x} 90H${x + 60}V${(90 - 60 * Math.tan(R(deg))).toFixed(4)}Z`;
+    const d = `M${f(p0)}L${f(p1)}L${f(p2)}L${p2[0]!.toFixed(4)} 90Z${tri(130, 30.5)}${tri(220, 30.6)}`;
+    const r = rebuildPath(d, { tolerance: 0.05, angles: 'auto' });
+    const pts = r.d
+      .split('M')[1]!
+      .split(/[LZ]/)
+      .filter(Boolean)
+      .map((q) => q.trim().split(/\s+/).map(Number));
+    // The neighbour runs from the hypotenuse's top to the next corner and still heads the same way.
+    const before = [p2[0]! - p1[0]!, p2[1]! - p1[1]!];
+    const after = [pts[2]![0]! - pts[1]![0]!, pts[2]![1]! - pts[1]![1]!];
+    expect(before[0]! * after[0]! + before[1]! * after[1]!).toBeGreaterThan(0);
+    expect(Math.hypot(after[0]!, after[1]!)).toBeGreaterThan(0.5);
+    expect(contourAreas(r.d).map(Math.sign)).toEqual(contourAreas(d).map(Math.sign));
+  });
+
+  it('snaps one shared angle across the paths of a drawing', () => {
+    const [a, b] = [triangles([31.2, 32.6]), triangles([31.9])];
+    expect(rebuildPath(a, { tolerance: 0.1, angles: 'auto' }).snapped).toEqual([]);
+    const r = rebuildPaths([a, b], { tolerance: 0.1, angles: 'auto' });
+    expect(r.snapped).toHaveLength(1);
+    expect(r.snapped[0]!.count).toBe(3);
+    expect(r.paths[0]!.snapped[0]!.count).toBe(2);
+    expect(r.paths[1]!.snapped[0]!.count).toBe(1);
+    for (const p of r.paths)
+      for (const x of lineAngles(p.d).filter((v) => v > 10 && v < 80))
+        expect(x).toBeCloseTo(r.snapped[0]!.angle, 1);
+  });
+
   it('keeps lines and curves when arcs are turned off', async () => {
     const t = traceRaster(await renderSvg(mark('plain-circle'), { width: 400 }), {});
     const d = t.svg.match(/ d="([^"]+)"/)![1]!;
@@ -227,6 +264,30 @@ describe('rebuild command', () => {
     await expect(cmd('rebuild', ['traced.svg', '-o', 'clean.svg'], cwd)).rejects.toMatchObject({
       code: 'EXISTS',
     });
+  });
+
+  it('refuses a rebuild that changes a glyph inside a tile, and names the path', async () => {
+    // The whole silhouette is the square tile either way; only the white glyph on it changes.
+    const cwd = tmp();
+    writeFileSync(
+      join(cwd, 'tile.svg'),
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#123"/><path id="glyph" fill="#fff" d="M30 20 C 60 10, 80 40, 70 60 C 60 80, 30 85, 25 60 C 22 45, 40 40, 45 50 L 50 30 Z"/></svg>',
+    );
+    const err = (await cmd('rebuild', ['tile.svg', '-o', 'out.svg', '--tolerance', '8'], cwd).catch(
+      (e: unknown) => e,
+    )) as MarkiloError;
+    expect(exitCodeFor(err.code)).toBe(1);
+    expect(err.details?.iou).toBe(1);
+    const worst = err.details?.worstPath as { id: string; iou: number };
+    expect(worst.id).toBe('glyph');
+    expect(worst.iou).toBeLessThan(0.95);
+    expect(err.message).toMatch(/glyph/);
+    expect(existsSync(join(cwd, 'out.svg'))).toBe(false);
+
+    // At a sane tolerance it passes, reports the worst path and says the <rect> was left as it is.
+    const ok = await cmd('rebuild', ['tile.svg', '-o', 'out.svg'], cwd);
+    expect((ok.worstPath as { iou: number }).iou).toBeGreaterThanOrEqual(0.95);
+    expect((ok.warnings as string[]).join(' ')).toMatch(/rect/);
   });
 
   it('rejects bad options', async () => {
