@@ -6,6 +6,65 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-11-19
+
+Refreshing an existing mark is a first-class path. A raster logo is traced to SVG, rebuilt as clean geometry against a
+fidelity gate, drawn in the owner's own proportions and exported to phones, TVs and stores in one run. From a field
+report on 1.7.0, the items parked from 1.6.0 and the minors deferred from 1.7.0. Locked identities and the logo files
+of existing kits are byte-for-byte what 1.7.0 wrote.
+
+### Added
+
+- **`markilo trace`**: a PNG, JPEG or WebP mark becomes SVG (it warns when the ground looks inverted); `score` reads
+  PNG and JPEG too.
+- **`markilo rebuild --against <svg> --min-iou <n>`**: fits lines, arcs and curves to a traced path, snaps shared
+  angles and accepts the result only when every path alone keeps the silhouette above the IoU gate.
+- **Refresh stage and `finalize --equity`**: a stage for the owner's own mark, and an equity mode in which the
+  owner's mark is kept as drawn and originality compares the refresh with it.
+- **`markilo refresh`**: trace, rebuild, small sizes and lockups in one command that stops at the owner's decisions and
+  keeps the owner's edits on a rerun.
+- **Rich renderings** (gradients, shadows, tints) beside the flat master: checked against the master, exported next to
+  it, and `--icon-art` chooses the artwork of an app icon.
+- **Small sizes are asked early.** `render --small-compare` shows the main and the small symbol side by side and the
+  export waits for the owner's answer.
+- **TV and store surfaces** (`tv`): Fire TV, webOS, Android TV (a 640x360 banner in `drawable-xxxhdpi`) and the Play
+  feature graphic. Tizen's 512 icon is left out until its size is confirmed. Symbol-only surfaces give no lettering
+  warning.
+- **`install-assets --framework android`** reads the project's own resource names and densities; `--map` states the
+  mapping explicitly.
+- **`render --out-dir`, `--pad` and `--zoom`**: batch output, padding and zoomed before/after crops sharing one frame;
+  `wordmark --pad`.
+- **Lettering operations on outlines**: `construct` ops `cut-terminals`, `slit`, `detach-bowl` and `point-apex`.
+- **Turkish boards and guidelines**: `--lang en|tr`; a kit with a Turkish-first brief gets a Turkish `guidelines.md`
+  when it is exported again. Logo files do not change.
+- **In-situ references and `audit in-situ`**: a photo of the real screen is kept as a reference and the mark is found
+  in it and measured there. `references dedupe` and `list` leave in-situ photos alone.
+- **WebP input everywhere** (lossless, lossy, alpha) without a dependency: references, calibration, competitor logos,
+  trace and refresh.
+- The 1.6.0 leftovers: family stems and non-Latin family members, nested hidden text and kerned pairs in research;
+  `style` block colours, recolours that keep the critique, navy and black as one colour and the review nits.
+
+### Changed
+
+- The owner's `existing` mark is reported as likeness, not as risk; only an existing reference counts as the owner's
+  mark.
+- Proposal ids in the gallery are `<slug>--<key>`; old hashes still resolve. `--` is refused in new slugs and concept
+  ids.
+- Names in mixed scripts slug differently: "Acme Нива" is now `acme-niva`.
+- The JPEG decoding budget follows the pixel cap (up to about 960 MB for a 40 MP image).
+- Skill and agent text covers the refresh stage, trace and rebuild, rich art, the early small-size question and
+  `audit in-situ`.
+
+### Fixed
+
+- A colour carries a critique only across an exact colour map; `color` and `flood-color` are recoloured too.
+- A dark lockup in navy and black reads as one colour.
+- An in-situ match is verified against the photo's colours before it is measured.
+- `rebuild` never reverses a neighbour it has already re-solved.
+- `render --out-dir` is atomic and case-safe; zoom crops share the before frame.
+- Gallery: arrow keys respect focus, element ids are unique, the flag label and stricter tests.
+- Interface text of the equity guidelines follows the board language.
+
 ## [1.7.0] - 2026-11-16
 
 A calmer review. The gallery puts the marks first and folds the reading away, uses only Markilo's three colours, and
