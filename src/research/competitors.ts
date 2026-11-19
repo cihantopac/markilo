@@ -47,7 +47,7 @@ export interface NewReference {
   id?: string;
   source: string;
   bytes: Uint8Array;
-  ext: '.svg' | '.png' | '.jpg' | '.ico';
+  ext: '.svg' | '.png' | '.jpg' | '.webp' | '.ico';
   category?: ReferenceCategory;
   retrievedAt?: string;
   notes?: string;
@@ -187,10 +187,12 @@ export async function findDuplicateReferences(ws: Workspace, brand: string): Pro
   return groups;
 }
 
-const extOf = (contentType: string, url: string): NewReference['ext'] | undefined => {
+/** The file extension a downloaded logo is stored under, from its content type or else its URL. */
+export const referenceExtOf = (contentType: string, url: string): NewReference['ext'] | undefined => {
   if (/svg/i.test(contentType) || /\.svg(\?|$)/i.test(url)) return '.svg';
   if (/png/i.test(contentType) || /\.png(\?|$)/i.test(url)) return '.png';
   if (/jpe?g/i.test(contentType) || /\.jpe?g(\?|$)/i.test(url)) return '.jpg';
+  if (/webp/i.test(contentType) || /\.webp(\?|$)/i.test(url)) return '.webp';
   if (/icon/i.test(contentType) || /\.ico(\?|$)/i.test(url)) return '.ico';
   return undefined;
 };
@@ -369,7 +371,7 @@ export async function researchCompetitor(
         continue;
       }
       const bin = await fetchBinary(u, opts);
-      const ext = extOf(bin.contentType, bin.url);
+      const ext = referenceExtOf(bin.contentType, bin.url);
       if (bin.status >= 400 || !ext) continue;
       const r = await addReference(ws, brand, {
         name: competitor.name,
@@ -404,7 +406,7 @@ export async function researchCompetitor(
         continue;
       }
       const bin = await fetchBinary(i.href, opts);
-      const ext = extOf(bin.contentType, bin.url);
+      const ext = referenceExtOf(bin.contentType, bin.url);
       if (bin.status >= 400 || !ext) continue;
       const r = await addReference(ws, brand, {
         name: `${competitor.name} icon`,

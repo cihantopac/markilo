@@ -13,6 +13,7 @@ import { composeLockup } from '../design/lockup.js';
 import { inkMetrics } from '../export/geometry.js';
 import { type ContextPeer, groundFor, renderContextSheet } from '../render/context.js';
 import { renderReviewSheet, renderWordmarkSheet } from '../render/sheet.js';
+import { rasterMime } from '../render/webp.js';
 import { type ReferenceCategory, USER_REFERENCE } from '../research/competitors.js';
 import { currentArt, gateOf, STALE_NOTE } from './gate.js';
 import { buildOriginalityReport, nameRiskReasons, readReferences } from './originality.js';
@@ -45,12 +46,10 @@ async function contextPeers(ws: Workspace, brand: string): Promise<ContextPeer[]
       ),
     );
     if (ext === '.svg') out.push({ name: r.name, svg: readFileSync(file, 'utf8'), ground });
-    else
-      out.push({
-        name: r.name,
-        raster: { bytes: readFileSync(file), mime: ext === '.png' ? 'image/png' : 'image/jpeg' },
-        ground,
-      });
+    else {
+      const bytes = readFileSync(file);
+      out.push({ name: r.name, raster: { bytes, mime: rasterMime(bytes) }, ground });
+    }
     if (out.length >= 7) break;
   }
   return out;

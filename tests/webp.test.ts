@@ -9,8 +9,10 @@ import { findCommand } from '../src/cli/commands.js';
 import { MarkiloError } from '../src/core/errors.js';
 import { inkMask, type Raster } from '../src/render/image.js';
 import { decodeImage } from '../src/render/png.js';
-import { decodeWebp } from '../src/render/webp.js';
-import { mark, tmp } from './helpers.js';
+import { decodeWebp, rasterMime } from '../src/render/webp.js';
+import { readReferences } from '../src/report/originality.js';
+import { referenceExtOf } from '../src/research/competitors.js';
+import { mark, synthBrand, tmp } from './helpers.js';
 
 // Fixtures: synthetic marks from tests/fixtures/marks rendered in Chromium by scripts/make-webp-fixtures.mjs.
 const fixture = (name: string) =>
@@ -477,5 +479,63 @@ describe('WebP end to end', () => {
     const svg = transformed({ id: 'orbit', raster: fixture('orbit-lossy.webp') }, 'mirror')!;
     expect(svg).toContain('data:image/webp;base64,');
     expect(svg).not.toContain('image/jpeg');
+  });
+});
+
+describe('WebP references', () => {
+  it('reference add stores a WebP photo as in-situ, and audit in-situ resolves it by id', async () => {
+    const { ws, dir } = synthBrand();
+    writeFileSync(join(dir, 'screen.webp'), fixture('orbit-lossy.webp'));
+    const r = await cmd(
+      'reference add',
+      [
+        '--brand',
+        'nimbra',
+        '--file',
+        'screen.webp',
+        '--name',
+        'Launcher',
+        '--source',
+        'photo',
+        '--category',
+        'in-situ',
+      ],
+      dir,
+    );
+    const id = r.added as string;
+    const ref = readReferences(ws, 'nimbra').references.find((x) => x.id === id)!;
+    expect(ref.file.endsWith('.webp')).toBe(true);
+    const a = await cmd(
+      'audit in-situ',
+      [
+        '--brand',
+        'nimbra',
+        '--photo',
+        id,
+        '--mark',
+        new URL('./fixtures/marks/orbit.svg', import.meta.url).pathname,
+      ],
+      dir,
+    );
+    // The photo resolves to the stored WebP file and decodes; whether the bare mark is "found" is locate's business.
+    const photo = a.photo as { file: string; width: number; height: number };
+    expect(photo.file).toBe(join(ws.referencesDir('nimbra'), ref.file));
+    expect(photo.width).toBeGreaterThan(0);
+  });
+
+  it('similarity calibrate reads WebP files from a folder', async () => {
+    const dir = tmp();
+    for (const f of ['orbit-lossless.webp', 'leaf-lossless.webp', 'bolt-alpha-lossless.webp'])
+      writeFileSync(join(dir, f), fixture(f));
+    const r = await cmd('similarity calibrate', [dir], dir);
+    expect(r.marks).toBe(3);
+  });
+
+  it('labels raster bytes by content, and saves .webp logos found on a site', () => {
+    expect(rasterMime(fixture('orbit-lossy.webp'))).toBe('image/webp');
+    expect(rasterMime(fixture('orbit.png'))).toBe('image/png');
+    expect(rasterMime(new Uint8Array([0xff, 0xd8, 0xff, 0xe0]))).toBe('image/jpeg');
+    expect(referenceExtOf('image/webp', 'https://acme.example/logo')).toBe('.webp');
+    expect(referenceExtOf('application/octet-stream', 'https://acme.example/logo.webp?v=2')).toBe('.webp');
   });
 });

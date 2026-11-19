@@ -1882,7 +1882,7 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'reference add',
     summary:
-      'Add a competitor or category reference mark (SVG/PNG/JPEG/ICO) for similarity analysis. Stored git-ignored.',
+      'Add a competitor or category reference mark (SVG/PNG/JPEG/WebP/ICO) for similarity analysis. Stored git-ignored.',
     usage:
       'reference add --brand <slug> --file <path> --name <brand name> --source <url or note> [--category direct|indirect|category|form-family|inspiration|dislike|existing|family|in-situ] [--notes <what the user likes or dislikes in it>] [--retrieved <ISO date>]',
     options: {
@@ -1904,8 +1904,8 @@ export const COMMANDS: CommandSpec[] = [
       const src = file(c, c.req('file'));
       if (!existsSync(src)) throw new MarkiloError('NOT_FOUND', `File not found: ${src}`);
       const ext = extname(src).toLowerCase().replace('.jpeg', '.jpg');
-      if (!['.svg', '.png', '.jpg', '.ico'].includes(ext))
-        throw new MarkiloError('INVALID_INPUT', 'References must be SVG, PNG, JPEG or ICO.');
+      if (!['.svg', '.png', '.jpg', '.webp', '.ico'].includes(ext))
+        throw new MarkiloError('INVALID_INPUT', 'References must be SVG, PNG, JPEG, WebP or ICO.');
       const category = c.str('category');
       if (category && !REFERENCE_CATEGORIES.includes(category as ReferenceCategory))
         throw new MarkiloError(
@@ -2005,7 +2005,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'similarity calibrate',
     summary:
       'Measure the similarity engine on a set of logos: copies with typical edits must score high, different marks low. Reports caught copies, false alarms and suggested thresholds.',
-    usage: 'similarity calibrate (--brand <slug> | <folder of svg/png/jpg>) [--limit 40]',
+    usage: 'similarity calibrate (--brand <slug> | <folder of svg/png/jpg/webp>) [--limit 40]',
     options: {
       ...brandOpt,
       limit: { type: 'string', description: 'Most marks to use (default 40)' },
@@ -2016,7 +2016,8 @@ export const COMMANDS: CommandSpec[] = [
       const add = (id: string, path: string) => {
         const ext = extname(path).toLowerCase();
         if (ext === '.svg') marks.push({ id, svg: readText(path) });
-        else if (['.png', '.jpg', '.jpeg'].includes(ext)) marks.push({ id, raster: readFileSync(path) });
+        else if (['.png', '.jpg', '.jpeg', '.webp'].includes(ext))
+          marks.push({ id, raster: readFileSync(path) });
       };
       if (c.str('brand')) {
         const w = ws(c);

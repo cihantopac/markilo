@@ -34,6 +34,11 @@ export function isWebp(buf: Uint8Array): boolean {
   return buf.length >= 12 && fourcc(buf, 0) === 'RIFF' && fourcc(buf, 8) === 'WEBP';
 }
 
+/** The MIME type of raster bytes, read from their content (PNG, WebP, else JPEG): a file name can lie. */
+export function rasterMime(buf: Uint8Array): 'image/png' | 'image/webp' | 'image/jpeg' {
+  return buf[0] === 0x89 && buf[1] === 0x50 ? 'image/png' : isWebp(buf) ? 'image/webp' : 'image/jpeg';
+}
+
 interface Chunk {
   type: string;
   data: Uint8Array;
