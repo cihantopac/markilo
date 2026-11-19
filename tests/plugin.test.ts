@@ -320,7 +320,12 @@ describe('craft-named directions', () => {
     expect(audit).toMatch(
       /A raster asset \(PNG, JPEG\) is traced first: `markilo trace <file\.png> -o <tmp>\.svg`/,
     );
-    expect(audit).toContain('`markilo audit in-situ --brand <slug> --photo <ref id|file> --mark <svg>`');
+    expect(audit).toContain(
+      '`markilo audit in-situ --brand <slug> --photo <in-situ reference id or photo file> --mark <the SVG or the trace>`',
+    );
+    expect(audit).toMatch(/`found: false` \(exit 1\)/);
+    expect(audit).toContain('`smallestStrokePx` is the thinnest stroke or gap');
+    expect(audit).toContain('a file path wins over a reference id');
     expect(audit).toContain('--category in-situ');
     // concept-designer develop mode
     expect(agent).toContain('`markilo rebuild in.svg -o out.svg --against <original>`');
@@ -337,7 +342,7 @@ describe('craft-named directions', () => {
       '--small-compare',
       '[--icon-art flat\\|rich]',
       '--session-usd',
-      '`audit in-situ --brand s --photo',
+      '`audit in-situ --brand s --photo <in-situ ref id\\|photo.png\\|jpg\\|webp> --mark mark.svg`',
       '`install-assets --brand s --framework auto\\|next\\|laravel\\|flutter\\|android\\|static [--map <name>=<export path>]',
       '(`cut-terminals`, `slit`, `detach-bowl`, `point-apex`)',
     ])
