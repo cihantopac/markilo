@@ -4,11 +4,12 @@ import { hexToOklch, normalizeColor, oklchToHex } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
 import { nowIso, readJson, readText, writeGenerated, writeJson } from '../core/fsx.js';
 import { resolveInsideReal } from '../core/paths.js';
-import type { Concept, Lettering } from '../core/types.js';
+import { type Concept, type Lettering, RICH_KEYS, type RichFiles, type RichKey } from '../core/types.js';
 import type { Workspace } from '../core/workspace.js';
 import { fontInfo } from '../design/fonts.js';
 import { composeLockup } from '../design/lockup.js';
 import { currentArt, type GateResult, gateOf } from '../report/gate.js';
+import { richArt, richCheckId } from '../report/quality.js';
 import { CSS_PAINT, lintSvg, paintOf } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
 import { localName, parseXml, walk } from '../svg/xml.js';
@@ -72,6 +73,8 @@ export interface BrandKit {
     symbolSmall?: string;
     /** A wordmark drawn for small sizes. */
     wordmarkSmall?: string;
+    /** Rich renderings of the flat masters (gradients, highlights), exported beside them as `<role>-rich`. */
+    rich?: RichFiles;
   };
   /** The user chose the main symbol at 32 px and below: export ignores `symbolSmall`. */
   smallSizes?: 'main';
@@ -139,7 +142,10 @@ export const kitPath = (ws: Workspace, brand: string) => join(ws.finalDir(brand)
 export function loadKit(
   ws: Workspace,
   brand: string,
-): BrandKit & { read(file: keyof BrandKit['files']): string | undefined } {
+): BrandKit & {
+  read(file: Exclude<keyof BrandKit['files'], 'rich'>): string | undefined;
+  readRich(file: RichKey): string | undefined;
+} {
   const p = kitPath(ws, brand);
   if (!existsSync(p)) {
     throw new MarkiloError(
@@ -162,6 +168,10 @@ export function loadKit(
     read(file) {
       const rel = kit.files[file];
       return rel ? readText(resolveInsideReal(ws.finalDir(brand), rel)) : undefined;
+    },
+    readRich(file) {
+      const rel = kit.files.rich?.[file];
+      return typeof rel === 'string' ? readText(resolveInsideReal(ws.finalDir(brand), rel)) : undefined;
     },
   };
 }
@@ -272,7 +282,17 @@ const FINAL_MASTERS = [
   'lockup-horizontal.svg',
   'lockup-stacked.svg',
   'lockup-compact.svg',
+  'symbol-rich.svg',
+  'lockup-horizontal-rich.svg',
+  'lockup-stacked-rich.svg',
 ] as const;
+
+/** Where finalize freezes each rich rendering in final/. */
+const RICH_FINAL: Record<RichKey, string> = {
+  symbol: 'symbol-rich.svg',
+  lockupHorizontal: 'lockup-horizontal-rich.svg',
+  lockupStacked: 'lockup-stacked-rich.svg',
+};
 
 /** Freezes an approved concept into final/: optimized masters, generated lockups and brand.json. */
 export async function finalizeConcept(
@@ -331,9 +351,25 @@ export async function finalizeConcept(
   }
   const qualityFile = join(ws.reportsDir(brand), `quality-${conceptId}.json`);
   const quality = existsSync(qualityFile)
-    ? readJson<{ checks: { label: string; status: string; message: string }[] }>(qualityFile)
+    ? readJson<{ checks: { id?: string; label: string; status: string; message: string; art?: string }[] }>(
+        qualityFile,
+      )
     : undefined;
   const fails = quality?.checks.filter((c) => c.status === 'fail') ?? [];
+  // A rich file is frozen only when verify checked these very files against their master: one registered, changed or
+  // redrawn (or a master changed) since is unchecked, whatever --accept-risk says.
+  const unchecked = RICH_KEYS.filter((key) => {
+    if (!concept.files.rich?.[key]) return false;
+    const art = richArt(ws, brand, concept, key);
+    const check = quality?.checks.find((c) => c.id === richCheckId(key));
+    return !art || !check || check.art !== art;
+  });
+  if (unchecked.length)
+    throw new MarkiloError(
+      'INVALID_INPUT',
+      `Concept ${conceptId} has rich renderings verify has not checked as they are now: ${unchecked.map((k) => concept.files.rich![k]).join(', ')}.`,
+      `Run "markilo verify --brand ${brand} --concept ${conceptId}" first.`,
+    );
   if (fails.length && !opts.acceptRisk) {
     throw new MarkiloError(
       'INVALID_INPUT',
@@ -369,10 +405,10 @@ export async function finalizeConcept(
     );
   }
   const files: BrandKit['files'] = {};
-  const take = (rel: string | undefined, out: string) => {
+  const take = (rel: string | undefined, out: string, profile: 'master' | 'rich' = 'master') => {
     if (!rel) return undefined;
     const src = readText(ws.conceptFile(brand, conceptId, rel));
-    const lint = lintSvg(src, { master: true });
+    const lint = lintSvg(src, profile === 'rich' ? { rich: true } : { master: true });
     const errors = lint.issues.filter((i) => i.severity === 'error');
     if (errors.length)
       throw new MarkiloError(
@@ -423,9 +459,17 @@ export async function finalizeConcept(
     files.lockupStacked = 'lockup-stacked.svg';
   if (compose && lockup(undefined, 'lockup-compact.svg', 'horizontal', 1, 0.4))
     files.lockupCompact = 'lockup-compact.svg';
+  // Rich renderings stand on a flat master: one whose master the kit does not have is not frozen.
+  const rich: RichFiles = {};
+  for (const key of RICH_KEYS)
+    if (files[key] && take(concept.files.rich?.[key], RICH_FINAL[key], 'rich')) rich[key] = RICH_FINAL[key];
+  if (Object.keys(rich).length) files.rich = rich;
   // A kit replaced with --force: a master the earlier kit wrote and this one does not list (a small symbol now that
   // small sizes use the main one, say) is removed, so final/ holds exactly what brand.json lists.
-  const listed = new Set(Object.values(files));
+  const listed = new Set([
+    ...Object.values(files).filter((f): f is string => typeof f === 'string'),
+    ...Object.values(rich),
+  ]);
   for (const name of FINAL_MASTERS) if (!listed.has(name)) rmSync(join(dir, name), { force: true });
 
   const { ink, dark } = inkFor(concept.palette.primary);

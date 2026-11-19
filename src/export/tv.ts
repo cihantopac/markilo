@@ -12,6 +12,8 @@ export interface TvSurfaceInput {
   ground: string;
   /** Locked artwork is reproduced as given; otherwise its inks are adapted to the ground. */
   locked: boolean;
+  /** A rich rendering (gradients, highlights): drawn as it is, like locked artwork. */
+  asDrawn?: boolean;
   inks: { dark: string; light: string };
   groundColors?: GroundColors;
 }
@@ -31,9 +33,10 @@ export interface TvSurface {
 export function tvSurface(input: TvSurfaceInput, label: string): TvSurface {
   const { width: w, height: h } = input;
   const m = SPECS.tv.safeMargin;
-  const art = input.locked
-    ? input.art
-    : adaptToGround(input.art, input.ground, input.inks, input.groundColors);
+  const art =
+    input.locked || input.asDrawn
+      ? input.art
+      : adaptToGround(input.art, input.ground, input.inks, input.groundColors);
   const a = aspectOf(art);
   let aw = w * (1 - 2 * m);
   let ah = aw / a;

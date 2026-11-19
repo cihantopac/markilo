@@ -31,6 +31,11 @@ export interface LintResult {
 export interface LintOptions {
   /** Master files are held to a stricter standard: no live text, no filters, no opacity tricks. */
   master?: boolean;
+  /**
+   * A rich rendering of a master (gradients, highlights, shadows): every security and integrity error of a master
+   * stays, but filters are only noted and the colour count and opacity are not judged (they are the point of it).
+   */
+  rich?: boolean;
 }
 
 const SHAPES = new Set(['path', 'rect', 'circle', 'ellipse', 'polygon', 'polyline', 'line']);
@@ -192,21 +197,23 @@ export function lintSvg(source: string, opts: LintOptions = {}): LintResult {
   if (stats.hasText) {
     add(
       'outline-text',
-      opts.master ? 'error' : 'warning',
+      opts.master || opts.rich ? 'error' : 'warning',
       'Live <text> depends on installed fonts. Convert to outlines (markilo wordmark) for master files.',
     );
   }
   if (stats.hasFilters) {
     add(
       'no-filters',
-      opts.master ? 'error' : 'warning',
-      'Filters (blur, shadow) do not survive small sizes, print or embroidery.',
+      opts.rich ? 'info' : opts.master ? 'error' : 'warning',
+      opts.rich
+        ? 'Filters (blur, shadow) used; the flat master carries small sizes, print and embroidery.'
+        : 'Filters (blur, shadow) do not survive small sizes, print or embroidery.',
     );
   }
-  if (opacityUsed)
+  if (opacityUsed && !opts.rich)
     add('opacity', 'warning', 'Transparency makes single-color reproduction ambiguous; prefer solid fills.');
   if (stats.hasGradients) add('gradients', 'info', 'Gradients used; make sure a flat-color version exists.');
-  if (stats.colors.length > 4)
+  if (stats.colors.length > 4 && !opts.rich)
     add('color-count', 'warning', `${stats.colors.length} colors; most enduring marks use 1–3.`);
   if (stats.pathCommands > 600)
     add('complexity', 'warning', `${stats.pathCommands} path commands; consider simplifying.`);

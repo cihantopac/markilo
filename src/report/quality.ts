@@ -2,11 +2,12 @@ import { existsSync, readFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
 import { checkLetters, letterAdvice } from '../analyze/letters.js';
 import { loadMark, sampleFromSvg } from '../analyze/mark.js';
-import { assessQuality, type QualityReport } from '../analyze/quality.js';
+import { assessQuality, assessRich, type QualityReport } from '../analyze/quality.js';
 import { compareMarks, RISK_THRESHOLDS } from '../analyze/similarity.js';
 import { type ConstructionSpec, compileSpec, normalizePath } from '../construct/compile.js';
 import { MarkiloError } from '../core/errors.js';
-import { readText, writeGenerated, writeJson } from '../core/fsx.js';
+import { readText, sha256, writeGenerated, writeJson } from '../core/fsx.js';
+import { type Concept, RICH_KEYS, type RichKey } from '../core/types.js';
 import type { Workspace } from '../core/workspace.js';
 import { composeLockup } from '../design/lockup.js';
 import { inkMetrics } from '../export/geometry.js';
@@ -115,6 +116,109 @@ export async function wordmarkLetters(
 /** Checks of the sizes export draws from the small version (≤ 32 px) when a concept has one. */
 const SMALL_SIZE_CHECKS = new Set(['fidelity-16', 'fidelity-32', 'thin-detail']);
 
+const RICH_ROLE = {
+  symbol: 'rich-symbol',
+  lockupHorizontal: 'rich-lockup-horizontal',
+  lockupStacked: 'rich-lockup-stacked',
+} as const satisfies Record<RichKey, QualityReport['role']>;
+
+/** The id of the check that clears a rich file for finalize, in the merged quality report. */
+export const richCheckId = (key: RichKey) => `${RICH_ROLE[key]}:silhouette-match`;
+
+/**
+ * What a rich file's silhouette check judged: sha256 over the rich file and the master it was matched against (the
+ * symbol and wordmark a composed lockup is made from). Recorded with the check, so finalize can tell a check of
+ * these files from one of earlier files. Undefined when the rich file is not on disk.
+ */
+export function richArt(ws: Workspace, brand: string, concept: Concept, key: RichKey): string | undefined {
+  const file = (rel?: string) => {
+    if (!rel) return '';
+    const p = ws.conceptFile(brand, concept.id, rel);
+    return existsSync(p) ? readText(p) : '';
+  };
+  const rel = concept.files.rich?.[key];
+  if (!rel || !existsSync(ws.conceptFile(brand, concept.id, rel))) return undefined;
+  const master =
+    concept.files[key] || key === 'symbol'
+      ? [file(concept.files[key])]
+      : [file(concept.files.symbol), file(concept.files.wordmark)];
+  return sha256([file(rel), ...master].join('\u0000'));
+}
+
+/**
+ * The rich renderings of a concept, each linted and matched against its flat master's silhouette, on the master's
+ * artboard too. A lockup the concept does not draw by hand is matched against the one finalize composes.
+ */
+async function richReports(ws: Workspace, brand: string, id: string): Promise<QualityReport[]> {
+  const concept = ws.concept(brand, id);
+  const out: QualityReport[] = [];
+  const read = (rel?: string) => {
+    if (!rel) return undefined;
+    const p = ws.conceptFile(brand, id, rel);
+    return existsSync(p) ? readText(p) : undefined;
+  };
+  const failed = (
+    rel: string,
+    role: QualityReport['role'],
+    value: string,
+    message: string,
+  ): QualityReport => ({
+    subject: `${id}/${rel}`,
+    role,
+    measuredAt: new Date().toISOString(),
+    checks: [
+      { id: 'silhouette-match', label: 'Keeps the master’s silhouette', status: 'fail', value, message },
+    ],
+    summary: { pass: 0, warn: 0, fail: 1, info: 0 },
+    note: 'Measured technical checks.',
+  });
+  for (const key of RICH_KEYS) {
+    const rel = concept.files.rich?.[key];
+    if (!rel) continue;
+    const role = RICH_ROLE[key];
+    const rich = read(rel);
+    if (rich === undefined) {
+      out.push(
+        failed(
+          rel,
+          role,
+          'missing',
+          `${rel} is registered as the rich ${key} but is not in the concept folder. Put it back, or unregister it with concept update --rich-${key === 'symbol' ? 'symbol' : key === 'lockupHorizontal' ? 'lockup-horizontal' : 'lockup-stacked'} none.`,
+        ),
+      );
+      continue;
+    }
+    let master = read(concept.files[key]);
+    if (!master && key !== 'symbol') {
+      const symbol = read(concept.files.symbol);
+      const wordmark = read(concept.files.wordmark);
+      if (symbol && wordmark)
+        master = composeLockup(symbol, wordmark, {
+          layout: key === 'lockupHorizontal' ? 'horizontal' : 'stacked',
+          symbolInk: (await inkMetrics(symbol)).bbox,
+          title: concept.title,
+        }).svg;
+    }
+    if (!master) {
+      out.push(
+        failed(
+          rel,
+          role,
+          'no master',
+          `${rel} is a rich rendering of the ${key}, but the concept has no flat ${key} to check it against.`,
+        ),
+      );
+      continue;
+    }
+    const r = await assessRich(rich, master, `${id}/${rel}`, role, { registered: true });
+    const art = richArt(ws, brand, concept, key);
+    const check = r.checks.find((c) => c.id === 'silhouette-match');
+    if (check && art) check.art = art;
+    out.push(r);
+  }
+  return out;
+}
+
 /** Runs every automated check on a concept and writes the reports and the review contact sheet. */
 export async function verifyConcept(ws: Workspace, brand: string, id: string) {
   ws.assertNotLocked(brand);
@@ -212,6 +316,7 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
     }
   }
   if (!reports.length) throw new MarkiloError('INVALID_INPUT', `Concept ${id} has no files to verify.`);
+  reports.push(...(await richReports(ws, brand, id)));
   const qPath = join(ws.reportsDir(brand), `quality-${id}.json`);
   const primary = reports[0]!;
   const merged: QualityReport = {

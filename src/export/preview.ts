@@ -99,6 +99,11 @@ export function kitReadme(kit: BrandKit, assets: AssetRecord[]): string {
       `- \`*-reversed\`: for ${g.darkFirst ? 'light' : 'dark'} backgrounds (${g.opposite}).`,
       '- `*-black`: one color, for light backgrounds, print and engraving.',
       '- `*-white`: one color, for dark backgrounds and photos (it looks empty in file previews: white on transparent).',
+      ...(assets.some((a) => /^logos\/[^/]+\/[^/]+-rich\.svg$/.test(a.path))
+        ? [
+            `- \`*-rich\`: the rich rendering (gradients, highlights) for ${g.native}, on screens and at large sizes; the flat files stay the master for print, one-colour use and small sizes.`,
+          ]
+        : []),
       '',
     );
   L.push('`asset-manifest.json` lists every file with its purpose, size and checksum.', '');

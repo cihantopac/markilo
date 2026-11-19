@@ -1,5 +1,5 @@
 import { isSlug } from './paths.js';
-import type { Brief, Concept, WorkspaceManifest } from './types.js';
+import { type Brief, type Concept, RICH_KEYS, type WorkspaceManifest } from './types.js';
 
 export type Issues = string[];
 
@@ -102,7 +102,19 @@ export function validateConcept(v: unknown): Issues {
     }
   }
   if (!isObj(v.files)) issues.push('files must be an object');
-  else if (!v.files.symbol && !v.files.wordmark) issues.push('files needs at least a symbol or a wordmark');
+  else {
+    if (!v.files.symbol && !v.files.wordmark) issues.push('files needs at least a symbol or a wordmark');
+    const rich = v.files.rich;
+    if (rich !== undefined) {
+      if (!isObj(rich)) issues.push('files.rich must be an object');
+      else
+        for (const [k, f] of Object.entries(rich)) {
+          if (!(RICH_KEYS as readonly string[]).includes(k))
+            issues.push(`files.rich.${k} is not a rich file kind (${RICH_KEYS.join(', ')})`);
+          else if (typeof f !== 'string' || !f) issues.push(`files.rich.${k} must be a file name`);
+        }
+    }
+  }
   if (!['draft', 'verified', 'shortlisted', 'rejected', 'approved'].includes(v.status as string))
     issues.push('status is invalid');
   const sizes = (v as unknown as Concept).smallSizes;
