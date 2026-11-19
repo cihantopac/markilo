@@ -1,10 +1,10 @@
 import { randomBytes } from 'node:crypto';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync, statSync } from 'node:fs';
+import { extname, join } from 'node:path';
 import type { QualityReport } from '../analyze/quality.js';
 import { readJson, readText, writeGenerated } from '../core/fsx.js';
 import { portableRelative, resolveInsideReal } from '../core/paths.js';
-import type { WorkspaceBrand } from '../core/types.js';
+import type { Concept, WorkspaceBrand } from '../core/types.js';
 import type { Workspace } from '../core/workspace.js';
 import { composeLockup } from '../design/lockup.js';
 import { roundLetters, rounds } from '../design/rounds.js';
@@ -98,10 +98,42 @@ function subjectsFor(ws: Workspace, b: WorkspaceBrand): Subject[] {
       art: artHash(symbol, wordmark),
       ...(q ? { quality: q } : {}),
       ...(o ? { originality: o } : {}),
+      ...(c.refreshedFrom ? originalOf(ws, b.slug, c) : {}),
       locked: false,
     });
   }
   return out;
+}
+
+/** Raster originals larger than this are shown as their trace instead (the page inlines every image). */
+const MAX_INLINE_ORIGINAL = 4 * 1024 * 1024;
+const RASTER_MIME: Record<string, string> = {
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+};
+
+/** A refresh concept's original mark as gallery markup: the SVG inlined (sanitized), a raster as a data: image. */
+function originalOf(ws: Workspace, slug: string, c: Concept): { original?: string } {
+  const rel = c.refreshedFrom?.file;
+  if (!rel) return {};
+  const path = ws.conceptFile(slug, c.id, rel);
+  if (!existsSync(path)) return {};
+  try {
+    const ext = extname(path).toLowerCase();
+    if (ext === '.svg') return { original: inline(readText(path), 220, 220, '', 'original') };
+    const mime = RASTER_MIME[ext];
+    const trace = ws.conceptFile(slug, c.id, 'trace.svg');
+    if (mime && statSync(path).size <= MAX_INLINE_ORIGINAL)
+      return {
+        original: `<img src="data:${mime};base64,${readFileSync(path).toString('base64')}" alt="original">`,
+      };
+    if (existsSync(trace)) return { original: inline(readText(trace), 220, 220, '', 'original') };
+  } catch {
+    // An unreadable original is left out; the concept itself is still shown.
+  }
+  return {};
 }
 
 export async function buildGallery(

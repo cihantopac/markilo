@@ -113,13 +113,14 @@ import {
 import { buildGallery } from '../gallery/gallery.js';
 import { serveGallery } from '../gallery/serve.js';
 import { centerOptically } from '../geom/center.js';
-import { boundsOf, ensurePathKit } from '../geom/pathkit.js';
+import { boundsOf, ensurePathKit, transformPath } from '../geom/pathkit.js';
 import { countSegments, rebuildPaths } from '../geom/rebuild.js';
 import { MAX_TRACE_COLORS, rasterMaskSvg, type TraceOptions, traceRaster } from '../geom/trace.js';
 import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarity.js';
 import { suggestNiceClasses, trademarkSearchPlan } from '../name/trademark.js';
 import { decodeImage } from '../render/png.js';
 import { type ProposalInput, renderProposal, renderRoundBoard } from '../render/proposal.js';
+import { rasterSvg, renderRefreshBoard } from '../render/refresh.js';
 import { renderPng } from '../render/resvg.js';
 import {
   paletteSheetSvg,
@@ -407,9 +408,15 @@ async function traceImageFile(path: string, opts: TraceOptions) {
   const t = traceRaster(img, opts);
   if (!t.faces.length)
     throw new MarkiloError('INVALID_INPUT', `${basename(path)}: no ink found to trace.`, 'Try --threshold.');
-  const iou = await silhouetteIoU(t.svg, rasterMaskSvg(img, opts));
+  const mask = rasterMaskSvg(img, opts);
+  const iou = await silhouetteIoU(t.svg, mask);
   // The decoder's doubts (an animated WebP read as its first frame) come first: they are about the input itself.
-  return { ...t, warnings: [...(img.warnings ?? []), ...t.warnings], iou: Math.round(iou * 1000) / 1000 };
+  return {
+    ...t,
+    mask,
+    warnings: [...(img.warnings ?? []), ...t.warnings],
+    iou: Math.round(iou * 1000) / 1000,
+  };
 }
 
 /** Default `rebuild` tolerance: this share of the drawing's diagonal (about half a pixel on a 600 px trace). */
@@ -466,16 +473,55 @@ function pathAloneSvg(d: string, other: string, rule: 'evenodd' | 'nonzero'): st
  */
 async function rebuildSvgFile(c: RunContext) {
   const inPath = pos(c, 0, 'in.svg');
-  const source = readText(file(c, inPath));
+  const against = c.str('against');
+  const warnings: string[] = [];
+  let reference: string | undefined;
+  if (against) {
+    const p = file(c, against);
+    if (RASTER_EXT.has(extname(p).toLowerCase())) {
+      if (!existsSync(p)) throw new MarkiloError('NOT_FOUND', `File not found: ${against}`);
+      const img = decodeImage(readFileSync(p));
+      warnings.push(...(img.warnings ?? []));
+      reference = rasterMaskSvg(img);
+    } else reference = readText(p);
+  }
+  const r = await rebuildSvgText(readText(file(c, inPath)), {
+    label: inPath,
+    ...(c.num('tolerance') !== undefined ? { tolerance: c.num('tolerance')! } : {}),
+    minIou: c.num('min-iou', 0.95)!,
+    angles: rebuildAngles(c),
+    arcs: !c.bool('no-arcs'),
+    ...(reference !== undefined ? { reference, referenceLabel: against! } : {}),
+  });
+  return { ...r, warnings: [...r.warnings, ...warnings] };
+}
+
+/**
+ * The core of `rebuild`: rebuilds an SVG's paths and measures the result against `reference` (default: the input).
+ * Throws INVALID_INPUT, with the measured IoU and worst path in its details, when either is below minIou.
+ */
+async function rebuildSvgText(
+  source: string,
+  opts: {
+    label: string;
+    tolerance?: number;
+    minIou: number;
+    angles: number[] | 'auto' | undefined;
+    arcs: boolean;
+    reference?: string;
+    referenceLabel?: string;
+  },
+) {
+  const inPath = opts.label;
   const root = parseXml(source);
   if (localName(root.name) !== 'svg')
     throw new MarkiloError('INVALID_SVG', `${inPath}: not an SVG document.`);
   const box = intrinsicBox(root);
-  const tolerance = c.num('tolerance') ?? (box ? Math.hypot(box.width, box.height) * REBUILD_TOLERANCE : 0.5);
+  const tolerance = opts.tolerance ?? (box ? Math.hypot(box.width, box.height) * REBUILD_TOLERANCE : 0.5);
   if (!(tolerance > 0)) throw new MarkiloError('USAGE', '--tolerance must be a positive number.');
-  const minIou = c.num('min-iou', 0.95)!;
+  const minIou = opts.minIou;
   if (!(minIou >= 0 && minIou <= 1)) throw new MarkiloError('USAGE', '--min-iou must be between 0 and 1.');
-  const angles = rebuildAngles(c);
+  const angles = opts.angles;
   await ensurePathKit();
   const paths: { attrs: Record<string, string>; rule: 'evenodd' | 'nonzero' }[] = [];
   const untouched = new Map<string, number>();
@@ -491,7 +537,7 @@ async function rebuildSvgFile(c: RunContext) {
   const rebuilt = rebuildPaths(before, {
     tolerance,
     ...(angles ? { angles } : {}),
-    arcs: !c.bool('no-arcs'),
+    arcs: opts.arcs,
   });
   const segments = { lines: 0, arcs: 0, cubics: 0 };
   rebuilt.paths.forEach((r, i) => {
@@ -501,7 +547,7 @@ async function rebuildSvgFile(c: RunContext) {
     segments.cubics += r.segments.cubics;
   });
   const svg = `${serializeXml(root)}\n`;
-  const against = c.str('against');
+  const against = opts.referenceLabel;
   const warnings: string[] = [];
   if (untouched.size) {
     const n = [...untouched.values()].reduce((x, y) => x + y, 0);
@@ -509,16 +555,7 @@ async function rebuildSvgFile(c: RunContext) {
       `${n} shape${n === 1 ? '' : 's'} that ${n === 1 ? 'is' : 'are'} not a <path> (${[...untouched.keys()].join(', ')}) left unchanged; convert ${n === 1 ? 'it' : 'them'} to paths to rebuild ${n === 1 ? 'it' : 'them'}.`,
     );
   }
-  let reference = source;
-  if (against) {
-    const p = file(c, against);
-    if (RASTER_EXT.has(extname(p).toLowerCase())) {
-      if (!existsSync(p)) throw new MarkiloError('NOT_FOUND', `File not found: ${against}`);
-      const img = decodeImage(readFileSync(p));
-      warnings.push(...(img.warnings ?? []));
-      reference = rasterMaskSvg(img);
-    } else reference = readText(p);
-  }
+  const reference = opts.reference ?? source;
   const round3 = (v: number) => Math.round(v * 1000) / 1000;
   const iou = round3(await silhouetteIoU(svg, reference));
   // The whole silhouette cannot see a change inside it (a glyph on a tile, a face inside another): every path is
@@ -556,6 +593,115 @@ async function rebuildSvgFile(c: RunContext) {
     snapped: rebuilt.snapped,
     warnings,
   };
+}
+
+/** The concept `markilo refresh` creates and updates. */
+const REFRESH_CONCEPT = 'refresh';
+
+/** The paint a path is filled with: its own, from its style, or inherited (SVG's default is black). */
+function fillOf(chain: XmlElement[]): string {
+  for (let i = chain.length - 1; i >= 0; i--) {
+    const el = chain[i]!;
+    const v = /(?:^|;)\s*fill\s*:\s*([^;]+)/.exec(el.attrs.style ?? '')?.[1]?.trim() ?? el.attrs.fill;
+    if (v !== undefined && v !== 'inherit') return v.trim();
+  }
+  return '#000000';
+}
+
+/** Elements whose content is not drawn where it stands. */
+const NOT_DRAWN = new Set(['defs', 'clipPath', 'mask', 'symbol', 'pattern', 'marker']);
+
+interface DrawnPath {
+  d: string;
+  fill: string;
+  rule: 'evenodd' | 'nonzero';
+}
+
+/**
+ * The paths an SVG draws, with their paint and fill rule. `blocked` says why the drawing cannot be read as plain
+ * filled paths (a transform, a shape that is not a path, a gradient or stroke paint).
+ */
+function drawnPaths(svg: string): { paths: DrawnPath[]; blocked?: string } {
+  const out: DrawnPath[] = [];
+  let blocked: string | undefined;
+  walk(parseXml(svg), (el, parents) => {
+    if (parents.some((p) => NOT_DRAWN.has(localName(p.name)))) return;
+    const name = localName(el.name);
+    const chain = [...parents, el];
+    if (name === 'path' && el.attrs.d?.trim()) {
+      if (chain.some((x) => x.attrs.transform)) blocked ??= 'a path is drawn through a transform';
+      const fill = fillOf(chain);
+      const hex = normalizeColor(fill);
+      if (!hex) blocked ??= `a path is painted with "${fill}", not a flat colour`;
+      else out.push({ d: el.attrs.d, fill: hex, rule: fillRuleOf(chain) });
+    } else if (NON_PATH_SHAPES.has(name)) blocked ??= `it draws a <${name}>, not only paths`;
+  });
+  return { paths: out, ...(blocked ? { blocked } : {}) };
+}
+
+/** The colours a drawing is painted in, the largest painted area first. */
+async function inkColours(svg: string): Promise<string[]> {
+  await ensurePathKit();
+  const area = new Map<string, number>();
+  for (const p of drawnPaths(svg).paths) {
+    const b = boundsOf(p.d);
+    area.set(p.fill, (area.get(p.fill) ?? 0) + b.w * b.h);
+  }
+  return [...area.entries()].sort((a, b) => b[1] - a[1]).map(([hex]) => hex);
+}
+
+/**
+ * Drafts the small version of a refreshed symbol the way `construct --role small` builds one: a construction spec
+ * (its paths as `path` shapes; an even-odd path as the xor of its contours) compiled with role small, fitted to the
+ * artboard with a 4 % margin so it fills more of a 16 px cell, and a one-colour mark grown by 1 % of the artboard so
+ * thin parts hold at small sizes. Returns why not when the drawing is not plain filled paths.
+ */
+async function draftSmallSpec(
+  symbolSvg: string,
+  title: string,
+): Promise<{ spec: ConstructionSpec } | { reason: string }> {
+  await ensurePathKit();
+  const { paths, blocked } = drawnPaths(symbolSvg);
+  if (blocked) return { reason: blocked };
+  if (!paths.length) return { reason: 'it has no filled path' };
+  const SIZE = 1024;
+  const oneColour = new Set(paths.map((p) => p.fill)).size === 1;
+  const layers = paths.map((p, i) => {
+    // Absolute commands, so the path splits cleanly into its contours.
+    const d = transformPath(p.d, [1, 0, 0, 1, 0, 0]);
+    const contours = d.split(/(?=M)/).filter((x) => x.trim());
+    const shape: Record<string, unknown> =
+      p.rule === 'evenodd' && contours.length > 1
+        ? { xor: contours.map((x) => ({ path: { d: x } })) }
+        : { path: { d } };
+    if (oneColour) shape.grow = SIZE * 0.01;
+    return { name: `face-${i + 1}`, fill: p.fill, shape };
+  });
+  return { spec: { title, role: 'small', size: SIZE, fit: 0.04, layers } };
+}
+
+/** The owner's questions a refresh stops at, each with the command that records the answer. */
+function refreshQuestions(o: {
+  slug: string;
+  id: string;
+  small?: string;
+  smallSkipped?: string;
+  lockups: boolean;
+  equity?: string;
+}): string[] {
+  const at = `--brand ${o.slug} --concept ${o.id}`;
+  return [
+    o.small
+      ? `smallSizes: show review/refresh.png (the small-size board is at its foot) and ask whether 32 px and below use the drafted small version or the main symbol; record it with markilo concept update ${at} --small-sizes small|main`
+      : `smallSizes: no small version was drafted (${o.smallSkipped ?? 'none'}); ask whether 32 px and below use the main symbol (markilo concept update ${at} --small-sizes main), or draw one with markilo construct <spec.json> ${at} --role small and ask again with --small-sizes small|main`,
+    o.lockups
+      ? `layout: show the horizontal and stacked lockups on review/refresh.png and ask which one leads (the owner picks; the other stays as the alternative)`
+      : `layout: no wordmark was given, so no lockups were composed; run markilo refresh again with --wordmark <file>, then ask which layout leads (horizontal or stacked)`,
+    o.equity
+      ? `equity: confirm with the owner that "${o.equity}" says since when and where the mark is in use (change it with markilo concept update ${at} --equity "<since when and where>")`
+      : `equity: ask since when and where the mark is in use, then record it with markilo concept update ${at} --equity "<since when and where>"`,
+    `then: markilo verify ${at} and markilo gallery; finalize only on the owner's approval (markilo finalize ${at} --user-choice "<their words>")`,
+  ];
 }
 
 /**
@@ -4799,6 +4945,291 @@ export const COMMANDS: CommandSpec[] = [
       const { svg, warnings, ...r } = await rebuildSvgFile(c);
       writeFileSafe(out, svg, { force: c.bool('force') });
       return { out: c.req('out'), ...r, ...(warnings.length ? { warnings } : {}) };
+    },
+  },
+  {
+    name: 'refresh',
+    summary:
+      "Refresh the owner's own mark in one command: trace a raster (or take the SVG), rebuild it under a fidelity gate, draft a small version, compose lockups with a wordmark and render review/refresh.png. Stops at the owner's decisions (small sizes, layout, equity): it never finalizes or exports.",
+    usage:
+      'refresh --brand <slug> --from <file.svg|png|jpg|webp> [--wordmark <file>] [--equity "<since when and where the mark is in use>"] [--min-iou 0.95] [--angles auto|none|32,90] [--colors n] [--threshold 0-255] [--background #hex]',
+    options: {
+      ...brandOpt,
+      from: { type: 'string', description: "The owner's current mark: an SVG, or a PNG/JPEG/WebP to trace" },
+      wordmark: {
+        type: 'string',
+        description:
+          'The wordmark (SVG, or a raster to trace): horizontal and stacked lockups are composed with it',
+      },
+      equity: {
+        type: 'string',
+        description:
+          'Since when and where the mark is in use ("in use since 2014 on the TV app"), recorded on the concept ("none" clears it)',
+      },
+      'min-iou': {
+        type: 'string',
+        description:
+          'Keep the rebuild only when it matches the original at least this closely; below it the trace is kept (default 0.95)',
+      },
+      angles: {
+        type: 'string',
+        description: 'Rebuild: auto (default), none, or degrees to snap lines to (32,90)',
+      },
+      ...traceOptions,
+    },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      w.assertNotLocked(slug);
+      const brandName = w.brand(slug).name;
+      const fromArg = c.req('from');
+      const fromPath = file(c, fromArg);
+      if (!existsSync(fromPath)) throw new MarkiloError('NOT_FOUND', `File not found: ${fromArg}`);
+      const ext = extname(fromPath).toLowerCase();
+      const raster = RASTER_EXT.has(ext);
+      if (!raster && ext !== '.svg')
+        throw new MarkiloError('USAGE', '--from takes an SVG, PNG, JPEG or WebP file.');
+      const minIou = c.num('min-iou', 0.95)!;
+      if (!(minIou >= 0 && minIou <= 1))
+        throw new MarkiloError('USAGE', '--min-iou must be between 0 and 1.');
+      const angles = rebuildAngles(c);
+      const equityArg = c.str('equity');
+      const equity = equityArg !== undefined && equityArg !== 'none' ? parseEquity(equityArg) : undefined;
+      const id = REFRESH_CONCEPT;
+      const existing = existsSync(w.conceptFile(slug, id, 'concept.json')) ? w.concept(slug, id) : undefined;
+      if (existing?.status === 'approved')
+        throw new MarkiloError(
+          'USAGE',
+          `Concept ${id} is already finalized; a refresh never changes an approved identity.`,
+          'Start again from a new brand or revert the finalize first.',
+        );
+      const warnings: string[] = [];
+      const progress = (m: string) => process.stderr.write(`refresh: ${m}\n`);
+
+      // 1. The original as vectors: the trace of a raster, or the owner's SVG as it is.
+      const source = raster ? undefined : readText(fromPath);
+      let base: string;
+      let reference: string;
+      let trace: { iou: number; faces: { color: string; area: number }[]; nodes: number } | undefined;
+      if (raster) {
+        progress('tracing');
+        const t = await traceImageFile(fromPath, traceOpts(c));
+        base = t.svg;
+        reference = t.mask;
+        trace = { iou: t.iou, faces: t.faces, nodes: t.nodes };
+        warnings.push(...t.warnings);
+        if (t.iou < minIou)
+          warnings.push(
+            `The trace itself matches the original at IoU ${t.iou}, below --min-iou ${minIou}: check --threshold, --background or --colors.`,
+          );
+      } else {
+        if (localName(parseXml(source!).name) !== 'svg')
+          throw new MarkiloError('INVALID_SVG', `${fromArg}: not an SVG document.`);
+        base = source!;
+        reference = source!;
+      }
+
+      // 2. The rebuild under the fidelity gate; below it the trace is kept, and the result says so.
+      progress('rebuilding');
+      let kept: 'rebuild' | 'trace' = 'rebuild';
+      let symbolSvg: string;
+      let iou: number;
+      let rebuild: Record<string, unknown> | undefined;
+      try {
+        const r = await rebuildSvgText(base, {
+          label: raster ? 'the trace' : fromArg,
+          minIou,
+          angles,
+          arcs: true,
+          reference,
+          referenceLabel: fromArg,
+        });
+        symbolSvg = r.svg;
+        iou = r.iou;
+        rebuild = {
+          iou: r.iou,
+          worstPath: r.worstPath,
+          nodesBefore: r.nodesBefore,
+          nodesAfter: r.nodesAfter,
+          segments: r.segments,
+        };
+        warnings.push(...r.warnings);
+      } catch (err) {
+        if (!(err instanceof MarkiloError) || err.code !== 'INVALID_INPUT') throw err;
+        kept = 'trace';
+        symbolSvg = base;
+        iou = trace ? trace.iou : 1;
+        const measured = err.details?.iou !== undefined;
+        rebuild = {
+          refused: err.message,
+          ...(measured ? { iou: err.details!.iou, worstPath: err.details!.worstPath } : {}),
+        };
+        warnings.push(
+          measured
+            ? `The rebuild fell below --min-iou ${minIou} (${err.message.replace(/ Nothing was written\.$/, '')}); kept the ${raster ? 'trace' : 'original SVG'} as symbol.svg.`
+            : `The rebuild did not run (${err.message}); kept the ${raster ? 'trace' : 'original SVG'} as symbol.svg.`,
+        );
+      }
+
+      // 3. The wordmark, when given (a raster one is traced).
+      const wordArg = c.str('wordmark');
+      let wordmarkSvg: string | undefined;
+      if (wordArg) {
+        const p = file(c, wordArg);
+        if (RASTER_EXT.has(extname(p).toLowerCase())) {
+          const t = await traceImageFile(p, {});
+          wordmarkSvg = t.svg;
+          warnings.push(...t.warnings.map((x) => `wordmark: ${x}`));
+        } else {
+          wordmarkSvg = readText(p);
+          if (!intrinsicBox(parseXml(wordmarkSvg)))
+            throw new MarkiloError('INVALID_SVG', `${wordArg}: the wordmark has no viewBox or size.`);
+        }
+      }
+
+      // 4. The small version, drafted as `construct --role small` builds one.
+      progress('drafting the small version');
+      const draft = await draftSmallSpec(symbolSvg, `${brandName} — small`);
+      let small: { svg: string; spec: ConstructionSpec; warnings: string[] } | undefined;
+      let smallSkipped: string | undefined;
+      if ('spec' in draft) {
+        try {
+          const compiled = await compileSpec(draft.spec, { title: `${brandName} — small` });
+          small = { svg: compiled.svg, spec: draft.spec, warnings: compiled.warnings };
+        } catch (err) {
+          if (!(err instanceof MarkiloError)) throw err;
+          smallSkipped = err.message;
+        }
+      } else smallSkipped = draft.reason;
+      if (smallSkipped) warnings.push(`No small version was drafted: ${smallSkipped}.`);
+
+      // 5. Files and the concept, under the brand lock.
+      const dir = w.conceptDir(slug, id);
+      const originalName = `original${ext}`;
+      const symbolInk = (await inkMetrics(symbolSvg)).bbox;
+      // Without --wordmark, a wordmark an earlier run registered still makes the lockups.
+      const earlierWord = existing?.files.wordmark && w.conceptFile(slug, id, existing.files.wordmark);
+      const word =
+        wordmarkSvg ?? (earlierWord && existsSync(earlierWord) ? readText(earlierWord) : undefined);
+      const lockups = word
+        ? (['horizontal', 'stacked'] as const).map((layout) => ({
+            layout,
+            svg: composeLockup(symbolSvg, word, { layout, symbolInk }).svg,
+          }))
+        : [];
+      // A new concept takes its palette from the mark's own colours, the largest area first; a second run keeps the
+      // palette the owner may have changed since.
+      const colours = existing ? [] : await inkColours(symbolSvg);
+      const palette: Concept['palette'] = existing?.palette ?? {
+        primary: colours[0] ?? '#000000',
+        ...(colours[1] ? { secondary: colours[1] } : {}),
+        ...(colours[2] ? { accent: colours[2] } : {}),
+      };
+      const concept = withBrandLock(w, slug, () => {
+        mkdirSync(dir, { recursive: true });
+        copyFileSync(fromPath, join(dir, originalName));
+        if (raster) writeGenerated(join(dir, 'trace.svg'), base);
+        const oldSymbol =
+          existing?.files.symbol && existsSync(w.conceptFile(slug, id, existing.files.symbol))
+            ? readText(w.conceptFile(slug, id, existing.files.symbol))
+            : undefined;
+        writeGenerated(join(dir, 'symbol.svg'), symbolSvg);
+        if (wordmarkSvg) writeGenerated(join(dir, 'wordmark.svg'), wordmarkSvg);
+        if (small) {
+          writeGenerated(join(dir, 'symbol-small.svg'), small.svg);
+          writeJson(join(dir, recipeName('small', 'json')), small.spec);
+        }
+        for (const l of lockups) writeGenerated(join(dir, `lockup-${l.layout}.svg`), l.svg);
+        const now = nowIso();
+        const files: Concept['files'] = {
+          ...existing?.files,
+          symbol: 'symbol.svg',
+          ...(wordmarkSvg ? { wordmark: 'wordmark.svg' } : {}),
+          ...(small ? { small: 'symbol-small.svg' } : {}),
+        };
+        // A changed drawing needs a fresh critique (as construct clears it); the small version is checked by verify.
+        const base0: Concept = existing
+          ? (() => {
+              if (oldSymbol === undefined || oldSymbol === symbolSvg) return existing;
+              const { judgment: _j, critique: _c, blind: _b, readsAs: _r, looks: _l, ...rest } = existing;
+              return rest;
+            })()
+          : {
+              schema: 'markilo/concept@1',
+              id,
+              brand: slug,
+              title: 'Refresh',
+              direction: `${brandName}'s current mark, rebuilt: the same form in clean geometry`,
+              rationale:
+                'Keeps what people already recognise in the mark in use and rebuilds its craft: geometry, small sizes and lockups.',
+              semantics: ['the current mark'],
+              palette,
+              files,
+              status: 'draft',
+              createdAt: now,
+              updatedAt: now,
+            };
+        const next: Concept = {
+          ...base0,
+          files,
+          refreshedFrom: { file: originalName, iou, kept, minIou, at: now },
+        };
+        if (equityArg === 'none') delete next.equity;
+        else if (equity) next.equity = equity;
+        const issues = validateConcept(next);
+        if (issues.length) throw new MarkiloError('INVALID_INPUT', `Invalid concept: ${issues.join('; ')}`);
+        w.saveConcept(next);
+        return next;
+      });
+      w.logDecision(
+        slug,
+        'Refresh',
+        `${id}: ${raster ? 'traced and ' : ''}${kept === 'rebuild' ? 'rebuilt' : 'kept the trace (the rebuild fell below the bar)'} from ${basename(fromPath)}, IoU ${iou} against the original (--min-iou ${minIou}).`,
+      );
+
+      // 6. The board: original beside the kept drawing, the lockups, then the small-size board.
+      progress('rendering review/refresh.png');
+      const board = join(dir, 'review', 'refresh.png');
+      writeGenerated(
+        board,
+        await renderRefreshBoard({
+          original: raster ? rasterSvg(readFileSync(fromPath)) : source!,
+          refreshed: symbolSvg,
+          kept,
+          iou,
+          minIou,
+          title: brandName,
+          lockups,
+          ...(small ? { small: { main: symbolSvg, small: small.svg, palette: concept.palette } } : {}),
+        }),
+      );
+      return {
+        concept: id,
+        created: !existing,
+        from: fromArg,
+        kept,
+        iou,
+        minIou,
+        ...(trace ? { trace } : {}),
+        ...(rebuild ? { rebuild } : {}),
+        symbol: join(dir, 'symbol.svg'),
+        ...(small ? { small: join(dir, 'symbol-small.svg') } : {}),
+        ...(small?.warnings.length ? { smallWarnings: small.warnings } : {}),
+        ...(wordmarkSvg ? { wordmark: join(dir, 'wordmark.svg') } : {}),
+        lockups: lockups.map((l) => join(dir, `lockup-${l.layout}.svg`)),
+        board,
+        ...(concept.equity ? { equity: concept.equity } : {}),
+        finalized: false,
+        ...(warnings.length ? { warnings } : {}),
+        next: refreshQuestions({
+          slug,
+          id,
+          ...(small ? { small: 'symbol-small.svg' } : {}),
+          ...(smallSkipped ? { smallSkipped } : {}),
+          lockups: lockups.length > 0,
+          ...(concept.equity ? { equity: concept.equity.note } : {}),
+        }),
+      };
     },
   },
   {

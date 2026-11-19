@@ -210,6 +210,12 @@ export interface Concept {
    * originality verdict without gating on it; `redesign` still blocks.
    */
   equity?: { note: string; since?: string };
+  /**
+   * A refresh (`markilo refresh`): the owner's current mark this concept rebuilds, copied into the concept folder
+   * (`file`), how closely the kept drawing matches it (`iou`), and whether the rebuild or the plain trace was kept
+   * (the rebuild falls back to the trace below `minIou`). The gallery shows the original beside the concept.
+   */
+  refreshedFrom?: { file: string; iou: number; kept: 'rebuild' | 'trace'; minIou: number; at: string };
   status: ConceptStatus;
   createdAt: string;
   updatedAt: string;

@@ -139,8 +139,10 @@ assumptions, list them at the top of the first round's message and ask them agai
 ### Refresh: the owner's own mark, rebuilt (instead of B–D)
 
 When the user chose **refresh** (the audit found strong equity and weak craft), there are no three proposals and no
-critic unless the user asks. Follow "The refresh path" in `references/workflow.md`: audit → `trace` (or the owner's
-SVG) → `rebuild` with `--against <the original>` and `--min-iou 0.95` → the small-size board
+critic unless the user asks. Follow "The refresh path" in `references/workflow.md`: audit →
+`markilo refresh --brand <slug> --from <current mark> [--wordmark <file>] [--equity "<…>"]`, which runs the mechanical
+steps in one command and stops at the owner's questions in its `next` (it never finalizes or exports). The steps it
+runs: `trace` (or the owner's SVG) → `rebuild` with `--against <the original>` and `--min-iou 0.95` → the small-size board
 (`render --small-compare`) and the small-size question → layout options (`lockup`, one `render --compare` board) →
 rich rendering (`concept update --rich-symbol`) only when the identity is metallic or gradient → verify, with the
 gallery showing the rebuild beside the original → `concept update --equity "<since when and where it is in use>"`, then
