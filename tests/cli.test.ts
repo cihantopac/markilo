@@ -42,6 +42,9 @@ describe('cli (bundled)', () => {
   it('prints help and version', () => {
     const cwd = tmp();
     expect(run(['help'], cwd).stdout).toContain('Usage: markilo');
+    // The 1.8 refresh path is listed in the overview.
+    for (const name of ['refresh', 'rebuild', 'audit in-situ'])
+      expect(run(['--help'], cwd).stdout).toMatch(new RegExp(`^  ${name} `, 'm'));
     expect(run(['--version'], cwd).stdout.trim()).toMatch(/^\d+\.\d+\.\d+/);
   });
   it('centers a mark and refuses to overwrite without --force', () => {

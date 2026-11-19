@@ -191,7 +191,6 @@ describe('locateMark', () => {
       const t0 = performance.now();
       const found = await locateMark(l.photo, TARGET);
       const ms = performance.now() - t0;
-      process.stderr.write(`locateMark ${width}×${height}: ${Math.round(ms)} ms\n`);
       expect(found).toBeDefined();
       expectBox(found!.box, l.box!);
       // About 1 s each on its own; the bound leaves room for a loaded, parallel test run.

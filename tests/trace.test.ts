@@ -125,6 +125,22 @@ describe('traceRaster on hard grounds and sizes', () => {
 });
 
 describe('trace and score commands', () => {
+  it('documents --colors as 1–8 (1 is one silhouette, the default) and refuses values outside it', async () => {
+    for (const name of ['trace', 'score', 'refresh']) {
+      const f = findCommand([name])!;
+      const opt = (f.spec.options as Record<string, { description?: string }>).colors!;
+      expect(opt.description, name).toMatch(/1–8/);
+    }
+    const cwd = tmp();
+    writeFileSync(join(cwd, 'orbit.png'), await pngOf('orbit', 200));
+    const one = await cmd('trace', ['orbit.png', '-o', 'one.svg', '--colors', '1'], cwd);
+    expect(one.faces).toHaveLength(1);
+    for (const n of ['0', '9'])
+      await expect(cmd('trace', ['orbit.png', '-o', 'x.svg', '--colors', n], cwd)).rejects.toThrow(
+        /--colors must be between 1 and 8/,
+      );
+  });
+
   it('trace writes the SVG and reports faces, nodes and its IoU against the raster', async () => {
     const cwd = tmp();
     writeFileSync(join(cwd, 'orbit.png'), await pngOf('orbit', 400));

@@ -216,6 +216,12 @@ export async function planFrameworkInstall(
       `Run "markilo export --brand ${brand}" first.`,
     );
   const detected = opts.framework ? { framework: opts.framework, by: 'chosen' } : detectFramework(project);
+  if (opts.map && Object.keys(opts.map).length && detected.framework !== 'android')
+    throw new MarkiloError(
+      'USAGE',
+      `--map applies to Android projects only; this installation is for ${detected.framework}.`,
+      'Drop --map, or pass --framework android for an Android project.',
+    );
   if (detected.framework === 'android') {
     const scratch = mkdtempSync(join(tmpdir(), 'markilo-android-'));
     try {

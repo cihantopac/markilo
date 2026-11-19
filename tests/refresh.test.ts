@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { parseCommand } from '../src/cli/args.js';
 import { findCommand } from '../src/cli/commands.js';
 import { Workspace } from '../src/core/workspace.js';
@@ -15,7 +15,15 @@ import { REFRESH_BOARD_LABELS, refreshBoardSvg } from '../src/render/refresh.js'
 import { renderPng } from '../src/render/resvg.js';
 import { decodeEntities } from '../src/svg/xml.js';
 import { TR } from '../src/ui/tr.js';
-import { mark, tmp } from './helpers.js';
+import { mark, synthBrand, tmp } from './helpers.js';
+
+// refresh reports its progress on stderr (for a person at the terminal); keep the test output clean.
+beforeAll(() => {
+  vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+});
+afterAll(() => {
+  vi.restoreAllMocks();
+});
 
 async function cmd(name: string, argv: string[], cwd: string): Promise<Record<string, unknown>> {
   const f = findCommand([name])!;
@@ -256,6 +264,23 @@ describe('refresh originality', () => {
   }, 180_000);
 });
 
+describe('equity on a fresh design', () => {
+  it('finalizes, but warns that equity is meant for a refresh of a mark already in use', async () => {
+    const { ws, dir } = synthBrand();
+    ws.saveConcept({ ...ws.concept('nimbra', 'fold'), equity: { note: 'in use since 2019', since: '2019' } });
+    await cmd('verify', ['--brand', 'nimbra', '--concept', 'fold'], dir);
+    const r = (await cmd(
+      'finalize',
+      ['--brand', 'nimbra', '--concept', 'fold', '--user-choice', 'This one.', '--accept-risk'],
+      dir,
+    )) as { warnings?: string[] };
+    const note = /equity is meant for a refresh of a mark already in use/;
+    expect(r.warnings?.join(' ')).toMatch(note);
+    const kit = JSON.parse(readFileSync(kitPath(ws, 'nimbra'), 'utf8')) as { warnings?: string[] };
+    expect(kit.warnings?.join(' ')).toMatch(note);
+  }, 120_000);
+});
+
 describe('refresh reruns', () => {
   it('keeps what the owner changed since the last refresh, and replaces it only with --force', async () => {
     const { dir, ws, png, word } = await tidepool();
@@ -300,6 +325,39 @@ describe('refresh reruns', () => {
     expect(c.files.small).toBe('symbol-small.svg');
     // The answer to small|main was about the old small version.
     expect(c.smallSizes).toBeUndefined();
+  }, 180_000);
+
+  it('leaves a symbol or wordmark registered by hand in place, and re-points it only with --force', async () => {
+    const { dir, ws, png, word } = await tidepool();
+    const args = ['--brand', 'tidepool', '--from', png, '--colors', '2', '--wordmark', word];
+    await cmd('refresh', args, dir);
+    writeFileSync(ws.conceptFile('tidepool', 'refresh', 'my-symbol.svg'), mark('orbit'));
+    writeFileSync(ws.conceptFile('tidepool', 'refresh', 'my-word.svg'), readFileSync(word, 'utf8'));
+    const c0 = ws.concept('tidepool', 'refresh');
+    ws.saveConcept({ ...c0, files: { ...c0.files, symbol: 'my-symbol.svg', wordmark: 'my-word.svg' } });
+
+    const r = (await cmd('refresh', args, dir)) as {
+      warnings?: string[];
+      keptOwnerFiles?: string[];
+      symbol: string;
+    };
+    const c = ws.concept('tidepool', 'refresh');
+    expect(c.files.symbol).toBe('my-symbol.svg');
+    expect(r.keptOwnerFiles).toEqual(['my-symbol.svg', 'my-word.svg']);
+    expect(r.symbol).toBe(ws.conceptFile('tidepool', 'refresh', 'my-symbol.svg'));
+    expect(c.files.wordmark).toBe('my-word.svg');
+    const warned = r.warnings?.join(' ') ?? '';
+    expect(warned).toMatch(
+      /files\.symbol is my-symbol\.svg, registered by hand; left it alone — pass --force/,
+    );
+    expect(warned).toMatch(
+      /files\.wordmark is my-word\.svg, registered by hand; left it alone — pass --force/,
+    );
+
+    await cmd('refresh', [...args, '--force'], dir);
+    const f = ws.concept('tidepool', 'refresh');
+    expect(f.files.symbol).toBe('symbol.svg');
+    expect(f.files.wordmark).toBe('wordmark.svg');
   }, 180_000);
 
   it('calls an SVG original kept below the gate "original", not a trace', async () => {

@@ -237,6 +237,7 @@ export function matchAndroid(
     }
     const expected = tableSize(target, r.density);
     const size = r.width && r.height ? { width: r.width, height: r.height } : expected;
+    checkRenderSize(r.path, size);
     if (
       target !== 'banner' &&
       r.width &&
@@ -286,6 +287,7 @@ export function matchAndroid(
       if (f.note)
         throw new MarkiloError('INVALID_INPUT', `--map ${name}: ${f.path} cannot be replaced: ${f.note}.`);
       const size = { width: f.width, height: f.height };
+      checkRenderSize(f.path, size);
       work.push({
         from: exportPath,
         to: f.path,
@@ -296,6 +298,19 @@ export function matchAndroid(
     unmatchedBy.get(name)!.mappedTo = exportPath;
   }
   return { work, unmatched: [...unmatchedBy.values()], notes };
+}
+
+/** The largest side a project file may ask Markilo to render (launcher icons and banners are far smaller). */
+export const MAX_ANDROID_SIDE = 4096;
+
+/** A size read from a project file's header is the file's claim, not a fact: refuse one no Android resource needs. */
+function checkRenderSize(path: string, size: { width: number; height: number }): void {
+  if (size.width > MAX_ANDROID_SIDE || size.height > MAX_ANDROID_SIDE)
+    throw new MarkiloError(
+      'INVALID_INPUT',
+      `${path} says it is ${size.width}×${size.height}px; Markilo renders Android resources up to ${MAX_ANDROID_SIDE} px a side.`,
+      'Check the file (its header may be damaged), or replace it by hand.',
+    );
 }
 
 const sameSize = (a: { width: number; height: number } | undefined, b: { width: number; height: number }) =>

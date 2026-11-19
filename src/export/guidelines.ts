@@ -21,9 +21,6 @@ export interface GuidelinesInput {
   reversed: (svg: string) => string;
 }
 
-/** Opens the originality section when no competitor marks were compared (verdict insufficient-evidence). */
-const LETTERING_LABEL = { custom: 'custom', family: 'custom (family)' } as const;
-
 const WORDMARK_SMALL_FILE = 'logos/wordmark-small.svg';
 const WORDMARK_SMALL_RULE = `Where the wordmark stands alone below about 120 px wide, use \`${WORDMARK_SMALL_FILE}\`: the same word drawn for small sizes.`;
 // The HTML page shows the file name as <code>, so the sentence is translated in two parts around it.

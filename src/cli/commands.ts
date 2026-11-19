@@ -433,7 +433,7 @@ const RASTER_EXT = new Set(['.png', '.jpg', '.jpeg', '.webp']);
 const traceOptions = {
   colors: {
     type: 'string',
-    description: `Split the ink into this many colours, one face each (2–${MAX_TRACE_COLORS}; default: one silhouette)`,
+    description: `Split the ink into this many colours, one face each (1–${MAX_TRACE_COLORS}; 1, the default, is one silhouette)`,
   },
   threshold: {
     type: 'string',
@@ -3168,7 +3168,11 @@ export const COMMANDS: CommandSpec[] = [
       'export --brand <slug> [--only web,ios,...] [--all] [--out <dir>] [--clean] [--progress] [--theme-color primary|paper|#hex] [--icon-art flat|rich] [--lang en|tr]',
     options: {
       ...brandOpt,
-      ...langOpt,
+      lang: {
+        type: 'string',
+        description:
+          'en or tr: the language of guidelines/brand-guidelines.md (default: tr when the brief’s first audience language is Turkish, else en)',
+      },
       only: { type: 'string', description: 'Comma-separated groups' },
       all: { type: 'boolean', description: 'Every group, whatever the brief says' },
       clean: {
@@ -3819,6 +3823,12 @@ export const COMMANDS: CommandSpec[] = [
           ...(expect ? { expect } : {}),
         });
       }
+      if (c.list('map').length)
+        throw new MarkiloError(
+          'USAGE',
+          '--map applies to Android projects only (--framework android), not to --group.',
+          'Drop --map, or install with --framework android.',
+        );
       return installAssets(ws(c), c.req('brand'), c.req('group'), c.req('into'), projectDir, {
         apply: c.bool('apply'),
         force: c.bool('force'),
@@ -4307,7 +4317,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Build a mark from a construction spec (primitives, booleans, gaps, offsets, repeats, glyphs) into clean SVG; --vary explores and scores parameter variants.',
     usage:
-      'construct <spec.json> (-o <out.svg> | --brand <slug> --concept <id>) [--role symbol|wordmark|small] [--member <name>] [--set k=v,… | role=#hex,…] [--guides <png>] [--vary [--max 24] [--sheet <png>] [--out-dir <dir>]] [--force]',
+      'construct <spec.json> (-o <out.svg> | --brand <slug> --concept <id>) [--role symbol|wordmark|small] [--member <name>] [--set k=v,… | role=#hex,…] [--guides <png>] [--vary [--max 24] [--sheet <png>] [--out-dir <dir>] [--lang en|tr]] [--force]',
     options: {
       ...brandOpt,
       concept: {
@@ -4340,6 +4350,7 @@ export const COMMANDS: CommandSpec[] = [
         type: 'string',
         description: "Family member from the spec's members block: its parameters and colours",
       },
+      ...langOpt,
       force: { type: 'boolean', description: 'Overwrite output' },
     },
     async run(c) {
@@ -4408,7 +4419,7 @@ export const COMMANDS: CommandSpec[] = [
         if (!dir) throw new MarkiloError('USAGE', '--vary needs --out-dir, or --brand and --concept.');
         for (const v of variants) if (v.svg) writeGenerated(join(dir, `${v.id}.svg`), v.svg);
         const sheet = c.str('sheet') ? file(c, c.str('sheet')!) : join(dir, 'variants.png');
-        writeGenerated(sheet, await renderVariantSheet(variants, paper));
+        writeGenerated(sheet, await renderVariantSheet(variants, paper, { lang: boardLangOf(c, w, brand) }));
         const summary = variants.map(({ svg: _svg, ...v }) => v);
         writeJson(join(dir, 'variants.json'), { spec: basename(specPath), paper, variants: summary });
         const best = variants[0]!;
@@ -5262,13 +5273,39 @@ export const COMMANDS: CommandSpec[] = [
         keptFiles.push(name);
         warnings.push(`${name} was changed since the last refresh; kept it — pass --force to replace it.`);
       };
-      if (changed('symbol.svg')) {
+      // A symbol or wordmark the owner registered by hand under another name (concept update) is theirs too: the
+      // concept keeps pointing at it, and refresh's own file is not written over it, unless --force.
+      const handFile = (role: 'symbol' | 'wordmark') => {
+        const f = existing?.files[role];
+        return !force && f && f !== `${role}.svg` && existsSync(w.conceptFile(slug, id, f)) ? f : undefined;
+      };
+      const handSymbol = handFile('symbol');
+      const handWord = wordmarkSvg ? handFile('wordmark') : undefined;
+      for (const [role, f] of [
+        ['symbol', handSymbol],
+        ['wordmark', handWord],
+      ] as const)
+        if (f)
+          warnings.push(
+            `files.${role} is ${f}, registered by hand; left it alone — pass --force to replace it.`,
+          );
+      // Refresh's own file names the hand-registered files stand in for: not written, not pointed at.
+      const standIn = new Set<string>();
+      if (handSymbol) {
+        keptFiles.push(handSymbol);
+        standIn.add('symbol.svg');
+        symbolSvg = readText(w.conceptFile(slug, id, handSymbol));
+        iou = Math.round((await silhouetteIoU(symbolSvg, reference)) * 1000) / 1000;
+      } else if (changed('symbol.svg')) {
         keep('symbol.svg');
         symbolSvg = readText(join(dir, 'symbol.svg'));
         // The owner's drawing is what the concept shows now: measure it against the original.
         iou = Math.round((await silhouetteIoU(symbolSvg, reference)) * 1000) / 1000;
       }
-      if (wordmarkSvg && changed('wordmark.svg')) keep('wordmark.svg');
+      if (handWord) {
+        keptFiles.push(handWord);
+        standIn.add('wordmark.svg');
+      } else if (wordmarkSvg && changed('wordmark.svg')) keep('wordmark.svg');
 
       // 5. The small version, drafted as `construct --role small` builds one — unless the owner registered their own
       // small file or changed the drafted one.
@@ -5308,8 +5345,9 @@ export const COMMANDS: CommandSpec[] = [
       // Without --wordmark (or with a wordmark the owner changed), the concept's registered wordmark makes the lockups.
       const earlierWord = existing?.files.wordmark && w.conceptFile(slug, id, existing.files.wordmark);
       const word =
-        (wordmarkSvg && !keptFiles.includes('wordmark.svg') ? wordmarkSvg : undefined) ??
-        (earlierWord && existsSync(earlierWord) ? readText(earlierWord) : wordmarkSvg);
+        (wordmarkSvg && !keptFiles.includes('wordmark.svg') && !standIn.has('wordmark.svg')
+          ? wordmarkSvg
+          : undefined) ?? (earlierWord && existsSync(earlierWord) ? readText(earlierWord) : wordmarkSvg);
       const lockups = word
         ? (['horizontal', 'stacked'] as const).map((layout) => ({
             layout,
@@ -5332,7 +5370,7 @@ export const COMMANDS: CommandSpec[] = [
         // Read and written as bytes (never copied through a link the --from path may be).
         writeGenerated(join(dir, originalName), readFileSync(fromPath));
         const put = (name: string, text: string) => {
-          if (keptFiles.includes(name)) return;
+          if (keptFiles.includes(name) || standIn.has(name)) return;
           const p = join(dir, name);
           writeGenerated(p, text);
           written[name] = sha256(readFileSync(p));
@@ -5354,8 +5392,8 @@ export const COMMANDS: CommandSpec[] = [
         const now = nowIso();
         const files: Concept['files'] = {
           ...existing?.files,
-          symbol: 'symbol.svg',
-          ...(wordmarkSvg ? { wordmark: 'wordmark.svg' } : {}),
+          symbol: handSymbol ?? 'symbol.svg',
+          ...(wordmarkSvg ? { wordmark: handWord ?? 'wordmark.svg' } : {}),
           ...(small ? { small: SMALL } : {}),
         };
         // A changed drawing needs a fresh critique (as construct clears it); the small version is checked by verify.
@@ -5387,7 +5425,10 @@ export const COMMANDS: CommandSpec[] = [
             file: originalName,
             iou,
             // The owner's own symbol stays described by what the last refresh kept.
-            kept: keptFiles.includes('symbol.svg') ? (existing?.refreshedFrom?.kept ?? kept) : kept,
+            kept:
+              keptFiles.includes('symbol.svg') || standIn.has('symbol.svg')
+                ? (existing?.refreshedFrom?.kept ?? kept)
+                : kept,
             minIou,
             at: now,
             written,
@@ -5440,11 +5481,13 @@ export const COMMANDS: CommandSpec[] = [
         minIou,
         ...(trace ? { trace } : {}),
         ...(rebuild ? { rebuild } : {}),
-        symbol: join(dir, 'symbol.svg'),
+        symbol: w.conceptFile(slug, id, concept.files.symbol ?? 'symbol.svg'),
         ...(smallFile ? { small: smallFile } : {}),
         ...(keptFiles.length ? { keptOwnerFiles: keptFiles } : {}),
         ...(small?.warnings.length ? { smallWarnings: small.warnings } : {}),
-        ...(wordmarkSvg ? { wordmark: join(dir, 'wordmark.svg') } : {}),
+        ...(wordmarkSvg
+          ? { wordmark: w.conceptFile(slug, id, concept.files.wordmark ?? 'wordmark.svg') }
+          : {}),
         lockups: lockups.map((l) => join(dir, `lockup-${l.layout}.svg`)),
         lang,
         board,
@@ -5465,7 +5508,7 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'score',
     summary:
-      'Technical quality scorecard for one SVG (legibility, balance, monochrome, contrast, genericity). A PNG or JPEG is traced first.',
+      'Technical quality scorecard for one SVG (legibility, balance, monochrome, contrast, genericity). A PNG, JPEG or WebP is traced first.',
     usage:
       'score <file.svg|png|jpg|webp> [--role symbol|wordmark|lockup] [--colors n] [--threshold 0-255] [--background #hex]',
     options: { role: { type: 'string', description: 'symbol | wordmark | lockup' }, ...traceOptions },

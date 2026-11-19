@@ -44,8 +44,9 @@ unchanged, while a refresh redraws them.
    `markilo refresh --brand <slug> --from <current.svg|png|jpg|webp> [--wordmark <file>] [--equity "<since when and where>"] [--colors n]`
    runs the mechanical steps on the concept `refresh`: it traces a raster (`--colors n` for a mark of n colours) or
    takes the SVG, rebuilds it under the fidelity gate (`--min-iou 0.95`; below it the trace is kept and the result
-   says so — never lower `--min-iou` without telling the user; when the gate refuses, lower `--tolerance` or pass
-   `--angles none` first, then say what happened), registers `symbol.svg`, drafts a small version the way
+   says so — never lower `--min-iou` without telling the user; when the gate refuses, rerun
+   `markilo rebuild <trace.svg> -o <out.svg> --against <original> --tolerance <smaller>` on the trace, or pass
+   `--angles none` to `refresh`, then say what happened), registers `symbol.svg`, drafts a small version the way
    `construct --role small` builds one, composes horizontal and stacked lockups when a wordmark is given, and renders
    `review/refresh.png` (original beside the rebuild at 512/64/32/16 px with the IoU, the lockups, the small-size
    board). The concept records the original (`refreshedFrom`), so the gallery shows the rebuild beside the original

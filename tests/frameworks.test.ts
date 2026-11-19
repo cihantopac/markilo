@@ -221,6 +221,60 @@ describe('Android profile', () => {
     expect(size(dir, `${res}/drawable-xhdpi/tv_banner.png`)).toBe('320×180');
   });
 
+  it('refuses a project file whose header claims a size beyond 4096 px a side', async () => {
+    /** A PNG whose IHDR says width × height while the file holds 2 × 2 pixels. */
+    const crafted = (width: number, height: number) => {
+      const b = Buffer.from(encodePng(createRaster(2, 2)));
+      b.writeUInt32BE(width, 16);
+      b.writeUInt32BE(height, 20);
+      return b;
+    };
+    const huge = androidProject();
+    writeFileSync(join(huge, res, 'drawable-xxhdpi/ic_splash.png'), crafted(60000, 60000));
+    const source = readdirSync(join(ws.exportsDir('nimbra'), 'logos'), { recursive: true })
+      .map(String)
+      .find((f) => f.endsWith('.svg'))!;
+    await expect(
+      planFrameworkInstall(ws, 'nimbra', huge, {
+        framework: 'android',
+        map: { ic_splash: `logos/${source}` },
+      }),
+    ).rejects.toMatchObject({ code: 'INVALID_INPUT', message: expect.stringMatching(/60000×60000/) });
+    const banner = androidProject();
+    mkdirSync(join(banner, res, 'drawable-xxhdpi'), { recursive: true });
+    writeFileSync(join(banner, res, 'drawable-xxhdpi/tv_banner.png'), crafted(480, 5000));
+    await expect(planFrameworkInstall(ws, 'nimbra', banner, { framework: 'android' })).rejects.toMatchObject({
+      code: 'INVALID_INPUT',
+      message: expect.stringMatching(/4096/),
+    });
+  });
+
+  it('refuses --map outside an Android installation', async () => {
+    await expect(
+      planFrameworkInstall(ws, 'nimbra', project('saas-invoicing'), {
+        framework: 'next',
+        map: { ic_splash: 'logos/x.svg' },
+      }),
+    ).rejects.toMatchObject({ code: 'USAGE', message: expect.stringMatching(/--map/) });
+    const { parseCommand } = await import('../src/cli/args.js');
+    const { findCommand } = await import('../src/cli/commands.js');
+    const f = findCommand(['install-assets'])!;
+    const dir = tmp();
+    const argv = [
+      '--brand',
+      'nimbra',
+      '--group',
+      'web',
+      '--into',
+      'public',
+      '--map',
+      'ic_splash=logos/x.svg',
+    ];
+    await expect(
+      f.spec.run(parseCommand(f.spec, [...argv, '--workspace', ws.root], dir)),
+    ).rejects.toMatchObject({ code: 'USAGE', message: expect.stringMatching(/--map/) });
+  });
+
   it('--map renders an export at the size of each project file with that name', async () => {
     const dir = androidProject();
     const source = readdirSync(join(ws.exportsDir('nimbra'), 'logos'), { recursive: true })

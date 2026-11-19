@@ -529,3 +529,29 @@ describe('lettering operations', () => {
     ).rejects.toThrow(/no def named "nope"/);
   });
 });
+
+describe('construct --vary sheet language', () => {
+  it('labels the variant sheet in the board language (--lang, else the brief)', async () => {
+    const { parseCommand } = await import('../src/cli/args.js');
+    const { findCommand } = await import('../src/cli/commands.js');
+    const cwd = tmp();
+    writeFileSync(
+      join(cwd, 'spec.json'),
+      JSON.stringify({
+        canvas: 1024,
+        params: { w: 120 },
+        vary: { w: [100, 140] },
+        layers: [
+          { fill: '#123456', shape: { arc: { c: [512, 512], r: 380, from: 40, to: 320, width: 'w' } } },
+        ],
+      }),
+    );
+    const f = findCommand(['construct'])!;
+    const sheet = async (lang: string) => {
+      const out = `v-${lang}`;
+      await f.spec.run(parseCommand(f.spec, ['spec.json', '--vary', '--out-dir', out, '--lang', lang], cwd));
+      return readFileSync(join(cwd, out, 'variants.png'));
+    };
+    expect((await sheet('tr')).equals(await sheet('en'))).toBe(false);
+  });
+});

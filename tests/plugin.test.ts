@@ -300,7 +300,7 @@ describe('craft-named directions', () => {
     // refresh stage
     expect(design).toMatch(/### Refresh: the owner's own mark/);
     expect(design).toContain('markilo refresh --brand <slug> --from <current mark>');
-    expect(workflow).toMatch(/lower `--tolerance` or pass `--angles none`/);
+    expect(workflow).toMatch(/--tolerance <smaller>` on the trace, or pass `--angles none` to `refresh`/);
     expect(workflow).toMatch(/`refreshedFrom`\), so the gallery shows the rebuild beside the original/);
     expect(workflow).toMatch(/A refresh needs no critique unless the user asks/);
     expect(workflow).toMatch(/\(a refresh: only on request\)/);

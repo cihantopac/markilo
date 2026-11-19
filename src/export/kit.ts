@@ -403,7 +403,14 @@ export async function finalizeConcept(
   const stale = masterColourMessages({ stale: colours.stale, offPalette: [] });
   // brand.json records what was knowingly accepted (stale colours under --accept-colours); an off-palette shade is
   // a note in verify and the finalize output only.
-  const colourWarnings = stale;
+  // Equity says the concept continues the owner's mark in use; on a fresh design it would hide a real verdict.
+  const equityWarning =
+    equity && !concept.refreshedFrom
+      ? [
+          `Concept ${conceptId} records equity ("${equity.note}") but is not a refresh: equity is meant for a refresh of a mark already in use (markilo refresh). Clear it with concept update --equity none if this is a new design.`,
+        ]
+      : [];
+  const kitWarnings = [...stale, ...equityWarning];
   if (stale.length && !opts.acceptColours)
     throw new MarkiloError(
       'INVALID_INPUT',
@@ -545,7 +552,7 @@ export async function finalizeConcept(
           }
         : {}),
     },
-    ...(colourWarnings.length ? { warnings: colourWarnings } : {}),
+    ...(kitWarnings.length ? { warnings: kitWarnings } : {}),
     gate: {
       status: gate.status,
       ...(gate.average !== undefined ? { average: gate.average } : {}),
