@@ -21,7 +21,10 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    app icons or print items (business card, email signature)?" Save the answer with
    `markilo deliverables --brand <slug> --set …` (or `--add` / `--remove`) and record it with `markilo answers`.
    If the user already said "everything" or "just do it", keep the suggestion and don't ask.
-3. `markilo export --brand <slug>` (it exports the chosen groups; `--only web,ios,…` or `--all` override). Read the
+3. `markilo export --brand <slug>` (it exports the chosen groups; `--only web,ios,…` or `--all` override). When the concept
+   holds rich renderings (metallic or gradient art), ask whether app icons, banners and OG images use them
+   (`--icon-art rich`) or the flat masters (default `flat`). `--lang en|tr` sets the language of the guidelines and
+   boards (default: the brief's first audience language). Read the
    summary: files per group, `notIncluded`, skipped groups, warnings.
 4. Spot-check a few outputs visually with `Read` (e.g. `exports/web/icon-maskable-512.png`,
    `exports/ios/AppIcon.appiconset/AppIcon-1024.png`, `exports/social/og-image.png`).

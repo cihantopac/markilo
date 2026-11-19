@@ -78,6 +78,21 @@ Command reference: `${CLAUDE_PLUGIN_ROOT}/skills/design/references/cli.md` — r
    critic's first read. `proposals` reports `formChange` (IoU against `chosen/`); below 0.85 show `chosen-vs-now` and
    ask. Advice, never a gate.
 
+   **Small sizes, asked early:** when the mark will be used at 32 px and below (favicon, app icon, TV or phone home
+   screen), ask in the first dialog or the develop-scope question whether a simplified small version is welcome, not
+   only at the end (`concept update --small-sizes small|main` records the answer after the board, see Verify).
+
+   **Rich art:** a metallic, gradient or glass identity keeps the flat master for small sizes and gets rich renderings
+   (`concept update --rich-symbol|--rich-lockup-horizontal|--rich-lockup-stacked <file>`); `markilo export --icon-art
+   rich` draws app icons, banners and OG images with them (default `flat`). Ask which the user wants.
+
+   **Boards in the user's language:** boards and the guidelines follow the brief's first audience language; pass
+   `--lang en|tr` to `render`, `proposals`, `sketches`, `refresh` or `export` to override it.
+
+   **Many files, one call:** render several SVGs with `markilo render a.svg b.svg … --out-dir <dir>` (one PNG per
+   input) instead of a loop of calls; `--pad <percent>` adds a margin, and `--compare … --zoom x,y,w,h[:label]` adds a
+   4x before/after crop.
+
    **References:** name the category leader in the research brief; if its logo cannot be collected, tell the user the
    originality check does not cover it. Use `render --width <px>` for large comparisons. In shell examples, quote
    answers with single quotes (`$` is expanded inside double quotes).

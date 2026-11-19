@@ -33,10 +33,8 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    If the user supplied photos of the real mark in use (a TV home screen, a shop front, a phone), they are stored with
    `markilo reference add --brand <slug> --file <photo> --name "<what it shows>" --source "<where it was taken>"
    --category in-situ` and listed by `markilo reference list`. `originality` never compares them. Read each one, then
-   measure the mark's real size and contrast in it: crop the mark out of the photo (and a patch of its ground beside
-   it) with any tool you have, run `markilo analyze` on the crop, and report the mark's size in the photo against the
-   frame and its measured contrast with the ground. Label what you read by eye as judgment. (A later release
-   measures this automatically; for now it is these two steps.)
+   measure the mark in each with `markilo audit in-situ` (step 2): a file path wins over a reference id of the same
+   name. Label what you read by eye as judgment.
 4. Report: what works (equity worth keeping), measured problems, judgment-based problems (labeled), and a
    recommendation — keep, refresh or redesign — with the evidence. Do not redesign during an audit; offer it.
    A refresh is its own stage in the design skill (the refresh stage: trace, `rebuild --against`, finalize with

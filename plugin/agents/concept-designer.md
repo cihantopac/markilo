@@ -107,6 +107,12 @@ font"), the word gets the options and the approved icon stays; if it is about th
    in one sheet (`markilo render word-a.svg word-b.svg … --compare -o review/wordmark-options.png`). For "too thin" or
    "too bold", render a **weight ladder** — three to five weights of the same drawing in one sheet — instead of one
    jump to the other extreme.
+   **Clean-ups and whole-word treatments with the toolchain, not by hand.** A geometric clean-up of a drawing that is
+   messy or traced from the owner's own mark: `markilo rebuild in.svg -o out.svg --against <original>` (lines, arcs,
+   snapped angles; it refuses below `--min-iou`, then lower `--tolerance`). A treatment that touches every letter of
+   a word is a `construct` operation (construction.md): `cut-terminals` (angled stem ends), `slit` (a thin cut where
+   you choose), `detach-bowl` (frees the bowls of P, R, b, d, q) and `point-apex` (sharp tips for A, M, N, V, W).
+   Read `skipped` in the result for letters an operation left alone.
 2. Icon options (when the icon is open): draw **two or three** icons, each the mark alone on a transparent artboard (no tile, box or
    underline): the chosen icon refined, and one or two alternatives that carry the same idea further — combine it with
    an idea the user pointed at, or make one product truth visible in it (in Markilo 1.1's validation the accepted icon was a cairn of
