@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { cpSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { deltaE2000, hexToRgb, rgbToHex } from '../src/analyze/color.js';
 import type { Workspace } from '../src/core/workspace.js';
 import { exportBrand } from '../src/export/exporter.js';
 import { finalizeConcept } from '../src/export/kit.js';
@@ -133,6 +134,43 @@ describe('interface colours: paper, ink and oxblood only', () => {
       ).toEqual([]);
     }
   });
+  it('makes every token paper, ink or oxblood, or a mix of them', () => {
+    const PAPER = '#f2ece1';
+    const INK = '#16120f';
+    const OXBLOOD = '#7e1d2a';
+    const hex6 = (c: string) =>
+      c.length === 4 ? `#${[...c.slice(1)].map((h) => h + h).join('')}` : c.toLowerCase();
+    const mix = (a: string, b: string, t: number) => {
+      const x = hexToRgb(a);
+      const y = hexToRgb(b);
+      const f = (p: number, q: number) => Math.round(p + (q - p) * t);
+      return rgbToHex({ r: f(x.r, y.r), g: f(x.g, y.g), b: f(x.b, y.b) });
+    };
+    const lines = [
+      [PAPER, INK],
+      [PAPER, OXBLOOD],
+      [INK, OXBLOOD],
+    ] as const;
+    const distance = (c: string) =>
+      Math.min(
+        ...lines.flatMap(([a, b]) =>
+          Array.from({ length: 101 }, (_, i) => deltaE2000(c, mix(a, b, i / 100))),
+        ),
+      );
+    // Tones that are knowingly outside the three-colour lines: a lightened paper for cards, white, and the oxblood
+    // lifted for contrast on the dark theme. Listed so a new stray tone fails instead of hiding among them.
+    const lifted = new Set(['#fbf8f2', '#ffffff', '#b34f55', '#e3a3a8']);
+    for (const c of INTERFACE_COLOURS.map(hex6)) {
+      if ([PAPER, INK, OXBLOOD].includes(c) || lifted.has(c)) continue;
+      expect(distance(c), c).toBeLessThanOrEqual(3);
+    }
+    // The gallery's stage tones sit on the paper–ink line.
+    for (const stage of ['#e6dfd2', '#26201b'])
+      expect(
+        Math.min(...Array.from({ length: 101 }, (_, i) => deltaE2000(stage, mix(PAPER, INK, i / 100)))),
+        stage,
+      ).toBeLessThanOrEqual(3);
+  });
   it('has no status hues (good / warn / bad) left', () => {
     for (const [name, html] of Object.entries(pages()))
       expect(html, name).not.toMatch(/var\(--(good|warn|bad)\)/);
@@ -166,7 +204,7 @@ describe('gallery: calm presentation', () => {
     expect(review).toContain('<nav class="board"');
     const tiles = [...review.matchAll(/<a class="tile[^"]*" href="#([^"]+)"/g)].map((m) => m[1]);
     expect(tiles).toEqual(proposals(review).map((p) => p.id));
-    expect(tiles).toEqual(['nimbra-fold']);
+    expect(tiles).toEqual(['nimbra--fold']);
   });
   it('shows the marks, one idea line and the decision; the rest is folded into Details', () => {
     const [p] = proposals(review);

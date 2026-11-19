@@ -1,6 +1,9 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import vm from 'node:vm';
 import { describe, expect, it } from 'vitest';
+import { proposalId } from '../src/gallery/cards.js';
+import { GALLERY_SCRIPT } from '../src/gallery/client.js';
 import {
   extractFeedback,
   feedbackRequests,
@@ -211,5 +214,215 @@ describe('gallery feedback pasted from chat: hard cases', () => {
   });
   it('says a whole file is not valid JSON when there is no block either', () => {
     expect(() => extractFeedback('{"schema": oops')).toThrow(/not valid JSON/);
+  });
+});
+
+/** Run the gallery's own script against saved decisions and return what "Copy decisions" puts on the clipboard. */
+async function copiedText(state: unknown): Promise<string> {
+  const stub: unknown = new Proxy(() => {}, {
+    get: (_t, k) => (k === Symbol.toPrimitive ? () => '' : k === 'length' ? 0 : stub),
+    apply: () => stub,
+    set: () => true,
+  });
+  const clicks: Record<string, () => unknown> = {};
+  let copied = '';
+  const document = {
+    querySelectorAll: () => [],
+    querySelector: () => null,
+    addEventListener: () => {},
+    activeElement: null,
+    getElementById: (id: string) =>
+      new Proxy(stub as object, {
+        set: (_t, k, v) => {
+          if (k === 'onclick') clicks[id] = v;
+          return true;
+        },
+      }),
+  };
+  const sandbox = {
+    document,
+    location: { pathname: '/gallery/index.html', search: '', hash: '', protocol: 'file:' },
+    localStorage: { getItem: () => JSON.stringify(state), setItem: () => {} },
+    navigator: {
+      clipboard: {
+        writeText: async (t: string) => {
+          copied = t;
+        },
+      },
+    },
+    CSS: { escape: (x: string) => x },
+    history: { replaceState: () => {} },
+    URLSearchParams,
+    setTimeout: () => 0,
+    JSON,
+    Date,
+    Object,
+    Number,
+    Math,
+  };
+  vm.runInNewContext(GALLERY_SCRIPT, { ...sandbox, window: sandbox });
+  await clicks.copy!();
+  return copied;
+}
+
+describe('gallery: the client copies what feedbackText builds', () => {
+  const state = {
+    'nimbra/fold': {
+      pick: 'refine',
+      chips: ['simpler', 'combine with another'],
+      note: 'less ornament',
+      pins: [{ x: 70, y: 30, note: 'thicker stem' }],
+    },
+    'nimbra/wave': { pick: 'keep', chips: ['combine with another'], note: 'calm' },
+    'nimbra/dune': { pick: 'drop' },
+    'nimbra/arch': { sketch: 's2', note: 'taller' },
+    'nimbra/tide': { sketch: 'none' },
+    '_reject:nimbra/1': { on: true, note: 'too busy' },
+    _prefer: { key: 'nimbra/wave', brand: 'nimbra', concept: 'wave', why: 'calmest', over: ['fold'] },
+  };
+  it('has the same requests and the same decisions block', async () => {
+    const text = await copiedText(state);
+    const f = parseFeedback(extractFeedback(text));
+    const lines = text.split('\n\n```')[0]!.split('\n');
+    expect(lines).toEqual(feedbackRequests(f).map((r) => `- ${r}`));
+    expect(text.split('\n\n```')[0]).toBe(feedbackText(f).split('\n\n```')[0]);
+    expect(f.decisions.map((d) => `${d.concept}:${d.decision}`).sort()).toEqual([
+      'arch:null',
+      'dune:drop',
+      'fold:refine',
+      'tide:null',
+      'wave:keep',
+    ]);
+    expect(lines).toContain('- combine nimbra/fold (less ornament) + nimbra/wave (calm)');
+    expect(lines).toContain('- reject all of round 1 for nimbra: too busy');
+  });
+});
+
+describe('gallery: ids, flags and the board', () => {
+  it('keeps proposal ids unique across brands that share a joined name', () => {
+    const id = (slug: string, key: string) => proposalId({ brand: { slug }, key } as never);
+    expect(id('acme', 'pro-x')).not.toBe(id('acme-pro', 'x'));
+    expect(id('acme', 'fold')).toBe('acme--fold');
+  });
+  it('labels the tile flag and says the originality problem on the proposal', async () => {
+    const { ws } = synthBrand();
+    ws.saveConcept({ ...ws.concept('nimbra', 'fold'), round: 1 });
+    mkdirSync(ws.reportsDir('nimbra'), { recursive: true });
+    writeFileSync(
+      join(ws.reportsDir('nimbra'), 'originality-fold.json'),
+      JSON.stringify({ schema: 'markilo/originality@2', verdict: 'redesign', visual: { matches: [] } }),
+    );
+    const html = readFileSync((await buildGallery(ws)).path, 'utf8');
+    expect(html).toMatch(
+      /<i class="tile-flag" role="img" aria-label="Has a problem — see the proposal" data-i18n-aria-label=/,
+    );
+    expect(html).toMatch(/class="flags"[\s\S]*originality: redesign/);
+  });
+  it('lists older rounds on their own boards and rejected proposals without a tile', async () => {
+    const { ws } = synthBrand();
+    const fold = ws.concept('nimbra', 'fold');
+    const add = (id: string, round: number, status: 'draft' | 'rejected') => {
+      if (id !== 'fold')
+        cpSync(ws.conceptDir('nimbra', 'fold'), ws.conceptDir('nimbra', id), { recursive: true });
+      ws.saveConcept({ ...fold, id, title: id, round, status });
+    };
+    add('fold', 1, 'draft');
+    add('fold2', 2, 'draft');
+    add('fold3', 2, 'rejected');
+    const html = readFileSync((await buildGallery(ws)).path, 'utf8');
+    const boards = [...html.matchAll(/<nav class="board"[\s\S]*?<\/nav>/g)].map((m) => m[0]);
+    expect(boards).toHaveLength(2);
+    expect(boards[0]).toContain('data-target="nimbra--fold2"');
+    expect(boards[0]).not.toContain('nimbra--fold"');
+    expect(boards[1]).toContain('data-target="nimbra--fold"');
+    expect(html).toMatch(
+      /<details class="round"><summary><span data-i18n="Round \{0\} \(\{1\}\)"[^>]*>Round 1 \(1\)<\/span>/,
+    );
+    expect(html).not.toContain('data-target="nimbra--fold3"');
+    expect(html).toMatch(/<details class="rejected-list"[\s\S]*id="nimbra--fold3"/);
+  });
+});
+
+describe('gallery: ids are safe to join', () => {
+  it('refuses "--" in a new brand slug or concept id, but still reads one that exists', () => {
+    const { ws } = synthBrand();
+    expect(() => ws.addBrand({ name: 'Odd', slug: 'a--b' })).toThrow(
+      expect.objectContaining({ code: 'USAGE' }),
+    );
+    const fold = ws.concept('nimbra', 'fold');
+    expect(() => ws.saveConcept({ ...fold, id: 'b--x' })).toThrow(expect.objectContaining({ code: 'USAGE' }));
+    // A workspace made before the rule keeps working: an existing concept with "--" is still saved.
+    cpSync(ws.conceptDir('nimbra', 'fold'), ws.conceptDir('nimbra', 'old--one'), { recursive: true });
+    writeFileSync(
+      join(ws.conceptDir('nimbra', 'old--one'), 'concept.json'),
+      JSON.stringify({ ...fold, id: 'old--one' }),
+    );
+    expect(ws.concept('nimbra', 'old--one').id).toBe('old--one');
+    expect(() => ws.saveConcept({ ...fold, id: 'old--one' })).not.toThrow();
+  });
+  it('no longer lets two brand and concept pairs share an id', () => {
+    const id = (slug: string, key: string) => proposalId({ brand: { slug }, key } as never);
+    expect(id('a', 'b-x')).not.toBe(id('a-b', 'x'));
+  });
+  /** Run the client against a page of these proposal ids; returns the id it brings forward. */
+  const shown = (ids: string[], hash: string) => {
+    const on: Record<string, boolean> = {};
+    const stub: unknown = new Proxy(() => {}, {
+      get: (_t, k) => (k === Symbol.toPrimitive ? () => '' : k === 'length' ? 0 : stub),
+      apply: () => stub,
+      set: () => true,
+    });
+    const list: Record<string, unknown> = {};
+    const cards = ids.map((id) => ({
+      id,
+      parentElement: list,
+      classList: {
+        toggle: (n: string, v: boolean) => {
+          if (n === 'on') on[id] = v;
+        },
+      },
+      querySelectorAll: () => [],
+      querySelector: () => null,
+    }));
+    Object.assign(list, {
+      children: cards,
+      classList: { add: () => {} },
+      querySelector: (sel: string) => (sel === ':scope>.proposal' ? cards[0] : null),
+      querySelectorAll: () => [],
+      contains: () => false,
+      getClientRects: () => [1],
+      getBoundingClientRect: () => ({ top: 0 }),
+      parentElement: { querySelector: () => ({ querySelectorAll: () => [], contains: () => false }) },
+    });
+    const document = {
+      querySelectorAll: (sel: string) => (sel === '.proposals' ? [list] : sel === '.proposal' ? cards : []),
+      querySelector: () => null,
+      addEventListener: () => {},
+      activeElement: null,
+      getElementById: (id: string) => cards.find((c) => c.id === id) ?? (id.includes('-') ? null : stub),
+    };
+    const sandbox = {
+      document,
+      location: { pathname: '/g.html', search: '', hash, protocol: 'file:' },
+      localStorage: { getItem: () => '{}', setItem: () => {} },
+      navigator: {},
+      CSS: { escape: (x: string) => x },
+      history: { replaceState: () => {} },
+      URLSearchParams,
+      setTimeout: () => 0,
+      JSON,
+      Date,
+      Object,
+      Number,
+      Math,
+    };
+    vm.runInNewContext(GALLERY_SCRIPT, { ...sandbox, window: sandbox });
+    return ids.filter((id) => on[id]);
+  };
+  it('opens an old "#slug-key" link only when exactly one proposal matches', () => {
+    expect(shown(['nimbra--other', 'nimbra--fold'], '#nimbra-fold')).toEqual(['nimbra--fold']);
+    expect(shown(['nimbra--other', 'nimbra--fold'], '#nimbra--fold')).toEqual(['nimbra--fold']);
+    // "#acme-pro-x" could be acme--pro-x or acme-pro--x: bring neither forward (the first stays).
+    expect(shown(['zzz--q', 'acme-pro--x', 'acme--pro-x'], '#acme-pro-x')).toEqual(['zzz--q']);
   });
 });

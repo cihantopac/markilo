@@ -132,6 +132,19 @@ export function isSlug(value: string): boolean {
 }
 
 /**
+ * New brand slugs and concept ids may not contain "--": the gallery joins them as `<slug>--<key>`, and a "--" inside
+ * either would make two proposals share an id. Reading stays tolerant, so an existing workspace that has one still loads.
+ */
+export function assertNewSlug(value: string, what: string): void {
+  if (value.includes('--'))
+    throw new MarkiloError(
+      'USAGE',
+      `${what} "${value}" may not contain "--".`,
+      'Use single hyphens: the gallery uses "--" to join a brand and a concept.',
+    );
+}
+
+/**
  * Resolves `target` against `root` and refuses anything that escapes `root`
  * (`..`, absolute paths elsewhere, other drive letters on Windows).
  */

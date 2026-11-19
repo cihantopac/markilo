@@ -19,11 +19,15 @@ const hashId=()=>{try{return decodeURIComponent(location.hash.slice(1))}catch(e)
 const groups=[...document.querySelectorAll('.proposals')].map(list=>({list,board:list.parentElement.querySelector(':scope>.board')})).filter(g=>g.board);let cur=groups[0];
 function show(g,id){const a=document.getElementById(id);if(!a||a.parentElement!==g.list)return;cur=g;g.list.classList.add('one');
 [...g.list.children].forEach(x=>x.classList.toggle('on',x===a));g.board.querySelectorAll('.tile').forEach(t=>{const on=t.dataset.target===id;t.classList.toggle('on',on);t.setAttribute('aria-current',on?'true':'false')})}
-groups.forEach(g=>{const first=g.list.querySelector(':scope>.proposal');const h=hashId();const fromHash=h&&g.list.querySelector(':scope>#'+CSS.escape(h));if(first)show(g,(fromHash||first).id);
-g.board.querySelectorAll('.tile').forEach(t=>t.onclick=e=>{e.preventDefault();show(g,t.dataset.target);try{history.replaceState(null,'','#'+t.dataset.target)}catch(e){}})});
-if(groups[0])cur=groups.find(g=>g.list.querySelector('#'+CSS.escape(hashId()||'-')))||groups[0];
+const byId=h=>{if(!h)return null;const x=document.getElementById(h);if(x)return x;const m=[...document.querySelectorAll('.proposal')].filter(p=>p.id.replace(/--/g,'-')===h);return m.length===1?m[0]:null};
+const mark=id=>{try{history.replaceState(null,'','#'+id)}catch(e){}};
+groups.forEach(g=>{g.list.querySelectorAll(':scope>.proposal h3').forEach(h=>h.setAttribute('tabindex','-1'));const first=g.list.querySelector(':scope>.proposal');const a=byId(hashId());const fromHash=a&&a.parentElement===g.list?a:null;if(first)show(g,(fromHash||first).id);
+g.board.querySelectorAll('.tile').forEach(t=>t.onclick=e=>{e.preventDefault();show(g,t.dataset.target);mark(t.dataset.target)})});
+const at0=byId(hashId());if(at0)cur=groups.find(g=>g.list===at0.parentElement)||groups[0];
+const visible=g=>g.list.getClientRects().length>0;
+const owner=()=>{const f=document.activeElement;const mine=groups.find(g=>f&&(g.list.contains(f)||g.board.contains(f)));if(mine)return mine;const vis=groups.filter(visible);return vis.length?vis.reduce((m,g)=>Math.abs(g.list.getBoundingClientRect().top)<Math.abs(m.list.getBoundingClientRect().top)?g:m):cur};
 document.addEventListener('keydown',e=>{if(!cur||e.metaKey||e.ctrlKey||e.altKey||(e.target.closest&&e.target.closest('input,textarea,dialog')))return;if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;
-const ids=[...cur.list.children].map(x=>x.id),at=ids.indexOf((cur.list.querySelector(':scope>.on')||{}).id);const next=ids[(at+(e.key==='ArrowRight'?1:ids.length-1))%ids.length];if(next){e.preventDefault();show(cur,next)}});
+const g=owner();if(!g)return;const ids=[...g.list.children].map(x=>x.id),at=ids.indexOf((g.list.querySelector(':scope>.on')||{}).id);const next=ids[(at+(e.key==='ArrowRight'?1:ids.length-1))%ids.length];if(next){e.preventDefault();show(g,next);mark(next);const h=document.getElementById(next).querySelector('h3');if(h)h.focus()}});
 function render(){boxes.forEach(b=>{const k=b.dataset.key,v=st[k]||{};b.classList.toggle('refine',v.pick==='refine');
 b.querySelectorAll('[data-pick]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.pick===v.pick)));
 b.querySelectorAll('[data-chip]').forEach(x=>x.classList.toggle('on',(v.chips||[]).includes(x.dataset.chip)));
