@@ -23,6 +23,7 @@ const FOLDERS: Record<ExportGroup, string> = {
   ios: 'the Xcode app icon set',
   macos: 'the macOS app icon (`.icns` and its sizes)',
   android: 'launcher icons (adaptive and legacy) for `res/`',
+  tv: 'Fire TV and webOS icons, backgrounds and splash screens',
   windows: 'tiles and the app icon for Windows packages',
   social: 'link previews, profile covers and the avatar',
   marketing: 'banners and artwork for launch posts and stores',

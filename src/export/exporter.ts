@@ -20,6 +20,7 @@ import { guidelinesHtml, guidelinesMarkdown } from './guidelines.js';
 import { type BrandKit, drawnLettering, loadKit, textTypeface } from './kit.js';
 import { kitIndexHtml, kitReadme } from './preview.js';
 import { SPECS } from './specs.js';
+import { tvSurface } from './tv.js';
 import {
   adaptToGround,
   type GroundColors,
@@ -39,6 +40,7 @@ export const EXPORT_GROUPS = [
   'ios',
   'macos',
   'android',
+  'tv',
   'windows',
   'social',
   'marketing',
@@ -701,6 +703,96 @@ async function exportAndroid(ctx: Ctx) {
       derivedFrom: primaryFile(ctx),
     },
   );
+
+  // 1.8.0: the xxxhdpi banner (640×360) and the Play feature graphic, drawn like the TV surfaces.
+  const X = A.tvBannerXxxhdpi;
+  const F = A.playFeatureGraphic;
+  const art = tvArt(ctx);
+  for (const [rel, w, h, purpose] of [
+    [
+      'android/res/drawable-xxxhdpi/banner.png',
+      X.width,
+      X.height,
+      `Android TV home-screen banner ${X.width}×${X.height}, xxxhdpi (same drawable name as the xhdpi banner; Android picks the density)`,
+    ],
+    [
+      'android/play-feature-graphic-1024x500.png',
+      F.width,
+      F.height,
+      `Google Play feature graphic ${F.width}×${F.height} (PNG, no transparency)`,
+    ],
+  ] as const) {
+    const s = tvSurface({ ...art, ...tvGround(ctx), width: w, height: h }, rel);
+    if (s.warning) ctx.warnings.push(s.warning);
+    await emit(ctx, rel, await png(s.svg, w, h), {
+      group: 'android',
+      purpose,
+      derivedFrom: primaryFile(ctx),
+    });
+  }
+}
+
+/** The lead logo for TV surfaces and how much of its height is lettering (a heuristic: the lockup's text sits at cap height). */
+function tvArt(ctx: Ctx): { art: string; textShare: number } {
+  if (!ctx.primary) return { art: ctx.symbol!, textShare: 0 };
+  return { art: ctx.primary, textShare: ctx.primary === ctx.wordmark ? 1 : 0.6 };
+}
+
+function tvGround(ctx: Ctx) {
+  const { kit } = ctx;
+  return {
+    ground: kit.locked ? kit.palette.paper : tileGround(kit.palette),
+    locked: kit.locked,
+    inks: { dark: kit.palette.ink, light: '#ffffff' },
+    groundColors: groundColors(kit.palette),
+  };
+}
+
+// ---------------------------------------------------------------- TV
+async function exportTv(ctx: Ctx) {
+  const T = SPECS.tv;
+  const art = tvArt(ctx);
+  const from = primaryFile(ctx);
+  const surfaces: [string, number, number, string][] = [
+    [
+      'tv/firetv/icon-1280x720.png',
+      T.fireTv.icon.width,
+      T.fireTv.icon.height,
+      'Fire TV app icon 1280×720 (PNG, no transparency)',
+    ],
+    [
+      'tv/firetv/background-1920x1080.png',
+      T.fireTv.background.width,
+      T.fireTv.background.height,
+      'Fire TV background image 1920×1080 (PNG, no transparency)',
+    ],
+    [
+      'tv/webos/splash-1920x1080.png',
+      T.webos.splash.width,
+      T.webos.splash.height,
+      'webOS TV splash 1920×1080 (appinfo.json: splashBackground)',
+    ],
+  ];
+  for (const [rel, w, h, purpose] of surfaces) {
+    const s = tvSurface({ ...art, ...tvGround(ctx), width: w, height: h }, rel);
+    if (s.warning) ctx.warnings.push(s.warning);
+    await emit(ctx, rel, await png(s.svg, w, h), { group: 'tv', purpose, derivedFrom: from });
+  }
+  // webOS icons are square: the symbol on its tile, like the Play listing icon.
+  const sym = ctx.symbol ?? art.art;
+  for (const [rel, size, key] of [
+    ['tv/webos/icon-80.png', T.webos.icon, 'icon'],
+    ['tv/webos/largeIcon-130.png', T.webos.largeIcon, 'largeIcon'],
+  ] as const) {
+    const svg = ctx.kit.locked
+      ? await canvas(sym, size, size, { mode: 'box', fraction: 0.62 }, ctx.kit.palette.paper)
+      : await appmarkSvg(ctx, size, 'square', 0.58);
+    await emit(ctx, rel, await png(svg, size), {
+      group: 'tv',
+      purpose: `webOS TV ${size}×${size} app icon (appinfo.json: ${key})`,
+      derivedFrom: 'symbol.svg',
+    });
+  }
 }
 
 // ---------------------------------------------------------------- Windows
@@ -1137,6 +1229,7 @@ const RUNNERS: Record<ExportGroup, (ctx: Ctx) => Promise<void>> = {
   ios: exportIos,
   macos: exportMacos,
   android: exportAndroid,
+  tv: exportTv,
   windows: exportWindows,
   social: exportSocial,
   marketing: exportMarketing,
