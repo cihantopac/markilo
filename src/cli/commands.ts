@@ -396,7 +396,8 @@ const file = (c: RunContext, p: string) => resolve(c.cwd, p);
 
 /**
  * The photo `audit in-situ` measures: a file, or the id of an in-situ reference (`reference add --category in-situ`).
- * A reference of another category, or an id this workspace does not know, is a usage error.
+ * A file path wins over a reference id of the same name. A reference of another category, or an id this workspace
+ * does not know, is a usage error.
  */
 function inSituPhoto(c: RunContext, w: Workspace, slug: string, arg: string): { path: string; id: string } {
   const path = file(c, arg);
@@ -406,7 +407,7 @@ function inSituPhoto(c: RunContext, w: Workspace, slug: string, arg: string): { 
   }
   const ref = readReferences(w, slug).references.find((r) => r.id === arg);
   if (ref && ref.category === 'in-situ')
-    return { path: resolveInsideReal(w.referencesDir(slug), ref.file), id: ref.id };
+    return { path: resolveInsideReal(w.referencesDir(slug), ref.file), id: slugifyOrHash(ref.id).slug };
   throw new MarkiloError(
     'USAGE',
     ref
@@ -4794,13 +4795,14 @@ export const COMMANDS: CommandSpec[] = [
   {
     name: 'audit in-situ',
     summary:
-      'Find the mark in a photo of the real screen (a TV launcher, a phone home screen) and measure it there: its box, its share of the frame and of its tile, the contrast of its ink against the ring around it and of the tile against its surroundings, and its smallest stroke in photo pixels. Writes reports/in-situ-<id>.png with the box drawn; exits 1 when the mark is not found.',
+      'Find the mark in a photo of the real screen (a TV launcher, a phone home screen) and measure it there: its box, its share of the frame and of its tile, the contrast of its ink against the ring around it and of the tile against its surroundings, and its smallest stroke or gap in photo pixels. The match is confirmed by laying the mark’s drawing over the photo; when no place is confirmed it reports not found and exits 1. Writes reports/in-situ-<id>.png with the box drawn. A file path wins over a reference id of the same name.',
     usage: 'audit in-situ --brand <slug> --photo <in-situ reference id | file> --mark <file.svg>',
     options: {
       ...brandOpt,
       photo: {
         type: 'string',
-        description: 'Photo of the real screen (PNG, JPEG, WebP), or the id of an in-situ reference',
+        description:
+          'Photo of the real screen (PNG, JPEG, WebP), or the id of an in-situ reference (an existing file of that name wins)',
       },
       mark: { type: 'string', description: 'The mark to look for (SVG)' },
     },

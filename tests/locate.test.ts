@@ -200,6 +200,80 @@ describe('locateMark', () => {
   });
 });
 
+const RING =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="#2346d8" fill-rule="evenodd" d="M50 8a42 42 0 1 1 0 84a42 42 0 1 1 0-84zm0 18a24 24 0 1 0 0 48a24 24 0 1 0 0-48z"/></svg>';
+const SQUARE =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" fill="#222"/></svg>';
+
+/** A text-like screen: rows of black glyph-sized bars on white (a settings page, an app's text). */
+function textScreen(width: number, height: number): Raster {
+  const img = createRaster(width, height, [255, 255, 255, 255]);
+  let seed = 7;
+  const rnd = () => {
+    seed = (seed * 1103515245 + 12345) % 2147483648;
+    return seed / 2147483648;
+  };
+  for (let line = 0; line * 23 + 40 < height; line++)
+    for (let x = 20; x < width - 20; ) {
+      const w = 3 + Math.floor(rnd() * 14);
+      const h = 10 + Math.floor(rnd() * 8);
+      if (rnd() < 0.8) fillRect(img, x, 20 + line * 23 + (18 - h), w, h, '#000000');
+      x += w + 2 + Math.floor(rnd() * 4);
+    }
+  return img;
+}
+
+describe('locateMark hard negatives', () => {
+  const absent = async (photo: Raster, target: string) => {
+    expect(await locateMark(photo, target)).toBeUndefined();
+    expect(await locateMark(jpegOf(photo), target)).toBeUndefined();
+  };
+  it('does not take a mirrored mark for the mark', async () => {
+    const l = await launcher({ width: 1280, height: 720, marks: [null, mark('orbit-mirrored'), null] });
+    await absent(l.photo, mark('orbit'));
+  });
+  it('does not take a plain disc for a ring or for orbit', async () => {
+    const l = await launcher({ width: 1280, height: 720, marks: [null, mark('plain-circle'), null] });
+    await absent(l.photo, mark('orbit'));
+    await absent(l.photo, RING);
+  });
+  it('does not take a cluster of glyphs on a text screen for a mark', async () => {
+    const photo = textScreen(1280, 720);
+    for (const t of [mark('bars'), mark('bolt'), SQUARE, TARGET]) await absent(photo, t);
+  });
+  it('does not take an empty tile for a plain square mark', async () => {
+    const l = await launcher({ width: 1280, height: 720, marks: [null, null, null, null] });
+    await absent(l.photo, SQUARE);
+  });
+  it('still finds orbit among its mirror image, its tweak and a plain disc', async () => {
+    const l = await launcher({
+      width: 1600,
+      height: 900,
+      marks: [mark('orbit-mirrored'), mark('orbit-tweaked'), null, mark('plain-circle')],
+      target: { svg: mark('orbit'), at: 2, size: 200, angle: -2 },
+    });
+    for (const photo of [l.photo, jpegOf(l.photo)]) {
+      const found = await locateMark(photo, mark('orbit'));
+      expect(found).toBeDefined();
+      expect(found!.score).toBeGreaterThanOrEqual(0.7);
+      expectBox(found!.box, l.box!);
+    }
+  });
+  it('says "not found" without throwing on tiny, flat and strip-shaped photos', async () => {
+    for (const photo of [
+      createRaster(1, 1, [0, 0, 0, 255]),
+      createRaster(2, 3, [0, 0, 0, 255]),
+      createRaster(15, 15, [255, 255, 255, 255]),
+      createRaster(1000, 800, [0, 0, 0, 255]),
+      createRaster(1000, 800, [255, 255, 255, 255]),
+      createRaster(600, 400, [0, 0, 0, 0]),
+      createRaster(1, 4000, [128, 128, 128, 255]),
+      createRaster(5000, 10, [128, 128, 128, 255]),
+    ])
+      expect(await locateMark(photo, TARGET)).toBeUndefined();
+  });
+});
+
 describe('measureInSitu', () => {
   it('measures tile-to-ground contrast, ink-to-ring contrast, shares and the smallest stroke', async () => {
     const want = contrastRatio(TILE, GROUND);
@@ -217,7 +291,9 @@ describe('measureInSitu', () => {
       expect(m.tile).not.toBeNull();
       expect(Math.abs(m.contrast.tileToSurround!.ratio - want)).toBeLessThanOrEqual(0.05);
       // fold-n's dominant blue on the tile.
-      expect(Math.abs(m.contrast.inkToRing.ratio - contrastRatio('#3b5bdb', TILE))).toBeLessThanOrEqual(0.25);
+      expect(Math.abs(m.contrast.inkToRing!.ratio - contrastRatio('#3b5bdb', TILE))).toBeLessThanOrEqual(
+        0.25,
+      );
       const t = l.tiles[2]!;
       expectBox(m.tile!, t, 0.03);
       expect(m.share.tile).toBeCloseTo((l.box!.w * l.box!.h) / (t.w * t.h), 2);
@@ -266,6 +342,47 @@ describe('audit in-situ', () => {
     expect(r.found).toBe(false);
     expect(r.exitCode).toBe(1);
     expect(existsSync(join(ws.reportsDir('nimbra'), 'in-situ-empty.png'))).toBe(false);
+  });
+
+  it('reads --photo as an in-situ reference id, and refuses a reference of another category', async () => {
+    const { ws, dir } = synthBrand();
+    const l = await launcher({
+      width: 1280,
+      height: 720,
+      marks: [null, null, null],
+      target: { svg: TARGET, at: 1, size: 150, angle: 0 },
+    });
+    writeFileSync(join(dir, 'home.png'), encodePng(l.photo));
+    writeFileSync(join(dir, 'mark.svg'), TARGET);
+    const add = async (category: string, file: string) => {
+      const f = findCommand(['reference', 'add'])!;
+      const argv = [
+        '--brand',
+        'nimbra',
+        '--file',
+        file,
+        '--name',
+        'TV home',
+        '--source',
+        'photo',
+        '--category',
+        category,
+      ];
+      return ((await f.spec.run(parseCommand(f.spec, argv, dir))) as { added: string }).added;
+    };
+    const id = await add('in-situ', 'home.png');
+    const r = await cmd(['--brand', 'nimbra', '--photo', id, '--mark', 'mark.svg'], dir);
+    expect(r.found).toBe(true);
+    expectBox(r.box as Box, l.box!);
+    expect(r.report).toBe(join(ws.reportsDir('nimbra'), `in-situ-${id}.png`));
+    expect(existsSync(r.report as string)).toBe(true);
+
+    const other = await add('inspiration', 'mark.svg');
+    const err = (await cmd(['--brand', 'nimbra', '--photo', other, '--mark', 'mark.svg'], dir).catch(
+      (e: unknown) => e,
+    )) as MarkiloError;
+    expect(err.code).toBe('USAGE');
+    expect(err.message).toContain('not an in-situ photo');
   });
 
   it('refuses a --photo that is neither a file nor an in-situ reference', async () => {

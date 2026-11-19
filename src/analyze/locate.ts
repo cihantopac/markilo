@@ -1,7 +1,7 @@
 import { createRaster, type Raster } from '../render/image.js';
 import { renderSvg } from '../render/resvg.js';
 import { nestSvg, svgDocument } from '../svg/compose.js';
-import { contrastRatio, hexToRgb, rgbToHex } from './color.js';
+import { contrastRatio, hexToRgb, type Lab, rgbToHex, rgbToLab } from './color.js';
 import { ANALYSIS_SIZE } from './features.js';
 import { sampleFromSvg } from './mark.js';
 
@@ -13,6 +13,12 @@ import { sampleFromSvg } from './mark.js';
  * is only ~12–17 px long, then the best few places are refined at ~48 px and at ~128 px (or the photo's own
  * resolution), where small turns (±5°) are tried as rotated templates. Edge maps make the match blind to the
  * mark's colours and to the tile it sits on; the normalization makes it blind to contrast.
+ *
+ * A correlation score alone takes a mirror image, a plain disc, an empty tile or a cluster of glyphs for a simple
+ * mark, so every place that scores is then verified against the photo's colours (`markEvidence`): the mark's own
+ * drawing, laid over the place, must separate into its colour parts (each ΔE ≥ 10 from the ring around the box,
+ * parts the mark draws apart still told apart), with its ink and its counters agreeing with the drawing and the
+ * ring around it calm. Boxes under 32 px also need a higher score.
  */
 
 export interface Box {
@@ -341,15 +347,16 @@ function regionSearch(photo: Raster, rect: Box, f: number): { img: Searchable; f
 }
 
 /**
- * Finds `mark` (SVG text) in `photo`. Returns undefined ("not found") when the best match scores below
- * LOCATE_MIN_SCORE. `minScale`/`maxScale` bound the search in `Located.scale` units; by default the mark's long
+ * Finds `mark` (SVG text) in `photo`. Returns undefined ("not found") when no place both scores LOCATE_MIN_SCORE
+ * (SMALL_BOX_SCORE for boxes under SMALL_BOX px) and passes the colour verification. `minScale`/`maxScale` bound the search in `Located.scale` units; by default the mark's long
  * side is searched from 2 % of the photo's long side (at least 12 px) up to the photo's short side.
  */
 export async function locateMark(
-  photo: Raster,
+  raw: Raster,
   mark: string,
   opts: { minScale?: number; maxScale?: number } = {},
 ): Promise<Located | undefined> {
+  const photo = flatten(raw);
   const templates = new Templates(mark);
   const base = await templates.get(ANALYSIS_SIZE, 0);
   if (!base) return undefined;
@@ -453,24 +460,31 @@ export async function locateMark(
     if (c && c.score >= 0.35) mid.push(c);
   }
   mid.sort((a, b) => b.score - a.score);
-  let best: Candidate | undefined;
-  for (const start of mid.slice(0, 3)) {
+  const finals: Candidate[] = [];
+  for (const start of mid.slice(0, 4)) {
     const c = (await refine(photo, templates, inkLong0, start, REFINE[1], false)) ?? start;
-    if (c.box && (!best || c.score > best.score)) best = c;
+    if (c.box) finals.push(c);
   }
-  if (!best?.box || best.score < LOCATE_MIN_SCORE) return undefined;
+  // The best-scoring place that the photo confirms: the mark's drawing laid over it separates into its parts.
+  finals.sort((a, b) => b.score - a.score);
   const round = (v: number, d = 1000) => Math.round(v * d) / d;
-  return {
-    box: {
-      x: Math.round(best.box.x),
-      y: Math.round(best.box.y),
-      w: Math.round(best.box.w),
-      h: Math.round(best.box.h),
-    },
-    scale: round(best.scale, 10_000),
-    score: round(best.score),
-    angle: round(best.angle, 100),
-  };
+  for (const c of finals) {
+    const at: Located = {
+      box: {
+        x: Math.round(c.box!.x),
+        y: Math.round(c.box!.y),
+        w: Math.round(c.box!.w),
+        h: Math.round(c.box!.h),
+      },
+      scale: round(c.scale, 10_000),
+      score: round(c.score),
+      angle: round(c.angle, 100),
+    };
+    const need = Math.max(at.box.w, at.box.h) < SMALL_BOX ? SMALL_BOX_SCORE : LOCATE_MIN_SCORE;
+    if (at.score < need) continue;
+    if (verified(await markEvidence(photo, mark, at))) return at;
+  }
+  return undefined;
 }
 
 async function refine(
@@ -540,16 +554,29 @@ async function refine(
 export interface InSituMeasures {
   /** The tile the mark sits on (a flat patch of one colour around it), or null when it sits on the ground itself. */
   tile: Box | null;
-  colors: { ink: string; ring: string; tile: string | null; surround: string | null };
+  /**
+   * `ink` is the mark's largest colour part as photographed (per-channel median of its eroded interior); `parts`
+   * lists every colour part. Null when there was nothing to sample.
+   */
+  colors: {
+    ink: string | null;
+    ring: string | null;
+    tile: string | null;
+    surround: string | null;
+    parts: InSituPart[];
+  };
   contrast: {
-    /** The mark's ink against the ring of ground just around it. */
-    inkToRing: { ratio: number };
+    /** The mark's ink against the ring of ground just around it (null when either could not be sampled). */
+    inkToRing: { ratio: number } | null;
     /** The tile against what surrounds it (the launcher ground). */
     tileToSurround: { ratio: number } | null;
   };
   /** Area of the mark's box as a share of the photo and of its tile. */
   share: { frame: number; tile: number | null };
-  /** The mark's thinnest stroke or gap (`analyze`'s minFeature) at the located scale, in photo pixels. */
+  /**
+   * The mark's thin-detail width at the located scale, in photo pixels: `analyze`'s minFeature, the 20th percentile
+   * of its stroke AND gap widths (a narrow counter counts as much as a thin stroke).
+   */
   smallestStrokePx: number | null;
 }
 
@@ -688,42 +715,218 @@ function flatten(r: Raster): Raster {
 }
 
 /** Measures a located mark in its photo: contrasts, tile, shares and the smallest stroke in photo pixels. */
+/** CIE76 colour distance between two RGB triples (cached Lab). */
+const labCache = new Map<number, Lab>();
+function labOf(r: number, g: number, b: number): Lab {
+  const key = (r << 16) | (g << 8) | b;
+  let lab = labCache.get(key);
+  if (!lab) {
+    if (labCache.size > 100_000) labCache.clear();
+    lab = rgbToLab({ r, g, b });
+    labCache.set(key, lab);
+  }
+  return lab;
+}
+const dist = (a: Lab, b: Lab) => Math.hypot(a.L - b.L, a.a - b.a, a.b - b.b);
+
+/** One colour part of the mark (pixels drawn in one colour), as the photo shows it. */
+export interface InSituPart {
+  /** The colour the mark draws this part in. */
+  mark: string;
+  /** The median (per channel) colour of the photo under the part's solid interior. */
+  photo: string;
+  /** Share of the mark's solid ink in this part. */
+  share: number;
+  /** CIE76 ΔE between the part (as photographed) and the ring around the mark. */
+  deltaE: number;
+}
+
+/** What the photo shows under the located mark: its parts, the ring around it, and how well they separate. */
+export interface MarkEvidence {
+  ring: string | null;
+  parts: InSituPart[];
+  /** Share of solid-ink samples nearer their part's photographed colour than the ring colour. */
+  inkAgree: number;
+  /** Share of solid-ground samples inside the box (counters, the space between parts) that look like the ring. */
+  groundAgree: number;
+  /** Share of the ring's own samples that look like its median: a mark sits on a calm patch, not amid glyphs. */
+  ringAgree: number;
+  /**
+   * Whether the photo keeps the mark's colour structure: parts the mark draws in clearly different colours
+   * (CIE76 ΔE ≥ 20) are also told apart in the photo (ΔE ≥ 10).
+   */
+  partsDistinct: boolean;
+}
+
+/** A part must stand at least this far (CIE76 ΔE) from the ring for the mark to count as present. */
+export const MIN_PART_DELTA_E = 10;
+/** Shares of ink samples and ground samples that must agree with the mark's drawing. */
+const MIN_INK_AGREE = 0.85;
+const MIN_GROUND_AGREE = 0.95;
+const MIN_RING_AGREE = 0.8;
+/** Boxes this small (long side, photo px) need a higher score: a glyph cluster correlates easily at that size. */
+const SMALL_BOX = 32;
+const SMALL_BOX_SCORE = 0.65;
+
+/**
+ * Lays the mark's own drawing (at the located size and turn) over the photo and reads what is under it: each
+ * colour part's photographed colour (median of its solid interior, eroded so edge blur and JPEG ringing stay out),
+ * the ring just outside the box, and how well ink and ground separate where the drawing says they should.
+ */
+async function markEvidence(photo: Raster, mark: string, at: Located): Promise<MarkEvidence> {
+  const box = at.box;
+  const long = Math.max(box.w, box.h);
+  const empty: MarkEvidence = {
+    ring: null,
+    parts: [],
+    inkAgree: 0,
+    groundAgree: 0,
+    ringAgree: 0,
+    partsDistinct: false,
+  };
+  if (box.w < 2 || box.h < 2) return empty;
+  // At most ~400 px of ink is drawn; the photo is sampled on a grid of at most ~200 steps per side.
+  const k = Math.min(1, 400 / Math.max(1, long));
+  const { img, ink } = await drawMark(mark, ANALYSIS_SIZE * at.scale * k, at.angle);
+  if (!ink) return empty;
+  const sx = ink.w / box.w;
+  const sy = ink.h / box.h;
+  const r = Math.max(1, Math.round(Math.max(ink.w, ink.h) * 0.03));
+  const alpha = (tx: number, ty: number) =>
+    tx < 0 || ty < 0 || tx >= img.width || ty >= img.height ? 0 : img.data[(ty * img.width + tx) * 4 + 3]!;
+  const ringBand = band(box, 2, Math.max(3, Math.round(long * 0.06)));
+  const ringHex = medianColor(photo, ringBand.rect, ringBand.pick);
+  if (!ringHex) return empty;
+  const rr = hexToRgb(ringHex);
+  const ringLab = labOf(Math.round(rr.r), Math.round(rr.g), Math.round(rr.b));
+
+  const step = Math.max(1, Math.floor(long / 200));
+  const inkSamples: { key: number; o: number }[] = [];
+  const groundSamples: number[] = [];
+  const x0 = Math.max(0, Math.ceil(box.x));
+  const y0 = Math.max(0, Math.ceil(box.y));
+  const x1 = Math.min(photo.width, Math.floor(box.x + box.w));
+  const y1 = Math.min(photo.height, Math.floor(box.y + box.h));
+  for (let y = y0; y < y1; y += step)
+    for (let x = x0; x < x1; x += step) {
+      const tx = Math.round(ink.x + (x + 0.5 - box.x) * sx - 0.5);
+      const ty = Math.round(ink.y + (y + 0.5 - box.y) * sy - 0.5);
+      const probes = [
+        alpha(tx, ty),
+        alpha(tx - r, ty),
+        alpha(tx + r, ty),
+        alpha(tx, ty - r),
+        alpha(tx, ty + r),
+      ];
+      const o = (y * photo.width + x) * 4;
+      if (probes.every((a) => a >= 250)) {
+        const t = (ty * img.width + tx) * 4;
+        const key = ((img.data[t]! >> 4) << 8) | ((img.data[t + 1]! >> 4) << 4) | (img.data[t + 2]! >> 4);
+        inkSamples.push({ key, o });
+      } else if (probes.every((a) => a <= 5)) groundSamples.push(o);
+    }
+  if (!inkSamples.length) return { ...empty, ring: ringHex };
+
+  // Parts: the mark's colours that cover at least 3 % of its solid ink, largest first.
+  const counts = new Map<number, number>();
+  for (const s of inkSamples) counts.set(s.key, (counts.get(s.key) ?? 0) + 1);
+  const keys = [...counts.entries()]
+    .filter(([, n]) => n >= inkSamples.length * 0.03)
+    .sort((a, b) => b[1] - a[1])
+    .map(([key]) => key);
+  const d = photo.data;
+  const parts: (InSituPart & { lab: Lab; samples: number[] })[] = [];
+  for (const key of keys) {
+    const samples = inkSamples.filter((s) => s.key === key).map((s) => s.o);
+    const med = [0, 1, 2].map((c) => {
+      const v = samples.map((o) => d[o + c]!).sort((a, b) => a - b);
+      return v[v.length >> 1]!;
+    });
+    const lab = labOf(med[0]!, med[1]!, med[2]!);
+    const full = (n: number) => ((n & 15) << 4) | (n & 15);
+    parts.push({
+      mark: rgbToHex({ r: full(key >> 8), g: full(key >> 4), b: full(key) }),
+      photo: rgbToHex({ r: med[0]!, g: med[1]!, b: med[2]! }),
+      share: Math.round((samples.length / inkSamples.length) * 1000) / 1000,
+      deltaE: Math.round(dist(lab, ringLab) * 10) / 10,
+      lab,
+      samples,
+    });
+  }
+  let inkOk = 0;
+  let inkN = 0;
+  for (const p of parts)
+    for (const o of p.samples) {
+      const c = labOf(d[o]!, d[o + 1]!, d[o + 2]!);
+      inkN++;
+      if (dist(c, p.lab) < dist(c, ringLab)) inkOk++;
+    }
+  // Ground inside the box must look like the ring: closer to it than half the weakest part's distance (at least 6).
+  const minDe = Math.min(...parts.map((p) => p.deltaE));
+  const tol = Math.max(6, minDe * 0.5);
+  let groundOk = 0;
+  for (const o of groundSamples) if (dist(labOf(d[o]!, d[o + 1]!, d[o + 2]!), ringLab) < tol) groundOk++;
+  let ringOk = 0;
+  let ringN = 0;
+  const rs = Math.max(1, Math.floor(step / 2));
+  const rb = ringBand.rect;
+  for (let y = Math.max(0, Math.floor(rb.y)); y < Math.min(photo.height, rb.y + rb.h); y += rs)
+    for (let x = Math.max(0, Math.floor(rb.x)); x < Math.min(photo.width, rb.x + rb.w); x += rs) {
+      if (!ringBand.pick(x, y)) continue;
+      const o = (y * photo.width + x) * 4;
+      ringN++;
+      if (dist(labOf(d[o]!, d[o + 1]!, d[o + 2]!), ringLab) < tol) ringOk++;
+    }
+  let partsDistinct = true;
+  for (let i = 0; i < parts.length; i++)
+    for (let j = i + 1; j < parts.length; j++) {
+      const a = hexToRgb(parts[i]!.mark);
+      const b = hexToRgb(parts[j]!.mark);
+      if (dist(labOf(a.r, a.g, a.b), labOf(b.r, b.g, b.b)) >= 20 && dist(parts[i]!.lab, parts[j]!.lab) < 10)
+        partsDistinct = false;
+    }
+  return {
+    ring: ringHex,
+    parts: parts.map(({ lab: _l, samples: _s, ...p }) => p),
+    inkAgree: inkN ? inkOk / inkN : 0,
+    groundAgree: groundSamples.length ? groundOk / groundSamples.length : 1,
+    ringAgree: ringN ? ringOk / ringN : 0,
+    partsDistinct,
+  };
+}
+
+/** Whether the photo really shows the mark at `at`: every part stands apart from the ring, ink and ground agree. */
+function verified(ev: MarkEvidence): boolean {
+  return (
+    ev.parts.length > 0 &&
+    ev.parts.every((p) => p.deltaE >= MIN_PART_DELTA_E) &&
+    ev.partsDistinct &&
+    ev.inkAgree >= MIN_INK_AGREE &&
+    ev.groundAgree >= MIN_GROUND_AGREE &&
+    ev.ringAgree >= MIN_RING_AGREE
+  );
+}
+
+/** Measures a located mark in its photo: contrasts, tile, shares and the smallest stroke in photo pixels. */
 export async function measureInSitu(raw: Raster, mark: string, at: Located): Promise<InSituMeasures> {
   const photo = flatten(raw);
   const box = at.box;
   const long = Math.max(box.w, box.h);
-  // The ink: the mark drawn at the located size and turn, laid on its box, eroded so edge blur and JPEG ringing stay out.
-  const { img, ink } = await drawMark(mark, ANALYSIS_SIZE * at.scale, at.angle);
-  const sx = ink ? ink.w / box.w : 1;
-  const sy = ink ? ink.h / box.h : 1;
-  const alphaAt = (x: number, y: number) => {
-    if (!ink) return 0;
-    const tx = Math.round(ink.x + (x - box.x) * sx);
-    const ty = Math.round(ink.y + (y - box.y) * sy);
-    if (tx < 0 || ty < 0 || tx >= img.width || ty >= img.height) return 0;
-    return img.data[(ty * img.width + tx) * 4 + 3]!;
-  };
-  const erode = Math.max(1, Math.round(long * 0.02));
-  const solid = (x: number, y: number, r: number) =>
-    alphaAt(x, y) >= 250 &&
-    alphaAt(x - r, y) >= 250 &&
-    alphaAt(x + r, y) >= 250 &&
-    alphaAt(x, y - r) >= 250 &&
-    alphaAt(x, y + r) >= 250;
-  const inkColor =
-    medianColor(photo, box, (x, y) => solid(x, y, erode)) ??
-    medianColor(photo, box, (x, y) => alphaAt(x, y) >= 250) ??
-    '#000000';
-
-  const ringBand = band(box, 2, Math.max(3, Math.round(long * 0.06)));
-  const ringColor = medianColor(photo, ringBand.rect, ringBand.pick) ?? '#ffffff';
-  const tol = Math.min(12, Math.max(6, spread(photo, ringBand.rect, ringBand.pick, ringColor) * 3));
-  const tile = findTile(photo, ringBand.rect, ringColor, tol);
+  const ev = await markEvidence(photo, mark, at);
+  // The ink is the mark's largest colour part as photographed (per-channel median of its eroded interior).
+  const inkColor = ev.parts[0]?.photo ?? null;
+  const ringColor = ev.ring;
+  let tile: Box | null = null;
   let surround: string | undefined;
-  if (tile) {
-    const tl = Math.max(tile.w, tile.h);
-    const sb = band(tile, Math.max(2, Math.round(tl * 0.01)), Math.max(4, Math.round(tl * 0.08)));
-    surround = medianColor(photo, sb.rect, sb.pick);
+  if (ringColor) {
+    const ringBand = band(box, 2, Math.max(3, Math.round(long * 0.06)));
+    const tol = Math.min(12, Math.max(6, spread(photo, ringBand.rect, ringBand.pick, ringColor) * 3));
+    tile = findTile(photo, ringBand.rect, ringColor, tol);
+    if (tile) {
+      const tl = Math.max(tile.w, tile.h);
+      const sb = band(tile, Math.max(2, Math.round(tl * 0.01)), Math.max(4, Math.round(tl * 0.08)));
+      surround = medianColor(photo, sb.rect, sb.pick);
+    }
   }
   const sample = await sampleFromSvg(mark, { id: 'mark' });
   const minFeature = sample.features.minFeature;
@@ -731,10 +934,17 @@ export async function measureInSitu(raw: Raster, mark: string, at: Located): Pro
   const area = box.w * box.h;
   return {
     tile,
-    colors: { ink: inkColor, ring: ringColor, tile: tile ? ringColor : null, surround: surround ?? null },
+    colors: {
+      ink: inkColor,
+      ring: ringColor,
+      tile: tile ? ringColor : null,
+      surround: surround ?? null,
+      parts: ev.parts,
+    },
     contrast: {
-      inkToRing: { ratio: r2(contrastRatio(inkColor, ringColor)) },
-      tileToSurround: tile && surround ? { ratio: r2(contrastRatio(ringColor, surround)) } : null,
+      inkToRing: inkColor && ringColor ? { ratio: r2(contrastRatio(inkColor, ringColor)) } : null,
+      tileToSurround:
+        tile && ringColor && surround ? { ratio: r2(contrastRatio(ringColor, surround)) } : null,
     },
     share: {
       frame: Math.round((area / (photo.width * photo.height)) * 10_000) / 10_000,

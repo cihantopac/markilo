@@ -24,7 +24,8 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
    When the user has a photo of the mark on the real screen (a TV launcher, a phone home screen), measure it there
    with `markilo audit in-situ --brand <slug> --photo <in-situ reference id or photo file> --mark <the SVG or the
    trace>`: it finds the mark and reports its box, its share of the frame and of its tile, the contrast of its ink
-   against the ring around it and of the tile against the launcher ground, and its smallest stroke in photo pixels.
+   against the ring around it and of the tile against the launcher ground, and its smallest stroke in photo pixels
+   (`smallestStrokePx` is the thinnest stroke or gap, so a narrow counter counts too).
    `Read` the `reports/in-situ-<id>.png` it writes to check the box sits on the mark. `found: false` (exit 1) means
    no place scored 0.5: say the mark was not found in the photo; do not measure a tile by eye instead. These
    in-situ numbers are the strongest evidence of how the mark reads where it is used.
