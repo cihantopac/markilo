@@ -189,6 +189,7 @@ import {
   walk,
   type XmlElement,
 } from '../svg/xml.js';
+import { type BoardLang, boardText, briefBoardLang, parseBoardLang } from '../ui/board-text.js';
 import { type AgentTarget, agentSetup, ROLE_IDS, type Role } from './agents.js';
 import type { CommandSpec, RunContext } from './args.js';
 import { FRAMEWORKS, type Framework, planFrameworkInstall } from './frameworks.js';
@@ -363,6 +364,28 @@ function applyRecolor(plan: RecolorPlan): void {
 /** A word without data-baseline / data-cap-height: composeLockup has to assume its ink box is the cap box. */
 const NO_BASELINE = 'word has no baseline; lockups will guess its position — run `family glyphs` on it';
 const brandOpt = { brand: { type: 'string', short: 'b', description: 'Brand slug' } } as const;
+const langOpt = {
+  lang: {
+    type: 'string',
+    description:
+      'en or tr: the language of the board text (default: tr when the brief’s first audience language is Turkish, else en)',
+  },
+} as const;
+/** --lang when given; else the brand's brief (a bare file without a brand stays English). */
+function boardLangOf(c: RunContext, w?: Workspace, slug?: string): BoardLang {
+  const given = c.str('lang');
+  if (given !== undefined) {
+    const lang = parseBoardLang(given);
+    if (!lang) throw new MarkiloError('USAGE', `--lang must be en or tr, not "${given}".`);
+    return lang;
+  }
+  if (!w || !slug) return 'en';
+  try {
+    return briefBoardLang(w.brief(slug));
+  } catch {
+    return 'en';
+  }
+}
 const pos = (c: RunContext, i: number, label: string): string => {
   const v = c.positionals[i];
   if (!v) throw new MarkiloError('USAGE', `Missing <${label}>.`);
@@ -675,7 +698,7 @@ async function loadReferences(w: Workspace, brand: string): Promise<Reference[]>
   const out: Reference[] = [];
   // A family reference is expected to look alike: it never steers sketches or variants away.
   for (const r of readReferences(w, brand)
-    .references.filter((x) => x.category !== 'family')
+    .references.filter((x) => x.category !== 'family' && x.category !== 'in-situ')
     .slice(0, 60)) {
     try {
       out.push({
@@ -1665,7 +1688,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Add a competitor or category reference mark (SVG/PNG/JPEG/ICO) for similarity analysis. Stored git-ignored.',
     usage:
-      'reference add --brand <slug> --file <path> --name <brand name> --source <url or note> [--category direct|indirect|category|form-family|inspiration|dislike|existing|family] [--notes <what the user likes or dislikes in it>] [--retrieved <ISO date>]',
+      'reference add --brand <slug> --file <path> --name <brand name> --source <url or note> [--category direct|indirect|category|form-family|inspiration|dislike|existing|family|in-situ] [--notes <what the user likes or dislikes in it>] [--retrieved <ISO date>]',
     options: {
       ...brandOpt,
       file: { type: 'string', description: 'Logo, screenshot, mood board or sketch' },
@@ -1674,7 +1697,7 @@ export const COMMANDS: CommandSpec[] = [
       category: {
         type: 'string',
         description:
-          'direct, indirect, category or form-family (competitors); inspiration, dislike or existing (the user’s own references); family (a mark of the product family this brand joins: likeness reported apart, never a risk)',
+          'direct, indirect, category or form-family (competitors); inspiration, dislike or existing (the user’s own references); family (a mark of the product family this brand joins: likeness reported apart, never a risk); in-situ (a photo of the real mark in use: stored and listed, read by the audit, never compared for originality)',
       },
       retrieved: { type: 'string', description: 'Retrieval date' },
       notes: { type: 'string', description: 'Notes' },
@@ -1804,7 +1827,7 @@ export const COMMANDS: CommandSpec[] = [
         const slug = c.req('brand');
         // One file per brand: several logos of one brand are not "different marks".
         const seen = new Set<string>();
-        for (const r of readReferences(w, slug).references) {
+        for (const r of readReferences(w, slug).references.filter((x) => x.category !== 'in-situ')) {
           const key = brandKeyOf(r.name);
           if (seen.has(key)) continue;
           seen.add(key);
@@ -2935,9 +2958,10 @@ export const COMMANDS: CommandSpec[] = [
     name: 'export',
     summary: `Generate the asset kit from the approved identity: the groups chosen in the brief (markilo deliverables), or --only / --all. Groups: ${EXPORT_GROUPS.join(', ')}.`,
     usage:
-      'export --brand <slug> [--only web,ios,...] [--all] [--out <dir>] [--clean] [--progress] [--theme-color primary|paper|#hex] [--icon-art flat|rich]',
+      'export --brand <slug> [--only web,ios,...] [--all] [--out <dir>] [--clean] [--progress] [--theme-color primary|paper|#hex] [--icon-art flat|rich] [--lang en|tr]',
     options: {
       ...brandOpt,
+      ...langOpt,
       only: { type: 'string', description: 'Comma-separated groups' },
       all: { type: 'boolean', description: 'Every group, whatever the brief says' },
       clean: {
@@ -2982,6 +3006,7 @@ export const COMMANDS: CommandSpec[] = [
       const out = c.str('out') ? file(c, c.str('out')!) : undefined;
       const r = await exportBrand(w, slug, {
         groups,
+        lang: boardLangOf(c, w, slug),
         clean: c.bool('clean'),
         ...(out ? { outDir: out } : {}),
         ...(c.bool('progress')
@@ -3083,15 +3108,17 @@ export const COMMANDS: CommandSpec[] = [
     name: 'proposals',
     summary:
       "Render a round's proposals for the user's decision: concepts/<id>/review/proposal.png each (the identity on its paper and reversed, the icon as app tile, avatar, 32 and 16 px) and proposals/round-<n>.png side by side.",
-    usage: 'proposals --brand <slug> [--round <n>] [--concepts a,b,c]',
+    usage: 'proposals --brand <slug> [--round <n>] [--concepts a,b,c] [--lang en|tr]',
     options: {
       ...brandOpt,
+      ...langOpt,
       round: { type: 'string', description: 'Round to render (default: the latest)' },
       concepts: { type: 'string', description: 'Concept ids instead of a round (comma-separated)' },
     },
     async run(c) {
       const w = ws(c);
       const slug = c.req('brand');
+      const lang = boardLangOf(c, w, slug);
       const all = w.concepts(slug);
       const ids = c.list('concepts');
       const byRound = rounds(all);
@@ -3189,7 +3216,8 @@ export const COMMANDS: CommandSpec[] = [
         const small = cpt.smallSizes === 'main' ? undefined : read(cpt, cpt.files.small);
         const input: ProposalInput = {
           title: cpt.title,
-          caption: `${cpt.round !== undefined ? `Round ${cpt.round} · ` : ''}${letterOf(cpt)} · ${cpt.lead === 'wordmark' ? 'wordmark-led' : 'symbol-led'}`,
+          caption: `${cpt.round !== undefined ? `${boardText('Round {0}', lang, [cpt.round])} · ` : ''}${letterOf(cpt)} · ${boardText(cpt.lead === 'wordmark' ? 'wordmark-led' : 'symbol-led', lang)}`,
+          lang,
           idea: cpt.pitch?.idea ?? cpt.direction,
           lead: cpt.lead === 'wordmark' ? 'wordmark' : 'symbol',
           ...(symbol ? { symbol } : {}),
@@ -3232,8 +3260,8 @@ export const COMMANDS: CommandSpec[] = [
           const then: ProposalInput = {
             ...input,
             caption: cpt.adoptedFrom
-              ? `As the user chose it (from ${cpt.adoptedFrom.concept})`
-              : 'As the user chose it',
+              ? boardText('As the user chose it (from {0})', lang, [cpt.adoptedFrom.concept])
+              : boardText('As the user chose it', lang),
             ...(was.symbol ? { symbol: was.symbol } : {}),
             ...(was.wordmark ? { wordmark: was.wordmark } : {}),
           };
@@ -3242,7 +3270,7 @@ export const COMMANDS: CommandSpec[] = [
           if (lockupWas) then.lockup = lockupWas;
           if (smallWas) then.small = smallWas;
           const cmp = w.conceptFile(slug, cpt.id, join('review', 'chosen-vs-now.png'));
-          writeGenerated(cmp, await renderRoundBoard([then, { ...input, caption: 'Now' }]));
+          writeGenerated(cmp, await renderRoundBoard([then, { ...input, caption: boardText('Now', lang) }]));
           compare[cpt.id] = cmp;
           const change: { symbol?: number; wordmark?: number } = {};
           for (const kind of ['symbol', 'wordmark'] as const) {
@@ -3885,14 +3913,16 @@ export const COMMANDS: CommandSpec[] = [
     name: 'sketches',
     summary:
       "Build every sketch spec in a concept's sketches/ folder in the concept palette and lay them out on one board (160/32/16 px, each with its idea) for an early critique.",
-    usage: 'sketches --brand <slug> --concept <id>',
+    usage: 'sketches --brand <slug> --concept <id> [--lang en|tr]',
     options: {
       ...brandOpt,
+      ...langOpt,
       concept: { type: 'string', description: 'Concept id' },
     },
     async run(c) {
       const w = ws(c);
       const brand = c.req('brand');
+      const lang = boardLangOf(c, w, brand);
       const id = c.req('concept');
       const concept = w.concept(brand, id);
       const dir = join(w.conceptDir(brand, id), 'sketches');
@@ -3965,7 +3995,7 @@ export const COMMANDS: CommandSpec[] = [
           const size = typeof spec.size === 'number' ? spec.size : 1024;
           const marks = [{ name: 'master', svg: compiled.svg }];
           const members = [];
-          familyTiles.push({ ...item, id: `${name} · master`, caption: 'master' });
+          familyTiles.push({ ...item, id: `${name} · master`, caption: boardText('master', lang) });
           for (const m of Object.keys(spec.members).slice(0, 7)) {
             const { params, palette: own } = memberOf(spec, m);
             const built = await compileSpec(spec, { palette: { ...palette, ...own }, params });
@@ -4008,8 +4038,11 @@ export const COMMANDS: CommandSpec[] = [
       writeGenerated(
         board,
         await renderVariantSheet(items, paper, {
-          title: `${concept.title}: sketches (id · score · 16 px legibility · stock-shape similarity)`,
+          title: boardText('{0}: sketches (id · score · 16 px legibility · stock-shape similarity)', lang, [
+            concept.title,
+          ]),
           highlightFirst: false,
+          lang,
         }),
       );
       const summary = items.map(({ svg: _svg, params: _p, ...v }) => {
@@ -4031,8 +4064,11 @@ export const COMMANDS: CommandSpec[] = [
         writeGenerated(
           family,
           await renderVariantSheet(familyTiles, paper, {
-            title: `${concept.title}: family — each sketch's master and members at 160, 32 and 16 px`,
+            title: boardText("{0}: family — each sketch's master and members at 160, 32 and 16 px", lang, [
+              concept.title,
+            ]),
             highlightFirst: false,
+            lang,
           }),
         );
       writeJson(join(dir, 'board.json'), { concept: id, paper, sketches: summary });
@@ -4513,7 +4549,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Render an SVG to PNG, or a review contact sheet (sizes 16–256 on light/dark/mono) with --sheet.',
     usage:
-      'render <in.svg> -o <out.png> [--width <px>] [--bg <#hex>] [--pad <percent>] [--sheet] | render --brand <slug> --concept <id> --small-compare -o <out.png> | render <a.svg> <b.svg>… --out-dir <dir> [--width <px>] [--bg <#hex>] [--pad <percent>] | render <before.svg> <after.svg> --compare [--paper <#hex>] [--tile] [--zoom x,y,w,h[:label]]… -o <out.png> | render <a.svg> <b.svg>… --compare … | render <new-word.svg> --family <ref-word.svg>[,<ref-word.svg>] -o <out.png> [--width 1600]  (--sheet / --compare: [--primary <#hex> --on-dark|--on-light <#hex>])',
+      'render <in.svg> -o <out.png> [--width <px>] [--bg <#hex>] [--pad <percent>] [--sheet] [--lang en|tr] | render --brand <slug> --concept <id> --small-compare -o <out.png> | render <a.svg> <b.svg>… --out-dir <dir> [--width <px>] [--bg <#hex>] [--pad <percent>] | render <before.svg> <after.svg> --compare [--paper <#hex>] [--tile] [--zoom x,y,w,h[:label]]… -o <out.png> | render <a.svg> <b.svg>… --compare … | render <new-word.svg> --family <ref-word.svg>[,<ref-word.svg>] -o <out.png> [--width 1600]  (--sheet / --compare: [--primary <#hex> --on-dark|--on-light <#hex>])',
     options: {
       out: { type: 'string', short: 'o', description: 'Output PNG' },
       'out-dir': {
@@ -4534,6 +4570,7 @@ export const COMMANDS: CommandSpec[] = [
       bg: { type: 'string', description: 'Background color' },
       sheet: { type: 'boolean', description: 'Render a review contact sheet' },
       ...brandOpt,
+      ...langOpt,
       concept: { type: 'string', description: '--small-compare: the concept whose symbols are shown' },
       'small-compare': {
         type: 'boolean',
@@ -4562,6 +4599,7 @@ export const COMMANDS: CommandSpec[] = [
     },
     async run(c) {
       const grounds = groundColorOptions(c);
+      const lang = boardLangOf(c, c.str('brand') ? ws(c) : undefined, c.str('brand'));
       let palette: { primary: string; onDark?: string; onLight?: string } | undefined;
       if (grounds.onDark || grounds.onLight || c.str('primary')) {
         const primary = c.str('primary') && normalizeColor(c.str('primary')!);
@@ -4615,7 +4653,11 @@ export const COMMANDS: CommandSpec[] = [
         const sheet = smallCompareSheetSvg(
           readText(w.conceptFile(c.str('brand')!, cpt.id, cpt.files.symbol)),
           readText(w.conceptFile(c.str('brand')!, cpt.id, cpt.files.small)),
-          { palette: cpt.palette, title: `${cpt.title} — main symbol and small version` },
+          {
+            palette: cpt.palette,
+            title: boardText('{0} — main symbol and small version', lang, [cpt.title]),
+            lang,
+          },
         );
         const png = await renderPng(sheet, { width: Number(/width="(\d+)"/.exec(sheet)![1]) });
         writeGenerated(file(c, c.req('out')), png);
@@ -4646,6 +4688,7 @@ export const COMMANDS: CommandSpec[] = [
         const zooms = zoomSpecs.map((z, i) => parseZoom(z, items[0]!.svg, i));
         const png = await renderCompareSheet(items, c.str('paper') ?? '#ffffff', 'Options', palette, {
           tile: c.bool('tile'),
+          lang,
           ...(zooms.length ? { zooms } : {}),
         });
         writeGenerated(file(c, c.req('out')), png);
@@ -4702,7 +4745,7 @@ export const COMMANDS: CommandSpec[] = [
       const svg = readText(file(c, pos(c, 0, 'in.svg')));
       const png =
         mode === 'sheet'
-          ? await renderReviewSheet(svg, basename(pos(c, 0, 'in.svg')), palette)
+          ? await renderReviewSheet(svg, basename(pos(c, 0, 'in.svg')), palette, lang)
           : await plainPng(pos(c, 0, 'in.svg'));
       writeGenerated(file(c, c.req('out')), png);
       return { out: c.req('out'), bytes: png.length };

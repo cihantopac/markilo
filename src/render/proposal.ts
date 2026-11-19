@@ -2,6 +2,7 @@ import { composeLockup } from '../design/lockup.js';
 import { inkMetrics, placeMark } from '../export/geometry.js';
 import { groundsFor, markOnGround, tileGround } from '../export/variants.js';
 import { nestSvg, svgDocument } from '../svg/compose.js';
+import { type BoardLang, boardText } from '../ui/board-text.js';
 import { renderPng } from './resvg.js';
 import { label } from './sheet.js';
 
@@ -24,6 +25,8 @@ export interface ProposalInput {
   onLight?: string;
   onBrand?: string;
   tile?: string;
+  /** The board language: English unless set. */
+  lang?: BoardLang;
 }
 
 const W = 640;
@@ -148,7 +151,7 @@ export async function proposalSvg(p: ProposalInput): Promise<{ svg: string; widt
     }
     y += tile + 16;
   } else {
-    body += label('No compact icon yet', PAD, y + 14, 13, '#b4232c');
+    body += label(boardText('No compact icon yet', p.lang), PAD, y + 14, 13, '#b4232c');
     y += 28;
   }
 

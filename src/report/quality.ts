@@ -23,7 +23,9 @@ async function contextPeers(ws: Workspace, brand: string): Promise<ContextPeer[]
   const refs = [...readReferences(ws, brand).references]
     .filter(
       (r) =>
-        !USER_REFERENCE.includes((r.category ?? 'direct') as ReferenceCategory) && r.category !== 'family',
+        !USER_REFERENCE.includes((r.category ?? 'direct') as ReferenceCategory) &&
+        r.category !== 'family' &&
+        r.category !== 'in-situ',
     )
     .sort(
       (a, b) => Number((b.category ?? 'direct') === 'direct') - Number((a.category ?? 'direct') === 'direct'),

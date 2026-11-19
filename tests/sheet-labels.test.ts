@@ -9,11 +9,13 @@ import {
   familySheetSvg,
   label,
   paletteSheetSvg,
+  reviewSheetRows,
   SMALL_COMPARE_SIZES,
   sheetSvg,
   smallCompareSheetSvg,
   zoomRowsSvg,
 } from '../src/render/sheet.js';
+import { boardText, briefBoardLang, parseBoardLang } from '../src/ui/board-text.js';
 import { TR } from '../src/ui/tr.js';
 import { fixture, mark } from './helpers.js';
 
@@ -222,5 +224,101 @@ describe('small compare board', () => {
   it('has Turkish entries for the new labels', () => {
     expect(TR['Main symbol']).toBeTruthy();
     expect(TR['Small version']).toBeTruthy();
+  });
+});
+
+describe('board language', () => {
+  const svg = mark('fold-n');
+  const g = groundsFor('#ffffff');
+  const dark = adaptToGround(svg, g.opposite);
+
+  it('draws the sheet labels in Turkish with --lang tr and keeps English byte-identical', () => {
+    const en = compareSheetSvg([{ label: 'A · x.svg', svg }], '#ffffff');
+    expect(
+      compareSheetSvg([{ label: 'A · x.svg', svg }], '#ffffff', 'Options', undefined, { lang: 'en' }),
+    ).toBe(en);
+    const tr = compareSheetSvg([{ label: 'A · x.svg', svg }], '#ffffff', 'Options', undefined, {
+      lang: 'tr',
+    });
+    expect(tr).not.toBe(en);
+    const expected = sheetSvg(
+      [
+        { label: 'A · x.svg', background: g.native, svg },
+        { label: `A · x.svg · ${TR['on dark']}`, background: g.opposite, svg: dark },
+      ],
+      [16, 32, 64, 128, 256],
+      TR.Options,
+    );
+    expect(tr).toBe(expected);
+  });
+
+  it('translates the review rows, the small-compare rows and the zoom captions', () => {
+    const rows = reviewSheetRows(svg, { lang: 'tr' }).map((r) => r.label);
+    expect(rows).toEqual([
+      TR['Color on light'],
+      TR['Color on dark (adapted)'],
+      TR.Black,
+      TR['White (reversed)'],
+    ]);
+    expect(reviewSheetRows(svg).map((r) => r.label)[0]).toBe('Color on light');
+    const small = smallCompareSheetSvg(svg, svg, { lang: 'tr' });
+    expect(small).toBe(
+      sheetSvg(
+        [
+          ...[TR['Main symbol'], TR['Small version']].flatMap((n) => [
+            {
+              label: `${n} · ${TR['on light']}`,
+              background: '#ffffff',
+              svg: markOnGround(svg, '#ffffff', undefined),
+            },
+            {
+              label: `${n} · ${TR['on dark']}`,
+              background: '#111318',
+              svg: markOnGround(svg, '#111318', undefined),
+            },
+          ]),
+        ],
+        SMALL_COMPARE_SIZES,
+        undefined,
+        1,
+        undefined,
+        'tr',
+      ),
+    );
+    const zoom = { before: svg, after: svg, zooms: [{ x: 0, y: 0, w: 20, h: 20, label: 'Z' }] };
+    const z = (lang?: 'tr') => zoomRowsSvg(svg, svg, zoom.zooms, 800, '#ffffff', lang).svg;
+    expect(z('tr')).not.toBe(z());
+    expect(z()).toBe(zoomRowsSvg(svg, svg, zoom.zooms, 800, '#ffffff').svg);
+  });
+
+  it('keeps a label without a Turkish entry in English', () => {
+    expect(boardText('No such label here', 'tr')).toBe('No such label here');
+    expect(boardText('Before', 'en')).toBe('Before');
+    expect(boardText('Before', 'tr')).toBe('Önce');
+  });
+
+  it('defaults to Turkish only when the first audience language of the brief is Turkish', () => {
+    for (const l of ['tr', 'TR', 'tr-TR', 'Turkish', 'Türkçe', 'turkce'])
+      expect(briefBoardLang({ audience: { languages: [l, 'en'] } }), l).toBe('tr');
+    expect(briefBoardLang({ audience: { languages: ['en', 'tr'] } })).toBe('en');
+    expect(briefBoardLang({ audience: { languages: ['Turkmen'] } })).toBe('en');
+    expect(briefBoardLang({})).toBe('en');
+    expect(parseBoardLang('TR')).toBe('tr');
+    expect(parseBoardLang('de')).toBeUndefined();
+  });
+
+  it('proposal boards and sketch sheets take the language too', async () => {
+    const { proposalSvg } = await import('../src/render/proposal.js');
+    const base = {
+      title: 'T',
+      caption: 'c',
+      lead: 'wordmark' as const,
+      wordmark: mark('fold-n'),
+      paper: '#ffffff',
+      primary: '#3b5bdb',
+    };
+    const noIcon = async (lang?: 'tr') => (await proposalSvg({ ...base, ...(lang ? { lang } : {}) })).svg;
+    expect(await noIcon('tr')).not.toBe(await noIcon());
+    expect(await noIcon()).toBe((await proposalSvg(base)).svg);
   });
 });

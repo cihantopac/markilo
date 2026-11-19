@@ -5,6 +5,7 @@ import { MarkiloError } from '../core/errors.js';
 import { renderPng } from '../render/resvg.js';
 import { label } from '../render/sheet.js';
 import { nestSvg, svgDocument } from '../svg/compose.js';
+import { type BoardLang, boardText } from '../ui/board-text.js';
 import { type ConstructionSpec, compileSpec } from './compile.js';
 
 /** Every combination of the spec's `vary` values, thinned evenly to at most `max`. */
@@ -181,7 +182,7 @@ function wrap(text: string, width: number, max: number): string[] {
 export async function renderVariantSheet(
   variants: ScoredVariant[],
   paper = '#ffffff',
-  opts: { title?: string; highlightFirst?: boolean } = {},
+  opts: { title?: string; highlightFirst?: boolean; lang?: BoardLang } = {},
 ): Promise<Buffer> {
   const shown = variants.filter((v) => v.svg);
   if (!shown.length) throw new MarkiloError('INVALID_INPUT', 'No variant compiled; nothing to show.');
@@ -198,7 +199,8 @@ export async function renderVariantSheet(
       : '#30343c';
   const highlight = opts.highlightFirst ?? true;
   let body = label(
-    opts.title ?? 'Variants, best first (score · 16 px legibility · stock-shape similarity)',
+    opts.title ??
+      boardText('Variants, best first (score · 16 px legibility · stock-shape similarity)', opts.lang),
     16,
     28,
     14,
@@ -211,7 +213,7 @@ export async function renderVariantSheet(
     body += nestSvg(v.svg, { x: x + 27, y: y + 12, width: 160, height: 160 });
     body += nestSvg(v.svg, { x: x + 60, y: y + 182, width: 32, height: 32 });
     body += nestSvg(v.svg, { x: x + 110, y: y + 190, width: 16, height: 16 });
-    const head = `${v.id} · ${v.score.toFixed(2)} · ${Math.round(v.quality.legibility16 * 100)}% · ${Math.round(v.genericity.similarity * 100)}%${v.quality.fail ? ' · FAIL' : ''}`;
+    const head = `${v.id} · ${v.score.toFixed(2)} · ${Math.round(v.quality.legibility16 * 100)}% · ${Math.round(v.genericity.similarity * 100)}%${v.quality.fail ? ` · ${boardText('FAIL', opts.lang)}` : ''}`;
     body += label(head, x + 10, y + 232, 11, v.quality.fail ? '#e5484d' : ink);
     const ps = Object.entries(v.params)
       .map(([k, n]) => `${k}=${n}`)

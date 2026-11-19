@@ -22,7 +22,9 @@ export type ReferenceCategory =
   | 'dislike'
   | 'existing'
   /** A mark of the product family this brand joins: likeness is expected, reported apart, never a risk. */
-  | 'family';
+  | 'family'
+  /** A photo of the real mark in use (a screen, a shop front): stored and listed, read by the audit, never compared. */
+  | 'in-situ';
 
 export const REFERENCE_CATEGORIES: ReferenceCategory[] = [
   'direct',
@@ -33,6 +35,7 @@ export const REFERENCE_CATEGORIES: ReferenceCategory[] = [
   'dislike',
   'existing',
   'family',
+  'in-situ',
 ];
 
 /** References the user supplied: compared for originality like any other, never shown as competitors. */
