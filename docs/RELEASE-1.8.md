@@ -242,7 +242,7 @@ These are not defects of the identity.
     `silhouette-match` passes.
   - A rich file moved 15 % off the master fails `silhouette-match`.
   - Export writes `symbol-rich.svg/png`.
-  - `--icon-art rich` puts the rich art in `ios/AppIcon-1024.png` (the pixel at the centre differs from the flat
+  - `--icon-art rich` puts the rich art in the iOS 1024 icon, `AppIcon-1024.png` (the pixel at the centre differs from the flat
     export).
 - [ ] **Step 2–5.** Commit `feat(rich): a rich rendering checked against its flat master, exported beside it`.
 
@@ -385,7 +385,7 @@ Several gaps slowed the run:
   `angle`. It keeps the stem's area within ±3 % and never cuts a bowl.
 - `{ "op": "slit", "of": "<id>", "from": [x, y], "to": [x, y], "width": 3 }`. Subtracts a thin rotated rectangle, so a
   designer can detach a bowl or open a join at a point they choose.
-- Results go through the existing clean-up (sliver removal by `turdSize`).
+- Results drop contours under 0.05 % of the glyph's area (slivers).
 
 - [ ] Failing tests (an "H" from the bundled Sora gets four cut ends at 32°, area within ±3 %; a slit across a "P" bowl
   leaves two contours) → implement → commit `feat(construct): cut-terminals and slit for custom lettering`.
@@ -400,7 +400,7 @@ Markilo has no place for it. **Cost:** the cost steps assume agent runs.
 
 - Modify: `src/render/sheet.ts`, `src/design/rounds.ts` (board labels via `TR`), `src/export/guidelines.ts`
   (`guidelines.md` in the brief's language), `src/cli/commands.ts` (`--lang en|tr` on `render`, `proposals`,
-  `sketches`, `export`; the default comes from `brief.language` when it is `tr`), `reference add --category in-situ`,
+  `sketches`, `export`; the default is `tr` when the brief's first `audience.languages` entry is Turkish), `reference add --category in-situ`,
   `plugin/skills/audit/SKILL.md`, `plugin/skills/design/SKILL.md` (cost for single-agent sessions:
   `cost --session-usd`)
 - Test: `tests/sheet-labels.test.ts`, `tests/export.test.ts`, `tests/research.test.ts`
