@@ -511,6 +511,82 @@ describe('cli (bundled)', () => {
     expect(lock).toContain('fill="#2b3a52"');
     expect(lock).toContain('stroke:#2b3a52;fill:#3b5bdc');
   }, 60_000);
+  it('recolours colours declared in a <style> block, exact matches only', () => {
+    const { ws, dir: cwd } = synthBrand();
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    const cdir = ws.conceptDir('nimbra', 'fold');
+    writeFileSync(
+      join(cdir, 'lockup.svg'),
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><style>.a{fill:#3B5BDB;stroke : #3b5bdb}.b{fill:#3b5bdc;color:#3b5bdb}</style><path class="a" d="M0 0h5v5z"/><path class="b" d="M5 5h5v5z"/></svg>',
+    );
+    ok(['concept', 'update', '--brand', 'nimbra', '--concept', 'fold', '--lockup-horizontal', 'lockup.svg']);
+    const r = ok(['concept', 'update', '--brand', 'nimbra', '--concept', 'fold', '--primary', '#2b3a52']);
+    expect(r.recolored).toEqual(
+      expect.arrayContaining([{ file: 'lockup.svg', from: '#3b5bdb', to: '#2b3a52', count: 3 }]),
+    );
+    const lock = readFileSync(join(cdir, 'lockup.svg'), 'utf8');
+    expect(lock).toContain('.a{fill:#2b3a52;stroke : #2b3a52}');
+    expect(lock).toContain('.b{fill:#3b5bdc;color:#2b3a52}');
+  }, 60_000);
+  it('a palette-only change keeps the critique; a form change still makes it stale', () => {
+    const { ws, dir: cwd } = synthBrand();
+    const upd = ['concept', 'update', '--brand', 'nimbra', '--concept', 'fold'];
+    const blind = 'distinctiveness=7,memorability=7,brand-fit=7,craft=7,versatility=7';
+    const ok = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    ok([...upd, '--blind', blind, '--present', 'yes:good']);
+    expect(ok(['concept', 'show', '--brand', 'nimbra', '--concept', 'fold']).gate.status).toBe('passed');
+    const r = ok([...upd, '--primary', '#2b3a52']);
+    expect(r.recolored?.length).toBeGreaterThan(0);
+    expect(ok(['concept', 'show', '--brand', 'nimbra', '--concept', 'fold']).gate.status).toBe('passed');
+    // A genuine redraw followed by a recolour is not a palette-only change.
+    copyFileSync(fixture('marks/leaf-letter.svg'), join(ws.conceptDir('nimbra', 'fold'), 'symbol.svg'));
+    ok([...upd, '--primary', '#c2255c']);
+    expect(ok(['concept', 'show', '--brand', 'nimbra', '--concept', 'fold']).gate.status).toBe('stale');
+  }, 60_000);
+  it('swapping the drawing and changing the palette in one call does not keep the critique', () => {
+    const { ws, dir: cwd } = synthBrand();
+    const upd = ['concept', 'update', '--brand', 'nimbra', '--concept', 'fold'];
+    const blind = 'distinctiveness=7,memorability=7,brand-fit=7,craft=7,versatility=7';
+    const run1 = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    run1([...upd, '--blind', blind, '--present', 'yes:good']);
+    copyFileSync(fixture('marks/leaf-letter.svg'), join(ws.conceptDir('nimbra', 'fold'), 'symbol-new.svg'));
+    run1([...upd, '--symbol', 'symbol-new.svg', '--primary', '#2b3a52']);
+    expect(run1(['concept', 'show', '--brand', 'nimbra', '--concept', 'fold']).gate.status).toBe('stale');
+  }, 60_000);
+  it('--recolor-from on a role set to none says the role has no colour to replace with', () => {
+    const { dir: cwd } = synthBrand();
+    const r = run(
+      [
+        'concept',
+        'update',
+        '--brand',
+        'nimbra',
+        '--concept',
+        'fold',
+        '--recolor-from',
+        '#ff8a3d',
+        '--accent',
+        'none',
+      ],
+      cwd,
+    );
+    expect(r.status).not.toBe(0);
+    const err = JSON.parse(r.stderr).error;
+    expect(err.code).toBe('USAGE');
+    expect(err.message).toMatch(/accent role with no colour, so there is nothing to replace/);
+  }, 60_000);
   it('finalize fails on a stale master colour; --accept-colours records it', async () => {
     const { ws, dir: cwd } = synthBrand();
     const fin = [
@@ -693,7 +769,7 @@ describe('cli (bundled)', () => {
       cwd,
     );
     expect(first.status, first.stderr).toBe(0);
-    const reviews = ws.concept('nimbra', 'fold').reviews;
+    ws.saveConcept({ ...ws.concept('nimbra', 'fold'), reviews: 2 });
     // The drawing changes; the new critic records only its blind scores in this call.
     copyFileSync(fixture('marks/leaf-letter.svg'), join(ws.conceptDir('nimbra', 'fold'), 'symbol.svg'));
     const r = run([...upd, '--blind', blind, '--show'], cwd);
@@ -705,10 +781,12 @@ describe('cli (bundled)', () => {
     expect(out.critiques).toHaveLength(1);
     expect(out.critiques[0].judgment.craft.score).toBe(8);
     expect(out.gate.status).not.toBe('passed');
+    // The old drawing's review count does not carry over either.
+    expect(out.reviews).toBeUndefined();
     // Its first answer counts as a new review; a follow-up call on the same drawing keeps this call's scores.
     const next = JSON.parse(run([...upd, '--present', 'yes:fine', '--show'], cwd).stdout);
     expect(next.blind.scores.craft).toBe(7);
-    expect(next.reviews).toBe((reviews ?? 0) + 1);
+    expect(next.reviews).toBe(1);
   }, 60_000);
   it('family word --fill writes the given fill on the word', () => {
     const { dir: cwd } = synthBrand();

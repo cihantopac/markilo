@@ -361,6 +361,21 @@ describe('concept revert', () => {
     expect(files.small).toBe('symbol-small.svg');
     expect(readFileSync(join(dir, 'symbol-dev.svg'), 'utf8')).toBe(chosen);
   }, 60_000);
+  it('does not list a file as unregistered while a restored key still points at it', () => {
+    const cwd = proposals(2);
+    const dir = join(cwd, 'brand', 'brands', 'tidepool', 'concepts', 'p2');
+    const set = ['concept', 'update', '--brand', 'tidepool', '--concept', 'p2'];
+    copyFileSync(fixture('marks/bars.svg'), join(dir, 'symbol-small.svg'));
+    ok([...set, '--small', 'symbol-small.svg'], cwd);
+    ok([...set, '--status', 'shortlisted'], cwd);
+    // Another key shares the file after the choice.
+    ok([...set, '--wordmark-small', 'symbol-small.svg'], cwd);
+    const r = ok(['concept', 'revert', '--brand', 'tidepool', '--concept', 'p2', '--to', 'chosen'], cwd);
+    expect(r.restored).toContain('symbol-small.svg');
+    expect(r.unregistered).toEqual([]);
+    expect(r.movedTo).toBeUndefined();
+    expect(existsSync(join(dir, 'symbol-small.svg'))).toBe(true);
+  }, 60_000);
   it('validates before moving anything: a revert that would leave no master changes nothing', () => {
     const cwd = proposals(1);
     const ws = Workspace.locate(cwd);
