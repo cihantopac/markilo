@@ -1,4 +1,4 @@
-import { type Lab, rgbToHex, rgbToLab } from '../analyze/color.js';
+import { hexToRgb, type Lab, normalizeColor, rgbToHex, rgbToLab } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
 import type { Raster } from '../render/image.js';
 
@@ -11,6 +11,8 @@ export interface TraceOptions {
   turdSize?: number;
   /** Largest distance, in source pixels, a fitted curve may stray from the traced contour (default 0.25). */
   tolerance?: number;
+  /** The ground colour of an opaque image, when the guess from its border is wrong (ignored on a transparent one). */
+  background?: string;
 }
 
 export interface TraceFace {
@@ -24,6 +26,8 @@ export interface TraceResult {
   faces: TraceFace[];
   /** Curve and line segments in the drawing, all faces together. */
   nodes: number;
+  /** Doubts about the result, chiefly that ground and ink may have been read the wrong way round. */
+  warnings: string[];
 }
 
 export const MAX_TRACE_COLORS = 8;
@@ -54,33 +58,58 @@ interface InkField {
   scale: number;
   srcW: number;
   srcH: number;
+  warnings: string[];
 }
 
 const ISO = 0.5;
 
-/** Averages a straight-alpha raster down to w×h (premultiplied, so transparent pixels do not darken the edges). */
+/** For each output cell along one axis, the source pixels it covers and how much of each (fractional at the ends). */
+function coverage(src: number, out: number): { from: number; weights: number[] }[] {
+  const step = src / out;
+  const cells: { from: number; weights: number[] }[] = [];
+  for (let o = 0; o < out; o++) {
+    const a = o * step;
+    const b = (o + 1) * step;
+    const from = Math.floor(a);
+    const weights: number[] = [];
+    for (let s = from; s < Math.min(src, Math.ceil(b)); s++)
+      weights.push(Math.min(b, s + 1) - Math.max(a, s));
+    cells.push({ from, weights });
+  }
+  return cells;
+}
+
+/**
+ * Averages a straight-alpha raster down to w×h with an exact area-weighted box filter (premultiplied, so transparent
+ * pixels do not darken the edges). Whole-pixel boxes at a non-integer ratio would shift edges by up to a pixel in a
+ * repeating pattern, and the fit would follow that ripple.
+ */
 function downsample(img: Raster, w: number, h: number): Raster {
   const out = new Uint8Array(w * h * 4);
+  const xs = coverage(img.width, w);
+  const ys = coverage(img.height, h);
   for (let y = 0; y < h; y++) {
-    const y0 = Math.floor((y * img.height) / h);
-    const y1 = Math.max(y0 + 1, Math.floor(((y + 1) * img.height) / h));
+    const cy = ys[y]!;
     for (let x = 0; x < w; x++) {
-      const x0 = Math.floor((x * img.width) / w);
-      const x1 = Math.max(x0 + 1, Math.floor(((x + 1) * img.width) / w));
+      const cx = xs[x]!;
       let r = 0;
       let g = 0;
       let b = 0;
       let a = 0;
-      for (let sy = y0; sy < y1; sy++)
-        for (let sx = x0; sx < x1; sx++) {
-          const i = (sy * img.width + sx) * 4;
-          const al = img.data[i + 3]!;
+      let n = 0;
+      for (let jy = 0; jy < cy.weights.length; jy++) {
+        const row = (cy.from + jy) * img.width;
+        for (let jx = 0; jx < cx.weights.length; jx++) {
+          const wt = cy.weights[jy]! * cx.weights[jx]!;
+          const i = (row + cx.from + jx) * 4;
+          const al = img.data[i + 3]! * wt;
           r += img.data[i]! * al;
           g += img.data[i + 1]! * al;
           b += img.data[i + 2]! * al;
           a += al;
+          n += wt;
         }
-      const n = (y1 - y0) * (x1 - x0);
+      }
       const o = (y * w + x) * 4;
       if (a > 0) {
         out[o] = Math.round(r / a);
@@ -121,11 +150,63 @@ function otsu(hist: Float64Array): number {
   return at;
 }
 
+const rgbDist = (data: Uint8Array, i: number, c: number[]) =>
+  Math.sqrt(((data[i]! - c[0]!) ** 2 + (data[i + 1]! - c[1]!) ** 2 + (data[i + 2]! - c[2]!) ** 2) / 3);
+/** Border pixels this close (RGB distance, 0–255 scale) to a candidate ground count as that ground. */
+const GROUND_NEAR = 32;
+
+/**
+ * The ground of an opaque image. The border's commonest colour is one candidate; when another colour also holds a
+ * good share of the border (a tight-cropped badge, a mark running off the edges), the corners decide, and on a tie the
+ * lighter one is taken as the paper. Both cases, and ink covering most of the image, are reported as possible
+ * inversions: the guess can be wrong, and the trace's own IoU cannot tell.
+ */
+function chooseGround(data: Uint8Array, w: number, h: number): { bg: number[]; doubt?: string } {
+  const border: number[] = [];
+  for (let x = 0; x < w; x++) border.push(x * 4, ((h - 1) * w + x) * 4);
+  for (let y = 1; y < h - 1; y++) border.push(y * w * 4, (y * w + w - 1) * 4);
+  const modeOf = (idx: number[]): number[] | undefined => {
+    const bins = new Map<number, number[]>();
+    for (const i of idx) {
+      const key = ((data[i]! >> 4) << 8) | ((data[i + 1]! >> 4) << 4) | (data[i + 2]! >> 4);
+      const b = bins.get(key) ?? [0, 0, 0, 0];
+      b[0]! += data[i]!;
+      b[1]! += data[i + 1]!;
+      b[2]! += data[i + 2]!;
+      b[3]! += 1;
+      bins.set(key, b);
+    }
+    let best: number[] | undefined;
+    for (const b of bins.values()) if (!best || b[3]! > best[3]!) best = b;
+    return best && [best[0]! / best[3]!, best[1]! / best[3]!, best[2]! / best[3]!];
+  };
+  const first = modeOf(border)!;
+  const rest = border.filter((i) => rgbDist(data, i, first) > GROUND_NEAR);
+  const second = rest.length ? modeOf(rest) : undefined;
+  const share = (c: number[]) =>
+    border.filter((i) => rgbDist(data, i, c) <= GROUND_NEAR).length / border.length;
+  const hex = (c: number[]) => rgbToHex({ r: Math.round(c[0]!), g: Math.round(c[1]!), b: Math.round(c[2]!) });
+  if (!second || share(second) < 0.1) return { bg: first };
+  const corners = [0, (w - 1) * 4, (h - 1) * w * 4, (h * w - 1) * 4];
+  const votes = (c: number[], o: number[]) =>
+    corners.filter((i) => rgbDist(data, i, c) <= GROUND_NEAR && rgbDist(data, i, c) < rgbDist(data, i, o))
+      .length;
+  const v1 = votes(first, second);
+  const v2 = votes(second, first);
+  const lum = (c: number[]) => 0.2126 * c[0]! + 0.7152 * c[1]! + 0.0722 * c[2]!;
+  const bg = v1 > v2 ? first : v2 > v1 ? second : lum(second) > lum(first) ? second : first;
+  const other = bg === first ? second : first;
+  return {
+    bg,
+    doubt: `The ground was read as ${hex(bg)}, but ${hex(other)} also runs along the border (${v1 === v2 ? 'the corners do not settle it' : 'the corners decided'}): if the trace looks inverted, trace again with --background '${hex(other)}'.`,
+  };
+}
+
 /**
  * Where the ink is. A transparent image is read from its alpha; an opaque one by each pixel's distance from the
- * background colour (the median of the border), cut at --threshold or, by default, where Otsu splits the histogram.
+ * background colour (read from the border: chooseGround), cut at --threshold or, by default, where Otsu splits the histogram.
  */
-function inkField(src: Raster, threshold: number | undefined): InkField {
+function inkField(src: Raster, threshold: number | undefined, background?: string): InkField {
   if (!(src.width > 0 && src.height > 0)) throw new MarkiloError('INVALID_INPUT', 'The image is empty.');
   const scale = Math.max(1, Math.max(src.width, src.height) / WORK_SIDE);
   const img =
@@ -141,6 +222,7 @@ function inkField(src: Raster, threshold: number | undefined): InkField {
   const f = new Float32Array(n);
   const rgb = new Float32Array(n * 3);
   const core = new Uint8Array(n);
+  const warnings: string[] = [];
   let transparent = 0;
   for (let i = 0; i < n; i++) if (data[i * 4 + 3]! < 250) transparent++;
   if (transparent > n * 0.02) {
@@ -156,12 +238,18 @@ function inkField(src: Raster, threshold: number | undefined): InkField {
       core[i] = data[i * 4 + 3]! >= 252 ? 1 : 0;
     }
   } else {
-    const border: number[][] = [[], [], []];
-    for (let x = 0; x < w; x++)
-      for (const y of [0, h - 1]) for (let k = 0; k < 3; k++) border[k]!.push(data[(y * w + x) * 4 + k]!);
-    for (let y = 0; y < h; y++)
-      for (const x of [0, w - 1]) for (let k = 0; k < 3; k++) border[k]!.push(data[(y * w + x) * 4 + k]!);
-    const bg = border.map((v) => v.sort((a, b) => a - b)[v.length >> 1]!);
+    let bg: number[];
+    if (background !== undefined) {
+      const hex = normalizeColor(background);
+      if (!hex)
+        throw new MarkiloError('USAGE', `--background must be a colour like #ffffff (got "${background}").`);
+      const c = hexToRgb(hex);
+      bg = [c.r, c.g, c.b];
+    } else {
+      const g = chooseGround(data, w, h);
+      bg = g.bg;
+      if (g.doubt) warnings.push(g.doubt);
+    }
     const d = new Float32Array(n);
     const hist = new Float64Array(256);
     for (let i = 0; i < n; i++) {
@@ -173,6 +261,14 @@ function inkField(src: Raster, threshold: number | undefined): InkField {
       hist[hb] = hist[hb]! + 1;
     }
     const cut = Math.max(8, threshold ?? otsu(hist));
+    if (background === undefined && !warnings.length) {
+      let ink = 0;
+      for (let i = 0; i < n; i++) if (d[i]! > cut) ink++;
+      if (ink > n * 0.6)
+        warnings.push(
+          `The ink covers ${Math.round((100 * ink) / n)} % of the image: ground and ink may be inverted — if so, trace again with --background '<the ground colour>'.`,
+        );
+    }
     // Local ink strength (3×3 max) to mix the background back out of anti-aliased edge pixels.
     // A pixel is core ink when its whole 3×3 neighbourhood is past the cut.
     const local = new Float32Array(n);
@@ -197,7 +293,7 @@ function inkField(src: Raster, threshold: number | undefined): InkField {
       }
     }
   }
-  return { w, h, f, rgb, core, scale, srcW: src.width, srcH: src.height };
+  return { w, h, f, rgb, core, scale, srcW: src.width, srcH: src.height, warnings };
 }
 
 const labOf = (r: number, g: number, b: number): Lab => rgbToLab({ r, g, b });
@@ -713,10 +809,12 @@ export function traceRaster(img: Raster, opts: TraceOptions = {}): TraceResult {
     throw new MarkiloError('USAGE', '--threshold must be between 0 and 255.');
   if (opts.tolerance !== undefined && !(opts.tolerance > 0))
     throw new MarkiloError('USAGE', '--tolerance must be a positive number of pixels.');
-  const field = inkField(img, opts.threshold);
+  const field = inkField(img, opts.threshold, opts.background);
   const { w, h, f, rgb, core, scale } = field;
   const turd = opts.turdSize ?? 0.0005 * img.width * img.height;
-  const tol = Math.max((opts.tolerance ?? 0.25) / scale, MIN_WORK_TOLERANCE);
+  // An explicit tolerance is honoured as given; the default never asks for more than the working grid can show.
+  const tol =
+    opts.tolerance !== undefined ? opts.tolerance / scale : Math.max(0.25 / scale, MIN_WORK_TOLERANCE);
 
   const faceFields: { field: Float32Array; color: string }[] = [];
   const meanColor = (keep: (i: number) => boolean): string | undefined => {
@@ -783,7 +881,7 @@ export function traceRaster(img: Raster, opts: TraceOptions = {}): TraceResult {
   faces.sort((a, b) => b.area - a.area);
   const paths = faces.map((fc) => `<path fill="${fc.color}" fill-rule="evenodd" d="${fc.d}"/>`).join('');
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${img.width} ${img.height}" width="${img.width}" height="${img.height}">${paths}</svg>\n`;
-  return { svg, faces: faces.map(({ color, area }) => ({ color, area })), nodes };
+  return { svg, faces: faces.map(({ color, area }) => ({ color, area })), nodes, warnings: field.warnings };
 }
 
 /**
@@ -791,8 +889,11 @@ export function traceRaster(img: Raster, opts: TraceOptions = {}): TraceResult {
  * marching-squares points, sub-pixel accurate), in source pixels. What a trace is measured against with silhouetteIoU;
  * pixel runs would add their own half-pixel staircase to the measurement.
  */
-export function rasterMaskSvg(img: Raster, opts: Pick<TraceOptions, 'threshold'> = {}): string {
-  const { w, h, f } = inkField(img, opts.threshold);
+export function rasterMaskSvg(
+  img: Raster,
+  opts: Pick<TraceOptions, 'threshold' | 'background'> = {},
+): string {
+  const { w, h, f } = inkField(img, opts.threshold, opts.background);
   const sx = img.width / w;
   const sy = img.height / h;
   const d = contours(f, w, h)

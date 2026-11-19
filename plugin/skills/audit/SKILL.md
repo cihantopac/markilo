@@ -15,9 +15,11 @@ Toolchain: `node "${CLAUDE_PLUGIN_ROOT}/dist/markilo.mjs" <command>` (written `m
 1. Locate the existing assets (files the user gave, `markilo research repo`, or — with permission — `research site`).
    `Read` them.
 2. Measure. A raster asset (PNG, JPEG) is traced first: `markilo trace <file.png> -o <tmp>.svg` (add `--colors n`
-   for a mark of n colours) — check its `iou` against the raster — and the trace is what you measure. `markilo score`
-   on the raster does the same and adds `tracedFrom { file, iou }`. Say in the report that the scores are of a trace
-   and give its IoU. Then `markilo score <file> --role symbol|wordmark|lockup`, `markilo analyze <file>`,
+   for a mark of n colours), and the trace is what you measure. `markilo score` on the raster does the same and adds
+   `tracedFrom { file, iou }`. The `iou` measures how closely the curves fit the ink mask that was traced, not
+   whether ink and ground were told apart correctly: when the output has a `warnings` entry about the ground, `Read` a
+   render of the trace, and if ink and ground are swapped, trace again with the `--background` it names. Say in the
+   report that the scores are of a trace and give its IoU. Then `markilo score <file> --role symbol|wordmark|lockup`, `markilo analyze <file>`,
    `markilo render <the SVG or the trace> -o <tmp>.png --sheet` and `Read` the sheet.
 3. Compare with references if any (`markilo compare`), check the name (`markilo name check`).
 4. Report: what works (equity worth keeping), measured problems, judgment-based problems (labeled), and a

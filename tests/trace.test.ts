@@ -68,6 +68,62 @@ describe('traceRaster', () => {
   }, 120_000);
 });
 
+/** A tight-cropped badge: a rounded plate filling the crop, with a hole cut through it (white corners on paper). */
+const BADGE =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60"><path fill="#2346d8" fill-rule="evenodd" d="M12 0h76a12 12 0 0 1 12 12v36a12 12 0 0 1-12 12H12A12 12 0 0 1 0 48V12A12 12 0 0 1 12 0zM30 18h40v24H30z"/></svg>';
+/** A mark that runs off the left, top and bottom edges. */
+const THREE_EDGES =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="0" y="0" width="60" height="100" fill="#2346d8"/><circle cx="80" cy="50" r="18" fill="#2346d8"/></svg>';
+
+describe('traceRaster on hard grounds and sizes', () => {
+  it('reads the paper, not the ink, as the ground of a tight-cropped badge', async () => {
+    const img = await renderSvg(BADGE, { width: 500, background: '#ffffff' });
+    const t = traceRaster(img, {});
+    expect(await silhouetteIoU(t.svg, BADGE)).toBeGreaterThanOrEqual(0.97);
+  });
+
+  it('reads the paper as the ground when the mark touches three edges, and warns', async () => {
+    const img = await renderSvg(THREE_EDGES, { width: 500, background: '#ffffff' });
+    const t = traceRaster(img, {});
+    expect(await silhouetteIoU(t.svg, THREE_EDGES)).toBeGreaterThanOrEqual(0.97);
+    expect(t.warnings?.join(' ')).toMatch(/inverted/);
+  });
+
+  it('does not warn about the ground of an ordinary mark on paper', async () => {
+    const img = await renderSvg(mark('fold-n'), { width: 552, background: '#ffffff' });
+    expect(traceRaster(img, {}).warnings ?? []).toEqual([]);
+  });
+
+  it('--background names the ground when the guess is wrong', async () => {
+    const img = await renderSvg(THREE_EDGES, { width: 500, background: '#ffffff' });
+    const t = traceRaster(img, { background: '#2346d8' });
+    // The ground is now the blue: what is traced is the white paper.
+    expect(await silhouetteIoU(t.svg, THREE_EDGES)).toBeLessThan(0.5);
+  });
+
+  for (const width of [1700, 2000]) {
+    it(`traces fold-n at ${width} px without ripple from the reduction`, async () => {
+      const t = traceRaster(await renderSvg(mark('fold-n'), { width }), {});
+      expect(t.nodes).toBeLessThanOrEqual(80);
+      expect(await silhouetteIoU(t.svg, mark('fold-n'))).toBeGreaterThanOrEqual(0.97);
+    });
+  }
+
+  it('honours an explicit tolerance finer than the default on a reduced image', async () => {
+    const img = await renderSvg(mark('orbit'), { width: 2000 });
+    expect(traceRaster(img, { tolerance: 0.05 }).nodes).toBeGreaterThan(traceRaster(img, {}).nodes);
+  });
+
+  it('decodes a 4000 × 4000 JPEG, and reports a broken one as invalid input', async () => {
+    const r = await renderSvg(mark('fold-n'), { width: 4000, background: '#ffffff' });
+    const jpg = jpeg.encode({ width: r.width, height: r.height, data: Buffer.from(r.data) }, 80).data;
+    expect(decodeImage(jpg).width).toBe(4000);
+    expect(() => decodeImage(Buffer.concat([jpg.subarray(0, 600), Buffer.alloc(64, 7)]))).toThrow(
+      expect.objectContaining({ code: 'INVALID_INPUT' }),
+    );
+  }, 120_000);
+});
+
 describe('trace and score commands', () => {
   it('trace writes the SVG and reports faces, nodes and its IoU against the raster', async () => {
     const cwd = tmp();

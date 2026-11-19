@@ -343,6 +343,10 @@ const traceOptions = {
     description:
       'Ink cut-off 0–255: alpha, or distance from the background on an opaque image (default: 128 / automatic)',
   },
+  background: {
+    type: 'string',
+    description: 'Ground colour of an opaque image, when the guess from its border is wrong (#hex)',
+  },
 } as const;
 
 function traceOpts(c: RunContext): TraceOptions {
@@ -351,6 +355,8 @@ function traceOpts(c: RunContext): TraceOptions {
     const v = c.num(k);
     if (v !== undefined) o[k] = v;
   }
+  const bg = c.str('background');
+  if (bg !== undefined) o.background = bg;
   return o;
 }
 
@@ -4324,7 +4330,8 @@ export const COMMANDS: CommandSpec[] = [
     name: 'trace',
     summary:
       'Trace a raster mark (PNG/JPEG) to SVG: one evenodd path per colour, holes kept, curves fitted. Reports the IoU of the trace against the raster.',
-    usage: 'trace <in.png|jpg> -o <out.svg> [--colors n] [--threshold 0-255] [--tolerance px] [--force]',
+    usage:
+      'trace <in.png|jpg> -o <out.svg> [--colors n] [--threshold 0-255] [--background #hex] [--tolerance px] [--force]',
     options: {
       out: { type: 'string', short: 'o', description: 'Output SVG' },
       ...traceOptions,
@@ -4339,14 +4346,21 @@ export const COMMANDS: CommandSpec[] = [
       const out = file(c, c.req('out'));
       const t = await traceImageFile(file(c, pos(c, 0, 'in.png')), traceOpts(c));
       writeFileSafe(out, t.svg, { force: c.bool('force') });
-      return { out: c.req('out'), faces: t.faces, nodes: t.nodes, iou: t.iou };
+      return {
+        out: c.req('out'),
+        faces: t.faces,
+        nodes: t.nodes,
+        iou: t.iou,
+        ...(t.warnings.length ? { warnings: t.warnings } : {}),
+      };
     },
   },
   {
     name: 'score',
     summary:
       'Technical quality scorecard for one SVG (legibility, balance, monochrome, contrast, genericity). A PNG or JPEG is traced first.',
-    usage: 'score <file.svg|png|jpg|webp> [--role symbol|wordmark|lockup] [--colors n] [--threshold 0-255]',
+    usage:
+      'score <file.svg|png|jpg|webp> [--role symbol|wordmark|lockup] [--colors n] [--threshold 0-255] [--background #hex]',
     options: { role: { type: 'string', description: 'symbol | wordmark | lockup' }, ...traceOptions },
     async run(c) {
       const p = pos(c, 0, 'file.svg');
@@ -4354,7 +4368,10 @@ export const COMMANDS: CommandSpec[] = [
       if (RASTER_EXT.has(extname(p).toLowerCase())) {
         const t = await traceImageFile(file(c, p), traceOpts(c));
         // Scored as the trace: say so, and how closely the trace follows the raster.
-        return { ...(await assessQuality(t.svg, p, role)), tracedFrom: { file: p, iou: t.iou } };
+        return {
+          ...(await assessQuality(t.svg, p, role)),
+          tracedFrom: { file: p, iou: t.iou, ...(t.warnings.length ? { warnings: t.warnings } : {}) },
+        };
       }
       return assessQuality(readText(file(c, p)), p, role);
     },

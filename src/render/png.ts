@@ -63,11 +63,21 @@ export function decodeImage(buf: Uint8Array): Raster {
     return { width: png.width, height: png.height, data: new Uint8Array(png.data) };
   }
   if (buf[0] === 0xff && buf[1] === 0xd8) {
-    const j = jpeg.decode(buf, {
-      useTArray: true,
-      maxMemoryUsageInMB: 256,
-      maxResolutionInMP: MAX_IMAGE_PIXELS / 1_000_000,
-    });
+    let j: { width: number; height: number; data: Uint8Array };
+    try {
+      j = jpeg.decode(buf, {
+        useTArray: true,
+        // jpeg-js budgets about 21 bytes per pixel (RGBA output plus its component and block buffers): allow that at
+        // the largest size MAX_IMAGE_PIXELS admits, so the pixel cap, not this budget, is the limit.
+        maxMemoryUsageInMB: Math.ceil((MAX_IMAGE_PIXELS * 24) / 1_000_000),
+        maxResolutionInMP: MAX_IMAGE_PIXELS / 1_000_000,
+      });
+    } catch (err) {
+      throw new MarkiloError(
+        'INVALID_INPUT',
+        `Cannot decode the JPEG: ${(err as Error).message ?? String(err)}`,
+      );
+    }
     return { width: j.width, height: j.height, data: new Uint8Array(j.data) };
   }
   throw new MarkiloError(
