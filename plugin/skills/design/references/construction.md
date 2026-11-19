@@ -204,6 +204,19 @@ like another letter ("o" cut open on the right reads as "c") is flagged; a lette
 merged into one shape is a note to weigh. A separate element dropped into a word reads as punctuation — a hyphen
 between letters, an accent over one, a full stop after the word — so attach it to a letter or put it inside a counter.
 
+## Rebuilding a traced or messy mark
+
+`markilo rebuild in.svg -o clean.svg --against original.svg|png` redraws an existing drawing — a `trace`, an export
+from another tool — the way it would have been constructed: straight edges as lines, round parts as circular arcs,
+and a cubic only where the form really is free. Lines meant to share one angle (the cut of a mark, the parallel
+strokes of a letter) are snapped to it: `--angles auto` finds groups of three or more within 3°, `--angles 32,90`
+names the angles. Each contour keeps its direction, so holes stay holes.
+
+The rebuild is a fidelity step, not a redesign: it reports the IoU against `--against` and refuses to write when it
+falls below `--min-iou` (default 0.95). Useful bars from a refresh: 0.98 for a trace, 0.97 for a clean rebuild, 0.94
+when the geometry was deliberately regularised. If it fails, lower `--tolerance`, pass `--angles none`, or keep the
+trace and draw the form again with `construct`.
+
 ## Craft checklist
 
 - One unit `u` and a few multiples of it for all widths, radii and gaps; a single corner radius family.

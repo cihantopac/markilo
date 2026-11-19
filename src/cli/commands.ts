@@ -103,6 +103,8 @@ import {
 import { buildGallery } from '../gallery/gallery.js';
 import { serveGallery } from '../gallery/serve.js';
 import { centerOptically } from '../geom/center.js';
+import { ensurePathKit } from '../geom/pathkit.js';
+import { countSegments, rebuildPath } from '../geom/rebuild.js';
 import { MAX_TRACE_COLORS, rasterMaskSvg, type TraceOptions, traceRaster } from '../geom/trace.js';
 import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarity.js';
 import { suggestNiceClasses, trademarkSearchPlan } from '../name/trademark.js';
@@ -164,6 +166,7 @@ import type { SiteScan } from '../research/site.js';
 import { researchSite } from '../research/site-research.js';
 import { lintSvg } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
+import { intrinsicBox, localName, parseXml, serializeXml, walk } from '../svg/xml.js';
 import { type AgentTarget, agentSetup, ROLE_IDS, type Role } from './agents.js';
 import type { CommandSpec, RunContext } from './args.js';
 import { FRAMEWORKS, type Framework, planFrameworkInstall } from './frameworks.js';
@@ -369,6 +372,89 @@ async function traceImageFile(path: string, opts: TraceOptions) {
     throw new MarkiloError('INVALID_INPUT', `${basename(path)}: no ink found to trace.`, 'Try --threshold.');
   const iou = await silhouetteIoU(t.svg, rasterMaskSvg(img, opts));
   return { ...t, iou: Math.round(iou * 1000) / 1000 };
+}
+
+/** Default `rebuild` tolerance: this share of the drawing's diagonal (about half a pixel on a 600 px trace). */
+const REBUILD_TOLERANCE = 0.0006;
+
+function rebuildAngles(c: RunContext): number[] | 'auto' | undefined {
+  const v = (c.str('angles') ?? 'auto').trim();
+  if (v === 'auto') return 'auto';
+  if (v === 'none') return undefined;
+  const list = v.split(',').map((x) => x.trim());
+  if (!list.every((x) => x !== '' && Number.isFinite(Number(x))))
+    throw new MarkiloError('USAGE', '--angles takes auto, none or a list of degrees (32,90).');
+  return list.map(Number);
+}
+
+/**
+ * Rebuilds every path of an SVG as clean geometry and measures the result against a reference (the input itself, or
+ * --against: an SVG or a raster's ink mask). Throws, without writing, when the IoU is below minIou.
+ */
+async function rebuildSvgFile(c: RunContext) {
+  const inPath = pos(c, 0, 'in.svg');
+  const source = readText(file(c, inPath));
+  const root = parseXml(source);
+  if (localName(root.name) !== 'svg')
+    throw new MarkiloError('INVALID_SVG', `${inPath}: not an SVG document.`);
+  const box = intrinsicBox(root);
+  const tolerance = c.num('tolerance') ?? (box ? Math.hypot(box.width, box.height) * REBUILD_TOLERANCE : 0.5);
+  if (!(tolerance > 0)) throw new MarkiloError('USAGE', '--tolerance must be a positive number.');
+  const minIou = c.num('min-iou', 0.95)!;
+  if (!(minIou >= 0 && minIou <= 1)) throw new MarkiloError('USAGE', '--min-iou must be between 0 and 1.');
+  const angles = rebuildAngles(c);
+  await ensurePathKit();
+  let nodesBefore = 0;
+  const segments = { lines: 0, arcs: 0, cubics: 0 };
+  const snapped = new Map<number, number>();
+  const paths: Record<string, string>[] = [];
+  walk(root, (el) => {
+    if (localName(el.name) === 'path' && el.attrs.d?.trim()) paths.push(el.attrs);
+  });
+  if (!paths.length) throw new MarkiloError('INVALID_INPUT', `${inPath}: no <path> to rebuild.`);
+  for (const attrs of paths) {
+    nodesBefore += countSegments(attrs.d!);
+    const r = rebuildPath(attrs.d!, {
+      tolerance,
+      ...(angles ? { angles } : {}),
+      arcs: !c.bool('no-arcs'),
+    });
+    attrs.d = r.d;
+    segments.lines += r.segments.lines;
+    segments.arcs += r.segments.arcs;
+    segments.cubics += r.segments.cubics;
+    for (const s of r.snapped) snapped.set(s.angle, (snapped.get(s.angle) ?? 0) + s.count);
+  }
+  const svg = `${serializeXml(root)}\n`;
+  const against = c.str('against');
+  const warnings: string[] = [];
+  let reference = source;
+  if (against) {
+    const p = file(c, against);
+    if (RASTER_EXT.has(extname(p).toLowerCase())) {
+      if (!existsSync(p)) throw new MarkiloError('NOT_FOUND', `File not found: ${against}`);
+      reference = rasterMaskSvg(decodeImage(readFileSync(p)));
+    } else reference = readText(p);
+  }
+  const iou = Math.round((await silhouetteIoU(svg, reference)) * 1000) / 1000;
+  if (iou < minIou)
+    throw new MarkiloError(
+      'INVALID_INPUT',
+      `The rebuild changes the form: IoU ${iou} against ${against ?? inPath} is below --min-iou ${minIou}. Nothing was written.`,
+      'Lower --tolerance, pass --angles none or --no-arcs; lower --min-iou only if the change is intended.',
+      { iou, minIou },
+    );
+  return {
+    svg,
+    iou,
+    nodesBefore,
+    nodesAfter: segments.lines + segments.arcs + segments.cubics,
+    segments,
+    snapped: [...snapped]
+      .map(([angle, count]) => ({ angle, count }))
+      .sort((a, b) => b.count - a.count || a.angle - b.angle),
+    warnings,
+  };
 }
 
 /**
@@ -4366,6 +4452,43 @@ export const COMMANDS: CommandSpec[] = [
         iou: t.iou,
         ...(t.warnings.length ? { warnings: t.warnings } : {}),
       };
+    },
+  },
+  {
+    name: 'rebuild',
+    summary:
+      "Redraw an SVG's paths as clean geometry (lines, circular arcs, few cubics; shared angles snapped) and refuse the result when it no longer matches the original form.",
+    usage:
+      'rebuild <in.svg> -o <out.svg> [--against <orig.svg|png|jpg|webp>] [--min-iou 0.95] [--tolerance px] [--angles auto|none|32,90] [--no-arcs] [--force]',
+    options: {
+      out: { type: 'string', short: 'o', description: 'Output SVG' },
+      against: {
+        type: 'string',
+        description:
+          'What the rebuild must still match: the original SVG or raster (default: the input itself)',
+      },
+      'min-iou': {
+        type: 'string',
+        description: 'Fail, writing nothing, when the IoU against the reference is below this (default 0.95)',
+      },
+      tolerance: {
+        type: 'string',
+        description:
+          "Largest distance a rebuilt piece may stray from the input, in the SVG's units (default 0.06 % of its diagonal)",
+      },
+      angles: {
+        type: 'string',
+        description:
+          'auto: snap groups of 3+ lines within 3° to their mean; none; or degrees to snap lines within 4° to (32,90; counter-clockwise from horizontal)',
+      },
+      'no-arcs': { type: 'boolean', description: 'Fit lines and cubics only' },
+      force: { type: 'boolean', description: 'Overwrite output' },
+    },
+    async run(c) {
+      const out = file(c, c.req('out'));
+      const { svg, warnings, ...r } = await rebuildSvgFile(c);
+      writeFileSafe(out, svg, { force: c.bool('force') });
+      return { out: c.req('out'), ...r, ...(warnings.length ? { warnings } : {}) };
     },
   },
   {

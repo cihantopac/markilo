@@ -43,7 +43,7 @@ const CORNER_SPAN = 3;
 /** [1 2 1] smoothing passes over a contour's points between corners (takes out the pixel grid's ripple). */
 const SMOOTHING_PASSES = 8;
 
-type Pt = [number, number];
+export type Pt = [number, number];
 
 interface InkField {
   w: number;
@@ -581,7 +581,7 @@ function findCorners(p: Pt[]): number[] {
   return corners;
 }
 
-type Seg = { kind: 'L'; to: Pt } | { kind: 'C'; c1: Pt; c2: Pt; to: Pt };
+export type Seg = { kind: 'L'; to: Pt } | { kind: 'C'; c1: Pt; c2: Pt; to: Pt };
 
 const bez = (b: Pt[], t: number): Pt => {
   const mt = 1 - t;
@@ -703,8 +703,30 @@ function curveHugs(b: Pt[], p: Pt[], tol: number): boolean {
   return true;
 }
 
+/**
+ * One cubic from p[0] to the last point that stays within tol of every point, leaving along t1 and arriving back
+ * along t2 (t2 points from the last point into the curve); undefined when a single cubic cannot follow the points.
+ */
+export function fitOneCubic(p: Pt[], t1: Pt, t2: Pt, tol: number): Pt[] | undefined {
+  if (p.length < 2) return undefined;
+  let u = chordParams(p);
+  let b = generateBezier(p, u, t1, t2);
+  let err = maxError(b, p, u).err;
+  if (err <= tol && curveHugs(b, p, tol)) return b;
+  for (let k = 0; k < 20; k++) {
+    u = reparameterize(b, p, u);
+    const nb = generateBezier(p, u, t1, t2);
+    const ne = maxError(nb, p, u).err;
+    if (ne > err * 0.999) break;
+    b = nb;
+    err = ne;
+    if (err <= tol && curveHugs(b, p, tol)) return b;
+  }
+  return undefined;
+}
+
 /** Schneider's cubic fit ("An Algorithm for Automatically Fitting Digitized Curves", Graphics Gems 1990). */
-function fitCubic(p: Pt[], t1: Pt, t2: Pt, tol: number, out: Seg[]): void {
+export function fitCubic(p: Pt[], t1: Pt, t2: Pt, tol: number, out: Seg[]): void {
   if (p.length <= 2 || lineError(p) <= tol) {
     out.push({ kind: 'L', to: p[p.length - 1]! });
     return;
