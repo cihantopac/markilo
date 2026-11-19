@@ -12,6 +12,7 @@ import { basename, dirname, extname, join, resolve } from 'node:path';
 import { type CalibrationMark, calibrate } from '../analyze/calibrate.js';
 import { contrastRatio, deltaE2000, normalizeColor } from '../analyze/color.js';
 import { checkLetters, letterAdvice } from '../analyze/letters.js';
+import { annotateInSitu, LOCATE_MIN_SCORE, locateMark, measureInSitu } from '../analyze/locate.js';
 import { loadMark, sampleFromSvg } from '../analyze/mark.js';
 import { assessQuality } from '../analyze/quality.js';
 import { FORM_CHANGE_LIMIT, formChangeWarning, formIoU, silhouetteIoU } from '../analyze/silhouette.js';
@@ -127,7 +128,7 @@ import { countSegments, rebuildPaths } from '../geom/rebuild.js';
 import { MAX_TRACE_COLORS, rasterMaskSvg, type TraceOptions, traceRaster } from '../geom/trace.js';
 import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarity.js';
 import { suggestNiceClasses, trademarkSearchPlan } from '../name/trademark.js';
-import { decodeImage } from '../render/png.js';
+import { decodeImage, encodePng } from '../render/png.js';
 import { type ProposalInput, renderProposal, renderRoundBoard } from '../render/proposal.js';
 import { type RefreshKept, rasterSvg, renderRefreshBoard } from '../render/refresh.js';
 import { renderPng } from '../render/resvg.js';
@@ -402,6 +403,29 @@ const pos = (c: RunContext, i: number, label: string): string => {
   return v;
 };
 const file = (c: RunContext, p: string) => resolve(c.cwd, p);
+
+/**
+ * The photo `audit in-situ` measures: a file, or the id of an in-situ reference (`reference add --category in-situ`).
+ * A file path wins over a reference id of the same name. A reference of another category, or an id this workspace
+ * does not know, is a usage error.
+ */
+function inSituPhoto(c: RunContext, w: Workspace, slug: string, arg: string): { path: string; id: string } {
+  const path = file(c, arg);
+  if (existsSync(path) && !isDir(path)) {
+    const stem = basename(path, extname(path));
+    return { path, id: slugifyOrHash(stem).slug };
+  }
+  const ref = readReferences(w, slug).references.find((r) => r.id === arg);
+  if (ref && ref.category === 'in-situ')
+    return { path: resolveInsideReal(w.referencesDir(slug), ref.file), id: slugifyOrHash(ref.id).slug };
+  throw new MarkiloError(
+    'USAGE',
+    ref
+      ? `Reference "${arg}" is a ${ref.category ?? 'competitor'} reference, not an in-situ photo.`
+      : `--photo "${arg}" is neither a file nor an in-situ reference of ${slug}.`,
+    'Give the path of a photo (PNG, JPEG or WebP) of the real screen, or the id of a reference added with --category in-situ.',
+  );
+}
 
 /** Raster formats `score` traces before scoring (WebP decodes once decodeImage reads it). */
 const RASTER_EXT = new Set(['.png', '.jpg', '.jpeg', '.webp']);
@@ -4931,6 +4955,48 @@ export const COMMANDS: CommandSpec[] = [
         hashes: m.hashes,
         genericity: await genericity(m),
       };
+    },
+  },
+  {
+    name: 'audit in-situ',
+    summary:
+      'Find the mark in a photo of the real screen (a TV launcher, a phone home screen) and measure it there: its box, its share of the frame and of its tile, the contrast of its ink against the ring around it and of the tile against its surroundings, and its smallest stroke or gap in photo pixels. The match is confirmed by laying the mark’s drawing over the photo; when no place is confirmed it reports not found and exits 1. Writes reports/in-situ-<id>.png with the box drawn. A file path wins over a reference id of the same name.',
+    usage: 'audit in-situ --brand <slug> --photo <in-situ reference id | file> --mark <file.svg>',
+    options: {
+      ...brandOpt,
+      photo: {
+        type: 'string',
+        description:
+          'Photo of the real screen (PNG, JPEG, WebP), or the id of an in-situ reference (an existing file of that name wins)',
+      },
+      mark: { type: 'string', description: 'The mark to look for (SVG)' },
+    },
+    async run(c) {
+      const w = ws(c);
+      const slug = c.req('brand');
+      w.brief(slug);
+      const { path, id } = inSituPhoto(c, w, slug, c.req('photo'));
+      const svg = readText(file(c, c.req('mark')));
+      if (extname(c.req('mark')).toLowerCase() !== '.svg' && !/<svg[\s>]/i.test(svg.slice(0, 2048)))
+        throw new MarkiloError('INVALID_INPUT', '--mark must be an SVG file.');
+      const photo = decodeImage(readFileSync(path));
+      const head = {
+        photo: { file: path, width: photo.width, height: photo.height },
+        ...(photo.warnings?.length ? { warnings: photo.warnings } : {}),
+      };
+      const at = await locateMark(photo, svg);
+      if (!at)
+        return {
+          ...head,
+          found: false,
+          message: `The mark was not found in the photo (no place scores ${LOCATE_MIN_SCORE} or more); nothing was measured.`,
+          exitCode: 1,
+        };
+      const m = await measureInSitu(photo, svg, at);
+      const out = join(w.reportsDir(slug), `in-situ-${id}.png`);
+      mkdirSync(dirname(out), { recursive: true });
+      writeGenerated(out, encodePng(annotateInSitu(photo, at.box, m.tile)));
+      return { ...head, found: true, ...at, ...m, report: out };
     },
   },
   {
