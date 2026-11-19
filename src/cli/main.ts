@@ -51,6 +51,7 @@ const GROUPS: [string, string[]][] = [
       'originality',
       'diversity',
       'score',
+      'trace',
       'analyze',
       'compare',
       'svg lint',
