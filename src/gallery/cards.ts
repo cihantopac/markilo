@@ -182,6 +182,9 @@ function palettesOf(s: Subject): string[] {
   ) as string[];
 }
 
+/** A proposal's anchor id. "--" cannot occur in a slug or a concept id, so ids never collide across brands. */
+export const proposalId = (s: Subject): string => `${s.brand.slug}--${s.key}`;
+
 /** A tile on the round's board: the word on its own ground, the icon on the opposite one, the letter and title. */
 export function tileHtml(s: Subject, letter?: string): string {
   const g = groundsFor(s.palette.paper);
@@ -191,9 +194,9 @@ export function tileHtml(s: Subject, letter?: string): string {
   const art = word ? fitInline(word, 240, 56) : fitInline(s.symbol!, 72, 72);
   const icon = s.symbol ? inline(on(s.symbol, g.opposite), 28, 28) : '';
   const flag = flagsOf(s).length
-    ? `<i class="tile-flag" ${ta('title', 'Has a problem — see the proposal')}>!</i>`
+    ? `<i class="tile-flag" role="img"${ta('aria-label', 'Has a problem — see the proposal')}${ta('title', 'Has a problem — see the proposal')}>!</i>`
     : '';
-  return `<a class="tile" href="#${escapeAttr(`${s.brand.slug}-${s.key}`)}" data-target="${escapeAttr(`${s.brand.slug}-${s.key}`)}">
+  return `<a class="tile" href="#${escapeAttr(proposalId(s))}" data-target="${escapeAttr(proposalId(s))}">
   <span class="tile-art" style="background:${g.native}">${art}</span>
   <span class="tile-cap">${letter ? `<b class="l">${letter}</b>` : ''}<span class="tile-title">${escapeText(s.title)}</span>${flag}<span class="tile-pick"></span>${icon ? `<span class="tile-icon" style="background:${g.opposite}">${icon}</span>` : ''}</span>
 </a>`;
@@ -312,7 +315,7 @@ export async function proposalHtml(
     <input type="text" class="note"${ta('placeholder', 'Anything specific? (optional)')}>
     <ol class="pins"${ta('title', 'Click on the large mark to point at a spot')}></ol>
   </div>`;
-  return `<article class="proposal${s.status === 'rejected' ? ' rejected' : ''}" id="${escapeAttr(`${s.brand.slug}-${s.key}`)}">
+  return `<article class="proposal${s.status === 'rejected' ? ' rejected' : ''}" id="${escapeAttr(proposalId(s))}">
   <header><h3>${opts.letter ? `<span class="letter">${opts.letter}</span>` : ''}${escapeText(s.title)}</h3><span class="status">${t(s.status)}</span></header>
   ${idea ? `<p class="idea">${escapeText(idea)}</p>` : ''}
   <div class="showcase">
