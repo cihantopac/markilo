@@ -4405,22 +4405,27 @@ export const COMMANDS: CommandSpec[] = [
         if (!c.positionals.length)
           throw new MarkiloError('USAGE', 'render --out-dir needs at least one SVG.');
         const dir = file(c, c.str('out-dir')!);
-        const names = new Map<string, string>();
+        if (existsSync(dir) && !isDir(dir))
+          throw new MarkiloError('USAGE', `--out-dir ${c.str('out-dir')} is a file, not a folder.`);
+        // Names are compared case-insensitively: two inputs must not collide on a case-insensitive filesystem.
+        const names = new Map<string, { name: string; input: string }>();
         for (const p of c.positionals) {
           const name = `${basename(p, extname(p))}.png`;
-          const first = names.get(name);
+          const first = names.get(name.toLowerCase());
           if (first !== undefined)
             throw new MarkiloError(
               'USAGE',
-              `${first} and ${p} would both write ${name} in ${c.str('out-dir')}.`,
+              `${first.input} and ${p} would both write ${first.name.toLowerCase() === name.toLowerCase() ? name : first.name} in ${c.str('out-dir')}.`,
               'Rename one of the inputs, or render them in separate --out-dir folders.',
             );
-          names.set(name, p);
+          names.set(name.toLowerCase(), { name, input: p });
         }
+        // Render everything first, so a failing input leaves no partial batch behind.
+        const rendered: { name: string; png: Uint8Array }[] = [];
+        for (const { name, input } of names.values()) rendered.push({ name, png: await plainPng(input) });
+        mkdirSync(dir, { recursive: true });
         const files: string[] = [];
-        for (const [name, p] of names) {
-          const png = await plainPng(p);
-          mkdirSync(dir, { recursive: true });
+        for (const { name, png } of rendered) {
           writeGenerated(join(dir, name), png);
           files.push(join(c.str('out-dir')!, name));
         }

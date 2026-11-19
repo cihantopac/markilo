@@ -214,6 +214,20 @@ describe('cli (bundled)', () => {
       expect(JSON.parse(r.stderr).error.code).toBe('USAGE');
       expect(existsSync(join(cwd, 'out', 'a.png'))).toBe(false);
     });
+    it('--out-dir is atomic, refuses a file, and compares names case-insensitively', () => {
+      const cwd = setup();
+      writeFileSync(join(cwd, 'bad.svg'), 'not svg');
+      const r = run(['render', 'a.svg', 'bad.svg', '--out-dir', 'out'], cwd);
+      expect(r.status).not.toBe(0);
+      expect(existsSync(join(cwd, 'out', 'a.png'))).toBe(false);
+      writeFileSync(join(cwd, 'afile'), 'x');
+      const f = run(['render', 'a.svg', '--out-dir', 'afile'], cwd);
+      expect(JSON.parse(f.stderr).error.code).toBe('USAGE');
+      mkdirSync(join(cwd, 'sub'));
+      writeFileSync(join(cwd, 'sub', 'A.svg'), art(5));
+      const d = run(['render', 'a.svg', 'sub/A.svg', '--out-dir', 'out'], cwd);
+      expect(JSON.parse(d.stderr).error.code).toBe('USAGE');
+    });
     it('--pad grows the image, keeps the art centred, and 0 is byte-identical', () => {
       const cwd = setup();
       expect(run(['render', 'a.svg', '-o', 'p0.png', '--width', '200'], cwd).status).toBe(0);

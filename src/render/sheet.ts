@@ -103,15 +103,20 @@ export function parseZoom(spec: string, svg: string, index: number): Zoom {
 }
 
 /** One crop: `svg` shown through a window of `zoom`, scaled by ZOOM_SCALE, clipped to its panel. */
-function cropMarkup(svg: string, zoom: Zoom, x: number, y: number, side: string): string {
-  const vb = intrinsicBox(parseXml(svg));
-  if (!vb) throw new MarkiloError('INVALID_SVG', 'Cannot crop an SVG without viewBox or width/height.');
+function cropMarkup(
+  svg: string,
+  frame: { x: number; y: number; width: number; height: number },
+  zoom: Zoom,
+  x: number,
+  y: number,
+  side: string,
+): string {
   const w = zoom.w * ZOOM_SCALE;
   const h = zoom.h * ZOOM_SCALE;
   return (
     `<rect x="${fmt(x)}" y="${fmt(y)}" width="${fmt(w)}" height="${fmt(h)}" fill="#ffffff" stroke="#d5d8de"/>` +
     `<svg data-zoom-side="${side}" x="${fmt(x)}" y="${fmt(y)}" width="${fmt(w)}" height="${fmt(h)}" viewBox="${fmt(zoom.x)} ${fmt(zoom.y)} ${fmt(zoom.w)} ${fmt(zoom.h)}" overflow="hidden">` +
-    nestSvg(svg, { x: vb.x, y: vb.y, width: vb.width, height: vb.height }) +
+    nestSvg(svg, frame) +
     '</svg>'
   );
 }
@@ -128,6 +133,10 @@ export function zoomRowsSvg(
   width: number,
   background = '#ffffff',
 ): { svg: string; height: number } {
+  // Crops are in the before file's coordinates: the after art is fitted (centred, aspect kept) into the before
+  // file's viewBox, the way the main panels fit both into one box, so one window covers the same part of both marks.
+  const frame = intrinsicBox(parseXml(before));
+  if (!frame) throw new MarkiloError('INVALID_SVG', 'The before file has no viewBox or size.');
   let body = '';
   let y = 0;
   zooms.forEach((z, i) => {
@@ -141,8 +150,8 @@ export function zoomRowsSvg(
     const xs = [ZOOM_PAD, ZOOM_PAD * 2 + w];
     body += label('Before', xs[0]!, panelY - 5, 10, ink);
     body += label('After', xs[1]!, panelY - 5, 10, ink);
-    body += cropMarkup(before, z, xs[0]!, panelY, 'before');
-    body += cropMarkup(after, z, xs[1]!, panelY, 'after');
+    body += cropMarkup(before, frame, z, xs[0]!, panelY, 'before');
+    body += cropMarkup(after, frame, z, xs[1]!, panelY, 'after');
     body += '</g>';
     y += rowH;
   });
