@@ -1,11 +1,12 @@
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { assessQuality } from '../src/analyze/quality.js';
+import { assessQuality, assessRich, richSilhouetteStatus } from '../src/analyze/quality.js';
 import { type ConstructionSpec, compileSpec } from '../src/construct/compile.js';
 import { transformPath } from '../src/geom/pathkit.js';
-import { wordmarkLetters } from '../src/report/quality.js';
+import { verifyConcept, wordmarkLetters } from '../src/report/quality.js';
 import { optimizeSvg } from '../src/svg/optimize.js';
-import { mark, synthBrand } from './helpers.js';
+import { mark, richFoldN, synthBrand } from './helpers.js';
 
 const status = async (svg: string, id: string) =>
   (await assessQuality(svg, 't')).checks.find((c) => c.id === id)?.status;
@@ -128,5 +129,63 @@ describe('the letter check says whether it ran', () => {
       checked: false,
       reason: 'no recipe (freeform wordmark)',
     });
+  });
+});
+
+describe('a rich rendering on a flat master', () => {
+  const withRich = (rich: string) => {
+    const { ws } = synthBrand();
+    writeFileSync(ws.conceptFile('nimbra', 'fold', 'symbol-rich.svg'), rich);
+    const c = ws.concept('nimbra', 'fold');
+    ws.saveConcept({ ...c, files: { ...c.files, rich: { symbol: 'symbol-rich.svg' } } });
+    return ws;
+  };
+  const silhouette = (ws: ReturnType<typeof withRich>) =>
+    (
+      JSON.parse(readFileSync(join(ws.reportsDir('nimbra'), 'quality-fold.json'), 'utf8')) as {
+        checks: { id: string; status: string; value: number; message: string }[];
+      }
+    ).checks.find((c) => c.id === 'rich-symbol:silhouette-match');
+
+  it('a gradient copy of the master adds no failure and matches its silhouette', async () => {
+    const { ws: plain } = synthBrand();
+    const before = await verifyConcept(plain, 'nimbra', 'fold');
+    const ws = withRich(richFoldN());
+    const r = await verifyConcept(ws, 'nimbra', 'fold');
+    expect(r.failing).toEqual(before.failing);
+    const m = silhouette(ws);
+    expect(m?.status).toBe('pass');
+    expect(m?.value).toBeGreaterThanOrEqual(0.97);
+    // Gradient stops are not palette roles: the rich file gets no palette or contrast checks of its own.
+    const q = JSON.parse(readFileSync(join(ws.reportsDir('nimbra'), 'quality-fold.json'), 'utf8')) as {
+      checks: { id: string }[];
+    };
+    const richChecks = q.checks.filter((c) => c.id.startsWith('rich-symbol:')).map((c) => c.id);
+    expect(richChecks.sort()).toEqual(['rich-symbol:silhouette-match', 'rich-symbol:svg-integrity']);
+  }, 60_000);
+
+  it('a rich file moved 15 % off its master fails silhouette-match', async () => {
+    const ws = withRich(richFoldN(18));
+    const r = await verifyConcept(ws, 'nimbra', 'fold');
+    const m = silhouette(ws);
+    expect(m?.status).toBe('fail');
+    expect(r.status).toBe('needs-work');
+    expect(r.failing.some((f) => /silhouette/i.test(f))).toBe(true);
+  }, 60_000);
+
+  it('allows 2 % registration slack on the artboard, not more', async () => {
+    const status = async (dx: number) =>
+      (await assessRich(richFoldN(dx), mark('fold-n'), 't', 'rich-symbol', { registered: true })).checks.find(
+        (c) => c.id === 'silhouette-match',
+      )?.status;
+    expect(await status(1)).toBe('pass');
+    expect(await status(6)).toBe('fail');
+  }, 30_000);
+
+  it('grades silhouette-match at 0.97 and 0.93', () => {
+    expect(richSilhouetteStatus(0.97)).toBe('pass');
+    expect(richSilhouetteStatus(0.95)).toBe('warn');
+    expect(richSilhouetteStatus(0.93)).toBe('warn');
+    expect(richSilhouetteStatus(0.929)).toBe('fail');
   });
 });

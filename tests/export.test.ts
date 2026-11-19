@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -13,7 +14,7 @@ import { buildGallery } from '../src/gallery/gallery.js';
 import { decodeImage, pngSize } from '../src/render/png.js';
 import { verifyConcept } from '../src/report/quality.js';
 import { lintSvg } from '../src/svg/lint.js';
-import { mark, synthBrand, tmp } from './helpers.js';
+import { mark, richFoldN, synthBrand, tmp } from './helpers.js';
 
 let ws: Workspace;
 let dir: string;
@@ -727,4 +728,84 @@ describe('custom lettering', () => {
     expect(read('tokens/tokens.css')).not.toContain('--nimbra-font-brand');
     expect(JSON.parse(read('tokens/tokens.json')).font.supporting.$value[0]).toBe('Inter');
   }, 120_000);
+});
+
+describe('a rich rendering', () => {
+  let rws: Workspace;
+  const exp = (p: string) => join(rws.exportsDir('nimbra'), p);
+  beforeAll(async () => {
+    ({ ws: rws } = synthBrand());
+    writeFileSync(rws.conceptFile('nimbra', 'fold', 'symbol-rich.svg'), richFoldN());
+    const c = rws.concept('nimbra', 'fold');
+    rws.saveConcept({ ...c, files: { ...c.files, rich: { symbol: 'symbol-rich.svg' } } });
+    await verifyConcept(rws, 'nimbra', 'fold');
+    await finalizeConcept(rws, 'nimbra', 'fold', { acceptRisk: true, userChoice: 'Chosen in a test.' });
+  }, 120_000);
+
+  it('is frozen in the kit and exported beside the flat logos', async () => {
+    const kit = JSON.parse(readFileSync(kitPath(rws, 'nimbra'), 'utf8'));
+    expect(kit.files.rich).toEqual({ symbol: 'symbol-rich.svg' });
+    expect(readFileSync(join(rws.finalDir('nimbra'), 'symbol-rich.svg'), 'utf8')).toContain('linearGradient');
+    const r = await exportBrand(rws, 'nimbra', { groups: ['logos'] });
+    expect(readFileSync(exp('logos/symbol/symbol-rich.svg'), 'utf8')).toContain('linearGradient');
+    expect(pngSize(readFileSync(exp('logos/symbol/symbol-rich.png')))).toEqual({ width: 1024, height: 1024 });
+    expect(r.assets.map((a) => a.path)).toContain('logos/symbol/symbol-rich.png');
+  }, 120_000);
+
+  it('--icon-art rich puts the rich art in the iOS 1024 icon', async () => {
+    const centre = (buf: Buffer) => {
+      const img = decodeImage(buf);
+      const i = (Math.floor(img.height / 2) * img.width + Math.floor(img.width / 2)) * 4;
+      return [...img.data.slice(i, i + 4)];
+    };
+    const icon = 'ios/AppIcon.appiconset/AppIcon-1024.png';
+    await exportBrand(rws, 'nimbra', { groups: ['ios'] });
+    const flat = readFileSync(exp(icon));
+    const r = await exportBrand(rws, 'nimbra', { groups: ['ios', 'tv', 'social'], iconArt: 'rich' });
+    const rich = readFileSync(exp(icon));
+    expect(centre(rich)).not.toEqual(centre(flat));
+    expect(r.assets.find((a) => a.path === icon)?.derivedFrom).toBe('symbol-rich.svg');
+    expect(r.assets.find((a) => a.path === 'tv/firetv/icon-1280x720.png')).toBeDefined();
+    // Opaque still: the rich icon is drawn on a ground.
+    const img = decodeImage(rich);
+    let transparent = 0;
+    for (let i = 3; i < img.data.length; i += 4) if (img.data[i]! < 255) transparent++;
+    expect(transparent).toBe(0);
+  }, 120_000);
+
+  it('--icon-art rich needs a rich file', async () => {
+    await expect(exportBrand(ws, 'nimbra', { groups: ['ios'], iconArt: 'rich' })).rejects.toMatchObject({
+      code: 'USAGE',
+    });
+  });
+});
+
+describe('rich flags', () => {
+  const bin = join(__dirname, '..', 'plugin', 'dist', 'markilo.mjs');
+  it('concept update registers and unregisters a rich rendering; export rejects an unknown --icon-art', () => {
+    const cwd = tmp();
+    const run = (args: string[]) => spawnSync(process.execPath, [bin, ...args], { cwd, encoding: 'utf8' });
+    const ok = (args: string[]) => {
+      const r = run(args);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    ok(['init', '--name', 'Demo']);
+    ok(['brand', 'add', 'Lumen']);
+    // biome-ignore format: one flag per pair reads better
+    ok(['concept', 'new', '--brand', 'lumen', '--id', 'p1', '--title', 'One', '--direction', 'd', '--rationale', 'r',
+      '--semantics', 'a', '--primary', '#3b5bdb']);
+    const dir = join(cwd, 'brand', 'brands', 'lumen', 'concepts', 'p1');
+    writeFileSync(join(dir, 'symbol.svg'), mark('fold-n'));
+    writeFileSync(join(dir, 'symbol-rich.svg'), richFoldN());
+    const set = ['concept', 'update', '--brand', 'lumen', '--concept', 'p1'];
+    ok([...set, '--symbol', 'symbol.svg', '--rich-symbol', 'symbol-rich.svg']);
+    const json = () => JSON.parse(readFileSync(join(dir, 'concept.json'), 'utf8'));
+    expect(json().files.rich).toEqual({ symbol: 'symbol-rich.svg' });
+    ok([...set, '--rich-symbol', 'none']);
+    expect(json().files.rich).toBeUndefined();
+    const bad = run(['export', '--brand', 'lumen', '--icon-art', 'shiny']);
+    expect(bad.status).not.toBe(0);
+    expect(JSON.parse(bad.stderr).error.code).toBe('USAGE');
+  });
 });

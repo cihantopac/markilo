@@ -37,15 +37,17 @@ import {
   slugify,
   slugifyOrHash,
 } from '../core/paths.js';
-import type {
-  BrandRole,
-  Brief,
-  Concept,
-  Confidence,
-  FindingStatus,
-  FindingTopic,
-  Source,
-  SourceReliability,
+import {
+  type BrandRole,
+  type Brief,
+  type Concept,
+  type Confidence,
+  type FindingStatus,
+  type FindingTopic,
+  type MasterFileKey,
+  RICH_KEYS,
+  type Source,
+  type SourceReliability,
 } from '../core/types.js';
 import { validateBrief, validateConcept } from '../core/validate.js';
 import { Workspace, withBrandLock } from '../core/workspace.js';
@@ -84,7 +86,14 @@ import {
 import { wordmarkSvg } from '../design/wordmark.js';
 import { defaultFonts, exploreWordmarks } from '../design/wordmarks.js';
 import { GROUP_INFO, resolveDeliverables, suggestDeliverables } from '../export/deliverables.js';
-import { brandFinalHolding, EXPORT_GROUPS, type ExportGroup, exportBrand } from '../export/exporter.js';
+import {
+  brandFinalHolding,
+  EXPORT_GROUPS,
+  type ExportGroup,
+  exportBrand,
+  ICON_ARTS,
+  type IconArt,
+} from '../export/exporter.js';
 import { inkMetrics } from '../export/geometry.js';
 import {
   composeLockedLockups,
@@ -1816,7 +1825,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'concept update',
     summary: 'Change a concept: status, files, palette, typography or recorded judgment scores.',
     usage:
-      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--no-recolor] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--semantics "<a>; <b>"] [--letter <L>] [--show] [--wordmark <file>] [--symbol <file>] [--small <file|none>] [--small-sizes small|main] [--wordmark-small <file|none>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
+      'concept update --brand <slug> --concept <id> [--status <s>] [--title <name>] [--direction <text>] [--rationale <text>] [--primary|--secondary|--accent <#hex>] [--ink|--paper <#hex>] [--no-recolor] [--on-dark|--on-light <#hex|none>] [--on-brand <#hex|auto|none>] [--tile <#hex|none>] [--font <id> --weight <n>] [--lettering font|custom|family] [--supporting-font <id|none> --supporting-weight <n>] [--idea <sentence> --strengths "<a>; <b>" --weaknesses "<a>; <b>"] [--semantics "<a>; <b>"] [--letter <L>] [--show] [--wordmark <file>] [--symbol <file>] [--small <file|none>] [--small-sizes small|main] [--wordmark-small <file|none>] [--rich-symbol|--rich-lockup-horizontal|--rich-lockup-stacked <file|none>] [--construction <notes>] [--judgment <criterion>=<0-10>:<rationale>]... [--reads-as "<a>; <b>; <c>"] [--blind <scores>] [--reviewer <model>] [--present yes|no:<reason>] [--look <scores> --look-present yes|no:<reason>]',
     options: {
       ...brandOpt,
       concept: { type: 'string', description: 'Concept id' },
@@ -1833,6 +1842,19 @@ export const COMMANDS: CommandSpec[] = [
         type: 'string',
         description:
           'Wordmark drawn for small sizes, file name inside the concept folder (exported as logos/wordmark-small)',
+      },
+      'rich-symbol': {
+        type: 'string',
+        description:
+          'A rich rendering (gradients, highlights, shadows) of the flat symbol, drawn on its artboard; "none" unregisters it. Checked against the symbol\'s silhouette, exported as logos/symbol/symbol-rich',
+      },
+      'rich-lockup-horizontal': {
+        type: 'string',
+        description: 'A rich rendering of the horizontal lockup ("none" unregisters it)',
+      },
+      'rich-lockup-stacked': {
+        type: 'string',
+        description: 'A rich rendering of the stacked lockup ("none" unregisters it)',
       },
       'small-sizes': {
         type: 'string',
@@ -1992,6 +2014,17 @@ export const COMMANDS: CommandSpec[] = [
         }
         next.files[key] = conceptRelative(w, slug, cur.id, v, c);
       }
+      for (const key of RICH_KEYS) {
+        const opt = `rich-${key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}`;
+        const v = c.str(opt);
+        if (!v) continue;
+        const rich = { ...next.files.rich };
+        // "none" unregisters the rich rendering (the file stays in the concept folder).
+        if (v === 'none') delete rich[key];
+        else rich[key] = conceptRelative(w, slug, cur.id, v, c);
+        if (Object.keys(rich).length) next.files.rich = rich;
+        else delete next.files.rich;
+      }
       const sizes = c.str('small-sizes');
       if (sizes === 'main') next.smallSizes = 'main';
       else if (sizes === 'small') delete next.smallSizes;
@@ -2051,7 +2084,8 @@ export const COMMANDS: CommandSpec[] = [
           map.set(staleFrom, to);
         }
         recolorMap = map;
-        const files = Object.values(next.files).filter((f): f is string => !!f);
+        // Rich renderings keep their own colours (gradient stops are not palette roles): only the flat masters follow.
+        const files = Object.values(next.files).filter((f): f is string => typeof f === 'string' && !!f);
         recolor = planRecolor(w, slug, cur.id, files, map, cur.palette);
       }
       // The drawing as it will be once this call is saved (planned recolours included).
@@ -2437,10 +2471,13 @@ export const COMMANDS: CommandSpec[] = [
       // chosen/files.json (1.6) maps each key to its stored copy; an older chosen/ is matched by the current names.
       const index = readChosenIndex(w, slug, cur.id);
       const next: Concept = { ...cur, files: { ...cur.files } };
-      const keys = new Set([
-        ...(Object.keys(cur.files) as (keyof Concept['files'])[]),
-        ...(index ? (Object.keys(index.files) as (keyof Concept['files'])[]) : []),
-      ]);
+      // Rich renderings are not kept in chosen/: a revert leaves them registered as they are.
+      const keys = new Set(
+        [
+          ...(Object.keys(cur.files) as (MasterFileKey | 'rich')[]),
+          ...(index ? (Object.keys(index.files) as (MasterFileKey | 'rich')[]) : []),
+        ].filter((k): k is MasterFileKey => k !== 'rich'),
+      );
       const copies = new Map<string, string>();
       const aside: string[] = [];
       for (const key of keys) {
@@ -2465,8 +2502,9 @@ export const COMMANDS: CommandSpec[] = [
           `Reverting ${cur.id} would leave an invalid concept: ${issues.join('; ')}.`,
           'Nothing was changed. Register the missing master with concept update, then revert again.',
         );
-      for (const [key, rel] of Object.entries(next.files) as [string, string | undefined][]) {
-        if (!rel || copies.has(rel) || existsSync(w.conceptFile(slug, cur.id, rel))) continue;
+      for (const [key, rel] of Object.entries(next.files) as [string, unknown][]) {
+        if (typeof rel !== 'string' || copies.has(rel) || existsSync(w.conceptFile(slug, cur.id, rel)))
+          continue;
         throw new MarkiloError(
           'NOT_FOUND',
           `Reverting ${cur.id} would leave files.${key} pointing at ${rel}, which does not exist.`,
@@ -2713,7 +2751,7 @@ export const COMMANDS: CommandSpec[] = [
     name: 'export',
     summary: `Generate the asset kit from the approved identity: the groups chosen in the brief (markilo deliverables), or --only / --all. Groups: ${EXPORT_GROUPS.join(', ')}.`,
     usage:
-      'export --brand <slug> [--only web,ios,...] [--all] [--out <dir>] [--clean] [--progress] [--theme-color primary|paper|#hex]',
+      'export --brand <slug> [--only web,ios,...] [--all] [--out <dir>] [--clean] [--progress] [--theme-color primary|paper|#hex] [--icon-art flat|rich]',
     options: {
       ...brandOpt,
       only: { type: 'string', description: 'Comma-separated groups' },
@@ -2733,10 +2771,18 @@ export const COMMANDS: CommandSpec[] = [
         description:
           'Browser theme-color: primary, paper or #hex (default: paper for dark-first brands, else primary)',
       },
+      'icon-art': {
+        type: 'string',
+        description:
+          'Art of app icons, banners and OG images: flat (default, the flat masters) or rich (the rich renderings the kit holds, drawn as they are)',
+      },
     },
     async run(c) {
       const w = ws(c);
       const slug = c.req('brand');
+      const iconArt = c.str('icon-art');
+      if (iconArt !== undefined && !(ICON_ARTS as readonly string[]).includes(iconArt))
+        throw new MarkiloError('USAGE', `--icon-art must be ${ICON_ARTS.join(' or ')} (got "${iconArt}").`);
       let groups = c.list('only') as ExportGroup[];
       let selection = groups.length ? 'only' : 'all';
       if (!groups.length && !c.bool('all')) {
@@ -2758,6 +2804,7 @@ export const COMMANDS: CommandSpec[] = [
           ? { onProgress: (progress: unknown) => process.stderr.write(`${JSON.stringify({ progress })}\n`) }
           : {}),
         ...(c.str('theme-color') ? { themeColor: c.str('theme-color')! } : {}),
+        ...(iconArt ? { iconArt: iconArt as IconArt } : {}),
       });
       const byGroup: Record<string, number> = {};
       for (const a of r.assets) byGroup[a.group] = (byGroup[a.group] ?? 0) + 1;
@@ -2990,7 +3037,7 @@ export const COMMANDS: CommandSpec[] = [
         files.push(out);
         // After the user chose this concept: what they chose next to what it is now, so drift is seen, not guessed.
         const chosenIndex = readChosenIndex(w, slug, cpt.id);
-        const kept = (key: keyof Concept['files']) => {
+        const kept = (key: MasterFileKey) => {
           const f = chosenFile(w, slug, cpt, key, chosenIndex);
           return f ? readText(f) : undefined;
         };

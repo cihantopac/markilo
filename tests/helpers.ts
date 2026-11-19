@@ -47,3 +47,21 @@ export function synthBrand(): { ws: Workspace; dir: string } {
   });
   return { ws, dir };
 }
+
+/** fold-n drawn with gradients (a metallic rendering of the flat master), optionally moved by dx artboard units. */
+export function richFoldN(dx = 0): string {
+  let n = 0;
+  const defs: string[] = [];
+  const body = mark('fold-n')
+    .replace(/fill="(#[0-9a-f]{6})"/g, (_m, hex: string) => {
+      const id = `g${n++}`;
+      defs.push(
+        `<linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5f7ff"/><stop offset="0.45" stop-color="${hex}"/><stop offset="0.55" stop-color="#0b1440"/><stop offset="1" stop-color="${hex}"/></linearGradient>`,
+      );
+      return `fill="url(#${id})"`;
+    })
+    .replace(/<title>[^<]*<\/title>/, '');
+  const open = body.indexOf('>') + 1;
+  const close = body.lastIndexOf('</svg>');
+  return `${body.slice(0, open)}<defs>${defs.join('')}</defs><g transform="translate(${dx} 0)">${body.slice(open, close)}</g></svg>`;
+}

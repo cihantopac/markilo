@@ -1,7 +1,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { MarkiloError } from '../core/errors.js';
-import type { Concept } from '../core/types.js';
+import type { Concept, MasterFileKey } from '../core/types.js';
 import type { Workspace } from '../core/workspace.js';
 
 /** Proposals shown together in one exploration round: enough to choose between, few enough to develop well. */
@@ -126,7 +126,7 @@ export const CHOSEN_INDEX = 'files.json';
 
 export interface ChosenIndex {
   /** `files` key → the file's name inside chosen/. */
-  files: Partial<Record<keyof Concept['files'], string>>;
+  files: Partial<Record<MasterFileKey, string>>;
   /** The concept palette when the user chose it: a revert recolours from it to the palette of the day. */
   palette?: Concept['palette'];
 }
@@ -151,7 +151,7 @@ export function chosenFile(
   ws: Workspace,
   slug: string,
   concept: Concept,
-  key: keyof Concept['files'],
+  key: MasterFileKey,
   index = readChosenIndex(ws, slug, concept.id),
 ): string | undefined {
   const name = index ? index.files[key] : concept.files[key]?.split('/').pop();
@@ -183,8 +183,15 @@ export function keepChosen(
   const kept: string[] = [];
   const index: ChosenIndex = { files: {}, palette: { ...concept.palette } };
   const stored = new Map<string, string>();
-  for (const [key, rel] of Object.entries(concept.files) as [keyof Concept['files'], string | undefined][]) {
-    if (!rel || !existsSync(ws.conceptFile(slug, concept.id, rel))) continue;
+  // Rich renderings are not part of the drawing the user chose: they are added on top of the flat masters later.
+  for (const [key, rel] of Object.entries(concept.files) as [MasterFileKey | 'rich', unknown][]) {
+    if (
+      key === 'rich' ||
+      typeof rel !== 'string' ||
+      !rel ||
+      !existsSync(ws.conceptFile(slug, concept.id, rel))
+    )
+      continue;
     let name = rel.split('/').pop()!;
     // Two keys with different files of the same name: the second is stored under its key.
     if (name === CHOSEN_INDEX || (stored.has(name) && stored.get(name) !== rel)) name = `${key}-${name}`;

@@ -147,6 +147,14 @@ export interface ConceptPalette {
 
 export type Lettering = 'font' | 'custom' | 'family';
 
+/** The flat masters a rich rendering can stand on. */
+export const RICH_KEYS = ['symbol', 'lockupHorizontal', 'lockupStacked'] as const;
+export type RichKey = (typeof RICH_KEYS)[number];
+export type RichFiles = Partial<Record<RichKey, string>>;
+
+/** The master files of a concept, by key, with the rich renderings (a nested object) left out. */
+export type MasterFileKey = Exclude<keyof Concept['files'], 'rich'>;
+
 export interface Concept {
   schema: 'markilo/concept@1';
   id: string;
@@ -184,6 +192,12 @@ export interface Concept {
     small?: string;
     /** A wordmark drawn for small sizes (tighter detail, opened spacing), exported as logos/wordmark-small. */
     wordmarkSmall?: string;
+    /**
+     * Rich renderings (gradients, highlights, shadows) of flat masters, each drawn on its master's artboard. Every
+     * quality check runs on the flat masters; a rich file is only linted and matched against its master's silhouette,
+     * and its colours are never palette roles. Exported beside the flat logos as `<role>-rich`.
+     */
+    rich?: RichFiles;
   };
   /**
    * What export draws at 32 px and below: the simplified `files.small` (default when it exists) or, by the user's

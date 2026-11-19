@@ -2,11 +2,12 @@ import { existsSync, readFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
 import { checkLetters, letterAdvice } from '../analyze/letters.js';
 import { loadMark, sampleFromSvg } from '../analyze/mark.js';
-import { assessQuality, type QualityReport } from '../analyze/quality.js';
+import { assessQuality, assessRich, type QualityReport } from '../analyze/quality.js';
 import { compareMarks, RISK_THRESHOLDS } from '../analyze/similarity.js';
 import { type ConstructionSpec, compileSpec, normalizePath } from '../construct/compile.js';
 import { MarkiloError } from '../core/errors.js';
 import { readText, writeGenerated, writeJson } from '../core/fsx.js';
+import { RICH_KEYS } from '../core/types.js';
 import type { Workspace } from '../core/workspace.js';
 import { composeLockup } from '../design/lockup.js';
 import { inkMetrics } from '../export/geometry.js';
@@ -115,6 +116,57 @@ export async function wordmarkLetters(
 /** Checks of the sizes export draws from the small version (≤ 32 px) when a concept has one. */
 const SMALL_SIZE_CHECKS = new Set(['fidelity-16', 'fidelity-32', 'thin-detail']);
 
+/**
+ * The rich renderings of a concept, each linted and matched against its flat master's silhouette. A lockup the
+ * concept does not draw by hand is matched against the one finalize would compose (by form only: it has no artboard
+ * on disk to draw on).
+ */
+async function richReports(ws: Workspace, brand: string, id: string): Promise<QualityReport[]> {
+  const concept = ws.concept(brand, id);
+  const out: QualityReport[] = [];
+  const read = (rel?: string) => (rel ? readText(ws.conceptFile(brand, id, rel)) : undefined);
+  for (const key of RICH_KEYS) {
+    const rel = concept.files.rich?.[key];
+    if (!rel) continue;
+    const role =
+      `rich-${key === 'symbol' ? 'symbol' : key === 'lockupHorizontal' ? 'lockup-horizontal' : 'lockup-stacked'}` as const;
+    const rich = readText(ws.conceptFile(brand, id, rel));
+    let master = read(concept.files[key]);
+    const registered = master !== undefined;
+    if (!master && key !== 'symbol') {
+      const symbol = read(concept.files.symbol);
+      const wordmark = read(concept.files.wordmark);
+      if (symbol && wordmark)
+        master = composeLockup(symbol, wordmark, {
+          layout: key === 'lockupHorizontal' ? 'horizontal' : 'stacked',
+          symbolInk: (await inkMetrics(symbol)).bbox,
+          title: concept.title,
+        }).svg;
+    }
+    if (!master) {
+      out.push({
+        subject: `${id}/${rel}`,
+        role,
+        measuredAt: new Date().toISOString(),
+        checks: [
+          {
+            id: 'silhouette-match',
+            label: 'Keeps the master’s silhouette',
+            status: 'fail',
+            value: 'no master',
+            message: `${rel} is a rich rendering of the ${key}, but the concept has no flat ${key} to check it against.`,
+          },
+        ],
+        summary: { pass: 0, warn: 0, fail: 1, info: 0 },
+        note: 'Measured technical checks.',
+      });
+      continue;
+    }
+    out.push(await assessRich(rich, master, `${id}/${rel}`, role, { registered }));
+  }
+  return out;
+}
+
 /** Runs every automated check on a concept and writes the reports and the review contact sheet. */
 export async function verifyConcept(ws: Workspace, brand: string, id: string) {
   ws.assertNotLocked(brand);
@@ -212,6 +264,7 @@ export async function verifyConcept(ws: Workspace, brand: string, id: string) {
     }
   }
   if (!reports.length) throw new MarkiloError('INVALID_INPUT', `Concept ${id} has no files to verify.`);
+  reports.push(...(await richReports(ws, brand, id)));
   const qPath = join(ws.reportsDir(brand), `quality-${id}.json`);
   const primary = reports[0]!;
   const merged: QualityReport = {

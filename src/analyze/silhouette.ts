@@ -36,6 +36,45 @@ export async function silhouetteIoU(a: string, b: string): Promise<number> {
   return union === 0 ? 1 : inter / union;
 }
 
+/** Alpha > 0.5 mask of an SVG's whole artboard stretched to a SIZE×SIZE square (no fitting to the ink). */
+async function maskOfArtboard(svg: string): Promise<Uint8Array> {
+  const placed = nestSvg(svg, { x: 0, y: 0, width: SIZE, height: SIZE });
+  const wrapped = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SIZE} ${SIZE}" width="${SIZE}" height="${SIZE}">${placed}</svg>`;
+  const r = await renderSvg(wrapped, { width: SIZE });
+  const m = new Uint8Array(r.width * r.height);
+  for (let i = 0; i < m.length; i++) m[i] = r.data[i * 4 + 3]! > 127 ? 1 : 0;
+  return m;
+}
+
+/**
+ * Intersection over union of two drawings laid on the same artboard (each artboard scaled to one square, nothing
+ * refitted): unlike silhouetteIoU it also sees a drawing that moved or changed size on its artboard. `slack`: the
+ * best IoU over shifts of up to this share of the artboard, so registration within it is not counted as a move.
+ */
+export async function artboardIoU(a: string, b: string, opts: { slack?: number } = {}): Promise<number> {
+  const [ma, mb] = await Promise.all([maskOfArtboard(a), maskOfArtboard(b)]);
+  const k = Math.round((opts.slack ?? 0) * SIZE);
+  let best = 0;
+  let any = false;
+  for (let dy = -k; dy <= k; dy++)
+    for (let dx = -k; dx <= k; dx++) {
+      let inter = 0;
+      let union = 0;
+      for (let y = 0; y < SIZE; y++)
+        for (let x = 0; x < SIZE; x++) {
+          const va = ma[y * SIZE + x]!;
+          const bx = x - dx;
+          const by = y - dy;
+          const vb = bx >= 0 && bx < SIZE && by >= 0 && by < SIZE ? mb[by * SIZE + bx]! : 0;
+          if (va && vb) inter++;
+          if (va || vb) union++;
+        }
+      if (union) any = true;
+      if (union) best = Math.max(best, inter / union);
+    }
+  return any ? best : 1;
+}
+
 /** Ink height a word is rendered at for wordmarkIoU (its letters keep this size whatever their spacing). */
 const WORD_HEIGHT = 256;
 

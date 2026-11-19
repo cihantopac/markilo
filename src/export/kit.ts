@@ -4,7 +4,7 @@ import { hexToOklch, normalizeColor, oklchToHex } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
 import { nowIso, readJson, readText, writeGenerated, writeJson } from '../core/fsx.js';
 import { resolveInsideReal } from '../core/paths.js';
-import type { Concept, Lettering } from '../core/types.js';
+import { type Concept, type Lettering, RICH_KEYS, type RichFiles, type RichKey } from '../core/types.js';
 import type { Workspace } from '../core/workspace.js';
 import { fontInfo } from '../design/fonts.js';
 import { composeLockup } from '../design/lockup.js';
@@ -72,6 +72,8 @@ export interface BrandKit {
     symbolSmall?: string;
     /** A wordmark drawn for small sizes. */
     wordmarkSmall?: string;
+    /** Rich renderings of the flat masters (gradients, highlights), exported beside them as `<role>-rich`. */
+    rich?: RichFiles;
   };
   /** The user chose the main symbol at 32 px and below: export ignores `symbolSmall`. */
   smallSizes?: 'main';
@@ -139,7 +141,10 @@ export const kitPath = (ws: Workspace, brand: string) => join(ws.finalDir(brand)
 export function loadKit(
   ws: Workspace,
   brand: string,
-): BrandKit & { read(file: keyof BrandKit['files']): string | undefined } {
+): BrandKit & {
+  read(file: Exclude<keyof BrandKit['files'], 'rich'>): string | undefined;
+  readRich(file: RichKey): string | undefined;
+} {
   const p = kitPath(ws, brand);
   if (!existsSync(p)) {
     throw new MarkiloError(
@@ -162,6 +167,10 @@ export function loadKit(
     read(file) {
       const rel = kit.files[file];
       return rel ? readText(resolveInsideReal(ws.finalDir(brand), rel)) : undefined;
+    },
+    readRich(file) {
+      const rel = kit.files.rich?.[file];
+      return typeof rel === 'string' ? readText(resolveInsideReal(ws.finalDir(brand), rel)) : undefined;
     },
   };
 }
@@ -272,7 +281,17 @@ const FINAL_MASTERS = [
   'lockup-horizontal.svg',
   'lockup-stacked.svg',
   'lockup-compact.svg',
+  'symbol-rich.svg',
+  'lockup-horizontal-rich.svg',
+  'lockup-stacked-rich.svg',
 ] as const;
+
+/** Where finalize freezes each rich rendering in final/. */
+const RICH_FINAL: Record<RichKey, string> = {
+  symbol: 'symbol-rich.svg',
+  lockupHorizontal: 'lockup-horizontal-rich.svg',
+  lockupStacked: 'lockup-stacked-rich.svg',
+};
 
 /** Freezes an approved concept into final/: optimized masters, generated lockups and brand.json. */
 export async function finalizeConcept(
@@ -423,9 +442,17 @@ export async function finalizeConcept(
     files.lockupStacked = 'lockup-stacked.svg';
   if (compose && lockup(undefined, 'lockup-compact.svg', 'horizontal', 1, 0.4))
     files.lockupCompact = 'lockup-compact.svg';
+  // Rich renderings stand on a flat master: one whose master the kit does not have is not frozen.
+  const rich: RichFiles = {};
+  for (const key of RICH_KEYS)
+    if (files[key] && take(concept.files.rich?.[key], RICH_FINAL[key])) rich[key] = RICH_FINAL[key];
+  if (Object.keys(rich).length) files.rich = rich;
   // A kit replaced with --force: a master the earlier kit wrote and this one does not list (a small symbol now that
   // small sizes use the main one, say) is removed, so final/ holds exactly what brand.json lists.
-  const listed = new Set(Object.values(files));
+  const listed = new Set([
+    ...Object.values(files).filter((f): f is string => typeof f === 'string'),
+    ...Object.values(rich),
+  ]);
   for (const name of FINAL_MASTERS) if (!listed.has(name)) rmSync(join(dir, name), { force: true });
 
   const { ink, dark } = inkFor(concept.palette.primary);

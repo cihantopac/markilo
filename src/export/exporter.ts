@@ -49,6 +49,10 @@ export const EXPORT_GROUPS = [
 ] as const;
 export type ExportGroup = (typeof EXPORT_GROUPS)[number];
 
+/** `--icon-art`: what app icons, banners and OG images draw (rich needs a rich rendering in the kit). */
+export const ICON_ARTS = ['flat', 'rich'] as const;
+export type IconArt = (typeof ICON_ARTS)[number];
+
 export interface AssetRecord {
   path: string;
   group: ExportGroup;
@@ -82,6 +86,10 @@ interface Ctx {
   lockupC?: string;
   /** The logo that leads: the wordmark for a wordmark-led identity, else the horizontal lockup. */
   primary?: string;
+  /** Rich renderings of the flat masters (gradients, highlights), drawn as they are, never recoloured. */
+  rich: { symbol?: string; lockupH?: string; lockupS?: string };
+  /** The art of app icons, banners and OG images: the flat masters (default) or their rich renderings. */
+  iconArt: IconArt;
   /** The browser/OS chrome colour (theme-color meta, manifest theme_color), resolved once. */
   themeColor: string;
   assets: AssetRecord[];
@@ -141,6 +149,33 @@ function fitArt(
 
 const grounds = (kit: BrandKit) => groundsFor(kit.palette.paper, kit.palette.dark);
 
+/** The rich symbol when app icons draw rich art (`--icon-art rich`), else undefined (the flat path). */
+const richIcon = (ctx: Ctx): string | undefined =>
+  ctx.iconArt === 'rich' && !ctx.kit.locked ? ctx.rich.symbol : undefined;
+
+/**
+ * The ground of the brand tile. Rich art is drawn as it is, so it stands on the ground it was drawn for — the tile
+ * colour the user set, else the paper — and never on a primary tile its own colours would sink into.
+ */
+const tileFill = (ctx: Ctx): string =>
+  richIcon(ctx) ? (ctx.kit.palette.tile ?? ctx.kit.palette.paper) : tileGround(ctx.kit.palette);
+
+/** The mark drawn on the brand tile: the rich symbol as drawn, or the flat symbol adapted to the tile. */
+const tileMark = (ctx: Ctx, fill: string): string =>
+  richIcon(ctx) ?? markOnGround(ctx.symbol!, fill, ctx.kit.palette, { tile: true });
+
+/** The master an app icon is drawn from. */
+const iconFrom = (ctx: Ctx): string => (richIcon(ctx) ? 'symbol-rich.svg' : 'symbol.svg');
+
+/** The rich rendering of the lead logo for banners and OG images, when `--icon-art rich` and the kit has one. */
+function richLead(ctx: Ctx): { art: string; from: string } | undefined {
+  if (ctx.iconArt !== 'rich' || ctx.kit.locked) return undefined;
+  if (!ctx.primary) return ctx.rich.symbol ? { art: ctx.rich.symbol, from: 'symbol-rich.svg' } : undefined;
+  if (ctx.primary === ctx.lockupH && ctx.rich.lockupH)
+    return { art: ctx.rich.lockupH, from: 'lockup-horizontal-rich.svg' };
+  return undefined;
+}
+
 // ---------------------------------------------------------------- logos
 async function exportLogos(ctx: Ctx) {
   const overview: { name: string; variants: { v: string; svg: string }[] }[] = [];
@@ -156,6 +191,17 @@ async function exportLogos(ctx: Ctx) {
     ['symbol', ctx.symbol, 'Symbol / brandmark'],
     // A wordmark-led primary already is the wordmark: the same files twice only made the folder harder to read.
     ['wordmark', ctx.primary === ctx.wordmark ? undefined : ctx.wordmark, 'Wordmark'],
+  ];
+  // Rich renderings, beside the flat files of the logo they render (as drawn: never recoloured or made one-colour).
+  const richLogos: [string, string | undefined, string, string][] = [
+    ['symbol', ctx.rich.symbol, 'Symbol', 'symbol-rich.svg'],
+    [
+      ctx.primary === ctx.lockupH ? 'primary' : 'lockup-horizontal',
+      ctx.rich.lockupH,
+      'Horizontal lockup',
+      'lockup-horizontal-rich.svg',
+    ],
+    ['secondary', ctx.rich.lockupS, 'Stacked lockup', 'lockup-stacked-rich.svg'],
   ];
   for (const [name, art, purpose] of arts) {
     if (!art) continue;
@@ -186,7 +232,14 @@ async function exportLogos(ctx: Ctx) {
           ['black', monochrome(art, '#000000'), 'one-color black (print, fax, engraving)'],
           ['white', monochrome(art, '#ffffff'), 'one-color white (knockout on photos and dark fills)'],
         ];
-    overview.push({ name, variants: variants.map(([v, svg]) => ({ v, svg })) });
+    const richArt = richLogos.find(([n]) => n === name)?.[1];
+    overview.push({
+      name,
+      variants: [
+        ...variants.map(([v, svg]) => ({ v, svg })),
+        ...(richArt ? [{ v: 'rich', svg: richArt }] : []),
+      ],
+    });
     for (const [v, svg, note] of variants) {
       const clean = kit.locked ? svg : optimizeSvg(svg);
       await emit(ctx, `logos/${name}/${name}-${v}.svg`, clean, {
@@ -207,7 +260,13 @@ async function exportLogos(ctx: Ctx) {
   if (overview.length) {
     const g = grounds(kit);
     const groundFor = (v: string): string =>
-      v === 'color' ? g.native : v === 'reversed' ? g.opposite : v === 'white' ? '#111318' : '#ffffff';
+      v === 'color' || v === 'rich'
+        ? g.native
+        : v === 'reversed'
+          ? g.opposite
+          : v === 'white'
+            ? '#111318'
+            : '#ffffff';
     const cols = Math.max(...overview.map((o) => o.variants.length));
     const cw = 300;
     const ch = 150;
@@ -238,6 +297,16 @@ async function exportLogos(ctx: Ctx) {
       derivedFrom: 'brand.json',
     });
   }
+  for (const [name, art, what, from] of richLogos) {
+    if (!art) continue;
+    const purpose = `${what}, rich rendering (gradients and highlights) for ${grounds(kit).native} — screens and large sizes; the flat files stay the master`;
+    await emit(ctx, `logos/${name}/${name}-rich.svg`, art, { group: 'logos', purpose, derivedFrom: from });
+    await emit(ctx, `logos/${name}/${name}-rich.png`, await png(art, name === 'symbol' ? 1024 : 2000), {
+      group: 'logos',
+      purpose: `${purpose}, transparent PNG`,
+      derivedFrom: from,
+    });
+  }
   if (ctx.wordmarkSmall) {
     const svg = kit.locked ? ctx.wordmarkSmall : optimizeSvg(ctx.wordmarkSmall);
     const purpose = 'Wordmark drawn for small sizes (below about 120 px wide)';
@@ -257,12 +326,12 @@ async function exportLogos(ctx: Ctx) {
     await emit(ctx, 'logos/appmark/appmark.svg', app, {
       group: 'logos',
       purpose: 'Appmark: symbol on brand tile (avatars, app listings)',
-      derivedFrom: 'symbol.svg',
+      derivedFrom: iconFrom(ctx),
     });
     await emit(ctx, 'logos/appmark/appmark.png', await png(app, 1024), {
       group: 'logos',
       purpose: 'Appmark PNG 1024',
-      derivedFrom: 'symbol.svg',
+      derivedFrom: iconFrom(ctx),
     });
   }
 }
@@ -274,8 +343,8 @@ async function appmarkSvg(
   shape: 'rounded' | 'square' | 'circle',
   fraction = 0.6,
 ): Promise<string> {
-  const fill = tileGround(ctx.kit.palette);
-  const svg = markOnGround(ctx.symbol!, fill, ctx.kit.palette, { tile: true });
+  const fill = tileFill(ctx);
+  const svg = tileMark(ctx, fill);
   const under =
     shape === 'square'
       ? `<rect width="${size}" height="${size}" fill="${fill}"/>`
@@ -368,7 +437,7 @@ async function exportWeb(ctx: Ctx) {
   await emit(ctx, 'web/apple-touch-icon.png', await png(touch, SPECS.web.appleTouch), {
     group: 'web',
     purpose: 'Apple touch icon 180×180, opaque',
-    derivedFrom: 'symbol.svg',
+    derivedFrom: iconFrom(ctx),
   });
   for (const s of SPECS.web.manifestIcons) {
     const any = kit.locked
@@ -377,12 +446,12 @@ async function exportWeb(ctx: Ctx) {
     await emit(ctx, `web/icon-${s}.png`, await png(any, s), {
       group: 'web',
       purpose: `Web app manifest icon ${s}×${s} (purpose any)`,
-      derivedFrom: 'symbol.svg',
+      derivedFrom: iconFrom(ctx),
     });
   }
   for (const s of SPECS.web.maskableIcons) {
-    const fill = kit.locked ? kit.palette.paper : tileGround(kit.palette);
-    const mark = kit.locked ? sym : markOnGround(sym, fill, kit.palette, { tile: true });
+    const fill = kit.locked ? kit.palette.paper : tileFill(ctx);
+    const mark = kit.locked ? sym : tileMark(ctx, fill);
     const maskable = await canvas(
       mark,
       s,
@@ -393,7 +462,7 @@ async function exportWeb(ctx: Ctx) {
     await emit(ctx, `web/icon-maskable-${s}.png`, await png(maskable, s), {
       group: 'web',
       purpose: `Maskable icon ${s}×${s} (content inside the 40% safe circle)`,
-      derivedFrom: 'symbol.svg',
+      derivedFrom: iconFrom(ctx),
     });
   }
   const manifest = {
@@ -455,7 +524,7 @@ async function exportIos(ctx: Ctx) {
   await emit(ctx, `${base}/AppIcon-1024.png`, await png(light, S), {
     group: 'ios',
     purpose: 'iOS/iPadOS app icon 1024, opaque, unmasked',
-    derivedFrom: 'symbol.svg',
+    derivedFrom: iconFrom(ctx),
   });
   const images: Record<string, unknown>[] = [
     { filename: 'AppIcon-1024.png', idiom: 'universal', platform: 'ios', size: '1024x1024' },
@@ -496,14 +565,14 @@ async function exportIos(ctx: Ctx) {
     await emit(
       ctx,
       'ios/icon-composer/background.svg',
-      svgDocument(S, S, '', { background: tileGround(kit.palette) }),
+      svgDocument(S, S, '', { background: tileFill(ctx) }),
       { group: 'ios', purpose: 'Icon Composer background layer', derivedFrom: 'brand.json' },
     );
     const fg = svgDocument(
       S,
       S,
       await placeMark(
-        markOnGround(sym, tileGround(kit.palette), kit.palette, { tile: true }),
+        tileMark(ctx, tileFill(ctx)),
         { x: 0, y: 0, width: S, height: S },
         { mode: 'box', fraction: 0.6 },
       ),
@@ -511,7 +580,7 @@ async function exportIos(ctx: Ctx) {
     await emit(ctx, 'ios/icon-composer/foreground.svg', fg, {
       group: 'ios',
       purpose: 'Icon Composer foreground layer (import into Icon Composer)',
-      derivedFrom: 'symbol.svg',
+      derivedFrom: iconFrom(ctx),
     });
   }
   await emit(
@@ -526,8 +595,9 @@ async function exportIos(ctx: Ctx) {
 async function exportMacos(ctx: Ctx) {
   const { kit } = ctx;
   const { canvas: C, legacyBody: body, legacyCornerRadius } = SPECS.macos;
-  const fill = kit.locked ? kit.palette.paper : tileGround(kit.palette);
-  const mark = kit.locked ? ctx.symbol! : markOnGround(ctx.symbol!, fill, kit.palette, { tile: true });
+  const fill = kit.locked ? kit.palette.paper : tileFill(ctx);
+  const mark = kit.locked ? ctx.symbol! : tileMark(ctx, fill);
+  const from = iconFrom(ctx);
   // macOS 26+: full-bleed square; the system applies the rounded shape (also the Icon Composer canvas).
   const square = svgDocument(
     C,
@@ -538,12 +608,12 @@ async function exportMacos(ctx: Ctx) {
   await emit(ctx, 'macos/AppIcon-1024-square.svg', square, {
     group: 'macos',
     purpose: 'macOS 26+ full-bleed square source (system rounds it; use with Icon Composer)',
-    derivedFrom: 'symbol.svg',
+    derivedFrom: from,
   });
   await emit(ctx, 'macos/AppIcon-1024-square.png', await png(square, C), {
     group: 'macos',
     purpose: 'macOS 26+ full-bleed 1024 PNG',
-    derivedFrom: 'symbol.svg',
+    derivedFrom: from,
   });
   // Legacy grid for .icns used outside Xcode (Electron, Tauri) and on older macOS.
   const inset = (C - body) / 2;
@@ -560,7 +630,7 @@ async function exportMacos(ctx: Ctx) {
   await emit(ctx, 'macos/AppIcon-1024-legacy.svg', art, {
     group: 'macos',
     purpose: 'Legacy macOS icon on the 824 px grid (for .icns)',
-    derivedFrom: 'symbol.svg',
+    derivedFrom: from,
   });
   const byPx = new Map<number, Buffer>();
   for (const px of [...new Set(ICNS_TYPES.map((t) => t.px))]) byPx.set(px, await png(art, px));
@@ -569,13 +639,13 @@ async function exportMacos(ctx: Ctx) {
     await emit(ctx, `macos/AppIcon.iconset/icon_${s}x${s}${x2 ? '@2x' : ''}.png`, byPx.get(px)!, {
       group: 'macos',
       purpose: `iconset ${label}`,
-      derivedFrom: 'symbol.svg',
+      derivedFrom: from,
     });
   }
   await emit(ctx, 'macos/AppIcon.icns', encodeIcns(byPx), {
     group: 'macos',
     purpose: 'macOS .icns (16–1024 px, legacy grid) for Electron/Tauri and older macOS',
-    derivedFrom: 'symbol.svg',
+    derivedFrom: from,
   });
 }
 
@@ -594,8 +664,9 @@ async function exportAndroid(ctx: Ctx) {
   const { kit } = ctx;
   const A = SPECS.android;
   const sym = ctx.symbol!;
-  const fill = kit.locked ? kit.palette.paper : tileGround(kit.palette);
-  const fg = kit.locked ? sym : markOnGround(sym, fill, kit.palette, { tile: true });
+  const fill = kit.locked ? kit.palette.paper : tileFill(ctx);
+  const fg = kit.locked ? sym : tileMark(ctx, fill);
+  const from = iconFrom(ctx);
   const safe = A.safeZoneDp / 2 / A.adaptiveDp; // radius as fraction of the layer
   for (const [d, k] of Object.entries(A.densities)) {
     const L = Math.round(A.adaptiveDp * k);
@@ -609,7 +680,7 @@ async function exportAndroid(ctx: Ctx) {
     await emit(ctx, `${dir}/ic_launcher_foreground.png`, await png(fgSvg, L), {
       group: 'android',
       purpose: `Adaptive icon foreground ${L}px (${d})`,
-      derivedFrom: 'symbol.svg',
+      derivedFrom: from,
     });
     await emit(
       ctx,
@@ -652,12 +723,12 @@ async function exportAndroid(ctx: Ctx) {
     await emit(ctx, `${dir}/ic_launcher.png`, await png(sq, legacy), {
       group: 'android',
       purpose: `Legacy launcher icon ${legacy}px (${d})`,
-      derivedFrom: 'symbol.svg',
+      derivedFrom: from,
     });
     await emit(ctx, `${dir}/ic_launcher_round.png`, await png(round, legacy), {
       group: 'android',
       purpose: `Legacy round launcher icon ${legacy}px (${d})`,
-      derivedFrom: 'symbol.svg',
+      derivedFrom: from,
     });
   }
   const xml = (round: boolean) =>
@@ -675,7 +746,7 @@ async function exportAndroid(ctx: Ctx) {
   await emit(
     ctx,
     'android/res/values/ic_launcher_colors.xml',
-    `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="brand_primary">${kit.locked ? kit.palette.primary : tileGround(kit.palette)}</color>\n</resources>\n`,
+    `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="brand_primary">${kit.locked ? kit.palette.primary : fill}</color>\n</resources>\n`,
     { group: 'android', purpose: 'Brand color resource', derivedFrom: 'brand.json' },
   );
   const play = kit.locked
@@ -684,14 +755,18 @@ async function exportAndroid(ctx: Ctx) {
   await emit(ctx, 'android/play-store-icon-512.png', await png(play, A.playStore), {
     group: 'android',
     purpose: 'Google Play listing icon 512×512 (Play applies the mask)',
-    derivedFrom: 'symbol.svg',
+    derivedFrom: from,
   });
   const { width: bw, height: bh } = A.tvBanner;
   const bg = grounds(kit).native;
   const bart0 = ctx.primary ?? sym;
-  const bart = kit.locked
-    ? bart0
-    : adaptToGround(bart0, bg, { dark: kit.palette.ink, light: '#ffffff' }, groundColors(kit.palette));
+  const richBanner = richLead(ctx);
+  // Rich art is drawn as it is, on the brand's own ground it was drawn for.
+  const bart = richBanner
+    ? richBanner.art
+    : kit.locked
+      ? bart0
+      : adaptToGround(bart0, bg, { dark: kit.palette.ink, light: '#ffffff' }, groundColors(kit.palette));
   await emit(
     ctx,
     // A drawable resource (names are [a-z0-9_]) under res/, so install-assets copies it with the launcher icons.
@@ -700,7 +775,7 @@ async function exportAndroid(ctx: Ctx) {
     {
       group: 'android',
       purpose: `Android TV home-screen banner ${bw}×${bh}, xhdpi (reference it in the manifest: android:banner="@drawable/banner")`,
-      derivedFrom: primaryFile(ctx),
+      derivedFrom: richBanner?.from ?? primaryFile(ctx),
     },
   );
 
@@ -722,27 +797,36 @@ async function exportAndroid(ctx: Ctx) {
       `Google Play feature graphic ${F.width}×${F.height} (PNG, no transparency)`,
     ],
   ] as const) {
-    const s = tvSurface({ ...art, ...tvGround(ctx), width: w, height: h }, rel);
+    const s = tvSurface({ ...art, ...tvGround(ctx, art.asDrawn), width: w, height: h }, rel);
     if (s.warning) ctx.warnings.push(s.warning);
     await emit(ctx, rel, await png(s.svg, w, h), {
       group: 'android',
       purpose,
-      derivedFrom: primaryFile(ctx),
+      derivedFrom: art.from,
     });
   }
 }
 
 /** The lead logo for TV surfaces and how much of its height is lettering (a heuristic: the lockup's text sits at cap height). */
-function tvArt(ctx: Ctx): { art: string; textShare: number } {
-  if (!ctx.primary) return { art: ctx.symbol!, textShare: 0 };
+function tvArt(ctx: Ctx): { art: string; textShare: number; from: string; asDrawn?: true } {
+  const textShare = !ctx.primary ? 0 : ctx.primary === ctx.wordmark ? 1 : 0.6;
+  // With --icon-art rich the rich rendering of the lead logo, drawn as it is (never adapted to the ground).
+  const rich = richLead(ctx);
+  if (rich) return { art: rich.art, textShare, from: rich.from, asDrawn: true };
+  if (!ctx.primary) return { art: ctx.symbol!, textShare: 0, from: primaryFile(ctx) };
   // 0.6: in the horizontal lockups Markilo draws, the wordmark's cap height is about 60% of the lockup's height.
-  return { art: ctx.primary, textShare: ctx.primary === ctx.wordmark ? 1 : 0.6 };
+  return { art: ctx.primary, textShare, from: primaryFile(ctx) };
 }
 
-function tvGround(ctx: Ctx) {
+/** The ground of a TV surface: rich art stands on the ground it was drawn for (the tile the user set, else paper). */
+function tvGround(ctx: Ctx, asDrawn?: boolean) {
   const { kit } = ctx;
   return {
-    ground: kit.locked ? kit.palette.paper : tileGround(kit.palette),
+    ground: kit.locked
+      ? kit.palette.paper
+      : asDrawn
+        ? (kit.palette.tile ?? kit.palette.paper)
+        : tileGround(kit.palette),
     locked: kit.locked,
     inks: { dark: kit.palette.ink, light: '#ffffff' },
     groundColors: groundColors(kit.palette),
@@ -753,7 +837,7 @@ function tvGround(ctx: Ctx) {
 async function exportTv(ctx: Ctx) {
   const T = SPECS.tv;
   const art = tvArt(ctx);
-  const from = primaryFile(ctx);
+  const from = art.from;
   const surfaces: [string, number, number, string][] = [
     [
       'tv/firetv/icon-1280x720.png',
@@ -775,7 +859,7 @@ async function exportTv(ctx: Ctx) {
     ],
   ];
   for (const [rel, w, h, purpose] of surfaces) {
-    const s = tvSurface({ ...art, ...tvGround(ctx), width: w, height: h }, rel);
+    const s = tvSurface({ ...art, ...tvGround(ctx, art.asDrawn), width: w, height: h }, rel);
     if (s.warning) ctx.warnings.push(s.warning);
     await emit(ctx, rel, await png(s.svg, w, h), { group: 'tv', purpose, derivedFrom: from });
   }
@@ -791,7 +875,7 @@ async function exportTv(ctx: Ctx) {
     await emit(ctx, rel, await png(svg, size), {
       group: 'tv',
       purpose: `webOS TV ${size}×${size} app icon (appinfo.json: ${key})`,
-      derivedFrom: 'symbol.svg',
+      derivedFrom: iconFrom(ctx),
     });
   }
 }
@@ -801,12 +885,14 @@ async function exportWindows(ctx: Ctx) {
   const { kit } = ctx;
   const W = SPECS.windows;
   const sym = ctx.symbol!;
+  // Plated icons above 32 px draw the rich symbol with --icon-art rich; small sizes and unplated forms stay flat.
+  const big = richIcon(ctx) ?? sym;
   const forDark = kit.locked ? sym : reversedVariant(sym, '#202020', '#ffffff', groundColors(kit.palette));
   const pngs: Buffer[] = [];
   for (const s of W.icoSizes)
     pngs.push(
       await png(
-        await canvas(s <= 32 ? (ctx.small ?? sym) : sym, s, s, {
+        await canvas(s <= 32 ? (ctx.small ?? sym) : big, s, s, {
           mode: 'box',
           fraction: s <= 32 ? 0.94 : 0.86,
         }),
@@ -816,38 +902,42 @@ async function exportWindows(ctx: Ctx) {
   await emit(ctx, 'windows/app.ico', encodeIco(pngs), {
     group: 'windows',
     purpose: `Windows app icon (${W.icoSizes.join('/')} px)`,
-    derivedFrom: 'symbol.svg',
+    derivedFrom: iconFrom(ctx),
   });
   const put = async (file: string, art: string, w: number, h: number, frac: number, purpose: string) =>
     emit(
       ctx,
       `windows/Assets/${file}`,
       await png(await canvas(art, w, h, { mode: 'box', fraction: frac }), w, h),
-      { group: 'windows', purpose, derivedFrom: 'symbol.svg' },
+      {
+        group: 'windows',
+        purpose,
+        derivedFrom: art === big && big !== sym ? 'symbol-rich.svg' : 'symbol.svg',
+      },
     );
   for (const sc of W.scales) {
     const k = sc / 100;
-    await put(`Square44x44Logo.scale-${sc}.png`, sym, 44 * k, 44 * k, 0.86, `App list icon 44 @${sc}%`);
+    await put(`Square44x44Logo.scale-${sc}.png`, big, 44 * k, 44 * k, 0.86, `App list icon 44 @${sc}%`);
     await put(
       `Square150x150Logo.scale-${sc}.png`,
-      sym,
+      big,
       150 * k,
       150 * k,
       0.5,
       `Medium tile 150 @${sc}% (required to publish)`,
     );
-    await put(`StoreLogo.scale-${sc}.png`, sym, 50 * k, 50 * k, 0.86, `Store logo 50 @${sc}%`);
+    await put(`StoreLogo.scale-${sc}.png`, big, 50 * k, 50 * k, 0.86, `Store logo 50 @${sc}%`);
   }
   for (const sc of [100, 200]) {
     const k = sc / 100;
-    await put(`Square71x71Logo.scale-${sc}.png`, sym, 71 * k, 71 * k, 0.6, `Small tile 71 @${sc}%`);
-    await put(`Square310x310Logo.scale-${sc}.png`, sym, 310 * k, 310 * k, 0.45, `Large tile 310 @${sc}%`);
+    await put(`Square71x71Logo.scale-${sc}.png`, big, 71 * k, 71 * k, 0.6, `Small tile 71 @${sc}%`);
+    await put(`Square310x310Logo.scale-${sc}.png`, big, 310 * k, 310 * k, 0.45, `Large tile 310 @${sc}%`);
   }
   for (const t of W.targetSizes) {
     const frac = t <= 32 ? 0.94 : 0.88;
     await put(
       `Square44x44Logo.targetsize-${t}.png`,
-      t <= 32 ? (ctx.small ?? sym) : sym,
+      t <= 32 ? (ctx.small ?? sym) : big,
       t,
       t,
       frac,
@@ -870,7 +960,8 @@ async function exportWindows(ctx: Ctx) {
       `Taskbar ${t}px, unplated for light theme`,
     );
   }
-  const wideArt = ctx.primary ?? sym;
+  const wideRich = richLead(ctx);
+  const wideArt = wideRich?.art ?? ctx.primary ?? sym;
   for (const sc of [100, 200]) {
     for (const [name, Wd, H] of [
       ['Wide310x150Logo', 310, 150],
@@ -882,7 +973,7 @@ async function exportWindows(ctx: Ctx) {
       await emit(ctx, `windows/Assets/${name}.scale-${sc}.png`, await png(svg, w, h), {
         group: 'windows',
         purpose: `MSIX ${name} ${w}×${h}`,
-        derivedFrom: primaryFile(ctx),
+        derivedFrom: wideRich?.from ?? primaryFile(ctx),
       });
     }
   }
@@ -900,9 +991,14 @@ async function socialCard(
   const g = grounds(kit);
   const bg = opts.dark ? g.opposite : g.native;
   const art0 = ctx.primary ?? ctx.symbol!;
-  const art = kit.locked
-    ? art0
-    : adaptToGround(art0, bg, { dark: kit.palette.ink, light: '#ffffff' }, groundColors(kit.palette));
+  // With --icon-art rich, the cards on the brand's own ground carry the rich rendering as drawn; the alternate
+  // ground keeps the flat logo adapted to it.
+  const rich = opts.dark ? undefined : richLead(ctx);
+  const art = rich
+    ? rich.art
+    : kit.locked
+      ? art0
+      : adaptToGround(art0, bg, { dark: kit.palette.ink, light: '#ffffff' }, groundColors(kit.palette));
   let body = '';
   // Supergraphic: an oversized, cropped tint of the symbol that ties the card to the identity.
   if (ctx.symbol && !kit.locked && !kit.wordmarkOnly) {
@@ -965,15 +1061,16 @@ async function exportSocial(ctx: Ctx) {
   ];
   for (const [name, w, h, o, purpose] of cards) {
     const svg = await socialCard(ctx, w, h, o);
+    const from = (!o?.dark && richLead(ctx)?.from) || 'lockup-horizontal.svg';
     await emit(ctx, `social/${name}.svg`, svg, {
       group: 'social',
       purpose: `${purpose} (editable source)`,
-      derivedFrom: 'lockup-horizontal.svg',
+      derivedFrom: from,
     });
     await emit(ctx, `social/${name}.png`, await png(svg, w, h), {
       group: 'social',
       purpose: `${purpose} ${w}×${h}`,
-      derivedFrom: 'lockup-horizontal.svg',
+      derivedFrom: from,
     });
   }
   if (ctx.symbol) {
@@ -984,7 +1081,7 @@ async function exportSocial(ctx: Ctx) {
     await emit(ctx, `social/avatar-${A}.png`, await png(avatar, A), {
       group: 'social',
       purpose: `Profile avatar ${A}×${A} (content safe inside circle crops)`,
-      derivedFrom: 'symbol.svg',
+      derivedFrom: iconFrom(ctx),
     });
   }
 }
@@ -1288,6 +1385,8 @@ export async function exportBrand(
     themeColor?: 'primary' | 'paper' | string;
     /** Absolute folder to write the kit to; defaults to the brand's exports folder. */
     outDir?: string;
+    /** `--icon-art`: what app icons, banners and OG images draw (default flat). */
+    iconArt?: IconArt;
     /** Called after each group (including skipped ones) with the running count and that group's file count. */
     onProgress?: (e: { group: ExportGroup; done: number; total: number; files: number }) => void;
   } = {},
@@ -1306,6 +1405,20 @@ export async function exportBrand(
     if (!EXPORT_GROUPS.includes(g))
       throw new MarkiloError('USAGE', `Unknown export group "${g}". Use: ${EXPORT_GROUPS.join(', ')}.`);
   const kit = loadKit(ws, brand);
+  const iconArt = opts.iconArt ?? 'flat';
+  if (!ICON_ARTS.includes(iconArt))
+    throw new MarkiloError('USAGE', `--icon-art must be ${ICON_ARTS.join(' or ')} (got "${iconArt}").`);
+  const rich = {
+    ...(kit.files.rich?.symbol ? { symbol: kit.readRich('symbol') } : {}),
+    ...(kit.files.rich?.lockupHorizontal ? { lockupH: kit.readRich('lockupHorizontal') } : {}),
+    ...(kit.files.rich?.lockupStacked ? { lockupS: kit.readRich('lockupStacked') } : {}),
+  };
+  if (iconArt === 'rich' && (kit.locked || !Object.keys(rich).length))
+    throw new MarkiloError(
+      'USAGE',
+      `--icon-art rich needs a rich rendering in ${brand}'s kit, and it has none.`,
+      'Register one on the concept (concept update --rich-symbol <file>), verify and finalize again, or export with --icon-art flat.',
+    );
   const themeColor =
     custom ??
     (opts.themeColor === 'primary'
@@ -1327,6 +1440,8 @@ export async function exportBrand(
     ...(kit.files.lockupHorizontal ? { lockupH: kit.read('lockupHorizontal') } : {}),
     ...(kit.files.lockupStacked ? { lockupS: kit.read('lockupStacked') } : {}),
     ...(kit.files.lockupCompact ? { lockupC: kit.read('lockupCompact') } : {}),
+    rich: rich as Ctx['rich'],
+    iconArt,
     assets: [],
     warnings: [],
   };
