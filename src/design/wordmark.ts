@@ -139,6 +139,8 @@ export function outlineText(face: FontFace, text: string, opts: OutlineOptions =
 export interface WordmarkOptions extends OutlineOptions {
   color?: string;
   title?: string;
+  /** Margin (units) added to the viewBox on every side; 0 keeps the tight ink box. */
+  pad?: number;
 }
 
 /**
@@ -147,9 +149,11 @@ export interface WordmarkOptions extends OutlineOptions {
  */
 export function wordmarkSvg(face: FontFace, text: string, opts: WordmarkOptions = {}): string {
   const o = outlineText(face, text, opts);
-  const { minX, minY, maxX, maxY } = o.bbox;
-  const w = maxX - minX;
-  const h = maxY - minY;
+  const pad = opts.pad ?? 0;
+  const minX = o.bbox.minX - pad;
+  const minY = o.bbox.minY - pad;
+  const w = o.bbox.maxX - o.bbox.minX + pad * 2;
+  const h = o.bbox.maxY - o.bbox.minY + pad * 2;
   const color = opts.color ?? '#111111';
   const paths = o.glyphs.map((g) => `  <path data-char="${escapeAttr(g.char)}" d="${g.d}"/>`).join('\n');
   return [

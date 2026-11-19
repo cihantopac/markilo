@@ -23,6 +23,10 @@ export const TR: Record<string, string> = {
   'Asset kit': 'Varlık kiti',
   'Brand guidelines': 'Marka kılavuzu',
 
+  // Boards (render --compare --zoom)
+  Before: 'Önce',
+  After: 'Sonra',
+
   // Gallery: introduction and action bar
   'Compare the proposals: tick “Add to comparison” on two or more to see them side by side.':
     'Önerileri karşılaştırın: yan yana görmek için iki ya da daha fazlasında “Karşılaştırmaya ekle”yi işaretleyin.',

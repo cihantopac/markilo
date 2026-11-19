@@ -2,7 +2,17 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { adaptToGround, groundsFor, markOnGround } from '../src/export/variants.js';
 import { ensurePathKit } from '../src/geom/pathkit.js';
-import { compareSheetSvg, familySheetSvg, label, paletteSheetSvg, sheetSvg } from '../src/render/sheet.js';
+import { decodeImage } from '../src/render/png.js';
+import { renderPng } from '../src/render/resvg.js';
+import {
+  compareSheetSvg,
+  familySheetSvg,
+  label,
+  paletteSheetSvg,
+  sheetSvg,
+  zoomRowsSvg,
+} from '../src/render/sheet.js';
+import { TR } from '../src/ui/tr.js';
 import { fixture, mark } from './helpers.js';
 
 // Sheet text is drawn as outlines, so the sheet is compared against one built from the expected title and labels.
@@ -106,5 +116,79 @@ describe('family, palette and tile sheets', () => {
       'Options',
     );
     expect(tiled).toBe(expected);
+  });
+});
+
+describe('zoom rows', () => {
+  const before = mark('fold-n');
+  const after = before.replace('<svg', '<svg data-after="1"');
+  const vb = /viewBox="([^"]+)"/.exec(before)![1]!.split(/[ ,]+/).map(Number);
+
+  it('adds one labelled row per zoom and leaves the plain sheet untouched', () => {
+    const items = [
+      { label: 'A', svg: before },
+      { label: 'B', svg: after },
+    ];
+    const plain = compareSheetSvg(items);
+    const zoomed = compareSheetSvg(items, '#ffffff', 'Options', undefined, {
+      zooms: [{ x: vb[0]!, y: vb[1]!, w: vb[2]! / 4, h: vb[3]! / 4, label: 'Corner' }],
+    });
+    expect(compareSheetSvg(items, '#ffffff', 'Options', undefined, { zooms: [] })).toBe(plain);
+    const h = (s: string) => Number(/ height="([\d.]+)"/.exec(s)![1]);
+    expect(h(zoomed)).toBeGreaterThan(h(plain));
+    // The row carries the label (drawn as outlines, so a different label draws a different sheet) and two crops.
+    const other = compareSheetSvg(items, '#ffffff', 'Options', undefined, {
+      zooms: [{ x: vb[0]!, y: vb[1]!, w: vb[2]! / 4, h: vb[3]! / 4, label: 'Other' }],
+    });
+    expect(other).not.toBe(zoomed);
+    expect(zoomed).toContain('data-zoom="0"');
+    expect(zoomed.match(/data-zoom-side="/g)).toHaveLength(2);
+  });
+
+  it('draws each crop at 4x', () => {
+    const svg = zoomRowsSvg(before, after, [{ x: vb[0]!, y: vb[1]!, w: 10, h: 5, label: 'z' }], 400).svg;
+    expect(svg).toContain('width="40" height="20" viewBox="');
+  });
+
+  it('maps the after art into the before viewBox, so a crop covers the same part of both', async () => {
+    const mk = (viewBox: string, inner: string) =>
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}">${inner}</svg>`;
+    const shape = (dx: number, w: number) =>
+      `<rect x="${20 + dx}" y="${20 + dx}" width="${w}" height="30" fill="#c2255c"/>`;
+    const b = mk('0 0 100 100', shape(0, 40));
+    const zoom = [{ x: 10, y: 10, w: 60, h: 60, label: 'z' }];
+    const crops = async (a: string) => {
+      const { svg } = zoomRowsSvg(b, a, zoom, 400);
+      const side = (n: string) => {
+        const m = new RegExp(`<svg data-zoom-side="${n}"[^>]*>[\\s\\S]*?</svg>(?=<svg|</g>)`).exec(svg)!;
+        return m[0];
+      };
+      const doc = (inner: string) =>
+        `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240"><rect width="240" height="240" fill="#fff"/>${inner.replace(/x="[\d.]+" y="[\d.]+" width/, 'x="0" y="0" width')}</svg>`;
+      const [l, r] = await Promise.all([
+        renderPng(doc(side('before')), { width: 240 }),
+        renderPng(doc(side('after')), { width: 240 }),
+      ]);
+      return [decodeImage(l), decodeImage(r)] as const;
+    };
+    const diff = (x: ReturnType<typeof decodeImage>, y: ReturnType<typeof decodeImage>) => {
+      let n = 0;
+      for (let i = 0; i < x.data.length; i += 4)
+        if (Math.abs(x.data[i]! - y.data[i]!) + Math.abs(x.data[i + 1]! - y.data[i + 1]!) > 24) n++;
+      return n / (x.width * x.height);
+    };
+    // The same drawing in another coordinate frame: shifted origin, and doubled units. Fitted into the before
+    // viewBox, both land where the before art is, so the crops match.
+    const moved = mk('100 100 100 100', shape(100, 40));
+    const doubled = mk('0 0 200 200', '<rect x="40" y="40" width="80" height="60" fill="#c2255c"/>');
+    expect(diff(...(await crops(moved)))).toBeLessThan(0.02);
+    expect(diff(...(await crops(doubled)))).toBeLessThan(0.02);
+    const wider = mk('0 0 100 100', shape(0, 60));
+    expect(diff(...(await crops(wider)))).toBeGreaterThan(0.05);
+  });
+
+  it('has Turkish entries for the new labels', () => {
+    expect(TR.Before).toBeTruthy();
+    expect(TR.After).toBeTruthy();
   });
 });

@@ -112,6 +112,7 @@ import { type ProposalInput, renderProposal, renderRoundBoard } from '../render/
 import { renderPng } from '../render/resvg.js';
 import {
   paletteSheetSvg,
+  parseZoom,
   renderCompareSheet,
   renderFamilySheet,
   renderReviewSheet,
@@ -163,6 +164,7 @@ import { addFinding, addSource, mergeRepoScan, summarizeProfile } from '../resea
 import { DEFAULT_MAX_FILES, scanRepo, summarizeScan } from '../research/repo.js';
 import type { SiteScan } from '../research/site.js';
 import { researchSite } from '../research/site-research.js';
+import { padViewBoxPercent } from '../svg/compose.js';
 import { CSS_PAINT, lintSvg } from '../svg/lint.js';
 import { optimizeSvg } from '../svg/optimize.js';
 import { type AgentTarget, agentSetup, ROLE_IDS, type Role } from './agents.js';
@@ -3489,7 +3491,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Typeset text and convert it to outlined SVG paths with real kerning. Bundled OFL fonts or your own file.',
     usage:
-      'wordmark --text <text> (--font <id> --weight <n> | --font-file <path> --font-license <text>) -o <out.svg> [--tracking <‰em>] [--case as-is|lower|upper] [--color <#hex>] [--no-ligatures] [--locale tr]',
+      'wordmark --text <text> (--font <id> --weight <n> | --font-file <path> --font-license <text>) -o <out.svg> [--pad <units>] [--tracking <‰em>] [--case as-is|lower|upper] [--color <#hex>] [--no-ligatures] [--locale tr]',
     options: {
       text: { type: 'string', description: 'Wordmark text' },
       font: { type: 'string', description: 'Bundled font id (see: markilo fonts)' },
@@ -3501,10 +3503,16 @@ export const COMMANDS: CommandSpec[] = [
       color: { type: 'string', description: 'Fill color' },
       'no-ligatures': { type: 'boolean', description: 'Disable fi/fl ligatures' },
       locale: { type: 'string', description: 'Casing locale (tr for Turkish i/İ)' },
+      pad: {
+        type: 'string',
+        description: 'Margin in SVG units added around the ink box on every side (default 0)',
+      },
       out: { type: 'string', short: 'o', description: 'Output SVG' },
       force: { type: 'boolean', description: 'Overwrite output' },
     },
     async run(c) {
+      const pad = c.num('pad', 0)!;
+      if (pad < 0) throw new MarkiloError('USAGE', '--pad must be 0 or more.');
       const face = c.str('font-file')
         ? loadFontFile(
             file(c, c.str('font-file')!),
@@ -3516,6 +3524,7 @@ export const COMMANDS: CommandSpec[] = [
         ...(c.str('case') ? { case: c.str('case') as 'as-is' } : {}),
         ...(c.str('color') ? { color: c.str('color')! } : {}),
         ...(c.str('locale') ? { locale: c.str('locale')! } : {}),
+        ...(pad > 0 ? { pad } : {}),
         ligatures: !c.bool('no-ligatures'),
       });
       writeFileSafe(file(c, c.req('out')), svg, { force: c.bool('force') });
@@ -4274,9 +4283,23 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       'Render an SVG to PNG, or a review contact sheet (sizes 16–256 on light/dark/mono) with --sheet.',
     usage:
-      'render <in.svg> -o <out.png> [--width <px>] [--bg <#hex>] [--sheet] | render <a.svg> <b.svg>… --compare [--paper <#hex>] [--tile] -o <out.png> | render <new-word.svg> --family <ref-word.svg>[,<ref-word.svg>] -o <out.png> [--width 1600]  (--sheet / --compare: [--primary <#hex> --on-dark|--on-light <#hex>])',
+      'render <in.svg> -o <out.png> [--width <px>] [--bg <#hex>] [--pad <percent>] [--sheet] | render <a.svg> <b.svg>… --out-dir <dir> [--width <px>] [--bg <#hex>] [--pad <percent>] | render <before.svg> <after.svg> --compare [--paper <#hex>] [--tile] [--zoom x,y,w,h[:label]]… -o <out.png> | render <a.svg> <b.svg>… --compare … | render <new-word.svg> --family <ref-word.svg>[,<ref-word.svg>] -o <out.png> [--width 1600]  (--sheet / --compare: [--primary <#hex> --on-dark|--on-light <#hex>])',
     options: {
       out: { type: 'string', short: 'o', description: 'Output PNG' },
+      'out-dir': {
+        type: 'string',
+        description: 'Render every input to <dir>/<name>.png (several files in one call)',
+      },
+      pad: {
+        type: 'string',
+        description: 'Margin around the art as a percent of its longer side, every side (default 0)',
+      },
+      zoom: {
+        type: 'string',
+        multiple: true,
+        description:
+          '--compare (two files): x,y,w,h[:label] in the first file’s viewBox; adds a row of that crop, before and after, at 4×. Repeatable',
+      },
       width: { type: 'string', description: 'Output width in px (default 512; 1600 with --family)' },
       bg: { type: 'string', description: 'Background color' },
       sheet: { type: 'boolean', description: 'Render a review contact sheet' },
@@ -4314,7 +4337,29 @@ export const COMMANDS: CommandSpec[] = [
           );
         palette = { primary, ...grounds };
       }
-      if (c.str('family')) {
+      const mode = c.str('family')
+        ? 'family'
+        : c.bool('compare')
+          ? 'compare'
+          : c.bool('sheet')
+            ? 'sheet'
+            : 'plain';
+      const batch = c.str('out-dir') !== undefined;
+      const padPct = c.num('pad', 0)!;
+      if (padPct < 0) throw new MarkiloError('USAGE', '--pad must be 0 or more (a percent).');
+      if (padPct > 0 && mode !== 'plain')
+        throw new MarkiloError(
+          'USAGE',
+          '--pad applies to a plain render, not --sheet, --compare or --family.',
+        );
+      const zoomSpecs = Array.isArray(c.values.zoom) ? c.values.zoom : [];
+      if (zoomSpecs.length && mode !== 'compare')
+        throw new MarkiloError('USAGE', '--zoom needs --compare with two files: before, then after.');
+      if (batch && mode !== 'plain')
+        throw new MarkiloError('USAGE', '--out-dir renders plain PNGs, not --sheet, --compare or --family.');
+      if (batch && c.str('out'))
+        throw new MarkiloError('USAGE', 'Use either -o (one file) or --out-dir (a folder), not both.');
+      if (mode === 'family') {
         const refs = c.list('family');
         const words = [
           ...refs.map((p) => ({ label: `${basename(p)} (parent)`, svg: readText(file(c, p)) })),
@@ -4327,29 +4372,76 @@ export const COMMANDS: CommandSpec[] = [
         writeGenerated(file(c, c.req('out')), png);
         return { out: c.req('out'), words: words.length, bytes: png.length };
       }
-      if (c.bool('compare')) {
+      if (mode === 'compare') {
         if (c.positionals.length < 2 || c.positionals.length > 8)
           throw new MarkiloError('USAGE', '--compare takes 2 to 8 SVG files.');
-        const png = await renderCompareSheet(
-          c.positionals.map((p, i) => ({
-            label: `${letterAt(i)} · ${basename(p)}`,
-            svg: readText(file(c, p)),
-          })),
-          c.str('paper') ?? '#ffffff',
-          'Options',
-          palette,
-          { tile: c.bool('tile') },
-        );
+        const items = c.positionals.map((p, i) => ({
+          label: `${letterAt(i)} · ${basename(p)}`,
+          svg: readText(file(c, p)),
+        }));
+        if (zoomSpecs.length && items.length !== 2)
+          throw new MarkiloError('USAGE', '--zoom compares exactly two files: before, then after.');
+        const zooms = zoomSpecs.map((z, i) => parseZoom(z, items[0]!.svg, i));
+        const png = await renderCompareSheet(items, c.str('paper') ?? '#ffffff', 'Options', palette, {
+          tile: c.bool('tile'),
+          ...(zooms.length ? { zooms } : {}),
+        });
         writeGenerated(file(c, c.req('out')), png);
-        return { out: c.req('out'), sketches: c.positionals.length, bytes: png.length };
+        return {
+          out: c.req('out'),
+          sketches: c.positionals.length,
+          ...(zooms.length ? { zooms: zooms.length } : {}),
+          bytes: png.length,
+        };
       }
+      const plainPng = async (path: string) => {
+        const svg = readText(file(c, path));
+        return renderPng(padPct > 0 ? padViewBoxPercent(svg, padPct) : svg, {
+          width: c.num('width', 512)!,
+          ...(c.str('bg') ? { background: c.str('bg')! } : {}),
+        });
+      };
+      if (batch) {
+        if (!c.positionals.length)
+          throw new MarkiloError('USAGE', 'render --out-dir needs at least one SVG.');
+        const dir = file(c, c.str('out-dir')!);
+        if (existsSync(dir) && !isDir(dir))
+          throw new MarkiloError('USAGE', `--out-dir ${c.str('out-dir')} is a file, not a folder.`);
+        // Names are compared case-insensitively: two inputs must not collide on a case-insensitive filesystem.
+        const names = new Map<string, { name: string; input: string }>();
+        for (const p of c.positionals) {
+          const name = `${basename(p, extname(p))}.png`;
+          const first = names.get(name.toLowerCase());
+          if (first !== undefined)
+            throw new MarkiloError(
+              'USAGE',
+              `${first.input} and ${p} would both write ${first.name.toLowerCase() === name.toLowerCase() ? name : first.name} in ${c.str('out-dir')}.`,
+              'Rename one of the inputs, or render them in separate --out-dir folders.',
+            );
+          names.set(name.toLowerCase(), { name, input: p });
+        }
+        // Render everything first, so a failing input leaves no partial batch behind.
+        const rendered: { name: string; png: Uint8Array }[] = [];
+        for (const { name, input } of names.values()) rendered.push({ name, png: await plainPng(input) });
+        mkdirSync(dir, { recursive: true });
+        const files: string[] = [];
+        for (const { name, png } of rendered) {
+          writeGenerated(join(dir, name), png);
+          files.push(join(c.str('out-dir')!, name));
+        }
+        return { files };
+      }
+      if (c.positionals.length > 1)
+        throw new MarkiloError(
+          'USAGE',
+          `-o takes one input, but ${c.positionals.length} were given.`,
+          'Use --out-dir <dir> to render several files at once, or --compare for a side-by-side board.',
+        );
       const svg = readText(file(c, pos(c, 0, 'in.svg')));
-      const png = c.bool('sheet')
-        ? await renderReviewSheet(svg, basename(pos(c, 0, 'in.svg')), palette)
-        : await renderPng(svg, {
-            width: c.num('width', 512)!,
-            ...(c.str('bg') ? { background: c.str('bg')! } : {}),
-          });
+      const png =
+        mode === 'sheet'
+          ? await renderReviewSheet(svg, basename(pos(c, 0, 'in.svg')), palette)
+          : await plainPng(pos(c, 0, 'in.svg'));
       writeGenerated(file(c, c.req('out')), png);
       return { out: c.req('out'), bytes: png.length };
     },

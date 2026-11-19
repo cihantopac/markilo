@@ -173,6 +173,151 @@ describe('cli (bundled)', () => {
     );
     expect(sheet.status, sheet.stderr).toBe(0);
   });
+  describe('render batch, padding and zoom', () => {
+    const art = (x: number) =>
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50"><rect x="${x}" y="10" width="30" height="30" fill="#c2255c"/></svg>`;
+    const setup = () => {
+      const cwd = tmp();
+      for (const [n, x] of [
+        ['a', 10],
+        ['b', 30],
+        ['c', 50],
+      ] as const)
+        writeFileSync(join(cwd, `${n}.svg`), art(x));
+      return cwd;
+    };
+    const dims = (cwd: string, f: string) => {
+      const img = decodeImage(readFileSync(join(cwd, f)));
+      return img;
+    };
+    it('--out-dir writes one PNG per input', () => {
+      const cwd = setup();
+      const r = run(['render', 'a.svg', 'b.svg', 'c.svg', '--out-dir', 'out', '--width', '200'], cwd);
+      expect(r.status, r.stderr).toBe(0);
+      expect(JSON.parse(r.stdout).files).toEqual(['out/a.png', 'out/b.png', 'out/c.png']);
+      for (const n of ['a', 'b', 'c']) expect(dims(cwd, `out/${n}.png`).width).toBe(200);
+    });
+    it('several inputs with -o and no --compare is an error naming --out-dir', () => {
+      const cwd = setup();
+      const r = run(['render', 'a.svg', 'b.svg', '-o', 'x.png'], cwd);
+      expect(r.status).not.toBe(0);
+      const e = JSON.parse(r.stderr).error;
+      expect(e.code).toBe('USAGE');
+      expect(JSON.stringify(e)).toContain('--out-dir');
+    });
+    it('--out-dir refuses two inputs with the same base name', () => {
+      const cwd = setup();
+      mkdirSync(join(cwd, 'sub'));
+      writeFileSync(join(cwd, 'sub', 'a.svg'), art(5));
+      const r = run(['render', 'a.svg', 'sub/a.svg', '--out-dir', 'out'], cwd);
+      expect(r.status).not.toBe(0);
+      expect(JSON.parse(r.stderr).error.code).toBe('USAGE');
+      expect(existsSync(join(cwd, 'out', 'a.png'))).toBe(false);
+    });
+    it('--out-dir is atomic, refuses a file, and compares names case-insensitively', () => {
+      const cwd = setup();
+      writeFileSync(join(cwd, 'bad.svg'), 'not svg');
+      const r = run(['render', 'a.svg', 'bad.svg', '--out-dir', 'out'], cwd);
+      expect(r.status).not.toBe(0);
+      expect(existsSync(join(cwd, 'out', 'a.png'))).toBe(false);
+      writeFileSync(join(cwd, 'afile'), 'x');
+      const f = run(['render', 'a.svg', '--out-dir', 'afile'], cwd);
+      expect(JSON.parse(f.stderr).error.code).toBe('USAGE');
+      mkdirSync(join(cwd, 'sub'));
+      writeFileSync(join(cwd, 'sub', 'A.svg'), art(5));
+      const d = run(['render', 'a.svg', 'sub/A.svg', '--out-dir', 'out'], cwd);
+      expect(JSON.parse(d.stderr).error.code).toBe('USAGE');
+    });
+    it('--pad grows the image, keeps the art centred, and 0 is byte-identical', () => {
+      const cwd = setup();
+      expect(run(['render', 'a.svg', '-o', 'p0.png', '--width', '200'], cwd).status).toBe(0);
+      expect(run(['render', 'a.svg', '-o', 'p0b.png', '--width', '200', '--pad', '0'], cwd).status).toBe(0);
+      expect(readFileSync(join(cwd, 'p0.png')).equals(readFileSync(join(cwd, 'p0b.png')))).toBe(true);
+      const r = run(['render', 'a.svg', '-o', 'p10.png', '--width', '200', '--pad', '10'], cwd);
+      expect(r.status, r.stderr).toBe(0);
+      const img = dims(cwd, 'p10.png');
+      // 10% of the longer side (100) on every edge: 120 x 70 units, rendered 200 wide -> 117 high.
+      expect(img.width).toBe(200);
+      expect(img.height).toBe(117);
+      const alpha = (x: number, y: number) => img.data[(y * img.width + x) * 4 + 3]!;
+      let minX = img.width;
+      let maxX = 0;
+      let minY = img.height;
+      let maxY = 0;
+      for (let y = 0; y < img.height; y++)
+        for (let x = 0; x < img.width; x++)
+          if (alpha(x, y) > 0) {
+            minX = Math.min(minX, x);
+            maxX = Math.max(maxX, x);
+            minY = Math.min(minY, y);
+            maxY = Math.max(maxY, y);
+          }
+      expect(minX).toBeGreaterThan(0);
+      expect(minY).toBeGreaterThan(0);
+      // The art (x 10..40 of 0..100) is not centred in its own box; the margin is the same on all sides.
+      expect(minY).toBeCloseTo(img.height - 1 - maxY - 0, -1);
+      expect(Math.abs(minY - (img.height - 1 - maxY))).toBeLessThanOrEqual(2);
+      const bad = run(['render', 'a.svg', '-o', 'x.png', '--pad', '-5'], cwd);
+      expect(JSON.parse(bad.stderr).error.code).toBe('USAGE');
+    });
+    it('wordmark --pad widens the viewBox by that many units on every side', () => {
+      const cwd = tmp();
+      const base = ['wordmark', '--text', 'Acme', '--font', 'inter', '--weight', '600'];
+      expect(run([...base, '-o', 'w0.svg'], cwd).status).toBe(0);
+      const r = run([...base, '-o', 'w1.svg', '--pad', '8'], cwd);
+      expect(r.status, r.stderr).toBe(0);
+      const vb = (f: string) =>
+        /viewBox="([^"]+)"/
+          .exec(readFileSync(join(cwd, f), 'utf8'))![1]!
+          .split(' ')
+          .map(Number);
+      const a = vb('w0.svg');
+      const b = vb('w1.svg');
+      expect(b[0]).toBeCloseTo(a[0]! - 8, 2);
+      expect(b[1]).toBeCloseTo(a[1]! - 8, 2);
+      expect(b[2]).toBeCloseTo(a[2]! + 16, 2);
+      expect(b[3]).toBeCloseTo(a[3]! + 16, 2);
+    });
+    it('--compare --zoom adds a labelled row per zoom', () => {
+      const cwd = setup();
+      const plain = run(['render', 'a.svg', 'b.svg', '--compare', '-o', 'p.png'], cwd);
+      expect(plain.status, plain.stderr).toBe(0);
+      const r = run(
+        [
+          'render',
+          'a.svg',
+          'b.svg',
+          '--compare',
+          '--zoom',
+          '10,10,30,30:Left edge',
+          '--zoom',
+          '50,10,20,20',
+          '-o',
+          'z.png',
+        ],
+        cwd,
+      );
+      expect(r.status, r.stderr).toBe(0);
+      expect(JSON.parse(r.stdout).zooms).toBe(2);
+      expect(dims(cwd, 'z.png').height).toBeGreaterThan(dims(cwd, 'p.png').height);
+    });
+    it('--zoom rejects bad input with a USAGE error', () => {
+      const cwd = setup();
+      const base = ['render', 'a.svg', 'b.svg', '--compare', '-o', 'z.png', '--zoom'];
+      for (const z of ['1,2,3', 'a,b,c,d', '0,0,0,10', '0,0,-5,10', '90,0,30,10', '-1,0,10,10']) {
+        const r = run([...base, z], cwd);
+        expect(r.status, z).not.toBe(0);
+        expect(JSON.parse(r.stderr).error.code, z).toBe('USAGE');
+      }
+      const alone = run(['render', 'a.svg', '-o', 'z.png', '--zoom', '0,0,10,10'], cwd);
+      expect(JSON.parse(alone.stderr).error.code).toBe('USAGE');
+      const three = run(
+        ['render', 'a.svg', 'b.svg', 'c.svg', '--compare', '-o', 'z.png', '--zoom', '0,0,10,10'],
+        cwd,
+      );
+      expect(JSON.parse(three.stderr).error.code).toBe('USAGE');
+    });
+  });
   it('render --family, palette --sheet and render --compare --tile write sheets', () => {
     const { dir: cwd } = synthBrand();
     const ok = (args: string[]) => {
