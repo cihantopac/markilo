@@ -104,3 +104,28 @@ export function aspectOf(source: string): number {
   if (!vb) throw new MarkiloError('INVALID_SVG', 'SVG has no viewBox or size.');
   return vb.width / vb.height;
 }
+
+/**
+ * Widens the viewBox by `margin` units on every side, so the art stays centred in more room. Fixed width and height
+ * attributes would fight the new viewBox, so they are dropped; the renderer sizes the image from the viewBox.
+ * A margin of 0 returns the source untouched.
+ */
+export function padViewBox(source: string, margin: number): string {
+  if (!(margin > 0)) return source;
+  const root = parseXml(source);
+  const vb = intrinsicBox(root);
+  if (!vb) throw new MarkiloError('INVALID_SVG', 'Cannot pad an SVG without viewBox or width/height.');
+  root.attrs.viewBox = [vb.x - margin, vb.y - margin, vb.width + margin * 2, vb.height + margin * 2]
+    .map((n) => fmt(Math.round(n * 10000) / 10000))
+    .join(' ');
+  delete root.attrs.width;
+  delete root.attrs.height;
+  return serializeXml(root);
+}
+
+/** Pads by a percent of the art's longer side on every edge: the same breathing room whatever the file's units. */
+export function padViewBoxPercent(source: string, percent: number): string {
+  const vb = intrinsicBox(parseXml(source));
+  if (!vb) throw new MarkiloError('INVALID_SVG', 'Cannot pad an SVG without viewBox or width/height.');
+  return padViewBox(source, (Math.max(vb.width, vb.height) * percent) / 100);
+}

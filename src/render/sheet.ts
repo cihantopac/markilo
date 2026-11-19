@@ -58,15 +58,119 @@ export function label(text: string, x: number, y: number, size: number, fill: st
   return textPathMarkup(loadBundledFace('inter', 500), text, x, y, size, fill).markup;
 }
 
-export function sheetSvg(rows: SheetRow[], sizes: number[], title?: string, aspect = 1): string {
+/** A crop of the before file's viewBox, shown for before and after side by side. */
+export interface Zoom {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  label: string;
+}
+
+/** How many times larger than its source units a zoomed crop is drawn. */
+export const ZOOM_SCALE = 4;
+
+const ZOOM_PAD = 16;
+const ZOOM_HEAD = 22;
+const ZOOM_CAPTION = 16;
+
+/**
+ * Parses `x,y,w,h[:label]` against the before file's viewBox. The crop must have a positive size and lie inside the
+ * viewBox, so a typo cannot silently show an empty panel.
+ */
+export function parseZoom(spec: string, svg: string, index: number): Zoom {
+  const colon = spec.indexOf(':');
+  const box = colon < 0 ? spec : spec.slice(0, colon);
+  const text = colon < 0 ? '' : spec.slice(colon + 1).trim();
+  const parts = box.split(',').map((p) => p.trim());
+  const nums = parts.map((p) => (p === '' ? Number.NaN : Number(p)));
+  const usage = 'Use --zoom x,y,w,h[:label], in the viewBox of the first (before) file.';
+  if (nums.length !== 4 || nums.some((n) => !Number.isFinite(n)))
+    throw new MarkiloError('USAGE', `--zoom "${spec}" needs four numbers: x,y,w,h.`, usage);
+  const [x, y, w, h] = nums as [number, number, number, number];
+  if (!(w > 0) || !(h > 0))
+    throw new MarkiloError('USAGE', `--zoom "${spec}": the width and height must be above zero.`, usage);
+  const vb = intrinsicBox(parseXml(svg));
+  if (!vb) throw new MarkiloError('INVALID_SVG', 'The before file has no viewBox or size.');
+  const eps = 1e-6;
+  if (x < vb.x - eps || y < vb.y - eps || x + w > vb.x + vb.width + eps || y + h > vb.y + vb.height + eps)
+    throw new MarkiloError(
+      'USAGE',
+      `--zoom "${spec}" lies outside the before file's viewBox (${fmt(vb.x)} ${fmt(vb.y)} ${fmt(vb.width)} ${fmt(vb.height)}).`,
+      usage,
+    );
+  return { x, y, w, h, label: text || `Zoom ${index + 1}` };
+}
+
+/** One crop: `svg` shown through a window of `zoom`, scaled by ZOOM_SCALE, clipped to its panel. */
+function cropMarkup(svg: string, zoom: Zoom, x: number, y: number, side: string): string {
+  const vb = intrinsicBox(parseXml(svg));
+  if (!vb) throw new MarkiloError('INVALID_SVG', 'Cannot crop an SVG without viewBox or width/height.');
+  const w = zoom.w * ZOOM_SCALE;
+  const h = zoom.h * ZOOM_SCALE;
+  return (
+    `<rect x="${fmt(x)}" y="${fmt(y)}" width="${fmt(w)}" height="${fmt(h)}" fill="#ffffff" stroke="#d5d8de"/>` +
+    `<svg data-zoom-side="${side}" x="${fmt(x)}" y="${fmt(y)}" width="${fmt(w)}" height="${fmt(h)}" viewBox="${fmt(zoom.x)} ${fmt(zoom.y)} ${fmt(zoom.w)} ${fmt(zoom.h)}" overflow="hidden">` +
+    nestSvg(svg, { x: vb.x, y: vb.y, width: vb.width, height: vb.height }) +
+    '</svg>'
+  );
+}
+
+/** The widest zoom row, in px: two crops side by side with margins. */
+const zoomMinWidth = (zooms: Zoom[]) =>
+  zooms.length ? Math.ceil(ZOOM_PAD * 3 + 2 * Math.max(...zooms.map((z) => z.w)) * ZOOM_SCALE) : 0;
+
+/** Rows of zoomed before/after crops, starting at y = 0 of the returned markup. */
+export function zoomRowsSvg(
+  before: string,
+  after: string,
+  zooms: Zoom[],
+  width: number,
+  background = '#ffffff',
+): { svg: string; height: number } {
+  let body = '';
+  let y = 0;
+  zooms.forEach((z, i) => {
+    const w = z.w * ZOOM_SCALE;
+    const h = z.h * ZOOM_SCALE;
+    const rowH = ZOOM_HEAD + ZOOM_CAPTION + h + ZOOM_PAD;
+    const ink = isDark(background) ? '#c9ced8' : '#5b6170';
+    body += `<g data-zoom="${i}"><rect x="0" y="${fmt(y)}" width="${fmt(width)}" height="${fmt(rowH)}" fill="${background}"/>`;
+    body += label(z.label, ZOOM_PAD, y + 17, 11, ink);
+    const panelY = y + ZOOM_HEAD + ZOOM_CAPTION;
+    const xs = [ZOOM_PAD, ZOOM_PAD * 2 + w];
+    body += label('Before', xs[0]!, panelY - 5, 10, ink);
+    body += label('After', xs[1]!, panelY - 5, 10, ink);
+    body += cropMarkup(before, z, xs[0]!, panelY, 'before');
+    body += cropMarkup(after, z, xs[1]!, panelY, 'after');
+    body += '</g>';
+    y += rowH;
+  });
+  return { svg: body, height: y };
+}
+
+export function sheetSvg(
+  rows: SheetRow[],
+  sizes: number[],
+  title?: string,
+  aspect = 1,
+  zoom?: { before: string; after: string; zooms: Zoom[]; background: string },
+): string {
   const pad = 16;
   const labelH = 22;
   const max = Math.max(...sizes);
   const rowH = max + pad * 2 + labelH;
   const wide = (s: number) => Math.round(s * aspect);
-  const width = sizes.reduce((a, s) => a + wide(s) + pad, pad);
+  const zooms = zoom?.zooms ?? [];
+  const width = Math.max(
+    sizes.reduce((a, s) => a + wide(s) + pad, pad),
+    zoomMinWidth(zooms),
+  );
   const headerH = title ? 34 : 0;
-  const height = headerH + rows.length * rowH;
+  const rowsH = headerH + rows.length * rowH;
+  const zoomed =
+    zoom && zooms.length ? zoomRowsSvg(zoom.before, zoom.after, zooms, width, zoom.background) : undefined;
+  const height = rowsH + (zoomed?.height ?? 0);
   let body = '';
   if (title) body += label(title, pad, 23, 15, '#30343c');
   rows.forEach((row, r) => {
@@ -80,6 +184,7 @@ export function sheetSvg(rows: SheetRow[], sizes: number[], title?: string, aspe
       x += wide(s) + pad;
     }
   });
+  if (zoomed) body += `<g transform="translate(0 ${fmt(rowsH)})">${zoomed.svg}</g>`;
   return svgDocument(width, height, body, { background: '#ffffff' });
 }
 
@@ -124,7 +229,7 @@ export function compareSheetSvg(
   paper = '#ffffff',
   title = 'Options',
   palette?: GroundPalette,
-  opts: { tile?: boolean } = {},
+  opts: { tile?: boolean; zooms?: Zoom[] } = {},
 ): string {
   const g = groundsFor(paper);
   const tileGroundHex = palette ? tileGround(palette) : DEFAULT_TILE;
@@ -146,6 +251,16 @@ export function compareSheetSvg(
       : []),
   ]);
   const sizes = [16, 32, 64, 128, 256];
+  if (opts.zooms?.length) {
+    if (items.length !== 2)
+      throw new MarkiloError('USAGE', '--zoom compares exactly two files: before, then after.');
+    return sheetSvg(rows, sizes, title, 1, {
+      before: items[0]!.svg,
+      after: items[1]!.svg,
+      zooms: opts.zooms,
+      background: g.native,
+    });
+  }
   return sheetSvg(rows, sizes, title);
 }
 
@@ -154,7 +269,7 @@ export async function renderCompareSheet(
   paper = '#ffffff',
   title = 'Options',
   palette?: GroundPalette,
-  opts: { tile?: boolean } = {},
+  opts: { tile?: boolean; zooms?: Zoom[] } = {},
 ): Promise<Buffer> {
   const sheet = compareSheetSvg(items, paper, title, palette, opts);
   const width = Number(/width="(\d+)"/.exec(sheet)![1]);

@@ -2,7 +2,15 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { adaptToGround, groundsFor, markOnGround } from '../src/export/variants.js';
 import { ensurePathKit } from '../src/geom/pathkit.js';
-import { compareSheetSvg, familySheetSvg, label, paletteSheetSvg, sheetSvg } from '../src/render/sheet.js';
+import {
+  compareSheetSvg,
+  familySheetSvg,
+  label,
+  paletteSheetSvg,
+  sheetSvg,
+  zoomRowsSvg,
+} from '../src/render/sheet.js';
+import { TR } from '../src/ui/tr.js';
 import { fixture, mark } from './helpers.js';
 
 // Sheet text is drawn as outlines, so the sheet is compared against one built from the expected title and labels.
@@ -106,5 +114,42 @@ describe('family, palette and tile sheets', () => {
       'Options',
     );
     expect(tiled).toBe(expected);
+  });
+});
+
+describe('zoom rows', () => {
+  const before = mark('fold-n');
+  const after = before.replace('<svg', '<svg data-after="1"');
+  const vb = /viewBox="([^"]+)"/.exec(before)![1]!.split(/[ ,]+/).map(Number);
+
+  it('adds one labelled row per zoom and leaves the plain sheet untouched', () => {
+    const items = [
+      { label: 'A', svg: before },
+      { label: 'B', svg: after },
+    ];
+    const plain = compareSheetSvg(items);
+    const zoomed = compareSheetSvg(items, '#ffffff', 'Options', undefined, {
+      zooms: [{ x: vb[0]!, y: vb[1]!, w: vb[2]! / 4, h: vb[3]! / 4, label: 'Corner' }],
+    });
+    expect(compareSheetSvg(items, '#ffffff', 'Options', undefined, { zooms: [] })).toBe(plain);
+    const h = (s: string) => Number(/ height="([\d.]+)"/.exec(s)![1]);
+    expect(h(zoomed)).toBeGreaterThan(h(plain));
+    // The row carries the label (drawn as outlines, so a different label draws a different sheet) and two crops.
+    const other = compareSheetSvg(items, '#ffffff', 'Options', undefined, {
+      zooms: [{ x: vb[0]!, y: vb[1]!, w: vb[2]! / 4, h: vb[3]! / 4, label: 'Other' }],
+    });
+    expect(other).not.toBe(zoomed);
+    expect(zoomed).toContain('data-zoom="0"');
+    expect(zoomed.match(/data-zoom-side="/g)).toHaveLength(2);
+  });
+
+  it('draws each crop at 4x', () => {
+    const svg = zoomRowsSvg(before, after, [{ x: vb[0]!, y: vb[1]!, w: 10, h: 5, label: 'z' }], 400).svg;
+    expect(svg).toContain('width="40" height="20" viewBox="');
+  });
+
+  it('has Turkish entries for the new labels', () => {
+    expect(TR.Before).toBeTruthy();
+    expect(TR.After).toBeTruthy();
   });
 });
