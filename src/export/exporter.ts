@@ -735,6 +735,7 @@ async function exportAndroid(ctx: Ctx) {
 /** The lead logo for TV surfaces and how much of its height is lettering (a heuristic: the lockup's text sits at cap height). */
 function tvArt(ctx: Ctx): { art: string; textShare: number } {
   if (!ctx.primary) return { art: ctx.symbol!, textShare: 0 };
+  // 0.6: in the horizontal lockups Markilo draws, the wordmark's cap height is about 60% of the lockup's height.
   return { art: ctx.primary, textShare: ctx.primary === ctx.wordmark ? 1 : 0.6 };
 }
 

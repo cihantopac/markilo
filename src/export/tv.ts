@@ -48,7 +48,7 @@ export function tvSurface(input: TvSurfaceInput, label: string): TvSurface {
   const textShare = (ah * input.textShare) / h;
   const min = SPECS.tv.minTextShare;
   const warning =
-    textShare < min
+    input.textShare > 0 && textShare < min
       ? `${label}: the lettering is ${(textShare * 100).toFixed(1)}% of the ${h} px height (under ${min * 100}%), too small to read from a sofa. Use a shorter wordmark or replace this file.`
       : undefined;
   return { svg, textShare, ...(warning ? { warning } : {}) };

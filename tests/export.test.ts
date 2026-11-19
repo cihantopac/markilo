@@ -235,6 +235,25 @@ describe('export kit', () => {
     const long = tvSurface({ ...base, art: wordmark(200) }, 'banner');
     expect(long.warning).toMatch(/lettering/);
     expect(long.textShare).toBeLessThan(0.08);
+    // A symbol-only identity has no lettering to check.
+    const none = tvSurface({ ...base, textShare: 0, art: wordmark(10) }, 'banner');
+    expect(none.warning).toBeUndefined();
+  });
+  it('puts the lettering warning of a long wordmark into the export result', async () => {
+    const d = tmp();
+    const sym = join(d, 'symbol.svg');
+    const wm = join(d, 'wordmark.svg');
+    writeFileSync(sym, mark('bars'));
+    writeFileSync(
+      wm,
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 10"><rect width="400" height="10" fill="#123456"/></svg>',
+    );
+    ws.addBrand({ name: 'Longword', locked: true });
+    lockIdentity(ws, 'longword', { symbol: sym, wordmark: wm, primary: '#7a3cf0', paper: '#ffffff' });
+    const r = await exportBrand(ws, 'longword', { groups: ['tv'] });
+    expect(r.warnings.some((w) => w.includes('tv/firetv/icon-1280x720.png') && /lettering/.test(w))).toBe(
+      true,
+    );
   });
   it('builds a self-contained gallery', async () => {
     const g = await buildGallery(ws);
