@@ -519,9 +519,41 @@ function withoutHiddenText(fragment: string): string {
     /\bclass=["'][^"']*\b(sr-only|visually-hidden|screen-reader-text|u-hidden-visually)\b[^"']*["']/i;
   const hiddenStyle =
     /\bstyle=["'][^"']*(\bclip\s*:|clip-path\s*:\s*inset\(\s*50%|(?:width|height)\s*:\s*1px)[^"']*["']/i;
-  return fragment.replace(/<(\w+)\b([^>]*)>[\s\S]*?<\/\1>/g, (all, _tag: string, attrs: string) =>
-    hiddenClass.test(attrs) || hiddenStyle.test(attrs) ? ' ' : all,
-  );
+  // Walk the tags with a stack so a hidden element is removed with everything nested in it, however deep.
+  const tag = /<(\/?)(\w+)\b([^>]*?)(\/?)>/g;
+  const VOID = /^(br|hr|img|input|meta|link|wbr|area|base|col|source|track|embed)$/i;
+  let out = '';
+  let last = 0;
+  let hide: { tag: string; depth: number } | undefined;
+  const stack: string[] = [];
+  for (const m of fragment.matchAll(tag)) {
+    const [whole, closing, name, attrs, selfClose] = m as unknown as [string, string, string, string, string];
+    const lower = name.toLowerCase();
+    if (!hide) out += fragment.slice(last, m.index);
+    last = m.index! + whole.length;
+    if (closing) {
+      const at = stack.lastIndexOf(lower);
+      if (at >= 0) stack.length = at;
+      if (hide && stack.length <= hide.depth) {
+        hide = undefined;
+        out += ' ';
+      }
+      continue;
+    }
+    if (hide) {
+      if (!selfClose && !VOID.test(lower)) stack.push(lower);
+      continue;
+    }
+    if ((hiddenClass.test(attrs) || hiddenStyle.test(attrs)) && !selfClose && !VOID.test(lower)) {
+      hide = { tag: lower, depth: stack.length };
+      stack.push(lower);
+      continue;
+    }
+    if (!selfClose && !VOID.test(lower)) stack.push(lower);
+    out += whole;
+  }
+  if (!hide) out += fragment.slice(last);
+  return out;
 }
 
 /** Letters or digits next to the SVG at `at`, inside its home link or logo container (tags and the SVG itself stripped). */
@@ -575,20 +607,48 @@ export function outboundHostsOf(html: string, pageUrl: string): string[] {
 }
 
 const letters = (s: string) => s.toLowerCase().replace(/[^\p{L}]+/gu, '');
-/** The part of a host that names it: the label before the public suffix (nimbra-loop.test -> nimbraloop). */
-const hostStem = (h: string) =>
-  letters(
+/** The label of a host before its public suffix, lowercased, hyphens kept (nimbra-loop.test -> nimbra-loop). */
+const hostLabel = (h: string) =>
+  (
     h
       .replace(/^www\./, '')
       .split('.')
       .slice(0, -1)
-      .pop() ?? h,
-  );
+      .pop() ?? h
+  ).toLowerCase();
+/** A name's own words, hyphens kept (Acme Mail -> acme-mail). */
+const nameLabel = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, '-')
+    .replace(/^-+|-+$/g, '');
+const CORPORATE_TAIL =
+  /^(labs?|group|corp|inc|ltd|llc|gmbh|shop|store|online|official|apps?|tech|hq|co|company)$/;
 const sharedPrefix = (a: string, b: string) => {
   let n = 0;
   while (n < a.length && n < b.length && a[n] === b[n]) n++;
   return n;
 };
+/**
+ * Whether two name labels belong to one product family: equal, one a hyphen-delimited extension of the other
+ * (acme, acme-mail), one extended by a real word of 4+ letters (nimbra, nimbradock), or two extensions of a shared
+ * 4+ letter stem (nimbramail, nimbradock). A short or corporate tail is another name (acme, acmeco).
+ */
+function sameFamilyStem(a: string, b: string): boolean {
+  if (a.length < 3 || b.length < 3) return false;
+  if (a === b) return true;
+  const [short, long] = a.length <= b.length ? [a, b] : [b, a];
+  if (long.startsWith(`${short}-`)) return true;
+  if (long.startsWith(short)) {
+    const tail = long.slice(short.length);
+    return tail.length >= 4 && !CORPORATE_TAIL.test(tail);
+  }
+  const first = (x: string) => x.split('-')[0]!;
+  if (a.includes('-') && b.includes('-')) return first(a).length >= 3 && first(a) === first(b);
+  if (a.includes('-')) return sameFamilyStem(first(a), b);
+  if (b.includes('-')) return sameFamilyStem(a, first(b));
+  return sharedPrefix(a, b) >= 4;
+}
 
 /**
  * A family hint: a `sameAs` hub (a non-social site elsewhere), sibling `data-lockup` marks on the page itself, two or
@@ -622,15 +682,17 @@ export function familyHintOf(
   if (lockups >= 2) return { hub: new URL(pageUrl).origin, siblings: [] };
 
   const orgStem = letters(org?.name ?? '');
-  const stems = [hostStem(host), orgStem].filter((x) => x.length >= 3);
+  const stems = [hostLabel(host), nameLabel(org?.name ?? '')].filter((x) => x.length >= 3);
   const stemmed = outboundHosts.filter((h) => {
-    const hs = hostStem(h);
-    return stems.some((st) => sharedPrefix(st, hs) >= 3);
+    const hs = hostLabel(h);
+    return stems.some((st) => sameFamilyStem(st, hs));
   });
   const product = letters(productName ?? '');
   const orgHost =
     orgStem.length >= 3 && orgStem !== product
-      ? outboundHosts.find((h) => hostStem(h).includes(orgStem) || orgStem.includes(hostStem(h)))
+      ? outboundHosts.find(
+          (h) => letters(hostLabel(h)).includes(orgStem) || orgStem.includes(letters(hostLabel(h))),
+        )
       : undefined;
   if (stemmed.length >= 2 || orgHost) {
     // hub and siblings are always URLs (origins here), as the other paths give and `research family --member` takes.

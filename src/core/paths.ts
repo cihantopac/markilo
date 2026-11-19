@@ -5,7 +5,7 @@ import { MarkiloError } from './errors.js';
 
 /** Lowercase ASCII slug; folds Turkish and other Latin diacritics so "Şirket Ürün" → "sirket-urun". */
 export function slugify(input: string): string {
-  const folded = foldAscii(input).toLowerCase();
+  const folded = transliterate(foldAscii(input).toLowerCase());
   const slug = folded
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
@@ -25,6 +25,85 @@ export function slugifyOrHash(name: string): { slug: string; hashed: boolean } {
   } catch {
     return { slug: `brand-${createHash('sha1').update(name).digest('hex').slice(0, 6)}`, hashed: true };
   }
+}
+
+const GREEK: Record<string, string> = {
+  α: 'a',
+  β: 'v',
+  γ: 'g',
+  δ: 'd',
+  ε: 'e',
+  ζ: 'z',
+  η: 'i',
+  θ: 'th',
+  ι: 'i',
+  κ: 'k',
+  λ: 'l',
+  μ: 'm',
+  ν: 'n',
+  ξ: 'x',
+  ο: 'o',
+  π: 'p',
+  ρ: 'r',
+  σ: 's',
+  ς: 's',
+  τ: 't',
+  υ: 'y',
+  φ: 'f',
+  χ: 'ch',
+  ψ: 'ps',
+  ω: 'o',
+};
+const CYRILLIC: Record<string, string> = {
+  а: 'a',
+  б: 'b',
+  в: 'v',
+  г: 'g',
+  д: 'd',
+  е: 'e',
+  ё: 'e',
+  ж: 'zh',
+  з: 'z',
+  и: 'i',
+  й: 'i',
+  к: 'k',
+  л: 'l',
+  м: 'm',
+  н: 'n',
+  о: 'o',
+  п: 'p',
+  р: 'r',
+  с: 's',
+  т: 't',
+  у: 'u',
+  ф: 'f',
+  х: 'kh',
+  ц: 'ts',
+  ч: 'ch',
+  ш: 'sh',
+  щ: 'shch',
+  ъ: '',
+  ы: 'y',
+  ь: '',
+  э: 'e',
+  ю: 'iu',
+  я: 'ia',
+  і: 'i',
+  ї: 'i',
+  є: 'e',
+  ґ: 'g',
+};
+
+/**
+ * Greek and Cyrillic letters (already lowercase, accents folded) to Latin, so a mark named "Ναύς" or "Нива" still gets
+ * a slug. The digraphs αυ, ευ and ου read as au, eu and ou, as in "Ναύς" -> "naus". Other scripts pass through.
+ */
+export function transliterate(lower: string): string {
+  return lower
+    .replace(/([αε])υ/g, '$1u')
+    .replace(/ου/g, 'ou')
+    .replace(/[α-ως]/g, (c) => GREEK[c] ?? c)
+    .replace(/[а-яёіїєґ]/g, (c) => CYRILLIC[c] ?? c);
 }
 
 const FOLD: Record<string, string> = {

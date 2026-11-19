@@ -1,6 +1,7 @@
 import { normalizeColor } from '../analyze/color.js';
 import { MarkiloError } from '../core/errors.js';
 import { writeJson } from '../core/fsx.js';
+import { slugify } from '../core/paths.js';
 import type { Workspace } from '../core/workspace.js';
 import { readReferences, referenceIndexPath } from '../report/originality.js';
 import { addReference } from './competitors.js';
@@ -59,12 +60,12 @@ function markName(svg: string): string | undefined {
     /\bdata-lockup-art=["']([^"']+)["']/i.exec(open)?.[1] ??
     /\baria-label=["']([^"']+)["']/i.exec(open)?.[1] ??
     /<title[^>]*>([^<]+)<\/title>/i.exec(svg)?.[1];
-  const slug = raw
-    ?.toLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 40);
-  return slug || undefined;
+  // Greek and Cyrillic names become Latin slugs; a name with no Latin form (CJK) falls back to the host.
+  try {
+    return raw ? slugify(raw).slice(0, 40).replace(/-+$/g, '') || undefined : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 export async function researchFamily(

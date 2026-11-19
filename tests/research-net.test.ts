@@ -133,6 +133,12 @@ beforeAll(async () => {
         `<!doctype html><html><head><title>${name}</title><meta property="og:site_name" content="${name}"><link rel="stylesheet" href="/typed.css">${ld}</head><body><header>${logo}</header><h1>Hello</h1></body></html>`,
       );
     }
+    if (url === '/naus')
+      return send(
+        200,
+        'text/html',
+        '<!doctype html><html><head><title>Ναύς</title></head><body><header><a href="/"><svg data-lockup-art="Ναύς" role="img" viewBox="0 0 200 40"><path fill="#123456" d="M0 0h20v40H0z"/><path fill="#123456" d="M30 0h20v40H30z"/></svg></a></header></body></html>',
+      );
     if (url === '/nimbra')
       return send(
         200,
@@ -320,6 +326,13 @@ describe('nameRenderingOf', () => {
     expect(render(`${icon}<span class="visually-hidden">Ledger</span>`)).toBe('outlined');
     expect(render(`${icon}<span class="sr-only">x</span><span>Ledger</span>`)).toBe('live-text');
   });
+  it('nested hidden spans are removed with what is inside them', () => {
+    expect(render(`${word}<span class="sr-only"><b>Ledger</b></span>`)).toBe('outlined');
+    expect(render(`${word}<span class="visually-hidden"><span><i>Ledger</i></span> app</span>`)).toBe(
+      'outlined',
+    );
+    expect(render(`${icon}<span class="sr-only"><b>x</b></span><span>Ledger</span>`)).toBe('live-text');
+  });
   it('a marked or role=img filled drawing in the home link is outlined even beside text', () => {
     const marked =
       '<svg data-lockup-art role="img" viewBox="0 0 120 40"><path fill="currentColor" d="M0 0h20v40H0z"/></svg>';
@@ -329,6 +342,15 @@ describe('nameRenderingOf', () => {
 
 describe('familyHintOf from outbound links', () => {
   const page = 'https://nimbramail.test/';
+  it('acme-mail and acme-maps are siblings of acme, acmeco is not', () => {
+    const acme = 'https://acme.test/';
+    expect(familyHintOf('', undefined, acme, ['acme-mail.test', 'acme-maps.test', 'acmeco.test'])).toEqual({
+      hub: 'https://acme-mail.test',
+      siblings: ['https://acme-mail.test', 'https://acme-maps.test'],
+    });
+    expect(familyHintOf('', undefined, acme, ['acme-mail.test', 'acmeco.test'])).toBeUndefined();
+    expect(familyHintOf('', undefined, acme, ['acmeco.test', 'acmehq.test'])).toBeUndefined();
+  });
   it('two outbound hosts sharing a name stem make a hint', () => {
     expect(familyHintOf('', undefined, page, ['nimbra-loop.test', 'nimbradock.test', 'other.test'])).toEqual({
       hub: 'https://nimbra-loop.test',
@@ -369,6 +391,16 @@ describe('familyHintOf from outbound links', () => {
     ws.addBrand({ name: 'Nimbra' });
     await researchFamily(ws, 'nimbra', [`${base}/nimbra`], { ...local, maxPages: 1 });
     expect(readReferences(ws, 'nimbra').references.map((x) => x.id)).toEqual(['nimbra-loop-1']);
+  });
+});
+
+describe('family member with a non-Latin name', () => {
+  it('keeps its lockup, with an id transliterated to Latin', async () => {
+    const ws = Workspace.init(join(tmp(), 'brand'), 'T');
+    ws.addBrand({ name: 'Lumen' });
+    const r = await researchFamily(ws, 'lumen', [`${base}/naus`], { ...local, maxPages: 1 });
+    expect(readReferences(ws, 'lumen').references.map((x) => x.id)).toEqual(['naus-1']);
+    expect(JSON.stringify(r.members[0])).not.toMatch(/unusable/);
   });
 });
 
