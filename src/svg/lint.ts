@@ -47,7 +47,7 @@ function styleDecls(style: string | undefined): Record<string, string> {
 }
 
 /** Paint declarations (`fill`, `stroke`, `stop-color`) in CSS text: match[1] is the property and colon, match[2] the value. */
-export const CSS_PAINT = /((?:^|[;{\s])(?:fill|stroke|stop-color)\s*:\s*)([^;}!]+)/gi;
+export const CSS_PAINT = /((?:^|[;{\s])(?:fill|stroke|stop-color|flood-color|color)\s*:\s*)([^;}!]+)/gi;
 
 /** Paint value of an element from attributes or inline style (style wins, as in CSS). */
 export function paintOf(el: XmlElement, prop: string): string | undefined {

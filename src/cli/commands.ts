@@ -244,13 +244,16 @@ function recolorSvgText(
     counts.set(hex, (counts.get(hex) ?? 0) + 1);
     return to;
   };
-  let text = src.replace(/(\s(?:fill|stroke|stop-color)\s*=\s*)(["'])([^"']*)\2/g, (m, pre, q, v) => {
-    const to = swap(v);
-    return to ? `${pre}${q}${to}${q}` : m;
-  });
+  let text = src.replace(
+    /(\s(?:fill|stroke|stop-color|flood-color|color)\s*=\s*)(["'])([^"']*)\2/g,
+    (m, pre, q, v) => {
+      const to = swap(v);
+      return to ? `${pre}${q}${to}${q}` : m;
+    },
+  );
   text = text.replace(/(\sstyle\s*=\s*)(["'])([^"']*)\2/g, (_m, pre, q, v: string) => {
     const inner = v.replace(
-      /((?:^|;)\s*(?:fill|stroke|stop-color)\s*:\s*)([^;]+)/gi,
+      /((?:^|;)\s*(?:fill|stroke|stop-color|flood-color|color)\s*:\s*)([^;]+)/gi,
       (m2, p2, val: string) => {
         const to = swap(val.trim());
         return to ? `${p2}${to}` : m2;
@@ -2016,6 +2019,7 @@ export const COMMANDS: CommandSpec[] = [
       // The masters follow the palette (an unlocked brand only; a locked identity is never recoloured).
       // Planned here, written only after every other option was accepted (just before the concept is saved).
       let recolor: RecolorPlan = { recolored: [], warnings: [], writes: [] };
+      let recolorMap = new Map<string, string>();
       const recolorFrom = c.str('recolor-from');
       const staleFrom = recolorFrom !== undefined ? normalizeColor(recolorFrom) : undefined;
       if (recolorFrom !== undefined) {
@@ -2044,6 +2048,7 @@ export const COMMANDS: CommandSpec[] = [
             throw new MarkiloError('USAGE', `--recolor-from ${staleFrom} is the ${role} colour itself.`);
           map.set(staleFrom, to);
         }
+        recolorMap = map;
         const files = Object.values(next.files).filter((f): f is string => !!f);
         recolor = planRecolor(w, slug, cur.id, files, map, cur.palette);
       }
@@ -2066,8 +2071,16 @@ export const COMMANDS: CommandSpec[] = [
       // A critique of a changed drawing starts clean: the old drawing's verdict goes to the history (archiveCritique
       // below), and none of its scores, answer or looks carry over into the new drawing's record.
       const freshCritique = critiquing && !!cur.reviewedArt && cur.reviewedArt !== plannedArt();
-      if (!critiquing && palettePlanned && cur.reviewedArt && cur.reviewedArt === currentArt(w, slug, cur))
-        next.reviewedArt = plannedArt();
+      if (!critiquing && palettePlanned && cur.reviewedArt && cur.reviewedArt === currentArt(w, slug, cur)) {
+        // Only when the planned drawing is exactly the old one under the colour map (no file was swapped as well).
+        const oldRecoloured = (rel?: string) => {
+          const path = rel && w.conceptFile(slug, cur.id, rel);
+          return path && existsSync(path) ? recolorSvgText(readText(path), recolorMap).text : undefined;
+        };
+        const planned = plannedArt();
+        if (artHash(oldRecoloured(cur.files.symbol), oldRecoloured(cur.files.wordmark)) === planned)
+          next.reviewedArt = planned;
+      }
       if (freshCritique)
         for (const k of ['judgment', 'critique', 'blind', 'looks', 'readsAs', 'reviews'] as const)
           delete next[k];

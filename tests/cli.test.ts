@@ -526,11 +526,11 @@ describe('cli (bundled)', () => {
     ok(['concept', 'update', '--brand', 'nimbra', '--concept', 'fold', '--lockup-horizontal', 'lockup.svg']);
     const r = ok(['concept', 'update', '--brand', 'nimbra', '--concept', 'fold', '--primary', '#2b3a52']);
     expect(r.recolored).toEqual(
-      expect.arrayContaining([{ file: 'lockup.svg', from: '#3b5bdb', to: '#2b3a52', count: 2 }]),
+      expect.arrayContaining([{ file: 'lockup.svg', from: '#3b5bdb', to: '#2b3a52', count: 3 }]),
     );
     const lock = readFileSync(join(cdir, 'lockup.svg'), 'utf8');
     expect(lock).toContain('.a{fill:#2b3a52;stroke : #2b3a52}');
-    expect(lock).toContain('.b{fill:#3b5bdc;color:#3b5bdb}');
+    expect(lock).toContain('.b{fill:#3b5bdc;color:#2b3a52}');
   }, 60_000);
   it('a palette-only change keeps the critique; a form change still makes it stale', () => {
     const { ws, dir: cwd } = synthBrand();
@@ -550,6 +550,20 @@ describe('cli (bundled)', () => {
     copyFileSync(fixture('marks/leaf-letter.svg'), join(ws.conceptDir('nimbra', 'fold'), 'symbol.svg'));
     ok([...upd, '--primary', '#c2255c']);
     expect(ok(['concept', 'show', '--brand', 'nimbra', '--concept', 'fold']).gate.status).toBe('stale');
+  }, 60_000);
+  it('swapping the drawing and changing the palette in one call does not keep the critique', () => {
+    const { ws, dir: cwd } = synthBrand();
+    const upd = ['concept', 'update', '--brand', 'nimbra', '--concept', 'fold'];
+    const blind = 'distinctiveness=7,memorability=7,brand-fit=7,craft=7,versatility=7';
+    const run1 = (args: string[]) => {
+      const r = run(args, cwd);
+      expect(r.status, `${args.join(' ')}: ${r.stderr}`).toBe(0);
+      return JSON.parse(r.stdout);
+    };
+    run1([...upd, '--blind', blind, '--present', 'yes:good']);
+    copyFileSync(fixture('marks/leaf-letter.svg'), join(ws.conceptDir('nimbra', 'fold'), 'symbol-new.svg'));
+    run1([...upd, '--symbol', 'symbol-new.svg', '--primary', '#2b3a52']);
+    expect(run1(['concept', 'show', '--brand', 'nimbra', '--concept', 'fold']).gate.status).toBe('stale');
   }, 60_000);
   it('--recolor-from on a role set to none says the role has no colour to replace with', () => {
     const { dir: cwd } = synthBrand();
