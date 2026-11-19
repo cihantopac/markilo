@@ -127,9 +127,10 @@ export function validateConcept(v: unknown): Issues {
       typeof rf.file !== 'string' ||
       !rf.file ||
       typeof rf.iou !== 'number' ||
-      (rf.kept !== 'rebuild' && rf.kept !== 'trace'))
+      !['rebuild', 'trace', 'original'].includes(rf.kept as string) ||
+      (rf.written !== undefined && !isObj(rf.written)))
   )
-    issues.push('refreshedFrom needs file, iou and kept (rebuild or trace)');
+    issues.push('refreshedFrom needs file, iou and kept (rebuild, trace or original)');
   const t = (v as unknown as Concept).typography;
   if (t !== undefined && (typeof t.fontId !== 'string' || typeof t.weight !== 'number'))
     issues.push('typography needs fontId and weight');

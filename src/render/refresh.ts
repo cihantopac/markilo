@@ -1,13 +1,10 @@
 import type { GroundPalette } from '../export/variants.js';
 import { nestSvg, svgDocument } from '../svg/compose.js';
 import { intrinsicBox, parseXml } from '../svg/xml.js';
-import { TR } from '../ui/tr.js';
+import { type BoardLang, boardText } from '../ui/board-text.js';
 import { decodeImage, encodePng } from './png.js';
 import { renderPng } from './resvg.js';
 import { label, smallCompareSheetSvg } from './sheet.js';
-
-/** Languages a board's labels are drawn in. */
-export type BoardLang = 'en' | 'tr';
 
 /** The sizes the original and the refreshed mark are compared at: the artwork, an app icon, a tab and a favicon. */
 export const REFRESH_SIZES = [512, 64, 32, 16];
@@ -20,6 +17,8 @@ export const REFRESH_BOARD_LABELS = [
   'Trace',
   'IoU {0} against the original',
   'The rebuild fell below --min-iou {0}: the trace is kept',
+  'Kept as it is',
+  'The rebuild fell below --min-iou {0}: the original is kept',
   'Lockups',
   'Horizontal',
   'Stacked',
@@ -28,11 +27,17 @@ export const REFRESH_BOARD_LABELS = [
 
 type Label = (typeof REFRESH_BOARD_LABELS)[number];
 
-/** A board label in `lang`, with {0}, {1}… filled in. */
-function say(en: Label, lang: BoardLang, vars: (string | number)[] = []): string {
-  const text = lang === 'tr' ? (TR[en] ?? en) : en;
-  return text.replace(/\{(\d+)\}/g, (_, i: string) => String(vars[Number(i)] ?? ''));
-}
+/** What a refresh keeps: the rebuild, the trace of a raster, or an SVG original as it is (its rebuild was refused). */
+export type RefreshKept = 'rebuild' | 'trace' | 'original';
+
+const KEPT_CAPTION: Record<RefreshKept, Label> = {
+  rebuild: 'Rebuild',
+  trace: 'Trace',
+  original: 'Kept as it is',
+};
+
+/** A board label in `lang`, through the boards' shared text helper. */
+const say = (en: Label, lang: BoardLang, vars?: (string | number)[]) => boardText(en, lang, vars);
 
 /** A raster (PNG, JPEG or WebP) as an SVG document of its own size, so it is placed like any mark. */
 export function rasterSvg(bytes: Uint8Array): string {
@@ -46,7 +51,7 @@ export interface RefreshBoardInput {
   original: string;
   /** The drawing the refresh keeps: the rebuild, or the trace when the rebuild fell below the bar. */
   refreshed: string;
-  kept: 'rebuild' | 'trace';
+  kept: RefreshKept;
   iou: number;
   minIou?: number;
   /** The brand name. */
@@ -74,7 +79,7 @@ export function refreshBoardSvg(input: RefreshBoardInput, lang: BoardLang = 'en'
   const columns = [
     { caption: say('Original', lang), svg: input.original, side: 'original' },
     {
-      caption: `${say(input.kept === 'rebuild' ? 'Rebuild' : 'Trace', lang)} · ${say('IoU {0} against the original', lang, [input.iou])}`,
+      caption: `${say(KEPT_CAPTION[input.kept], lang)} · ${say('IoU {0} against the original', lang, [input.iou])}`,
       svg: input.refreshed,
       side: input.kept,
     },
@@ -83,9 +88,15 @@ export function refreshBoardSvg(input: RefreshBoardInput, lang: BoardLang = 'en'
     body += label(col.caption, PAD + i * (colW + PAD), y + 16, 13, INK);
   });
   y += 24;
-  if (input.kept === 'trace') {
+  if (input.kept !== 'rebuild') {
     body += label(
-      say('The rebuild fell below --min-iou {0}: the trace is kept', lang, [input.minIou ?? 0.95]),
+      say(
+        input.kept === 'trace'
+          ? 'The rebuild fell below --min-iou {0}: the trace is kept'
+          : 'The rebuild fell below --min-iou {0}: the original is kept',
+        lang,
+        [input.minIou ?? 0.95],
+      ),
       PAD + colW + PAD,
       y + 12,
       11,
@@ -127,6 +138,7 @@ export function refreshBoardSvg(input: RefreshBoardInput, lang: BoardLang = 'en'
     const sheet = smallCompareSheetSvg(input.small.main, input.small.small, {
       ...(input.small.palette ? { palette: input.small.palette } : {}),
       title: say('Small sizes', lang),
+      lang,
     });
     const box = intrinsicBox(parseXml(sheet))!;
     const s = Math.min(1, (width - PAD * 2) / box.width);

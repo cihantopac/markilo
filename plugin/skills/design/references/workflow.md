@@ -48,7 +48,8 @@ unchanged, while a refresh redraws them.
    `construct --role small` builds one, composes horizontal and stacked lockups when a wordmark is given, and renders
    `review/refresh.png` (original beside the rebuild at 512/64/32/16 px with the IoU, the lockups, the small-size
    board). The concept records the original (`refreshedFrom`), so the gallery shows it beside the rebuild. It never
-   finalizes or exports; its `next` lists the owner's questions. The single steps stay available
+   finalizes or exports; its `next` lists the owner's questions. Rerunning it is safe: files the owner changed since
+   the last refresh are kept (with a warning) unless `--force`. The single steps stay available
    (`markilo trace`, `markilo rebuild … --against <original>`, `markilo lockup`, `render --small-compare`).
 3. **Small sizes**: show the small-size board and ask whether 32 px and below use the small version or the main
    symbol (`concept update --small-sizes small|main`).

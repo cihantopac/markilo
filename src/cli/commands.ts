@@ -27,7 +27,16 @@ import {
   sketchReadiness,
 } from '../construct/vary.js';
 import { MarkiloError } from '../core/errors.js';
-import { isDir, nowIso, readJson, readText, writeFileSafe, writeGenerated, writeJson } from '../core/fsx.js';
+import {
+  isDir,
+  nowIso,
+  readJson,
+  readText,
+  sha256,
+  writeFileSafe,
+  writeGenerated,
+  writeJson,
+} from '../core/fsx.js';
 import {
   assertNewSlug,
   isSlug,
@@ -120,7 +129,7 @@ import { compareNames, phoneticKey, pronunciationNotes } from '../name/similarit
 import { suggestNiceClasses, trademarkSearchPlan } from '../name/trademark.js';
 import { decodeImage } from '../render/png.js';
 import { type ProposalInput, renderProposal, renderRoundBoard } from '../render/proposal.js';
-import { rasterSvg, renderRefreshBoard } from '../render/refresh.js';
+import { type RefreshKept, rasterSvg, renderRefreshBoard } from '../render/refresh.js';
 import { renderPng } from '../render/resvg.js';
 import {
   paletteSheetSvg,
@@ -496,6 +505,13 @@ function pathAloneSvg(d: string, other: string, rule: 'evenodd' | 'nonzero'): st
  */
 async function rebuildSvgFile(c: RunContext) {
   const inPath = pos(c, 0, 'in.svg');
+  // The input and the gate are checked before --against is read (decoding a raster can be slow).
+  const source = readText(file(c, inPath));
+  if (localName(parseXml(source).name) !== 'svg')
+    throw new MarkiloError('INVALID_SVG', `${inPath}: not an SVG document.`);
+  const minIou = c.num('min-iou', 0.95)!;
+  if (!(minIou >= 0 && minIou <= 1)) throw new MarkiloError('USAGE', '--min-iou must be between 0 and 1.');
+  const angles = rebuildAngles(c);
   const against = c.str('against');
   const warnings: string[] = [];
   let reference: string | undefined;
@@ -508,11 +524,11 @@ async function rebuildSvgFile(c: RunContext) {
       reference = rasterMaskSvg(img);
     } else reference = readText(p);
   }
-  const r = await rebuildSvgText(readText(file(c, inPath)), {
+  const r = await rebuildSvgText(source, {
     label: inPath,
     ...(c.num('tolerance') !== undefined ? { tolerance: c.num('tolerance')! } : {}),
-    minIou: c.num('min-iou', 0.95)!,
-    angles: rebuildAngles(c),
+    minIou,
+    angles,
     arcs: !c.bool('no-arcs'),
     ...(reference !== undefined ? { reference, referenceLabel: against! } : {}),
   });
@@ -662,7 +678,10 @@ function drawnPaths(svg: string): { paths: DrawnPath[]; blocked?: string } {
   return { paths: out, ...(blocked ? { blocked } : {}) };
 }
 
-/** The colours a drawing is painted in, the largest painted area first. */
+/**
+ * The colours a drawing is painted in, ordered by the summed bounding-box area of their paths (a cheap stand-in for
+ * painted area that is enough to tell the main colour from an accent).
+ */
 async function inkColours(svg: string): Promise<string[]> {
   await ensurePathKit();
   const area = new Map<string, number>();
@@ -4995,7 +5014,7 @@ export const COMMANDS: CommandSpec[] = [
     summary:
       "Refresh the owner's own mark in one command: trace a raster (or take the SVG), rebuild it under a fidelity gate, draft a small version, compose lockups with a wordmark and render review/refresh.png. Stops at the owner's decisions (small sizes, layout, equity): it never finalizes or exports.",
     usage:
-      'refresh --brand <slug> --from <file.svg|png|jpg|webp> [--wordmark <file>] [--equity "<since when and where the mark is in use>"] [--min-iou 0.95] [--angles auto|none|32,90] [--colors n] [--threshold 0-255] [--background #hex]',
+      'refresh --brand <slug> --from <file.svg|png|jpg|webp> [--wordmark <file>] [--equity "<since when and where the mark is in use>"] [--min-iou 0.95] [--angles auto|none|32,90] [--colors n] [--threshold 0-255] [--background #hex] [--lang en|tr] [--force]',
     options: {
       ...brandOpt,
       from: { type: 'string', description: "The owner's current mark: an SVG, or a PNG/JPEG/WebP to trace" },
@@ -5012,8 +5031,14 @@ export const COMMANDS: CommandSpec[] = [
       'min-iou': {
         type: 'string',
         description:
-          'Keep the rebuild only when it matches the original at least this closely; below it the trace is kept (default 0.95)',
+          'Keep the rebuild only when it matches the original at least this closely; below it the trace (or an SVG original) is kept (default 0.95)',
       },
+      force: {
+        type: 'boolean',
+        description:
+          'Replace files the owner changed since the last refresh (default: they are kept, with a warning) and a small version registered by hand',
+      },
+      ...langOpt,
       angles: {
         type: 'string',
         description: 'Rebuild: auto (default), none, or degrees to snap lines to (32,90)',
@@ -5036,6 +5061,8 @@ export const COMMANDS: CommandSpec[] = [
       if (!(minIou >= 0 && minIou <= 1))
         throw new MarkiloError('USAGE', '--min-iou must be between 0 and 1.');
       const angles = rebuildAngles(c);
+      const lang = boardLangOf(c, w, slug);
+      const force = c.bool('force');
       const equityArg = c.str('equity');
       const equity = equityArg !== undefined && equityArg !== 'none' ? parseEquity(equityArg) : undefined;
       const id = REFRESH_CONCEPT;
@@ -5074,7 +5101,7 @@ export const COMMANDS: CommandSpec[] = [
 
       // 2. The rebuild under the fidelity gate; below it the trace is kept, and the result says so.
       progress('rebuilding');
-      let kept: 'rebuild' | 'trace' = 'rebuild';
+      let kept: RefreshKept = 'rebuild';
       let symbolSvg: string;
       let iou: number;
       let rebuild: Record<string, unknown> | undefined;
@@ -5099,7 +5126,7 @@ export const COMMANDS: CommandSpec[] = [
         warnings.push(...r.warnings);
       } catch (err) {
         if (!(err instanceof MarkiloError) || err.code !== 'INVALID_INPUT') throw err;
-        kept = 'trace';
+        kept = raster ? 'trace' : 'original';
         symbolSvg = base;
         iou = trace ? trace.iou : 1;
         const measured = err.details?.iou !== undefined;
@@ -5120,9 +5147,16 @@ export const COMMANDS: CommandSpec[] = [
       if (wordArg) {
         const p = file(c, wordArg);
         if (RASTER_EXT.has(extname(p).toLowerCase())) {
-          const t = await traceImageFile(p, {});
+          // The symbol's threshold and ground apply to the wordmark too; its colour count does not (a one-colour
+          // word split into the symbol's colours would cut its anti-aliased edges into a second face).
+          const { colors: _colors, ...wordOpts } = traceOpts(c);
+          const t = await traceImageFile(p, wordOpts);
           wordmarkSvg = t.svg;
           warnings.push(...t.warnings.map((x) => `wordmark: ${x}`));
+          if (t.iou < minIou)
+            warnings.push(
+              `wordmark: its trace matches the raster at IoU ${t.iou}, below --min-iou ${minIou}: check --threshold or --background, or give the wordmark as SVG.`,
+            );
         } else {
           wordmarkSvg = readText(p);
           if (!intrinsicBox(parseXml(wordmarkSvg)))
@@ -5130,65 +5164,115 @@ export const COMMANDS: CommandSpec[] = [
         }
       }
 
-      // 4. The small version, drafted as `construct --role small` builds one.
-      progress('drafting the small version');
-      const draft = await draftSmallSpec(symbolSvg, `${brandName} — small`);
+      // 4. What the owner changed since the last refresh is theirs: kept unless --force. A file counts as changed
+      // when its sha256 no longer matches the one the last refresh recorded (or none was recorded).
+      const dir = w.conceptDir(slug, id);
+      const written = { ...(existing?.refreshedFrom?.written ?? {}) };
+      const changed = (name: string) => {
+        if (force || !existing) return false;
+        const p = join(dir, name);
+        return existsSync(p) && written[name] !== sha256(readFileSync(p));
+      };
+      const keptFiles: string[] = [];
+      const keep = (name: string) => {
+        keptFiles.push(name);
+        warnings.push(`${name} was changed since the last refresh; kept it — pass --force to replace it.`);
+      };
+      if (changed('symbol.svg')) {
+        keep('symbol.svg');
+        symbolSvg = readText(join(dir, 'symbol.svg'));
+        // The owner's drawing is what the concept shows now: measure it against the original.
+        iou = Math.round((await silhouetteIoU(symbolSvg, reference)) * 1000) / 1000;
+      }
+      if (wordmarkSvg && changed('wordmark.svg')) keep('wordmark.svg');
+
+      // 5. The small version, drafted as `construct --role small` builds one — unless the owner registered their own
+      // small file or changed the drafted one.
+      const SMALL = 'symbol-small.svg';
+      const SMALL_RECIPE = recipeName('small', 'json');
+      const handSmall =
+        !force && existing?.files.small && existing.files.small !== SMALL ? existing.files.small : undefined;
+      const smallEdited = !handSmall && (changed(SMALL) || changed(SMALL_RECIPE));
       let small: { svg: string; spec: ConstructionSpec; warnings: string[] } | undefined;
       let smallSkipped: string | undefined;
-      if ('spec' in draft) {
-        try {
-          const compiled = await compileSpec(draft.spec, { title: `${brandName} — small` });
-          small = { svg: compiled.svg, spec: draft.spec, warnings: compiled.warnings };
-        } catch (err) {
-          if (!(err instanceof MarkiloError)) throw err;
-          smallSkipped = err.message;
-        }
-      } else smallSkipped = draft.reason;
-      if (smallSkipped) warnings.push(`No small version was drafted: ${smallSkipped}.`);
+      if (handSmall) {
+        smallSkipped = `the small version registered by hand (${handSmall}) is left alone; pass --force to replace it`;
+        warnings.push(
+          `files.small is ${handSmall}, registered by hand; left it alone — pass --force to replace it.`,
+        );
+      } else if (smallEdited) {
+        keep(changed(SMALL) ? SMALL : SMALL_RECIPE);
+        smallSkipped = `${SMALL} was changed since the last refresh and is kept`;
+      } else {
+        progress('drafting the small version');
+        const draft = await draftSmallSpec(symbolSvg, `${brandName} — small`);
+        if ('spec' in draft) {
+          try {
+            const compiled = await compileSpec(draft.spec, { title: `${brandName} — small` });
+            small = { svg: compiled.svg, spec: draft.spec, warnings: compiled.warnings };
+          } catch (err) {
+            if (!(err instanceof MarkiloError)) throw err;
+            smallSkipped = err.message;
+          }
+        } else smallSkipped = draft.reason;
+        if (smallSkipped) warnings.push(`No small version was drafted: ${smallSkipped}.`);
+      }
 
-      // 5. Files and the concept, under the brand lock.
-      const dir = w.conceptDir(slug, id);
+      // 6. Lockups, from the symbol and wordmark the concept has now.
       const originalName = `original${ext}`;
       const symbolInk = (await inkMetrics(symbolSvg)).bbox;
-      // Without --wordmark, a wordmark an earlier run registered still makes the lockups.
+      // Without --wordmark (or with a wordmark the owner changed), the concept's registered wordmark makes the lockups.
       const earlierWord = existing?.files.wordmark && w.conceptFile(slug, id, existing.files.wordmark);
       const word =
-        wordmarkSvg ?? (earlierWord && existsSync(earlierWord) ? readText(earlierWord) : undefined);
+        (wordmarkSvg && !keptFiles.includes('wordmark.svg') ? wordmarkSvg : undefined) ??
+        (earlierWord && existsSync(earlierWord) ? readText(earlierWord) : wordmarkSvg);
       const lockups = word
         ? (['horizontal', 'stacked'] as const).map((layout) => ({
             layout,
             svg: composeLockup(symbolSvg, word, { layout, symbolInk }).svg,
           }))
         : [];
-      // A new concept takes its palette from the mark's own colours, the largest area first; a second run keeps the
-      // palette the owner may have changed since.
+      for (const l of lockups) if (changed(`lockup-${l.layout}.svg`)) keep(`lockup-${l.layout}.svg`);
+      if (raster && changed('trace.svg')) keep('trace.svg');
+      // A new concept takes its palette from the mark's own colours (see inkColours); a second run keeps the palette
+      // the owner may have changed since.
       const colours = existing ? [] : await inkColours(symbolSvg);
       const palette: Concept['palette'] = existing?.palette ?? {
         primary: colours[0] ?? '#000000',
         ...(colours[1] ? { secondary: colours[1] } : {}),
         ...(colours[2] ? { accent: colours[2] } : {}),
       };
+      let smallReplaced = false;
       const concept = withBrandLock(w, slug, () => {
         mkdirSync(dir, { recursive: true });
-        copyFileSync(fromPath, join(dir, originalName));
-        if (raster) writeGenerated(join(dir, 'trace.svg'), base);
+        // Read and written as bytes (never copied through a link the --from path may be).
+        writeGenerated(join(dir, originalName), readFileSync(fromPath));
+        const put = (name: string, text: string) => {
+          if (keptFiles.includes(name)) return;
+          const p = join(dir, name);
+          writeGenerated(p, text);
+          written[name] = sha256(readFileSync(p));
+        };
         const oldSymbol =
           existing?.files.symbol && existsSync(w.conceptFile(slug, id, existing.files.symbol))
             ? readText(w.conceptFile(slug, id, existing.files.symbol))
             : undefined;
-        writeGenerated(join(dir, 'symbol.svg'), symbolSvg);
-        if (wordmarkSvg) writeGenerated(join(dir, 'wordmark.svg'), wordmarkSvg);
+        if (raster) put('trace.svg', base);
+        put('symbol.svg', symbolSvg);
+        if (wordmarkSvg) put('wordmark.svg', wordmarkSvg);
         if (small) {
-          writeGenerated(join(dir, 'symbol-small.svg'), small.svg);
-          writeJson(join(dir, recipeName('small', 'json')), small.spec);
+          const before = existsSync(join(dir, SMALL)) ? readText(join(dir, SMALL)) : undefined;
+          put(SMALL, small.svg);
+          put(SMALL_RECIPE, `${JSON.stringify(small.spec, null, 2)}\n`);
+          smallReplaced = before !== small.svg || existing?.files.small !== SMALL;
         }
-        for (const l of lockups) writeGenerated(join(dir, `lockup-${l.layout}.svg`), l.svg);
+        for (const l of lockups) put(`lockup-${l.layout}.svg`, l.svg);
         const now = nowIso();
         const files: Concept['files'] = {
           ...existing?.files,
           symbol: 'symbol.svg',
           ...(wordmarkSvg ? { wordmark: 'wordmark.svg' } : {}),
-          ...(small ? { small: 'symbol-small.svg' } : {}),
+          ...(small ? { small: SMALL } : {}),
         };
         // A changed drawing needs a fresh critique (as construct clears it); the small version is checked by verify.
         const base0: Concept = existing
@@ -5215,8 +5299,18 @@ export const COMMANDS: CommandSpec[] = [
         const next: Concept = {
           ...base0,
           files,
-          refreshedFrom: { file: originalName, iou, kept, minIou, at: now },
+          refreshedFrom: {
+            file: originalName,
+            iou,
+            // The owner's own symbol stays described by what the last refresh kept.
+            kept: keptFiles.includes('symbol.svg') ? (existing?.refreshedFrom?.kept ?? kept) : kept,
+            minIou,
+            at: now,
+            written,
+          },
         };
+        // The answer to small|main was about the small version that was there: a new one asks again.
+        if (smallReplaced) delete next.smallSizes;
         if (equityArg === 'none') delete next.equity;
         else if (equity) next.equity = equity;
         const issues = validateConcept(next);
@@ -5227,39 +5321,48 @@ export const COMMANDS: CommandSpec[] = [
       w.logDecision(
         slug,
         'Refresh',
-        `${id}: ${raster ? 'traced and ' : ''}${kept === 'rebuild' ? 'rebuilt' : 'kept the trace (the rebuild fell below the bar)'} from ${basename(fromPath)}, IoU ${iou} against the original (--min-iou ${minIou}).`,
+        `${id}: ${raster ? 'traced and ' : ''}${kept === 'rebuild' ? 'rebuilt' : `kept the ${kept} (the rebuild fell below the bar)`}${keptFiles.length ? `, kept the owner's ${keptFiles.join(', ')}` : ''} from ${basename(fromPath)}, IoU ${iou} against the original (--min-iou ${minIou}).`,
       );
 
-      // 6. The board: original beside the kept drawing, the lockups, then the small-size board.
+      // 7. The board: original beside the kept drawing, the lockups, then the small-size board.
+      const smallFile = concept.files.small && w.conceptFile(slug, id, concept.files.small);
+      const smallBoard = smallFile && existsSync(smallFile) ? readText(smallFile) : undefined;
       progress('rendering review/refresh.png');
       const board = join(dir, 'review', 'refresh.png');
       writeGenerated(
         board,
-        await renderRefreshBoard({
-          original: raster ? rasterSvg(readFileSync(fromPath)) : source!,
-          refreshed: symbolSvg,
-          kept,
-          iou,
-          minIou,
-          title: brandName,
-          lockups,
-          ...(small ? { small: { main: symbolSvg, small: small.svg, palette: concept.palette } } : {}),
-        }),
+        await renderRefreshBoard(
+          {
+            original: raster ? rasterSvg(readFileSync(fromPath)) : source!,
+            refreshed: symbolSvg,
+            kept: concept.refreshedFrom!.kept,
+            iou,
+            minIou,
+            title: brandName,
+            lockups,
+            ...(smallBoard
+              ? { small: { main: symbolSvg, small: smallBoard, palette: concept.palette } }
+              : {}),
+          },
+          lang,
+        ),
       );
       return {
         concept: id,
         created: !existing,
         from: fromArg,
-        kept,
+        kept: concept.refreshedFrom!.kept,
         iou,
         minIou,
         ...(trace ? { trace } : {}),
         ...(rebuild ? { rebuild } : {}),
         symbol: join(dir, 'symbol.svg'),
-        ...(small ? { small: join(dir, 'symbol-small.svg') } : {}),
+        ...(smallFile ? { small: smallFile } : {}),
+        ...(keptFiles.length ? { keptOwnerFiles: keptFiles } : {}),
         ...(small?.warnings.length ? { smallWarnings: small.warnings } : {}),
         ...(wordmarkSvg ? { wordmark: join(dir, 'wordmark.svg') } : {}),
         lockups: lockups.map((l) => join(dir, `lockup-${l.layout}.svg`)),
+        lang,
         board,
         ...(concept.equity ? { equity: concept.equity } : {}),
         finalized: false,
@@ -5267,8 +5370,8 @@ export const COMMANDS: CommandSpec[] = [
         next: refreshQuestions({
           slug,
           id,
-          ...(small ? { small: 'symbol-small.svg' } : {}),
-          ...(smallSkipped ? { smallSkipped } : {}),
+          ...(smallFile ? { small: concept.files.small! } : {}),
+          ...(smallSkipped && !smallFile ? { smallSkipped } : {}),
           lockups: lockups.length > 0,
           ...(concept.equity ? { equity: concept.equity.note } : {}),
         }),
