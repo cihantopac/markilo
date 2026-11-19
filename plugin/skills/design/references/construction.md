@@ -82,6 +82,32 @@ With `--brand/--concept`, palette roles come from the concept, the result is wri
 Every shape also takes `round` (fillet all corners with this radius), `grow` (offset), `scale`, `rotate`, `flip`
 (`x`/`y`), `move` `[dx, dy]` and `origin` (default: the shape's centre). Order: grow, round, scale, flip, rotate, move.
 
+### Lettering operations
+
+Edits a lettering artist makes to a real glyph, done on its outline so the font's stroke angles and weights stay
+exact. `of` names a def (usually a `glyph`; an inline shape also works). Each takes the transforms above too.
+
+| Operation                                                        | What it does                                                                                                                                                                                                                                          |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `{ "op": "cut-terminals", "of", "angle", "where", "minLength" }` | Turns each flat stem end within 2 % of the cap line or baseline (`where`: `top`, `bottom`, `both`) about its midpoint to `angle`° (rising to the right, one shared angle), so the stem keeps its area. Curved ends (a bowl's shoulder) are never cut. |
+| `{ "op": "slit", "of", "from": [x, y], "to": [x, y], "width" }`  | Subtracts a thin band from `from` to `to`: detach a bowl or open a join exactly where you choose.                                                                                                                                                     |
+| `{ "op": "detach-bowl", "of", "gap" }`                           | Finds each bowl (a counter beside a vertical stem) and cuts both its joins to the stem with a `gap`-wide cut across the wall at its narrowest neck, so the bowl comes free as a ribbon (P, R, b, d, q, D).                                            |
+| `{ "op": "point-apex", "of", "where" }`                          | Extends the outer edges of two strokes that meet in a flat or rounded join (`where`: `top` for A, M, N; `bottom` for V, W) to their intersection, and the inner edges to theirs: a sharp point, edge angles unchanged.                                |
+
+- The detectors leave a glyph alone rather than guess: an "o" has no stem, an "I" no counter, a point that would
+  overshoot the join by more than 25 % of the cap height (Sora's wide, flat A and V apexes) is not drawn, and a cut
+  that would not free a bowl with the full gap (the bar of a "B") is undone. `construct` lists each in `skipped`
+  (`at`, `op`, `of`, `reason`); use `slit` or a `subtract` there instead.
+- Contours under 0.05 % of the glyph's area left by an operation (slivers) are dropped.
+- The cap line and baseline come from the glyph; for a transformed glyph or a drawn path the bounding box stands in.
+
+```json
+{
+  "defs": { "R": { "glyph": { "text": "R", "font": "sora", "height": 600, "at": [200, 800] } } },
+  "layers": [{ "fill": "primary", "shape": { "op": "detach-bowl", "of": "R", "gap": 24 } }]
+}
+```
+
 ## Using it well
 
 - **Custom letters as skeletons.** Draw a letter's centre line as a `path` with `width` (and `cap`/`join`); Béziers

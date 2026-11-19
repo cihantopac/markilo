@@ -33,6 +33,15 @@ import {
 } from '../geom/shapes.js';
 import { escapeAttr, escapeText } from '../svg/xml.js';
 import { evaluate } from './expr.js';
+import {
+  areaOf,
+  bandD,
+  cutTerminals,
+  detachBowl,
+  dropSlivers,
+  pointApex,
+  type TypeLines,
+} from './lettering.js';
 
 /**
  * Construction specs: a logo described the way a designer builds it — primitives, booleans, gaps, offsets,
@@ -164,6 +173,8 @@ export interface Compiled {
   warnings: string[];
   /** Palette roles the spec used that the caller gave no colour for: they took the placeholder in ROLE_DEFAULTS. */
   defaultColors: string[];
+  /** Lettering operations that left a glyph (or part of it) alone, and why. Absent when none did. */
+  skipped?: SkippedOp[];
   stats: { paths: number; commands: number; contours: number; ink: number };
 }
 
@@ -176,6 +187,13 @@ export interface SourceLetter {
   /** Font size and baseline in the final drawing's coordinates. */
   size: number;
   baseline: number;
+}
+
+export interface SkippedOp {
+  at: string;
+  op: string;
+  of: string;
+  reason: string;
 }
 
 export interface CompileOptions {
@@ -211,6 +229,13 @@ const SHAPE_KINDS = [
   'ref',
 ] as const;
 const TRANSFORM_KEYS = ['move', 'rotate', 'scale', 'flip', 'origin', 'round', 'grow'];
+/** Lettering operations on outlines (`{ "op": …, "of": … }`) and the fields each takes. */
+const LETTERING_OPS: Record<string, string[]> = {
+  'cut-terminals': ['angle', 'where', 'minLength'],
+  slit: ['from', 'to', 'width'],
+  'detach-bowl': ['gap'],
+  'point-apex': ['where'],
+};
 
 type M = [number, number, number, number, number, number];
 const mmul = (a: M, b: M): M => [
@@ -232,6 +257,7 @@ class Ctx {
   /** Where each letter landed (before the shape's own transforms), so specs can aim cuts at stems and bars. */
   glyphs: GlyphBox[] = [];
   letters: SourceLetter[] = [];
+  skipped: SkippedOp[] = [];
   depth = 0;
   constructor(
     readonly vars: Record<string, number>,
@@ -272,6 +298,15 @@ class Ctx {
 
 function kindOf(s: Shape, at: string, ctx: Ctx): string {
   if (!s || typeof s !== 'object' || Array.isArray(s)) ctx.fail(at, 'expected a shape object');
+  if (Object.hasOwn(s, 'op')) {
+    const op = String(s.op);
+    const fields = Object.hasOwn(LETTERING_OPS, op) ? LETTERING_OPS[op] : undefined;
+    if (!fields) ctx.fail(`${at}.op`, `unknown op "${op}". Ops: ${Object.keys(LETTERING_OPS).join(', ')}.`);
+    const unknown = Object.keys(s).filter((k) => !['op', 'of', ...fields, ...TRANSFORM_KEYS].includes(k));
+    if (unknown.length)
+      ctx.fail(at, `unknown key(s) ${unknown.join(', ')} for op "${op}". Fields: of, ${fields.join(', ')}.`);
+    return 'op';
+  }
   const kinds = Object.keys(s).filter((k) => (SHAPE_KINDS as readonly string[]).includes(k));
   const unknown = Object.keys(s).filter(
     (k) => !(SHAPE_KINDS as readonly string[]).includes(k) && !TRANSFORM_KEYS.includes(k),
@@ -524,11 +559,83 @@ function primitive(kind: string, raw: unknown, at: string, ctx: Ctx): string {
   return ctx.fail(a, 'unsupported shape');
 }
 
+/**
+ * A lettering operation on the outline of `of` (a def name, usually a glyph, or an inline shape). The glyph's cap
+ * line and baseline steer the detectors; for a shape that is not an untransformed glyph its bounding box stands in.
+ */
+function letteringOp(s: Shape, at: string, ctx: Ctx): string {
+  const op = String(s.op);
+  if (s.of === undefined) ctx.fail(`${at}.of`, 'missing: the def name (or shape) to work on');
+  const of = typeof s.of === 'string' ? s.of : 'shape';
+  const firstGlyph = ctx.glyphs.length;
+  const src =
+    typeof s.of === 'string' ? shape({ ref: s.of }, `${at}.of`, ctx) : shape(s.of as Shape, `${at}.of`, ctx);
+  const box = boundsOf(src);
+  const lines = ((): TypeLines => {
+    const gs = ctx.glyphs.slice(firstGlyph);
+    if (gs.length) {
+      const x0 = Math.min(...gs.map((g) => g.x));
+      const y0 = Math.min(...gs.map((g) => g.y));
+      const x1 = Math.max(...gs.map((g) => g.x + g.w));
+      const y1 = Math.max(...gs.map((g) => g.y + g.h));
+      const fits = [x0 - box.x, y0 - box.y, x1 - box.x - box.w, y1 - box.y - box.h].every(
+        (v) => Math.abs(v) <= 1,
+      );
+      if (fits)
+        return {
+          baseline: gs[0]!.baseline,
+          capLine: gs[0]!.baseline - gs[0]!.capHeight,
+          capHeight: gs[0]!.capHeight,
+        };
+    }
+    return { baseline: box.y + box.h, capLine: box.y, capHeight: box.h };
+  })();
+  const n = (k: string, d?: number) => ctx.num(s[k], `${at}.${k}`, d);
+  const where = (allowed: string[], dflt: string) => {
+    const v = s.where === undefined ? dflt : String(s.where);
+    if (!allowed.includes(v)) ctx.fail(`${at}.where`, `expected ${allowed.join(' or ')}`);
+    return v;
+  };
+  let res: { d: string; skipped: string[] };
+  switch (op) {
+    case 'cut-terminals': {
+      const angle = n('angle', 30);
+      if (!(angle > 0 && angle < 90)) ctx.fail(`${at}.angle`, 'expected an angle between 0 and 90 degrees');
+      res = cutTerminals(
+        src,
+        { angle, where: where(['top', 'bottom', 'both'], 'both') as 'top', minLength: n('minLength', 4) },
+        lines,
+      );
+      break;
+    }
+    case 'slit': {
+      const from = ctx.pt(s.from, `${at}.from`);
+      const to = ctx.pt(s.to, `${at}.to`);
+      const width = n('width', 3);
+      if (!(width > 0)) ctx.fail(`${at}.width`, 'expected a width above 0');
+      if (Math.hypot(to[0] - from[0], to[1] - from[1]) < 1e-6)
+        ctx.fail(`${at}.to`, 'must differ from "from"');
+      res = { d: booleanOp('subtract', [src, bandD(from, to, width)]), skipped: [] };
+      break;
+    }
+    case 'detach-bowl': {
+      const gap = n('gap', 3);
+      if (!(gap > 0)) ctx.fail(`${at}.gap`, 'expected a gap above 0');
+      res = detachBowl(src, gap, lines);
+      break;
+    }
+    default:
+      res = pointApex(src, where(['top', 'bottom'], 'top') as 'top', lines);
+  }
+  for (const reason of res.skipped) ctx.skipped.push({ at, op, of, reason });
+  return res.d === src ? src : dropSlivers(res.d, areaOf(src));
+}
+
 function shape(s: Shape, at: string, ctx: Ctx): string {
   const kind = kindOf(s, at, ctx);
   const firstGuide = ctx.guides.length;
-  let d = primitive(kind, s[kind], at, ctx);
-  if (!['union', 'subtract', 'intersect', 'xor', 'ref', 'repeat', 'mirror', 'gap'].includes(kind))
+  let d = kind === 'op' ? letteringOp(s, at, ctx) : primitive(kind, s[kind], at, ctx);
+  if (!['union', 'subtract', 'intersect', 'xor', 'ref', 'repeat', 'mirror', 'gap', 'op'].includes(kind))
     ctx.guides.push(d);
   if (s.grow !== undefined) d = offsetPath(d, ctx.num(s.grow, `${at}.grow`));
   if (s.round !== undefined) d = roundCorners(d, ctx.num(s.round, `${at}.round`));
@@ -734,6 +841,7 @@ export async function compileSpec(spec: ConstructionSpec, opts: CompileOptions =
     params: Object.fromEntries(Object.entries(vars).filter(([k]) => !['W', 'H', 'cx', 'cy'].includes(k))),
     warnings: ctx.warnings,
     defaultColors: [...defaulted],
+    ...(ctx.skipped.length ? { skipped: ctx.skipped } : {}),
     stats: {
       paths: layers.length,
       commands: layers.reduce((n, l) => n + countCmds(l.d), 0),

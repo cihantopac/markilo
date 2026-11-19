@@ -275,3 +275,257 @@ describe('construct --set colours (CLI)', () => {
     expect(JSON.parse(c.stdout).defaultColors).toEqual([]);
   });
 });
+
+// ---- Lettering operations on outlines -------------------------------------------------------------------------
+
+type Pt2 = [number, number];
+/** Path data (absolute M/L/Q/C/Z, as the kit writes it) as closed polylines, curves flattened finely. */
+function polylines(d: string): Pt2[][] {
+  const toks = d.match(/[MLQCZ]|-?\d*\.?\d+(?:e[-+]?\d+)?/gi) ?? [];
+  const out: Pt2[][] = [];
+  let cur: Pt2[] = [];
+  let i = 0;
+  let cmd = '';
+  const num = () => Number(toks[i++]);
+  const last = (): Pt2 => cur[cur.length - 1]!;
+  while (i < toks.length) {
+    if (/[MLQCZ]/i.test(toks[i]!)) cmd = toks[i++]!.toUpperCase();
+    if (cmd === 'M') {
+      if (cur.length) out.push(cur);
+      cur = [[num(), num()]];
+      cmd = 'L';
+    } else if (cmd === 'L') cur.push([num(), num()]);
+    else if (cmd === 'Q' || cmd === 'C') {
+      const p0 = last();
+      const ps: Pt2[] = [p0];
+      for (let k = 0; k < (cmd === 'Q' ? 2 : 3); k++) ps.push([num(), num()]);
+      for (let s = 1; s <= 64; s++) {
+        const t = s / 64;
+        let pts = ps;
+        while (pts.length > 1)
+          pts = pts
+            .slice(1)
+            .map((p, j) => [
+              pts[j]![0] + (p[0] - pts[j]![0]) * t,
+              pts[j]![1] + (p[1] - pts[j]![1]) * t,
+            ]) as Pt2[];
+        cur.push(pts[0]!);
+      }
+    } else if (cmd === 'Z') {
+      const [f, l] = [cur[0], cur[cur.length - 1]];
+      if (cur.length > 1 && f && l && f[0] === l[0] && f[1] === l[1]) cur.pop();
+      out.push(cur);
+      cur = [];
+      cmd = '';
+    } else i++;
+  }
+  if (cur.length) out.push(cur);
+  return out;
+}
+const signedArea = (p: Pt2[]) =>
+  p.reduce((s, a, i) => {
+    const b = p[(i + 1) % p.length]!;
+    return s + a[0] * b[1] - b[0] * a[1];
+  }, 0) / 2;
+const inside = (pt: Pt2, poly: Pt2[]) => {
+  let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i]!;
+    const [xj, yj] = poly[j]!;
+    if (yi > pt[1] !== yj > pt[1] && pt[0] < ((xj - xi) * (pt[1] - yi)) / (yj - yi) + xi) c = !c;
+  }
+  return c;
+};
+/** Even-odd filled area of path data. */
+const inkArea = (d: string) => {
+  const ps = polylines(d);
+  return ps.reduce((s, p, i) => {
+    const depth = ps.filter((q, j) => j !== i && inside(p[0]!, q)).length;
+    return s + (depth % 2 ? -1 : 1) * Math.abs(signedArea(p));
+  }, 0);
+};
+const segDist = (p: Pt2, a: Pt2, b: Pt2) => {
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  const l = dx * dx + dy * dy;
+  const t = l ? Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / l)) : 0;
+  return Math.hypot(p[0] - a[0] - t * dx, p[1] - a[1] - t * dy);
+};
+/** Smallest distance between two closed polylines. */
+const polyDist = (a: Pt2[], b: Pt2[]) => {
+  let m = Infinity;
+  for (const [x, y] of [
+    [a, b],
+    [b, a],
+  ] as const)
+    for (const p of x)
+      for (let i = 0; i < y.length; i++) m = Math.min(m, segDist(p, y[i]!, y[(i + 1) % y.length]!));
+  return m;
+};
+/** Straight segments of path data as [from, to] pairs (curves left out). */
+const lines = (d: string): [Pt2, Pt2][] => {
+  const toks = d.match(/[MLQCZ]|-?\d*\.?\d+(?:e[-+]?\d+)?/gi) ?? [];
+  const res: [Pt2, Pt2][] = [];
+  let i = 0;
+  let cmd = '';
+  let pen: Pt2 = [0, 0];
+  let start: Pt2 = [0, 0];
+  const pt = (): Pt2 => [Number(toks[i++]), Number(toks[i++])];
+  while (i < toks.length) {
+    if (/[MLQCZ]/i.test(toks[i]!)) cmd = toks[i++]!.toUpperCase();
+    if (cmd === 'M') {
+      pen = start = pt();
+      cmd = 'L';
+    } else if (cmd === 'L') {
+      const p = pt();
+      res.push([pen, p]);
+      pen = p;
+    } else if (cmd === 'Q' || cmd === 'C') {
+      for (let k = 0; k < (cmd === 'Q' ? 2 : 3); k++) pen = pt();
+    } else if (cmd === 'Z') {
+      if (pen[0] !== start[0] || pen[1] !== start[1]) res.push([pen, start]);
+      pen = start;
+      cmd = '';
+    } else i++;
+  }
+  return res;
+};
+const deg = (a: Pt2, b: Pt2) => (Math.atan2(b[1] - a[1], b[0] - a[0]) * 180) / Math.PI;
+/** Undirected angle from horizontal, 0…180. */
+const lineAngle = (a: Pt2, b: Pt2) => ((deg(a, b) % 180) + 180) % 180;
+
+const glyphSpec = (text: string, shape: Record<string, unknown>, font = 'sora'): ConstructionSpec => ({
+  defs: { g: { glyph: { text, font, weight: 700, height: 600, at: [100, 800] } } },
+  layers: [{ name: text, fill: 'ink', shape }],
+});
+const plain = async (text: string, font = 'sora') =>
+  (await compileSpec(glyphSpec(text, { ref: 'g' }, font))).layers[0]!.d;
+
+describe('lettering operations', () => {
+  it('cuts the four free ends of an H at one shared angle, keeping its area', async () => {
+    const before = await plain('H');
+    const c = await compileSpec(
+      glyphSpec('H', { op: 'cut-terminals', of: 'g', angle: 32, where: 'both', minLength: 4 }),
+    );
+    const d = c.layers[0]!.d;
+    const cuts = lines(d).filter(([a, b]) => Math.abs(lineAngle(a, b) - (180 - 32)) < 0.5);
+    expect(cuts).toHaveLength(4);
+    // Each cut spans the stem: its horizontal reach is the stem width.
+    for (const [a, b] of cuts) expect(Math.abs(a[0] - b[0])).toBeCloseTo(134.8, 0);
+    // No flat end is left on the cap line or the baseline.
+    const flat = lines(d).filter(
+      ([a, b]) => Math.abs(a[1] - b[1]) < 0.01 && (Math.abs(a[1] - 200) < 12 || Math.abs(a[1] - 800) < 12),
+    );
+    expect(flat).toEqual([]);
+    expect(Math.abs(inkArea(d) / inkArea(before) - 1)).toBeLessThan(0.03);
+    expect(c.skipped).toBeUndefined();
+  });
+
+  it('never cuts a bowl: the P keeps its curved top and only its foot is cut', async () => {
+    const c = await compileSpec(glyphSpec('P', { op: 'cut-terminals', of: 'g', angle: 32, where: 'both' }));
+    const cuts = lines(c.layers[0]!.d).filter(([a, b]) => Math.abs(lineAngle(a, b) - 148) < 0.5);
+    expect(cuts).toHaveLength(1);
+    expect(Math.min(...cuts[0]!.map((p) => p[1]))).toBeGreaterThan(700);
+  });
+
+  it('a slit across the joins of a P bowl leaves two contours', async () => {
+    const c = await compileSpec(
+      glyphSpec('P', { op: 'slit', of: 'g', from: [312, 150], to: [312, 660], width: 10 }),
+    );
+    expect(polylines(c.layers[0]!.d)).toHaveLength(2);
+  });
+
+  for (const ch of ['P', 'R', 'b'])
+    it(`detach-bowl separates the bowl of "${ch}" from its stem by the gap`, async () => {
+      const c = await compileSpec(glyphSpec(ch, { op: 'detach-bowl', of: 'g', gap: 3 }));
+      const parts = polylines(c.layers[0]!.d);
+      expect(parts).toHaveLength(2);
+      // One part holds the stem, the other the bowl.
+      const stem = parts.findIndex((p) => inside([230, 300], p));
+      expect(stem).toBeGreaterThanOrEqual(0);
+      expect(polyDist(parts[0]!, parts[1]!)).toBeGreaterThan(3 - 0.2);
+      expect(polyDist(parts[0]!, parts[1]!)).toBeLessThan(3 + 0.2);
+      expect(c.skipped).toBeUndefined();
+    });
+
+  // Sora's A and V end in wide flat joins: pointing them would overshoot by 54 % and 62 % of the cap height, past
+  // the 25 % limit, so the sharpening itself is checked on the bundled Inter, whose joins are narrow.
+  for (const [ch, where] of [
+    ['A', 'top'],
+    ['V', 'bottom'],
+  ] as const)
+    it(`point-apex sharpens the ${where} of "${ch}" to one vertex, keeping the stroke angles`, async () => {
+      const spec = (shape: Record<string, unknown>): ConstructionSpec => ({
+        defs: { g: { glyph: { text: ch, font: 'inter', weight: 400, height: 600, at: [100, 800] } } },
+        layers: [{ fill: 'ink', shape }],
+      });
+      const before = lines((await compileSpec(spec({ ref: 'g' }))).layers[0]!.d).filter(
+        ([a, b]) => Math.abs(lineAngle(a, b) - 90) < 60,
+      );
+      expect(before.length).toBeGreaterThanOrEqual(2);
+      const c = await compileSpec(spec({ op: 'point-apex', of: 'g', where }));
+      expect(c.skipped).toBeUndefined();
+      const d = c.layers[0]!.d;
+      const outer = polylines(d).sort((p, q) => Math.abs(signedArea(q)) - Math.abs(signedArea(p)))[0]!;
+      const ys = outer.map((p) => p[1]);
+      const extreme = where === 'top' ? Math.min(...ys) : Math.max(...ys);
+      expect(outer.filter((p) => Math.abs(p[1] - extreme) < 0.5)).toHaveLength(1);
+      // The point goes past the old join, within 25 % of the cap height.
+      expect(Math.abs(extreme - (where === 'top' ? 200 : 800))).toBeGreaterThan(1);
+      expect(Math.abs(extreme - (where === 'top' ? 200 : 800))).toBeLessThanOrEqual(150);
+      // Every diagonal edge keeps its angle within 0.5°.
+      const after = lines(d).filter(([a, b]) => Math.abs(lineAngle(a, b) - 90) < 60);
+      for (const [a, b] of before) {
+        const t = lineAngle(a, b);
+        expect(after.some(([p, q]) => Math.abs(lineAngle(p, q) - t) < 0.5)).toBe(true);
+      }
+    });
+
+  it("leaves Sora's flat A and V apexes alone and says how far the point would reach", async () => {
+    for (const [ch, where, pct] of [
+      ['A', 'top', 54],
+      ['V', 'bottom', 62],
+    ] as const) {
+      const before = await plain(ch);
+      const c = await compileSpec(glyphSpec(ch, { op: 'point-apex', of: 'g', where }));
+      expect(c.layers[0]!.d).toBe(before);
+      expect(c.skipped).toHaveLength(1);
+      expect(c.skipped![0]!.reason).toContain(`${pct} % of the cap height; the limit is 25 %`);
+    }
+  });
+
+  it('reports a B it cannot free cleanly instead of slashing its bar', async () => {
+    const before = await plain('B');
+    const c = await compileSpec(glyphSpec('B', { op: 'detach-bowl', of: 'g', gap: 3 }));
+    expect(c.layers[0]!.d).toBe(before);
+    expect(c.skipped!.length).toBeGreaterThan(0);
+  });
+
+  for (const ch of ['o', 'I'])
+    it(`reports "${ch}" as skipped and leaves it unchanged`, async () => {
+      const before = await plain(ch);
+      for (const shape of [
+        { op: 'detach-bowl', of: 'g', gap: 3 },
+        { op: 'point-apex', of: 'g', where: 'top' },
+      ]) {
+        const c = await compileSpec(glyphSpec(ch, shape));
+        expect(c.layers[0]!.d).toBe(before);
+        expect(c.skipped).toEqual([expect.objectContaining({ op: shape.op, of: 'g' })]);
+      }
+    });
+
+  it('drops slivers under 0.05 % of the area', async () => {
+    const c = await compileSpec({
+      defs: { sq: { rect: { x: 100, y: 100, w: 400, h: 400 } } },
+      layers: [{ fill: 'ink', shape: { op: 'slit', of: 'sq', from: [90, 108], to: [108, 90], width: 4 } }],
+    });
+    expect(polylines(c.layers[0]!.d)).toHaveLength(1);
+  });
+
+  it('rejects an unknown operation or a missing source', async () => {
+    await expect(compileSpec(glyphSpec('H', { op: 'melt', of: 'g' }))).rejects.toThrow(/op.*cut-terminals/);
+    await expect(
+      compileSpec(glyphSpec('H', { op: 'slit', of: 'nope', from: [0, 0], to: [1, 1] })),
+    ).rejects.toThrow(/no def named "nope"/);
+  });
+});
